@@ -1,0 +1,154 @@
+delete from sales_return;
+delete from sales_invoice;
+delete from debit_note;
+delete from credit_note;
+delete from receipt;
+delete from quotation;
+delete from income_statement;
+delete from balance_sheet;
+delete from customer_aged_summary;
+update clients set amount_owing = '{}' where id in(10000);
+delete from inventory;
+
+-- OLD 
+DELETE FROM balance_sheet;
+DELETE FROM income_statements;
+DELETE FROM log_error;
+DELETE FROM receipts;
+DELETE FROM sales_return;
+DELETE FROM sales_invoice;
+DELETE FROM credit_note;
+DELETE FROM debit_note;
+DELETE FROM purchase_invoice;
+DELETE FROM payment_receipts;
+update inventory set qty_on_hand = 1000 where item_id = 1;
+
+[COMPLETED]
+Client   [COMPLETED]
+Sales Invoice [COMPLETED]
+Sales Return [COMPLETED]
+Quotation   [COMPLETED]
+Convert Quote to Invoice   [COMPLETED]
+Credit Note [COMPLETED]
+Debit Note  [COMPLETED]
+Item Add / Update [COMPLETED]
+Adjust Inventory [COMPLETED]
+Set Margin  [COMPLETED]
+Transfer Invoices Item to Store   [COMPLETED]
+Balance Sheet PRINT/DISPLAY/DOWNLOAD PDF    [COMPLETED]
+Settings  [COMPLETED]
+LOCK ITEM PRICE TO BASE PRICE WHEN CREATING INVOICE FOR SELF CLIENT. [COMPLETED]
+Add Inventory Quantity When Creating Sales Invoice per item   [COMPLETED]
+Add Base Price On Sales Invoice per item.  [COMPLETED]
+Set Custom Price for Selected Items for Client.   [COMPLETED]
+Dashboard nav look change. [COMPLETED]
+Customer Statement  [COMPLETED]
+BackOrder [COMPLETED]
+Income Statement Display [COMPLETED]
+Receipt [COMPLETED]
+STORE OLD COPIES OF TRANSACTIONS. [COMPLETED]
+PACKAGING SLIP PRINT [COMPLETED]
+Income Statement in PDF Format [COMPLETED]
+Receipt Number in Words [COMPLETED]
+Customer Summary Store Previous Date [COMPLETED]
+Add Amount Owing for Client in Txn. [COMPLETED]
+Added Inventory History [COMPLETED]
+Add Profit Margin by PreText on item identifier  [COMPLETED]
+Conversion of Old Data into New Format.  [COMPLETED]
+VERIFY BALANCE SHEET CALCULATIONS  [COMPLETED]
+TEST SYSTEM FOR WASH SYSTEM.  [COMPLETED]
+
+[INCOMPLETE]
+Partially Unpaid Status wrong in Customer Summary
+Item Frequency 
+Fix inventory value in BS
+Inventory Report IN PDF
+Add Images Support for Items.
+add vendor details.  [BIG CHANGE]
+Dashboard today summary 
+    pie chart
+    highest invoice 
+    COGS 
+    COGR 
+    Collections
+Inventory Parts Report 
+
+[BALANCE SHEET MAJOR ISSUE FIX]
+BS SHould be year wise
+Accounts receivables
+Accounts Payable
+Inventory 
+Tax Payable 
+SHOULD ALL BE FORWARDED, ELSE ALL DETAILS 
+
+[CONVERSION]
+Clients   [DONE]
+Items    [DONE]
+Inventory [DONE]
+Users [DONE]
+Balance Sheet  [DONE]
+Income Statement [DONE]
+Sales Invoice [DONE]
+Sales Return  [DONE]
+Credit Note [DONE]
+Debit Note [DONE]
+Quotations [DONE]
+Receipt  [DONE]
+Store Details/GLOBAL SETTINGS
+
+
+CHANGE TIMEZONE
+MYSQL: 
+default-time-zone = "+00:00"
+
+PHP: 
+date.timezone=UTC
+
+
+GIT Command
+git show
+
+// VERIFY AMOUNTS
+SELECT payment_method, SUM(sum_total) FROM sales_invoice WHERE store_id = 2 GROUP BY payment_method;
+SELECT payment_method, SUM(sum_total) FROM sales_return WHERE store_id = 2  GROUP BY payment_method;
+SELECT payment_method, SUM(sum_total), sum(total_discount) FROM receipt WHERE store_id = 2 and do_conceal = 0 GROUP BY payment_method;
+SELECT sum(sum_total), sum(total_discount) FROM receipt WHERE store_id = 2 and do_conceal = 0;
+SELECT SUM(sum_total) FROM debit_note WHERE store_id = 2;
+SELECT SUM(sum_total) FROM credit_note WHERE store_id = 2;
+
+SELECT payment_method, SUM(sum_total) FROM sales_invoice WHERE store_id = 3 GROUP BY payment_method;
+SELECT payment_method, SUM(sum_total) FROM sales_return WHERE store_id = 3  GROUP BY payment_method;
+SELECT payment_method, SUM(sum_total), sum(total_discount) FROM receipt WHERE store_id = 3 and do_conceal = 0 GROUP BY payment_method;
+SELECT sum(sum_total), sum(total_discount) FROM receipt WHERE store_id = 3 and do_conceal = 0;
+SELECT SUM(sum_total) FROM debit_note WHERE store_id = 3;
+SELECT SUM(sum_total) FROM credit_note WHERE store_id = 3;
+
+SELECT payment_method, SUM(sum_total) FROM sales_invoice WHERE store_id = 4 GROUP BY payment_method;
+SELECT payment_method, SUM(sum_total) FROM sales_return WHERE store_id = 4  GROUP BY payment_method;
+SELECT payment_method, SUM(sum_total), sum(total_discount) FROM receipt WHERE store_id = 4 and do_conceal = 0 GROUP BY payment_method;
+SELECT sum(sum_total), sum(total_discount) FROM receipt WHERE store_id = 4 and do_conceal = 0;
+SELECT SUM(sum_total) FROM debit_note WHERE store_id = 4;
+SELECT SUM(sum_total) FROM credit_note WHERE store_id = 4;
+
+SELECT payment_method, SUM(sum_total) FROM sales_invoice WHERE store_id = 5 GROUP BY payment_method;
+SELECT payment_method, SUM(sum_total) FROM sales_return WHERE store_id = 5  GROUP BY payment_method;
+SELECT payment_method, SUM(sum_total), sum(total_discount) FROM receipt WHERE store_id = 5 and do_conceal = 0 GROUP BY payment_method;
+SELECT sum(sum_total), sum(total_discount) FROM receipt WHERE store_id = 5 and do_conceal = 0;
+SELECT SUM(sum_total) FROM debit_note WHERE store_id = 5;
+SELECT SUM(sum_total) FROM credit_note WHERE store_id = 5;
+
+SELECT payment_method, SUM(sum_total) FROM sales_invoice WHERE store_id = 6 GROUP BY payment_method;
+SELECT payment_method, SUM(sum_total) FROM sales_return WHERE store_id = 6  GROUP BY payment_method;
+SELECT payment_method, SUM(sum_total), sum(total_discount) FROM receipt WHERE store_id = 6 and do_conceal = 0 GROUP BY payment_method;
+SELECT sum(sum_total), sum(total_discount) FROM receipt WHERE store_id = 6 and do_conceal = 0;
+SELECT SUM(sum_total) FROM debit_note WHERE store_id = 6;
+SELECT SUM(sum_total) FROM credit_note WHERE store_id = 6;
+
+SELECT payment_method, SUM(sum_total) FROM sales_invoice WHERE store_id = 7 GROUP BY payment_method;
+SELECT payment_method, SUM(sum_total) FROM sales_return WHERE store_id = 7  GROUP BY payment_method;
+SELECT payment_method, SUM(sum_total), sum(total_discount) FROM receipt WHERE store_id = 7 and do_conceal = 0 GROUP BY payment_method;
+SELECT sum(sum_total), sum(total_discount) FROM receipt WHERE store_id = 7 and do_conceal = 0;
+SELECT SUM(sum_total) FROM debit_note WHERE store_id = 7;
+SELECT SUM(sum_total) FROM credit_note WHERE store_id = 7;
+
+////////////////////////////

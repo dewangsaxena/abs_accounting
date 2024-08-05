@@ -1,0 +1,61 @@
+.react-autosuggest__container {
+  z-index: 1 !important;
+}
+
+.react-autosuggest__suggestions-container {
+  position: absolute;
+  z-index: 1 !important;
+  background-color: white !important;
+  padding-left: 0.2em;
+  padding-right: 0.2em;
+  font-size: 0.9em;
+  letter-spacing: 0.1em;
+  font-family: "Space Grotesk";
+}
+
+.react-autosuggest__suggestions-list {
+  *:nth-child(even) {
+    background-color: #9cd9a2;
+  }
+  list-style-type: none;
+  :hover {
+    background-color: #a29cd9;
+  }
+  z-index: 999 !important;
+}
+
+.react-autosuggest__input::-webkit-input-placeholder {
+  /* Chrome/Opera/Safari */
+  letter-spacing: 2px;
+  font-size: 1em;
+  font-family: "Space Grotesk";
+}
+.react-autosuggest__input::-moz-placeholder {
+  /* Firefox 19+ */
+  letter-spacing: 2px;
+  font-size: 1em;
+  font-family: "Space Grotesk";
+}
+.react-autosuggest__input:-ms-input-placeholder {
+  /* IE 10+ */
+  letter-spacing: 2px;
+  font-size: 1em;
+  font-family: "Space Grotesk";
+}
+.react-autosuggest__input:-moz-placeholder {
+  /* Firefox 18- */
+  letter-spacing: 2px;
+  font-size: 1em;
+  font-family: "Space Grotesk";
+}
+
+.react-autosuggest__input {
+  padding-left: 2px;
+  padding-right: 2px;
+  letter-spacing: 2px;
+  font-size: 0.8em;
+  border-width: 1px;
+  border-radius: 1px;
+  color: #7f00ff;
+  font-family: "Space Grotesk";
+}
