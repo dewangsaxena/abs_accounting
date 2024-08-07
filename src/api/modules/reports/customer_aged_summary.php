@@ -326,6 +326,8 @@ class CustomerAgedSummary {
         $handle = fopen($path_to_file, 'w');
         $summary = $details['summary'];
         fputcsv($handle, ['Client Name', 'Phone Number', 'Total', 'Current', '31-60', '61-90', '91+']);
+
+        $footer = ['**** TOTAL AMOUNT ****', '', 0, 0, 0, 0, 0];
         foreach($summary as $r) {
             fputcsv($handle, [
                 $r['client_name'],
@@ -336,7 +338,22 @@ class CustomerAgedSummary {
                 Utils::round($r['61-90'], 2),
                 Utils::round($r['91+'], 2),
             ]);
+
+            $footer[2] += $r['total'];
+            $footer[3] += $r['current'];
+            $footer[4] += $r['31-60'];
+            $footer[5] += $r['61-90'];
+            $footer[6] += $r['91+'];
         }
+
+        // Round off
+        $footer[2] = Utils::round($footer[2]);
+        $footer[3] = Utils::round($footer[3]);
+        $footer[4] = Utils::round($footer[4]);
+        $footer[5] = Utils::round($footer[5]);
+        $footer[6] = Utils::round($footer[6]);
+
+        fputcsv($handle, $footer);
 
         fclose($handle);
         return $path_to_file;
