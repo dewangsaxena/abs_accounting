@@ -30,7 +30,7 @@ define('DB_PASSWORD', [
 
 define('DB_NAME', [
     /* Localhost */ 
-    __LOCALHOST__ => 'new_abs', 
+    __LOCALHOST__ => 'abs', 
 
     /* partsv2.abs.company */ 
     __PARTS_V2__ => 'u356746783_partsv2_abs',
