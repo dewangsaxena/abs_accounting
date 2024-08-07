@@ -64,11 +64,11 @@ VALUES
 (
     7, 
     'Delta'
-);
+)
 (
     8,
     'Regina'
-)
+);
 
 /* User Information */ 
 CREATE TABLE users(
