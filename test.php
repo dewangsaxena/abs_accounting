@@ -77,5 +77,5 @@ function generate_list(int $store_id) {
 }
 
 // generate_list(StoreDetails::DELTA);
-echo Correct_IS_BS_Inventory::correct(StoreDetails::SLAVE_LAKE) ? 'T' : 'F';
+// echo Correct_IS_BS_Inventory::correct(StoreDetails::EDMONTON) ? 'T' : 'F';
 ?>
