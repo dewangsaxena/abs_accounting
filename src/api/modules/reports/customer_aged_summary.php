@@ -347,11 +347,11 @@ class CustomerAgedSummary {
         }
 
         // Round off
-        $footer[2] = Utils::round($footer[2]);
-        $footer[3] = Utils::round($footer[3]);
-        $footer[4] = Utils::round($footer[4]);
-        $footer[5] = Utils::round($footer[5]);
-        $footer[6] = Utils::round($footer[6]);
+        $footer[2] = Utils::round($footer[2], 2);
+        $footer[3] = Utils::round($footer[3], 2);
+        $footer[4] = Utils::round($footer[4], 2);
+        $footer[5] = Utils::round($footer[5], 2);
+        $footer[6] = Utils::round($footer[6], 2);
 
         fputcsv($handle, $footer);
 
