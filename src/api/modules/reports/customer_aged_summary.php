@@ -327,7 +327,7 @@ class CustomerAgedSummary {
         $summary = $details['summary'];
         fputcsv($handle, ['Client Name', 'Phone Number', 'Total', 'Current', '31-60', '61-90', '91+']);
 
-        $footer = ['**** TOTAL AMOUNT ****', '', 0, 0, 0, 0, 0];
+        $footer = ['**** TOTAL AMOUNTS ****', '', 0, 0, 0, 0, 0];
         foreach($summary as $r) {
             fputcsv($handle, [
                 $r['client_name'],
