@@ -64,7 +64,7 @@ VALUES
 (
     7, 
     'Delta'
-)
+),
 (
     8,
     'Regina'
