@@ -67,7 +67,7 @@ VALUES
 );
 (
     8,
-    'Regina',
+    'Regina'
 )
 
 /* User Information */ 
