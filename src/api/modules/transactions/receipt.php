@@ -1109,7 +1109,7 @@ class Receipt {
 
             // Send email
             $is_email_sent = Email::send(
-                subject: "Receipt #$receipt_id from ". StoreDetails::STORE_DETAILS[$store_id]['email']['for_name'][SYSTEM_INIT_MODE],
+                subject: "Receipt #$receipt_id from ". StoreDetails::STORE_DETAILS[$store_id]['email']['from_name'][SYSTEM_INIT_MODE],
                 recipient_email: $details['email_id'],
                 recipient_name: $details['name'],
                 content: "Please notify us immediately if you are unable to see the attachment(s).$content_details",

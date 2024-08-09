@@ -378,7 +378,7 @@ class CustomerStatement {
                 
                 // Send email
                 $is_email_sent = Email::send(
-                    subject: 'Statement from '. StoreDetails::STORE_DETAILS[$store_id]['email']['for_name'][SYSTEM_INIT_MODE],
+                    subject: 'Statement from '. StoreDetails::STORE_DETAILS[$store_id]['email']['from_name'][SYSTEM_INIT_MODE],
                     recipient_email: $client_details['primaryDetails']['emailId'],
                     recipient_name: $client_details['primaryDetails']['name'],
                     content: 'Please notify us immediately if you are unable to see the attachment(s). Please find herewith attached statement.',

@@ -1150,7 +1150,7 @@ class Shared {
                 }
                 
                 // Add Business Name
-                $subject .= ' from '. StoreDetails::STORE_DETAILS[$store_id]['email']['for_name'][SYSTEM_INIT_MODE];
+                $subject .= ' from '. StoreDetails::STORE_DETAILS[$store_id]['email']['from_name'][SYSTEM_INIT_MODE];
 
                 // Signature 
                 $signature = self::get_store_signature($store_id);
