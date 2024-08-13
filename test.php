@@ -70,14 +70,14 @@ function generate_list(int $store_id) {
         EOS;
     }
 
-    $total_value = Utils::number_format($total_value);
+    $total_value = Utils::number_format($total_value, 200);
     $code .= "</table><br><br>Total Inventory Value: &nbsp;&nbsp;&nbsp;&nbsp;<label style='letter-spacing: 2px;font-weight:bold;'>\$ $total_value</label>";
 
     echo $code;
 }
 
-// generate_list(StoreDetails::DELTA);
 if(SYSTEM_INIT_MODE === PARTS) {
-    echo 'CALGARY : '. (Correct_IS_BS_Inventory::correct(StoreDetails::CALGARY) ? 'T' : 'F');
+    // generate_list(StoreDetails::SLAVE_LAKE);
+    echo 'SLAVE LAKE : '. (Correct_IS_BS_Inventory::correct(StoreDetails::SLAVE_LAKE) ? 'T' : 'F');
 }
 ?>
