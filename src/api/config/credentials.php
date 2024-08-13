@@ -22,7 +22,7 @@ define('DB_PASSWORD', [
     __LOCALHOST__ => '',
 
     /* partsv2.abs.company */ 
-    // __PARTS_V2__ => 'h+w_W#^SfF[cb7XEo,7t#|g-4ca=k".`',
+    // __PARTS_V2__ => '__DELETEME__'. 'h+w_W#^SfF[cb7XEo,7t#|g-4ca=k".`',
     __PARTS_V2__ => 'Fr:W="|ryHn/AQ.%2.pznd`N*#([97/Q',
 
     /* washv2.abs.company */
