@@ -188,7 +188,7 @@ class Correct_IS_BS_Inventory {
             if (SYSTEM_INIT_MODE === WASH) {
 
                 // Account
-                $account_id = intval($item['accounts']['revenue']);
+                $account_id = intval($item['account']['revenue']);
                 
                 if($account_id != 1520) {
 
