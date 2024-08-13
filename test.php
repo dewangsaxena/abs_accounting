@@ -78,6 +78,6 @@ function generate_list(int $store_id) {
 
 // generate_list(StoreDetails::DELTA);
 if(SYSTEM_INIT_MODE === PARTS) {
-    echo Correct_IS_BS_Inventory::correct(StoreDetails::EDMONTON) ? 'T' : 'F';
+    echo Correct_IS_BS_Inventory::correct(StoreDetails::NISKU) ? 'T' : 'F';
 }
 ?>
