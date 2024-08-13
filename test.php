@@ -78,6 +78,6 @@ function generate_list(int $store_id) {
 
 if(SYSTEM_INIT_MODE === PARTS) {
     // generate_list(StoreDetails::CALGARY);
-    echo 'CALGARY : '. (Correct_IS_BS_Inventory::correct(StoreDetails::CALGARY) ? 'T' : 'F');
+    // echo 'CALGARY : '. (Correct_IS_BS_Inventory::correct(StoreDetails::CALGARY) ? 'T' : 'F');
 }
 ?>
