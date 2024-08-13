@@ -77,7 +77,7 @@ function generate_list(int $store_id) {
 }
 
 if(SYSTEM_INIT_MODE === PARTS) {
-    // generate_list(StoreDetails::SLAVE_LAKE);
-    echo 'SLAVE LAKE : '. (Correct_IS_BS_Inventory::correct(StoreDetails::SLAVE_LAKE) ? 'T' : 'F');
+    // generate_list(StoreDetails::EDMONTON);
+    echo 'EDMONTON : '. (Correct_IS_BS_Inventory::correct(StoreDetails::EDMONTON) ? 'T' : 'F');
 }
 ?>

@@ -981,28 +981,28 @@ class Correct_IS_BS_Inventory {
             }
     
             // Inventory
-            $statement_it = self::$db -> prepare(<<<EOS
-            UPDATE 
-                inventory 
-            SET 
-                `quantity` = :quantity
-            WHERE 
-                item_id = :item_id
-            AND
-                store_id = :store_id;
-            EOS);
+            // $statement_it = self::$db -> prepare(<<<EOS
+            // UPDATE 
+            //     inventory 
+            // SET 
+            //     `quantity` = :quantity
+            // WHERE 
+            //     item_id = :item_id
+            // AND
+            //     store_id = :store_id;
+            // EOS);
     
-            foreach($item_keys as $item_key) {
-                $is_successful = $statement_it -> execute([
-                    ':quantity' => $items_information[$item_key]['quantity'],
-                    ':item_id' => $item_key,
-                    ':store_id' => self::$store_id,
-                ]);
+            // foreach($item_keys as $item_key) {
+            //     $is_successful = $statement_it -> execute([
+            //         ':quantity' => $items_information[$item_key]['quantity'],
+            //         ':item_id' => $item_key,
+            //         ':store_id' => self::$store_id,
+            //     ]);
     
-                if(!$is_successful && $statement_it -> rowCount() === 0) {
-                    throw new Exception('Unable to update inventory value.');
-                }
-            }
+            //     if(!$is_successful && $statement_it -> rowCount() === 0) {
+            //         throw new Exception('Unable to update inventory value.');
+            //     }
+            // }
             return true;
         }
         catch(Exception $e) {
