@@ -23,7 +23,7 @@ define('DB_PASSWORD', [
 
     /* partsv2.abs.company */ 
     // __PARTS_V2__ => 'h+w_W#^SfF[cb7XEo,7t#|g-4ca=k".`',
-    __PARTS_V2__ => 'Fr:W="|ryHn/AQ.%2.pznd`N*#([97/f',
+    __PARTS_V2__ => 'Fr:W="|ryHn/AQ.%2.pznd`N*#([97/Q',
 
     /* washv2.abs.company */
     __WASH_V2__ => 'R~%CWR3+p],N_sSN_@D"YPKSo-}"ay,=',
