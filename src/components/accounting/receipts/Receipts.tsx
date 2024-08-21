@@ -462,6 +462,7 @@ const Transaction = memo(
       <Box width="100%">
         <HStack textAlign="center">
           <Checkbox
+            tabIndex={-1}
             isChecked={isChecked}
             onChange={() => {
               transactions[indexId].isChecked = transactions[indexId].isChecked
