@@ -491,6 +491,8 @@ const Transaction = memo(
                 fontFamily={numberFont}
               >
                 <Link
+                  /* Disable Tab On Link */
+                  tabIndex={-1}
                   isExternal
                   href={
                     VIEW_URL_TABLE[transactions[indexId].type] +
