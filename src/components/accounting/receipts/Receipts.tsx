@@ -697,83 +697,84 @@ interface TransactionListProps extends ReceiptProps {
   isClientChange: boolean;
 }
 
-const TransactionsList = ({
-  isViewOrUpdate,
-  isClientChange,
-}: TransactionListProps) => {
-  const [checkAllTransactions, setCheckAllTransactions] = useState<number>(0);
+const TransactionsList = memo(
+  ({ isViewOrUpdate, isClientChange }: TransactionListProps) => {
+    const [checkAllTransactions, setCheckAllTransactions] = useState<number>(0);
 
-  const toggleCheckAllTransactionsState = () => {
-    setCheckAllTransactions(checkAllTransactions + 1);
-  };
+    const toggleCheckAllTransactionsState = () => {
+      setCheckAllTransactions(checkAllTransactions + 1);
+    };
 
-  const { clientId, transactions } = receiptStore(
-    (state) => ({
-      clientId: state.clientId,
-      transactions: state.transactions,
-    }),
-    shallow
-  );
+    const { clientId, transactions } = receiptStore(
+      (state) => ({
+        clientId: state.clientId,
+        transactions: state.transactions,
+      }),
+      shallow
+    );
 
-  let isClientNotLoaded = clientId === undefined;
-  const list = isClientNotLoaded ? (
-    <></>
-  ) : (
-    <Card borderRadius={2} width="100%">
-      <CardBody padding={2} width="100%">
-        <Box width="100%">
-          <VStack align="start" width="100%">
-            <TransactionHeader
-              checkAllTransactions={checkAllTransactions}
-              toggleCheckAllTransactionsState={toggleCheckAllTransactionsState}
-            />
-            {transactions.map((_, index) => {
-              return (
-                <Transaction
-                  isViewOrUpdate={isViewOrUpdate}
-                  checkAllTransactions={checkAllTransactions}
-                  key={getUUID()}
-                  indexId={index}
-                ></Transaction>
-              );
-            })}
-          </VStack>
-        </Box>
-      </CardBody>
-    </Card>
-  );
+    let isClientNotLoaded = clientId === undefined;
+    const list = isClientNotLoaded ? (
+      <></>
+    ) : (
+      <Card borderRadius={2} width="100%">
+        <CardBody padding={2} width="100%">
+          <Box width="100%">
+            <VStack align="start" width="100%">
+              <TransactionHeader
+                checkAllTransactions={checkAllTransactions}
+                toggleCheckAllTransactionsState={
+                  toggleCheckAllTransactionsState
+                }
+              />
+              {transactions.map((_, index) => {
+                return (
+                  <Transaction
+                    isViewOrUpdate={isViewOrUpdate}
+                    checkAllTransactions={checkAllTransactions}
+                    key={getUUID()}
+                    indexId={index}
+                  ></Transaction>
+                );
+              })}
+            </VStack>
+          </Box>
+        </CardBody>
+      </Card>
+    );
 
-  const code = (
-    <Box width="100%" height="65vh" overflow="auto">
-      {list}
-    </Box>
-  );
-
-  if (isClientNotLoaded) return code;
-  if (isClientChange)
-    return (
-      <Box width="100%">
-        <Center>
-          <Spinner
-            speed="0.8s"
-            size="xl"
-            thickness="2px"
-            color="#10EFA7"
-            emptyColor="#EF1058"
-          ></Spinner>
-        </Center>
+    const code = (
+      <Box width="100%" height="65vh" overflow="auto">
+        {list}
       </Box>
     );
 
-  return code;
-};
+    if (isClientNotLoaded) return code;
+    if (isClientChange)
+      return (
+        <Box width="100%">
+          <Center>
+            <Spinner
+              speed="0.8s"
+              size="xl"
+              thickness="2px"
+              color="#10EFA7"
+              emptyColor="#EF1058"
+            ></Spinner>
+          </Center>
+        </Box>
+      );
+
+    return code;
+  }
+);
 
 /**
  * Footer
  * @param isViewOrUpdate
  * @return JSX.Element
  */
-const Footer = ({ isViewOrUpdate, enableEditing }: ReceiptProps) => {
+const Footer = memo(({ isViewOrUpdate, enableEditing }: ReceiptProps) => {
   const [opStatus, setOpStatus] = useState<boolean>(false);
   const {
     id,
@@ -1005,7 +1006,7 @@ const Footer = ({ isViewOrUpdate, enableEditing }: ReceiptProps) => {
       </HStack>
     </Box>
   );
-};
+});
 
 /**
  * Receipts Component
