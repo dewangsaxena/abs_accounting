@@ -318,7 +318,7 @@ class StoreDetails {
             ],
             'email' => [
                 'from_name' => [
-                    WASH => 'No reply from ABS Truck Wash and Lube Ltd.', 
+                    WASH => 'No reply from ABS Truck Wash and Lube SK Ltd.', 
                     PARTS => 'No reply from ABS Truck & Trailer Parts SK Ltd.'
                 ],
                 'bcc' => [
