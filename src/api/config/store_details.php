@@ -299,7 +299,7 @@ class StoreDetails {
             'hst_tax_rate' => 0,
             'use_hst' => false,
             'business_number' => [
-                PARTS => null,
+                PARTS => '700635212RC0001',
                 WASH => null,
             ],
             'pst_number' => [
@@ -307,12 +307,12 @@ class StoreDetails {
                 WASH => null,
             ],
             'address' => [
-                'name' => 'ABS TRUCK AND TRAILER PARTS BC LTD.',
-                'street1' => '',
-                'city' => '',
-                'province' => '',
-                'postal_code' => '',
-                'country' => '',
+                'name' => 'ABS TRUCK AND TRAILER PARTS SK LTD.',
+                'street1' => '1600 ROSS AVE EAST',
+                'city' => 'REGINA',
+                'province' => 'SASKATCHEWAN',
+                'postal_code' => 'S4N 7A3',
+                'country' => 'CANADA',
                 'tel' => '',
                 'fax' => ''
             ],
@@ -322,12 +322,12 @@ class StoreDetails {
                     PARTS => 'No reply ABS Truck & Trailer Parts Ltd.'
                 ],
                 'bcc' => [
-                    PARTS => '', 
+                    PARTS => 'abstruckparts.regina@gmail.com', 
                     WASH => '',
                 ],
             ],
             'payment_details' => [
-                'email_id' => '',
+                'email_id' => 'abstruckparts.regina@gmail.com',
                 'checks' => [
                     'payable_to' => '',
                     'address' => '',
