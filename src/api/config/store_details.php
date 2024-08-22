@@ -48,8 +48,8 @@ class StoreDetails {
             ],
             'email' => [
                 'from_name' => [
-                    WASH => 'No reply ABS Truck Wash and Lube Ltd.', 
-                    PARTS => 'No reply ABS Truck & Trailer Parts Ltd.'
+                    WASH => 'No reply from ABS Truck Wash and Lube Ltd.', 
+                    PARTS => 'No reply from ABS Truck & Trailer Parts Ltd.'
                 ],
                 'bcc' => [
                     PARTS => 'abstruckparts@gmail.com', 
@@ -93,8 +93,8 @@ class StoreDetails {
             ],
             'email' => [
                 'from_name' => [
-                    WASH => 'No reply ABS Truck Wash and Lube Ltd.', 
-                    PARTS => 'No reply ABS Truck & Trailer Parts Ltd.'
+                    WASH => 'No reply from ABS Truck Wash and Lube Ltd.', 
+                    PARTS => 'No reply from ABS Truck & Trailer Parts Ltd.'
                 ],
                 'bcc' => [
                     PARTS => 'absparts.calgary@gmail.com', 
@@ -138,8 +138,8 @@ class StoreDetails {
             ],
             'email' => [
                 'from_name' => [
-                    WASH => 'No reply ABS Truck Wash and Lube Ltd.', 
-                    PARTS => 'No reply ABS Truck & Trailer Parts Ltd.'
+                    WASH => 'No reply from ABS Truck Wash and Lube Ltd.', 
+                    PARTS => 'No reply from ABS Truck & Trailer Parts Ltd.'
                 ],
                 'bcc' => [
                     PARTS => 'abstruckparts_nisku@outlook.com', 
@@ -183,8 +183,8 @@ class StoreDetails {
             ],
             'email' => [
                 'from_name' => [
-                    WASH => 'No reply ABS Truck Wash and Lube Ltd.', 
-                    PARTS => 'No reply ABS Truck & Trailer Parts Ltd.'
+                    WASH => 'No reply from ABS Truck Wash and Lube Ltd.', 
+                    PARTS => 'No reply from ABS Truck & Trailer Parts Ltd.'
                 ],
                 'bcc' => [
                     PARTS => 'absparts.traction.delta@gmail.com', 
@@ -228,8 +228,8 @@ class StoreDetails {
             ],
             'email' => [
                 'from_name' => [
-                    WASH => 'No reply ABS Truck Wash and Lube Ltd.', 
-                    PARTS => 'No reply ABS Truck & Trailer Parts Ltd.'
+                    WASH => 'No reply from ABS Truck Wash and Lube Ltd.', 
+                    PARTS => 'No reply from ABS Truck & Trailer Parts Ltd.'
                 ],
                 'bcc' => [
                     PARTS => 'abstruckparts.slavelake@gmail.com', 
@@ -273,8 +273,8 @@ class StoreDetails {
             ],
             'email' => [
                 'from_name' => [
-                    WASH => 'No reply ABS Truck Wash and Lube Ltd.', 
-                    PARTS => 'No reply ABS Truck & Trailer Parts Ltd.'
+                    WASH => 'No reply from ABS Truck Wash and Lube Ltd.', 
+                    PARTS => 'No reply from ABS Truck & Trailer Parts Ltd.'
                 ],
                 'bcc' => [
                     PARTS => 'absparts.traction.delta@gmail.com', 
@@ -318,8 +318,8 @@ class StoreDetails {
             ],
             'email' => [
                 'from_name' => [
-                    WASH => 'No reply ABS Truck Wash and Lube Ltd.', 
-                    PARTS => 'No reply ABS Truck & Trailer Parts Ltd.'
+                    WASH => 'No reply from ABS Truck Wash and Lube Ltd.', 
+                    PARTS => 'No reply from ABS Truck & Trailer Parts SK Ltd.'
                 ],
                 'bcc' => [
                     PARTS => 'abstruckparts.regina@gmail.com', 
