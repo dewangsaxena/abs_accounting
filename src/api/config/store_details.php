@@ -290,6 +290,8 @@ class StoreDetails {
             ],
             'cipher_key' => 'K(|;Q7cKYnb~ZMa/6^67pb{}(bWm2/s5',
         ],
+
+        // https://www.zeitverschiebung.net/en/timezone/america--regina
         self::REGINA => [
             'id' => self::REGINA, 
             'name' => 'Regina',
