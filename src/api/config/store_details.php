@@ -294,7 +294,7 @@ class StoreDetails {
             'id' => self::REGINA, 
             'name' => 'Regina',
             'location_code' => 'R',
-            'timezone' => 'America/Edmonton',
+            'timezone' => 'America/Regina',
             'pst_tax_rate' => 6.00,
             'hst_tax_rate' => 0,
             'use_hst' => false,
