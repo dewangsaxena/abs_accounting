@@ -148,7 +148,7 @@ function fetch_quantity_sold_of_items(int $item_id, PDO &$db, int $store_id): in
    return $quantity;
 }
 
-$store_id = StoreDetails::EDMONTON;
+$store_id = StoreDetails::VANCOUVER;
 $db = get_db_instance();
 $quantity_table = [];
 foreach($items as $item_id) {
