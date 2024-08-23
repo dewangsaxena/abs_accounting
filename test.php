@@ -131,7 +131,7 @@ $items = [14942,
 
 function fetch_quantity_sold_of_items(int $item_id, PDO &$db, int $store_id): void {
     $query = <<<'EOS'
-    SELECT details FROM sales_invoice WHERE store_id = :store_id AND details LIKE '%"itemId": :item_id,%';
+    SELECT `details` FROM sales_invoice WHERE store_id = :store_id AND `details` LIKE '%"itemId": :item_id,%';
     EOS;
 
     $quantity = 0;
