@@ -148,15 +148,16 @@ function fetch_quantity_sold_of_items(int $item_id, PDO &$db, int $store_id): in
    return $quantity;
 }
 
+$store_id = StoreDetails::EDMONTON;
 $db = get_db_instance();
 $quantity_table = [];
 foreach($items as $item_id) {
-    $quantity = fetch_quantity_sold_of_items($item_id, $db, StoreDetails::EDMONTON);
+    $quantity = fetch_quantity_sold_of_items($item_id, $db, $store_id);
     if(isset($quantity_table[$item_id]) === false)  $quantity_table[$item_id] = 0;
     $quantity_table[$item_id] += $quantity;
 }
 
-function generate_table(array $quantity_table, PDO &$db): void {
+function generate_table(array $quantity_table, PDO &$db, int $store_id): void {
     $query = 'SELECT id, identifier FROM items WHERE id IN (:placeholder);';
     $ret = Utils::mysql_in_placeholder_pdo_substitute(array_keys($quantity_table), $query);
     $query = $ret['query'];
@@ -173,7 +174,8 @@ function generate_table(array $quantity_table, PDO &$db): void {
         ];
     }
 
-    echo "<html><body><table><thead><tr><th>Identifier</th><th>Quantity</th></tr></thead><tbody>";
+    $store_name = StoreDetails::STORE_DETAILS[$store_id]['name'];
+    echo "<html><body><h1>$store_name</h1><br><br><table><thead><tr><th>Identifier</th><th>Quantity</th></tr></thead><tbody>";
     foreach($items as $item) {
         echo <<<EOS
         <tr>
@@ -188,5 +190,5 @@ function generate_table(array $quantity_table, PDO &$db): void {
     EOS;
 }
 
-generate_table($quantity_table, $db);
+generate_table($quantity_table, $db, $store_id);
 ?>
