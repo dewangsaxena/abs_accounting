@@ -80,4 +80,77 @@ if(SYSTEM_INIT_MODE === PARTS) {
     // generate_list(StoreDetails::CALGARY);
     // echo 'CALGARY : '. (Correct_IS_BS_Inventory::correct(StoreDetails::CALGARY) ? 'T' : 'F');
 }
+
+$items = [14942,
+14512, 
+14528, 
+14529, 
+14512,
+14514,
+14528,
+14529,
+14530,
+14531,
+14532,
+14533,
+14534,
+14535,
+14536,
+14537,
+14538,
+14539,
+14540,
+14541,
+14542,
+14543,
+14545,
+14546,
+14547,
+14548,
+14549,
+14550,
+14551,
+14552,
+14553,
+14555,
+14556,
+14557,
+14558,
+14559,
+14560,
+14561,
+14563,
+14565,
+14566,
+14568,
+14570,
+14571,
+14572,
+14942
+];
+
+function fetch_quantity_sold_of_items(int $item_id, PDO &$db, int $store_id): void {
+    $query = <<<'EOS'
+    SELECT details FROM sales_invoice WHERE store_id = :store_id AND details LIKE '%"itemId": :item_id,%';
+    EOS;
+
+    $quantity = 0;
+    $statement = $db -> prepare($query);
+    $statement -> execute([':store_id' => $store_id, ':item_id' => $item_id]);
+    $details = $statement -> fetchAll(PDO::FETCH_ASSOC);
+    foreach($details as $d) {
+        $d = json_decode($d, true, flags: JSON_NUMERIC_CHECK);
+        foreach($d as $item) {
+            if($item['itemId'] === $item_id) $quantity += $item['quantity'];
+        }
+    }
+
+    echo $quantity;
+}
+
+$db = get_db_instance();
+foreach($items as $item_id) {
+    fetch_quantity_sold_of_items($item_id, $db, StoreDetails::EDMONTON);
+    break;
+}
 ?>
