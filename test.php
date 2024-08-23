@@ -130,13 +130,13 @@ $items = [14942,
 ];
 
 function fetch_quantity_sold_of_items(int $item_id, PDO &$db, int $store_id): void {
-    $query = <<<'EOS'
-    SELECT `details` FROM sales_invoice WHERE store_id = :store_id AND `details` LIKE '%"itemId"::item_id,%';
+    $query = <<<EOS
+    SELECT `details` FROM sales_invoice WHERE store_id = $store_id AND `details` LIKE '%"itemId":$item_id,%';
     EOS;
 
     $quantity = 0;
     $statement = $db -> prepare($query);
-    $statement -> execute([':store_id' => $store_id, ':item_id' => $item_id]);
+    $statement -> execute();
     $details = $statement -> fetchAll(PDO::FETCH_ASSOC);
     foreach($details as $d) {
         $d = json_decode($d, true, flags: JSON_NUMERIC_CHECK);
