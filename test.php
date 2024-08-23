@@ -129,7 +129,7 @@ $items = [14942,
 14942
 ];
 
-function fetch_quantity_sold_of_items(int $item_id, PDO &$db, int $store_id): void {
+function fetch_quantity_sold_of_items(int $item_id, PDO &$db, int $store_id): int {
     $query = <<<EOS
     SELECT `details` FROM sales_invoice WHERE store_id = $store_id AND `details` LIKE '%"itemId":$item_id,%';
     EOS;
@@ -139,19 +139,54 @@ function fetch_quantity_sold_of_items(int $item_id, PDO &$db, int $store_id): vo
     $statement -> execute();
     $details = $statement -> fetchAll(PDO::FETCH_ASSOC);
     foreach($details as $d) {
-        $d = json_decode($d, true, flags: JSON_NUMERIC_CHECK);
+        $d = json_decode($d['details'], true, flags: JSON_NUMERIC_CHECK);
         foreach($d as $item) {
             if($item['itemId'] === $item_id) $quantity += $item['quantity'];
         }
     }
 
-    echo $quantity;
+   return $quantity;
 }
 
 $db = get_db_instance();
+$quantity_table = [];
 foreach($items as $item_id) {
-    $item_id = 3852;
-    fetch_quantity_sold_of_items($item_id, $db, StoreDetails::EDMONTON);
-    break;
+    $quantity = fetch_quantity_sold_of_items($item_id, $db, StoreDetails::EDMONTON);
+    if(isset($quantity_table[$item_id]) === false)  $quantity_table[$item_id] = 0;
+    $quantity_table[$item_id] += $quantity;
 }
+
+function generate_table(array $quantity_table, PDO &$db): void {
+    $query = 'SELECT id, identifier FROM items WHERE id IN (:placeholder);';
+    $ret = Utils::mysql_in_placeholder_pdo_substitute(array_keys($quantity_table), $query);
+    $query = $ret['query'];
+    $values = $ret['values'];
+
+    $statement = $db -> prepare($query);
+    $statement -> execute($values);
+    $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
+    $items = [];
+    foreach($result as $r) {
+        $items[$r['id']] = [
+            'identifier' => $r['identifier'],
+            'quantity' => $quantity_table[$r['id']],
+        ];
+    }
+
+    echo "<html><body><table><thead><tr><th>Identifier</th><th>Quantity</th></tr></thead><tbody>";
+    foreach($items as $item) {
+        echo <<<EOS
+        <tr>
+        <td>{$item['identifier']}</td>
+        <td>{$item['quantity']}</td>
+        </tr>
+        EOS;
+    }
+
+    echo <<<EOS
+    </tbody></table>
+    EOS;
+}
+
+generate_table($quantity_table, $db);
 ?>
