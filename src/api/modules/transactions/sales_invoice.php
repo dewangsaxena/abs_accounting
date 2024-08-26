@@ -172,7 +172,7 @@ class SalesInvoice {
         } 
 
         // Check for Pay Later Available
-        Client::is_pay_later_available($data['clientDetails']['primaryDetails']);
+        if($is_pay_later) Client::is_pay_later_available($data['clientDetails']['primaryDetails']);
 
         // Check whether credit transactions are disabled for this client.
         if(!Validate::is_numeric(strval($data['clientDetails']['disableCreditTransactions']))) throw new Exception('Invalid Disable Credit Transaction Value.');
