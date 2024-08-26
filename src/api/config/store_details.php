@@ -305,7 +305,7 @@ class StoreDetails {
                 WASH => null,
             ],
             'pst_number' => [
-                PARTS => null,
+                PARTS => '8040305',
                 WASH => null,
             ],
             'address' => [
