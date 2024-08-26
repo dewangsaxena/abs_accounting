@@ -191,4 +191,48 @@ function generate_table(array $quantity_table, PDO &$db, int $store_id): void {
 }
 
 generate_table($quantity_table, $db, $store_id);
+
+
+function disable_pay_later(int $store_id) {
+    $db = get_db_instance();
+    try {
+        $db -> beginTransaction();
+
+        $client_query = 'SELECT id, last_purchase_date, modified FROM clients;';
+        $statement = $db -> prepare($client_query);
+        $statement -> execute();
+        $results = $statement -> fetchAll(PDO::FETCH_ASSOC);
+
+        $clients_to_disable = [];
+
+        foreach($results as $client) {
+            $last_purchase_date = json_decode($client['last_purchase_date'], true, flags: JSON_THROW_ON_ERROR);
+            if(isset($last_purchase_date[$store_id])) {
+                $last_purchase_date = $last_purchase_date[$store_id];
+
+                if($last_purchase_date < '2024-01-01') {
+                    $clients_to_disable[$client['id']] = $client['modified'];
+                }
+            }
+        }
+
+        // Update Clients
+        $client_query = 'UPDATE clients SET disable_credit_transactions = 1 WHERE id = :id AND modified = :modified;';
+        $statement = $db -> prepare($client_query);
+        $client_ids = array_keys($clients_to_disable);
+        foreach($client_ids as $client_id) {
+            $is_successful = $statement -> execute([
+                ':id' => $client_id,
+                ':modified' => $clients_to_disable[$client_id],
+            ]);
+
+            if($is_successful !== true && $statement -> rowCount() < 1) throw new Exception('Unable to Update for client: '. $client_id);
+        }
+        $db -> commit();
+        echo 'Done';
+    }
+    catch(Exception $e) {
+        echo $e -> getMessage();
+    }
+}
 ?>
