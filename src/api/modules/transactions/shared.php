@@ -403,6 +403,9 @@ class Shared {
             throw new Exception('Cannot Process Txn for Invalid Customer.');
         }
 
+        // Check for Credit Eligible Transaction
+        if($txn_type === DEBIT_NOTE) Client::is_credit_txn_eligible_for_client($data['clientDetails']['primaryDetails']);
+
         // Validate Store
         $store_id = intval($_SESSION['store_id']);
         if(key_exists($store_id, StoreDetails::STORE_DETAILS) === false) throw new Exception('Store is Invalid.');

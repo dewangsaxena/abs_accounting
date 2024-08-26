@@ -124,7 +124,7 @@ class Client {
      * This method will check whether Pay Later is Available for the client.
      * @param primary_details
      */
-    public static function is_pay_later_available(array $primary_details) : void {
+    public static function is_credit_txn_eligible_for_client(array $primary_details) : void {
         $is_pay_later_available = true;
         if(isset($primary_details['phoneNumber1']) === false || strlen($primary_details['phoneNumber1']) < 10) $is_pay_later_available = false;
         if(Validate::is_email_id($primary_details['emailId'] ?? '') === false) $is_pay_later_available = false;
