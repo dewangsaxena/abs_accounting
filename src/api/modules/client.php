@@ -127,7 +127,7 @@ class Client {
     public static function is_pay_later_available(array $primary_details) : void {
         $is_pay_later_available = true;
         if(!isset($primary_details['phoneNumber1']) || strlen($primary_details['phoneNumber1']) < 10) $is_pay_later_available = false;
-        if(!isset($primary_details['emailId']) || is_string($primary_details['emailId']) === false) $is_pay_later_available = false;
+        if(Validate::is_email_id($primary_details['emailId'] ?? '')) $is_pay_later_available = false;
 
         // Check for Pay later available
         if($is_pay_later_available === false) throw new Exception('Pay Later is Not Available for this Client Due to Invalid Phone Number and/or Email Id.');
