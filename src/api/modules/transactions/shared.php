@@ -404,7 +404,7 @@ class Shared {
         }
 
         // Check for Credit Eligible Transaction
-        if($txn_type === 'debit_note') Client::is_credit_txn_eligible_for_client($data['clientDetails']['primaryDetails']);
+        Client::is_credit_txn_eligible_for_client($data['clientDetails']['primaryDetails']);
 
         // Validate Store
         $store_id = intval($_SESSION['store_id']);
