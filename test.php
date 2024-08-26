@@ -217,7 +217,17 @@ function disable_pay_later(int $store_id) {
         }
 
         // Update Clients
-        $client_query = 'UPDATE clients SET disable_credit_transactions = 1 WHERE id = :id AND modified = :modified;';
+        $client_query = <<<'EOS'
+        UPDATE 
+            clients 
+        SET 
+            disable_credit_transactions = 1,
+            modified = CURRENT_TIMESTAMP
+        WHERE 
+            id = :id 
+        AND 
+            modified = :modified;
+        EOS;
         $statement = $db -> prepare($client_query);
         $client_ids = array_keys($clients_to_disable);
         foreach($client_ids as $client_id) {
@@ -236,4 +246,6 @@ function disable_pay_later(int $store_id) {
         $db -> rollBack();
     }
 }
+
+disable_pay_later(StoreDetails::EDMONTON);
 ?>
