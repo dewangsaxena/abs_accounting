@@ -233,6 +233,7 @@ function disable_pay_later(int $store_id) {
     }
     catch(Exception $e) {
         echo $e -> getMessage();
+        $db -> rollBack();
     }
 }
 ?>
