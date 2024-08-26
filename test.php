@@ -190,7 +190,7 @@ function generate_table(array $quantity_table, PDO &$db, int $store_id): void {
     EOS;
 }
 
-generate_table($quantity_table, $db, $store_id);
+// generate_table($quantity_table, $db, $store_id);
 
 
 function disable_pay_later(int $store_id) {
