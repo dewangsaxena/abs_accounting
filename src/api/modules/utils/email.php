@@ -32,7 +32,7 @@ class Email {
         'postmarkapp' => 'PM-B-broadcast-bQWBIt6Eq51i-XmcSJFLn',
     ][self::SERVICE];
 
-    // SendGrid
+    // Password
     private const APP_ACCESS_KEY = [
         'google' => 'dtfzftppvtyaaqua',
         'sendgrid' => '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',
