@@ -29,24 +29,28 @@ class Email {
     private const USERNAME = [
         'google' => self::FROM_EMAIL,
         'sendgrid' => 'apikey',
+        'postmarkapp' => '5399774b-464d-4605-a229-266062878ce6',
     ][self::SERVICE];
 
     // SendGrid
     private const APP_ACCESS_KEY = [
         'google' => 'dtfzftppvtyaaqua',
         'sendgrid' => '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',
+        'postmarkapp' => '5399774b-464d-4605-a229-266062878ce6',
     ][self::SERVICE];
 
     // Port 
     private const PORT = [
         'google' => 587,
         'sendgrid' => 587,
+        'postmarkapp' => 587,
     ][self::SERVICE];
 
     // Host 
     private const HOST = [
         'google' => 'smtp.gmail.com',
         'sendgrid' => 'smtp.sendgrid.net',
+        'postmarkapp' => 'smtp-broadcasts.postmarkapp.com',
     ][self::SERVICE];
 
     private const DEBUG_STATUS = false;
