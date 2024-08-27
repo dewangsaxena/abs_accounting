@@ -22,7 +22,7 @@ use PHPMailer\PHPMailer\SMTP;
 
 class Email {
     // Service Used
-    private const SERVICE = 'sendgrid';
+    private const SERVICE = 'google';
     private const FROM_EMAIL = 'abs@abs.company';
 
     // Username
