@@ -29,14 +29,14 @@ class Email {
     private const USERNAME = [
         'google' => self::FROM_EMAIL,
         'sendgrid' => 'apikey',
-        'postmarkapp' => 'PM-B-broadcast-qhTjrYh3WQCXw6MCbHmX-',
+        'postmarkapp' => 'PM-B-broadcast-bQWBIt6Eq51i-XmcSJFLn',
     ][self::SERVICE];
 
     // SendGrid
     private const APP_ACCESS_KEY = [
         'google' => 'dtfzftppvtyaaqua',
         'sendgrid' => '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',
-        'postmarkapp' => 'EJSCKc5s9pfR09xI34R9qdLvV7oMOG9m2jU6',
+        'postmarkapp' => 'jY5ocel379u_TwwZN0XJiNtZ-xYXsH6FQR9g',
     ][self::SERVICE];
 
     // Port 
@@ -100,7 +100,7 @@ class Email {
             $mail -> Encoding = 'base64';
 
             // Add BCC 
-            if($add_cc) {
+            if(false && $add_cc) {
                 $mail -> addBCC(
                     StoreDetails::STORE_DETAILS[$store_id]['email']['bcc'][SYSTEM_INIT_MODE], 
                     StoreDetails::STORE_DETAILS[$store_id]['address']['name'],
