@@ -196,6 +196,9 @@ CREATE TABLE IF NOT EXISTS items(
     /* Images */ 
     images JSON NOT NULL DEFAULT '{}',
 
+    /* Frequency */
+    frequency JSON NOT NULL DEFAULT '{}',
+
     /* Dates */ 
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modified TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
