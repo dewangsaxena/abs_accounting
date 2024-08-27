@@ -72,7 +72,7 @@ class Email {
      */
     public static function send(string $subject, string $recipient_email, string $recipient_name, string $content, string $path_to_attachment=null, string $file_name=null, int $store_id, ?string $additional_email_addresses=null, ?bool $is_html=false, ?bool $add_cc=true) : array {
         /* Return on Localhost */
-        if(defined('DISABLE_EMAIL_ON_LOCALHOST')) return ['status' => true];
+        if(defined('DISABLE_EMAIL_ON_LOCALHOST') || true) return ['status' => true];
         try {
             $mail = new PHPMailer(self::DEBUG_STATUS);
             if(self::DEBUG_STATUS) $mail -> SMTPDebug = SMTP::DEBUG_SERVER;
@@ -100,7 +100,7 @@ class Email {
             $mail -> Encoding = 'base64';
 
             // Add BCC 
-            if(false && $add_cc) {
+            if($add_cc) {
                 $mail -> addBCC(
                     StoreDetails::STORE_DETAILS[$store_id]['email']['bcc'][SYSTEM_INIT_MODE], 
                     StoreDetails::STORE_DETAILS[$store_id]['address']['name'],
