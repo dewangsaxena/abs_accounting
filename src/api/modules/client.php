@@ -803,11 +803,11 @@ class Client {
     }
 
     /**
-     * This method will pack primary address.
+     * This method will pack primary details.
      * @param record
      * @return array
      */
-    public static function pack_primary_address(array $record) : array {
+    public static function pack_primary_details(array $record) : array {
         return [
             'name' => $record['name'],
             'contactName' => $record['contact_name'],
@@ -959,7 +959,7 @@ class Client {
                 if($client_since === '0000/00/00') $client_since = '1970/01/01';
                 $data = [
                     'id' => $record['id'],
-                    'primaryDetails' => self::pack_primary_address($record),
+                    'primaryDetails' => self::pack_primary_details($record),
                     'additionalInformation' => $record['additional_information'],
                     'clientSince' => $client_since,
                     'disableCreditTransactions' => $record['disable_credit_transactions'],

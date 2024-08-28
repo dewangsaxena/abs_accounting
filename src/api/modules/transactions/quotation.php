@@ -558,7 +558,7 @@ class Quotations {
                 $record['disable_provincial_taxes'] = $disable_provincial_taxes[$store_id] ?? 0;
 
                 // Add Primary Details
-                $record['primary_details'] = Client::pack_primary_address($record);
+                $record['primary_details'] = Client::pack_primary_details($record);
 
                 // Shipping Address
                 $shipping_addresses = json_decode($record['shipping_addresses'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
