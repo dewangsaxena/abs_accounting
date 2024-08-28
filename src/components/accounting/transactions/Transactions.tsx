@@ -745,7 +745,6 @@ const ItemFieldRow = memo(
     const [disableDiscountOnItem, setDisableDiscountOnItem] =
       useState<boolean>(false);
 
-    // DEWANG HERE
     const [selectedItem, setSelectedItem] = useState<string>(
       details[rowIndex].itemId !== null ? `${details[rowIndex].identifier}` : ""
     );
