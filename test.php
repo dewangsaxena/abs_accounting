@@ -144,7 +144,7 @@ function fetch_inventory(int $store_id): void {
     $items = array_keys($parts);
 
     // Deduct 
-    $amount_to_deduct = 572178.57;
+    $amount_to_deduct = 303538.76;
     while($amount_to_deduct > 50) {
         $index = rand(0, $no_of_items - 1);
 
@@ -185,7 +185,7 @@ function fetch_inventory(int $store_id): void {
 }
 
 if(SYSTEM_INIT_MODE === PARTS) {
-    $store_id = StoreDetails::EDMONTON;
+    $store_id = StoreDetails::SLAVE_LAKE;
     // generate_list($store_id);
     fetch_inventory($store_id);
     // echo 'CALGARY : '. (Correct_IS_BS_Inventory::correct(StoreDetails::CALGARY) ? 'T' : 'F');
