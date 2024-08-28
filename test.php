@@ -135,7 +135,7 @@ function fetch_inventory(int $store_id): void {
             $parts[$id] = [
                 'identifier' => $identifier,
                 'quantity' => $quantity,
-                'price' => $price,
+                'price' => Utils::round($price, 2),
             ];
         }
     }
@@ -144,7 +144,7 @@ function fetch_inventory(int $store_id): void {
     $items = array_keys($parts);
 
     // Deduct 
-    $amount_to_deduct = 162564.7;
+    $amount_to_deduct = 572178.57;
     while($amount_to_deduct > 50) {
         $index = rand(0, $no_of_items - 1);
 
@@ -153,7 +153,7 @@ function fetch_inventory(int $store_id): void {
         $quantity = $parts[$selected_item]['quantity'];
         if($quantity > 1) {
             $price = $parts[$selected_item]['price'];
-            if($price > 1 && ($amount_to_deduct - $price > 0)) {
+            if($price > 0 && ($amount_to_deduct - $price > 0)) {
                 $parts[$selected_item]['quantity'] -= 1;
                 $amount_to_deduct -= $price;
             }
@@ -176,18 +176,18 @@ function fetch_inventory(int $store_id): void {
         </tr>
         EOS;
 
-        $total_value += ($part['price'] * $part['quantity']);
+        $total_value += Utils::round($part['price'] * $part['quantity'], 2);
     }
 
     $total_value = Utils::number_format($total_value, 2);
     $code .= "</table><br><br>Total Inventory Value: &nbsp;&nbsp;&nbsp;&nbsp;<label style='letter-spacing: 2px;font-weight:bold;'>\$ $total_value</label>";
-
     if($amount_to_deduct < 20) echo $code;
 }
 
 if(SYSTEM_INIT_MODE === PARTS) {
-    // generate_list(StoreDetails::EDMONTON);
-    fetch_inventory(StoreDetails::NISKU);
+    $store_id = StoreDetails::EDMONTON;
+    // generate_list($store_id);
+    fetch_inventory($store_id);
     // echo 'CALGARY : '. (Correct_IS_BS_Inventory::correct(StoreDetails::CALGARY) ? 'T' : 'F');
 }
 die;
