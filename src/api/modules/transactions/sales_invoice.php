@@ -1496,6 +1496,9 @@ class SalesInvoice {
             'disableFederalTaxes' => $details['disableFederalTaxes'],
             'disableProvincialTaxes' => $details['disableProvincialTaxes'],
 
+            /* Primary Details */ 
+            'primaryDetails' => $quotation['primary_details'],
+
             /* Shipping Address */ 
             'shippingAddresses' => $quotation['shipping_addresses'],
 

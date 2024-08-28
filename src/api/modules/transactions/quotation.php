@@ -500,6 +500,18 @@ class Quotations {
                 c.disable_provincial_taxes,
                 c.disable_credit_transactions,
                 c.modified as client_last_modified_timestamp,
+                c.name,
+                c.contact_name,
+                c.street1,
+                c.street2,
+                c.city,
+                c.postal_code,
+                c.province,
+                c.phone_number_1,
+                c.phone_number_2,
+                c.fax,
+                c.email_id,
+                c.country,
                 qt.*
             FROM 
                 quotation AS qt
@@ -544,6 +556,9 @@ class Quotations {
                 // Disable Provincial Taxes
                 $disable_provincial_taxes = json_decode($record['disable_provincial_taxes'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
                 $record['disable_provincial_taxes'] = $disable_provincial_taxes[$store_id] ?? 0;
+
+                // Add Primary Details
+                $record['primary_details'] = Client::pack_primary_address($record);
 
                 // Shipping Address
                 $shipping_addresses = json_decode($record['shipping_addresses'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
