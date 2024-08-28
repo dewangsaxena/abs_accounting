@@ -1092,10 +1092,6 @@ const ItemFieldRow = memo(
       updateAmounts();
     };
 
-    const [selectedClient, setSelectedClient] = useState<string>(
-      details[rowIndex].itemId !== null ? `${details[rowIndex].identifier}` : ""
-    );
-
     return (
       <HStack spacing={2} marginTop={rowIndex == 0 ? 0 : 1}>
         {/* Item Details */}
@@ -2019,7 +2015,9 @@ const TransactionHeaderDetails = ({
 
   // Client Suggestions
   const [clientSuggestions, setClientSuggestions] = useState<any>([]);
-  const [selectedClient, setSelectedClient] = useState<string>("");
+  const [selectedClient, setSelectedClient] = useState<string>(
+    defaultClient.defaultValue.label
+  );
 
   // Client Select
   const onClientSelect = (selectedClient: any) => {
