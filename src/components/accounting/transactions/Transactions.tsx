@@ -1913,16 +1913,13 @@ const TransactionHeaderDetails = ({
   const toast = useToast();
 
   // Load Clients
-  const loadOptionsForClient = (
-    searchTerm: string,
-    callback: (args: any) => void
-  ) => {
+  const loadOptionsForClient = (searchTerm: string) => {
     /* Hide Inactive Client */
     fetchClient(searchTerm, true, type === TRANSACTION_TYPES["SR"])
       .then((res: any) => {
         let response: APIResponse<ClientDetails[]> = res.data;
         if (response.status === true)
-          callback(buildSearchListForClient(response.data));
+          setClientSuggestions(buildSearchListForClient(response.data));
         else
           showToast(toast, false, response.message || UNKNOWN_SERVER_ERROR_MSG);
       })
@@ -2016,6 +2013,55 @@ const TransactionHeaderDetails = ({
     };
   }
 
+  // Client Suggestions
+  const [clientSuggestions, setClientSuggestions] = useState<any>([]);
+  const [selectedClient, setSelectedClient] = useState<string>("");
+
+  // Client Select
+  const onClientSelect = (selectedClient: any) => {
+    let clientDetails: ClientDetails = selectedClient.value;
+    setIsClientChangedSuccessfully(false);
+
+    // Clear Name History
+    clientDetails.nameHistory = [];
+
+    setProperty("clientDetails", clientDetails);
+
+    // Only change the Payment method when creating new Transaction
+    if (id === null) {
+      setProperty("paymentMethod", -1);
+    }
+
+    // Change Tax Status
+    setProperty("disableFederalTaxes", clientDetails.disableFederalTaxes);
+    setProperty("disableProvincialTaxes", clientDetails.disableProvincialTaxes);
+
+    // Change Early Payment Details
+    setProperty("earlyPaymentDiscount", clientDetails.earlyPaymentDiscount);
+
+    setProperty(
+      "earlyPaymentPaidWithinDays",
+      clientDetails.earlyPaymentPaidWithinDays
+    );
+
+    setProperty("netAmountDueWithinDays", clientDetails.netAmountDueWithinDays);
+
+    setProperty(
+      "disableCreditTransactions",
+      clientDetails.disableCreditTransactions
+    );
+
+    // Fetch All Invoices by Client for Sales Returns
+    if (type === TRANSACTION_TYPES["SR"]) {
+      setAllInvoicesForSelectedClient(
+        buildSearchListForShowingInvoices(clientDetails.salesInvoices)
+      );
+    }
+
+    // Set Successful client change status
+    setIsClientChangedSuccessfully(true);
+  };
+
   return (
     <>
       <Box width="100%">
@@ -2092,7 +2138,7 @@ const TransactionHeaderDetails = ({
                               <VStack width="50%" align={"left"}>
                                 <HStack>
                                   <Box width="100%">
-                                    <AsyncSelect
+                                    {/* <AsyncSelect
                                       // key={getUUID()}
                                       tabSelectsValue={true}
                                       isDisabled={
@@ -2138,7 +2184,7 @@ const TransactionHeaderDetails = ({
                                           clientDetails.disableProvincialTaxes
                                         );
 
-                                        /* Change Early Payment Details */
+                                        // Change Early Payment Details
                                         setProperty(
                                           "earlyPaymentDiscount",
                                           clientDetails.earlyPaymentDiscount
@@ -2159,7 +2205,7 @@ const TransactionHeaderDetails = ({
                                           clientDetails.disableCreditTransactions
                                         );
 
-                                        /* Fetch All Invoices by Client for Sales Returns */
+                                        // Fetch All Invoices by Client for Sales Returns
                                         if (type === TRANSACTION_TYPES["SR"]) {
                                           setAllInvoicesForSelectedClient(
                                             buildSearchListForShowingInvoices(
@@ -2171,7 +2217,60 @@ const TransactionHeaderDetails = ({
                                         // Set Successful client change status
                                         setIsClientChangedSuccessfully(true);
                                       }}
-                                    />
+                                    /> */}
+                                    <AutoSuggest
+                                      suggestions={clientSuggestions}
+                                      onSuggestionsClearRequested={() =>
+                                        setClientSuggestions([])
+                                      }
+                                      onSuggestionsFetchRequested={({
+                                        value,
+                                      }) => {
+                                        if (
+                                          value.length <
+                                          AUTO_SUGGEST_MIN_INPUT_LENGTH
+                                        )
+                                          return;
+                                        loadOptionsForClient(value);
+                                      }}
+                                      onSuggestionSelected={(
+                                        _: any,
+                                        { suggestionIndex }
+                                      ) => {
+                                        onClientSelect(
+                                          clientSuggestions[suggestionIndex]
+                                        );
+                                      }}
+                                      getSuggestionValue={(suggestion: any) => {
+                                        return `${suggestion.value.primaryDetails.name}`;
+                                      }}
+                                      renderSuggestion={(suggestion: any) => (
+                                        <span>&nbsp;{suggestion.label}</span>
+                                      )}
+                                      inputProps={{
+                                        style: {
+                                          width: "100%",
+                                          ...AutoSuggestStyle,
+                                        },
+                                        placeholder:
+                                          `Search Customer by Name, Phone, Email Id...` +
+                                          (AUTO_SUGGEST_MIN_INPUT_LENGTH > 1
+                                            ? `(min ${AUTO_SUGGEST_MIN_INPUT_LENGTH} chars)`
+                                            : ""),
+                                        value: selectedClient,
+                                        disabled:
+                                          isReadOnly ||
+                                          (type === TRANSACTION_TYPES["SR"] &&
+                                            id !== null) ||
+                                          isProcessed,
+                                        onChange: (_, { newValue }) => {
+                                          setSelectedClient(newValue);
+                                          if (newValue.trim() === "") {
+                                          }
+                                        },
+                                      }}
+                                      highlightFirstSuggestion={true}
+                                    ></AutoSuggest>
                                   </Box>
                                   <Box>
                                     <Button
