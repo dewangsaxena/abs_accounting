@@ -803,6 +803,28 @@ class Client {
     }
 
     /**
+     * This method will pack primary address.
+     * @param record
+     * @return array
+     */
+    public static function pack_primary_address(array $record) : array {
+        return [
+            'name' => $record['name'],
+            'contactName' => $record['contact_name'],
+            'street1' => $record['street1'],
+            'street2' => $record['street2'],
+            'city' => $record['city'],
+            'postalCode' => $record['postal_code'],
+            'province' => $record['province'],
+            'phoneNumber1' => $record['phone_number_1'],
+            'phoneNumber2' => $record['phone_number_2'],
+            'fax' => $record['fax'],
+            'emailId' => $record['email_id'],
+            'country' => $record['country'],
+        ];
+    }
+
+    /**
      * This method will fetch the client detail.
      * @param params
      * @param db
@@ -937,20 +959,7 @@ class Client {
                 if($client_since === '0000/00/00') $client_since = '1970/01/01';
                 $data = [
                     'id' => $record['id'],
-                    'primaryDetails' => [
-                        'name' => $record['name'],
-                        'contactName' => $record['contact_name'],
-                        'street1' => $record['street1'],
-                        'street2' => $record['street2'],
-                        'city' => $record['city'],
-                        'postalCode' => $record['postal_code'],
-                        'province' => $record['province'],
-                        'phoneNumber1' => $record['phone_number_1'],
-                        'phoneNumber2' => $record['phone_number_2'],
-                        'fax' => $record['fax'],
-                        'emailId' => $record['email_id'],
-                        'country' => $record['country'],
-                    ],
+                    'primaryDetails' => self::pack_primary_address($record),
                     'additionalInformation' => $record['additional_information'],
                     'clientSince' => $client_since,
                     'disableCreditTransactions' => $record['disable_credit_transactions'],
