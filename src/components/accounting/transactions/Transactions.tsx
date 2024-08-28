@@ -2016,7 +2016,7 @@ const TransactionHeaderDetails = ({
   // Client Suggestions
   const [clientSuggestions, setClientSuggestions] = useState<any>([]);
   const [selectedClient, setSelectedClient] = useState<string>(
-    defaultClient.defaultValue.label
+    isViewOrUpdate && clientDetails && clientDetails.primaryDetails.name ? defaultClient.defaultValue.label : ""
   );
 
   // Client Select
