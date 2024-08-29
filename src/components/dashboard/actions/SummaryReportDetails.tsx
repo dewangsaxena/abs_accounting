@@ -1,65 +1,67 @@
 import {
-  // Badge,
-  // Box,
+  Badge,
+  Box,
   Card,
   CardBody,
-  // HStack,
-  // Tooltip,
+  HStack,
+  Tooltip,
   VStack,
-  // useToast,
+  useToast,
 } from "@chakra-ui/react";
 import { _Divider, _Label } from "../../../shared/Components";
-// import { FcInfo } from "react-icons/fc";
-// import { numberFont } from "../../../shared/style";
-// import { HTTPService } from "../../../service/api-client";
-// import { create } from "zustand";
-// import { formatNumberWithDecimalPlaces } from "../../../shared/functions";
-// import { CiTimer } from "react-icons/ci";
+import { FcInfo } from "react-icons/fc";
+import { numberFont } from "../../../shared/style";
+import { HTTPService } from "../../../service/api-client";
+import { create } from "zustand";
+import { formatNumberWithDecimalPlaces } from "../../../shared/functions";
+import { CiTimer } from "react-icons/ci";
 
 // Http Service
-// const httpService = new HTTPService();
+const httpService = new HTTPService();
 
 // Summary Report Details
-// interface SummaryReportDetails {
-//   cogs: number;
-//   totalRevenue: number;
-//   salesReturn: number;
-//   netIncome: number;
-//   profitMargin: number;
-//   receiptPayments: number;
-// }
+interface SummaryReportDetails {
+  cogs: number;
+  cogsMargin: number;
+  netIncome: number;
+  totalRevenue: number;
+  salesReturn: number;
+  profitMargin: number;
+  receiptPayments: number;
+}
 
 // Summary Report Details Store
-// interface SummaryReportDetailsStore extends SummaryReportDetails {
-//   fetch: () => any;
-// }
+interface SummaryReportDetailsStore extends SummaryReportDetails {
+  fetch: () => any;
+}
 
-// export const summaryReportDetails = create<SummaryReportDetailsStore>(
-//   (_, __) => ({
-//     cogs: 0,
-//     totalRevenue: 0,
-//     salesReturn: 0,
-//     profitMargin: 0,
-//     netIncome: 0,
-//     receiptPayments: 0,
-//     fetch: async () => {},
-//   })
-// );
+export const summaryReportDetails = create<SummaryReportDetailsStore>(
+  (_, __) => ({
+    cogs: 0,
+    cogsMargin: 0,
+    netIncome: 0,
+    totalRevenue: 0,
+    salesReturn: 0,
+    profitMargin: 0,
+    receiptPayments: 0,
+    fetch: async () => {},
+  })
+);
 
-// const Header = () => {
-//   let date = new Date().toDateString();
-//   return (
-//     <VStack align="start">
-//       <HStack>
-//         <FcInfo />
-//         <_Label letterSpacing={2} fontSize="0.8em" fontFamily={numberFont}>
-//           Summary Report for <b>{date}</b>
-//         </_Label>
-//       </HStack>
-//     </VStack>
-//   );
-// };
-/*
+const Header = () => {
+  let date = new Date().toDateString();
+  return (
+    <VStack align="start">
+      <HStack>
+        <FcInfo />
+        <_Label letterSpacing={2} fontSize="0.8em" fontFamily={numberFont}>
+          Summary Report for <b>{date}</b>
+        </_Label>
+      </HStack>
+    </VStack>
+  );
+};
+
 const InventoryReport = () => {
   const {
     cogs,
@@ -183,23 +185,23 @@ const StatsUpdateMsg = () => {
     </HStack>
   );
 };
-*/
+
 const Stats = () => {
-  // const toast = useToast();
+  const toast = useToast();
   return (
     <Card>
       <CardBody>
         <VStack align={"start"}>
           {/* Header */}
-          {/* <Header /> */}
-          {/* <_Divider margin={1} /> */}
+          <Header />
+          <_Divider margin={1} />
 
           {/* Inventory Report */}
-          {/* <InventoryReport /> */}
-          {/* <_Divider margin={1} /> */}
+          <InventoryReport />
+          <_Divider margin={1} />
 
           {/* Stats Update Msg  */}
-          {/* <StatsUpdateMsg /> */}
+          <StatsUpdateMsg />
         </VStack>
       </CardBody>
     </Card>
