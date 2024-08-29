@@ -18,16 +18,13 @@ class Stats {
             $store_id = intval($_SESSION['store_id']);  
 
             // Current Date
-            $current_date = Utils::get_business_date($store_id);
+            $current_date = '2024-01-05';//Utils::get_business_date($store_id);
 
             // Stats
             $revenue = 0;
             $cogs = 0;
             $discount = 0;
             $sales_return = 0;
-            $net_income = 0;
-            $profit_margin = 0;
-            $cogs_margin = 0;
             $receipt_payment = 0;
             $receipt_discount = 0;
 

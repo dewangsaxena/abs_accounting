@@ -6,15 +6,20 @@ import {
   HStack,
   Tooltip,
   VStack,
+  useInterval,
   useToast,
 } from "@chakra-ui/react";
 import { _Divider, _Label } from "../../../shared/Components";
 import { FcInfo } from "react-icons/fc";
 import { numberFont } from "../../../shared/style";
-import { HTTPService } from "../../../service/api-client";
+import { APIResponse, HTTPService } from "../../../service/api-client";
 import { create } from "zustand";
-import { formatNumberWithDecimalPlaces } from "../../../shared/functions";
+import {
+  formatNumberWithDecimalPlaces,
+  showToast,
+} from "../../../shared/functions";
 import { CiTimer } from "react-icons/ci";
+import { useEffect } from "react";
 
 // Http Service
 const httpService = new HTTPService();
@@ -24,6 +29,7 @@ interface SummaryReportDetails {
   cogs: number;
   cogsMargin: number;
   netIncome: number;
+  discount: number;
   totalRevenue: number;
   salesReturn: number;
   profitMargin: number;
@@ -34,20 +40,33 @@ interface SummaryReportDetails {
 // Summary Report Details Store
 interface SummaryReportDetailsStore extends SummaryReportDetails {
   fetch: () => any;
+  setStats: (details: SummaryReportDetails) => void;
 }
 
 export const summaryReportDetails = create<SummaryReportDetailsStore>(
-  (_, __) => ({
+  (set, _) => ({
     cogs: 0,
     cogsMargin: 0,
     netIncome: 0,
     totalRevenue: 0,
+    discount: 0,
     salesReturn: 0,
     profitMargin: 0,
     receiptPayments: 0,
     receiptDiscount: 0,
     fetch: async () => {
-      httpService.fetch<SummaryReportDetails>({}, "stats");
+      return httpService.fetch<SummaryReportDetails>({}, "stats");
+    },
+    setStats: (details: SummaryReportDetails) => {
+      set({ cogs: details.cogs });
+      set({ cogsMargin: details.cogsMargin });
+      set({ netIncome: details.netIncome });
+      set({ discount: details.discount });
+      set({ totalRevenue: details.totalRevenue });
+      set({ salesReturn: details.salesReturn });
+      set({ profitMargin: details.profitMargin });
+      set({ receiptPayments: details.receiptPayments });
+      set({ receiptDiscount: details.receiptDiscount });
     },
   })
 );
@@ -74,24 +93,47 @@ const InventoryReport = () => {
     salesReturn,
     profitMargin,
     netIncome,
+    discount,
     receiptPayments,
     receiptDiscount,
     fetch,
+    setStats,
   } = summaryReportDetails((state) => ({
     cogs: state.cogs,
     cogsMargin: state.cogsMargin,
     totalRevenue: state.totalRevenue,
     salesReturn: state.salesReturn,
     profitMargin: state.profitMargin,
+    discount: state.discount,
     netIncome: state.netIncome,
     receiptPayments: state.receiptPayments,
     receiptDiscount: state.receiptDiscount,
     fetch: state.fetch,
+    setStats: state.setStats,
   }));
 
-  fetch().then((res: any) => {
-    console.log(res);
-  });
+  // Toast Handle
+  const toast = useToast();
+
+  // Execute Once only...
+  useEffect(() => {
+    fetch().then((res: any) => {
+      let response: APIResponse<SummaryReportDetails> = res.data;
+      if (response.status && response.data) setStats(response.data);
+      else showToast(toast, false, "Unable to Fetch Stats.");
+    });
+  }, []);
+
+  // Interval
+  const INTERVAL: number = 900000;
+  useInterval(() => {
+    fetch().then((res: any) => {
+      let response: APIResponse<SummaryReportDetails> = res.data;
+      if (response.status && response.data) setStats(response.data);
+      else showToast(toast, false, "Unable to Fetch Stats.");
+    });
+  }, INTERVAL);
+
   return (
     <VStack align={"start"} width="100%">
       <HStack width="100%">
@@ -127,6 +169,18 @@ const InventoryReport = () => {
         </Box>
         <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2}>
           $ {cogs > 0 ? "-" : "" + formatNumberWithDecimalPlaces(cogs)}
+        </_Label>
+      </HStack>
+      <HStack>
+        <Box width="10vw">
+          <Tooltip label="Cost of Goods Sold">
+            <Badge color="#C8375D" bgColor="#37C8A2" letterSpacing={2}>
+              Discount
+            </Badge>
+          </Tooltip>
+        </Box>
+        <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2}>
+          $ {cogs > 0 ? "-" : "" + formatNumberWithDecimalPlaces(discount)}
         </_Label>
       </HStack>
       <HStack width="100%">
@@ -168,6 +222,24 @@ const InventoryReport = () => {
           <b>{formatNumberWithDecimalPlaces(profitMargin)} %</b>
         </_Label>
       </HStack>
+      <HStack>
+        <Box width="10vw">
+          <Tooltip label="C.O.G.S Margin">
+            <Badge color="#376EC8" bgColor="#C89137" letterSpacing={2}>
+              C.O.G.S Margin
+            </Badge>
+          </Tooltip>
+        </Box>
+        <_Label
+          fontFamily={numberFont}
+          fontSize="0.8em"
+          letterSpacing={2}
+          hide={true}
+          toggleVisibility={true}
+        >
+          <b>{formatNumberWithDecimalPlaces(cogsMargin)} %</b>
+        </_Label>
+      </HStack>
       <HStack width="100%">
         <_Divider margin={1} />
       </HStack>
@@ -181,6 +253,18 @@ const InventoryReport = () => {
         </Box>
         <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2}>
           <b>$ {formatNumberWithDecimalPlaces(receiptPayments)}</b>
+        </_Label>
+      </HStack>
+      <HStack>
+        <Box width="10vw">
+          <Tooltip label="Receipts discounts">
+            <Badge color="#F88379" bgColor="#79EEF8" letterSpacing={2}>
+              Receipt Discounts
+            </Badge>
+          </Tooltip>
+        </Box>
+        <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2}>
+          <b>$ {formatNumberWithDecimalPlaces(receiptDiscount)}</b>
         </_Label>
       </HStack>
     </VStack>
@@ -199,7 +283,6 @@ const StatsUpdateMsg = () => {
 };
 
 const Stats = () => {
-  const toast = useToast();
   return (
     <Card>
       <CardBody>
