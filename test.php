@@ -187,10 +187,10 @@ function fetch_inventory(int $store_id): void {
 if(SYSTEM_INIT_MODE === PARTS) {
     $store_id = StoreDetails::SLAVE_LAKE;
     // generate_list($store_id);
-    fetch_inventory($store_id);
+    // fetch_inventory($store_id);
     // echo 'CALGARY : '. (Correct_IS_BS_Inventory::correct(StoreDetails::CALGARY) ? 'T' : 'F');
 }
-die;
+
 
 $items = [14942,
 14512, 
@@ -259,14 +259,14 @@ function fetch_quantity_sold_of_items(int $item_id, PDO &$db, int $store_id): in
    return $quantity;
 }
 
-$store_id = StoreDetails::EDMONTON;
-$db = get_db_instance();
-$quantity_table = [];
-foreach($items as $item_id) {
-    $quantity = fetch_quantity_sold_of_items($item_id, $db, $store_id);
-    if(isset($quantity_table[$item_id]) === false)  $quantity_table[$item_id] = 0;
-    $quantity_table[$item_id] += $quantity;
-}
+// $store_id = StoreDetails::EDMONTON;
+// $db = get_db_instance();
+// $quantity_table = [];
+// foreach($items as $item_id) {
+//     $quantity = fetch_quantity_sold_of_items($item_id, $db, $store_id);
+//     if(isset($quantity_table[$item_id]) === false)  $quantity_table[$item_id] = 0;
+//     $quantity_table[$item_id] += $quantity;
+// }
 
 function generate_table(array $quantity_table, PDO &$db, int $store_id): void {
     $query = 'SELECT id, identifier FROM items WHERE id IN (:placeholder);';
@@ -302,4 +302,6 @@ function generate_table(array $quantity_table, PDO &$db, int $store_id): void {
 }
 
 // generate_table($quantity_table, $db, $store_id);
+
+Client::fetch_clients_by_last_purchase_date('2024-01-01', StoreDetails::EDMONTON);
 ?>

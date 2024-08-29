@@ -2908,6 +2908,79 @@ class __GenerateInventory {
     }
 }
 
+class __GenerateLastPurchaseDateReport {
+    // Layout Settings
+    private const ORIENTATION = 'L';
+    private const UNIT = 'mm';
+    private const PAPER_SIZE = 'Letter';
+
+    // Font Settings
+    private const COURIER = 'Courier';
+
+    // PDF Instance
+    private static $pdf = null;
+
+    // Details
+    private static $details = null;
+
+    // For Debugging.
+    private const SHOW_BORDER_FOR_DEBUG = 0;
+
+    // Header
+    private static function header(): void {
+        // Set Font 
+        self::$pdf -> SetFont(self::COURIER, 'B', 10,);
+        self::$pdf -> Cell(w: 60, h: 5, txt: 'Client Name', border: 0, ln: 0);
+        self::$pdf -> Cell(w: 70, h: 5, txt: 'Contact Name', border: 0, ln: 0);
+        self::$pdf -> Cell(w: 40, h: 5, txt: 'Phone Number(s)', border: 0, ln: 0);
+        self::$pdf -> Cell(w: 20, h: 5, txt: 'Category', border: 0, ln: 0);
+        self::$pdf -> Cell(w: 0, h: 5, txt: 'Last Purchase Date', border: 0, ln: 1);
+    }
+    
+    // List
+    private static function list(): void {
+        self::$pdf -> SetFont(self::COURIER, '', 8,);
+        foreach (self::$details as $client) {
+            self::$pdf -> Cell(w: 60, h: 5, txt: $client['name'], border: 0, ln: 0);
+            self::$pdf -> Cell(w: 70, h: 5, txt: $client['contact_name'], border: 0, ln: 0);
+            self::$pdf -> Cell(w: 40, h: 5, txt: $client['phone_number_1'], border: 0, ln: 0);
+            self::$pdf -> Cell(w: 20, h: 5, txt: $client['category'], border: 0, ln:0);
+            self::$pdf -> Cell(w: 0, h: 5, txt: $client['last_purchase_date'], border: 0, ln: 1);
+        }
+    }
+
+    /**
+     * This method will generate client list.
+     * @param details
+     */
+    public static function generate(array $details): void {
+
+        // Details
+        self::$details = $details;
+
+        // Handle 
+        self::$pdf = new FPDF(self::ORIENTATION, self::UNIT, self::PAPER_SIZE);
+
+        // Set Title
+        self::$pdf -> SetTitle('Customer Last Purchase Date');
+
+        // Set Compression ON
+        self::$pdf -> SetCompression(true);        
+
+        // Add page
+        self::$pdf -> AddPage();
+
+        // Print Header
+        self::header();
+
+        // List
+        self::list();
+
+        // Send to Browser
+        self::$pdf -> Output();
+    }
+}
+
 /**
  * Unified Class for Generating Transactions and Receipt.
  */
@@ -2994,6 +3067,14 @@ class GeneratePDF {
      */
     public static function low_stock(array $details): void {
         __GenerateInventory::low_stock($details);
+    }
+
+    /**
+     * This method will generate last purchase date report.
+     * @param details
+     */
+    public static function last_purchase_date(array $details): void {
+        __GenerateLastPurchaseDateReport::generate($details);
     }
 }
 ?>

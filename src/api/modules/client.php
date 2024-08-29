@@ -14,6 +14,7 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/validate.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/utils.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/csrf.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/store_details.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/pdf/pdf.php";
 
 class Client {
 
@@ -67,6 +68,19 @@ class Client {
     public const CATEGORY_TRANSPORT = 6;
     public const CATEGORY_MOBILE_REPAIR_VAN = 7;
     public const CATEGORY_TRANSPORTER_FLEET = 8;
+
+    // Client Category Index
+    private const CLIENT_CATEGORY_INDEX = [
+        self::CATEGORY_ALL => 'All',
+        self::CATEGORY_OTHER => 'Other/No Category',
+        self::CATEGORY_LOGISTIC => 'Logistic',
+        self::CATEGORY_REPAIR_SHOP => 'Repair Shop',
+        self::CATEGORY_OWNER_DRIVE => 'Owner Driver',
+        self::CATEGORY_DRIVER => 'Driver',
+        self::CATEGORY_TRANSPORT => 'Transport',
+        self::CATEGORY_MOBILE_REPAIR_VAN => 'Mobile Repair Van',
+        self::CATEGORY_TRANSPORTER_FLEET => 'Transporter/Fleet',
+    ];
 
     /**
      * This method will validate phone number or fax.
@@ -1118,10 +1132,11 @@ class Client {
 
     /**
      * This method will fetch clients by last purchase date.
-     * @param data
+     * @param last_purchase_date
+     * @param store_id
      * @return void
      */
-    public static function fetch_clients_by_last_purchase_date(array $data): void {
+    public static function fetch_clients_by_last_purchase_date(string $last_purchase_date, int $store_id): void {
         try {
             $query = <<<'EOS'
             SELECT DISTINCT
@@ -1129,7 +1144,8 @@ class Client {
                 `contact_name`,
                 `phone_number_1`,
                 `phone_number_2`,
-                `last_purchase_date`
+                `last_purchase_date`,
+                `category`
             FROM
                 clients AS c
             LEFT JOIN 
@@ -1139,11 +1155,7 @@ class Client {
             WHERE 
                 si.store_id = :store_id;
             EOS;
-            if(isset($data['lastPurchaseDate'][0]) === false) throw new Exception('Invalid Last Purchase Date.');
-            $last_purchase_date = $data['lastPurchaseDate'];
-
-            // Store Id 
-            $store_id = intval($_SESSION['store_id']);
+            if(isset($last_purchase_date[0]) === false) throw new Exception('Invalid Last Purchase Date.');
 
             $db = get_db_instance();
             $statement = $db -> prepare($query);
@@ -1159,11 +1171,13 @@ class Client {
                         'phone_number_1' => $client['phone_number_1'],
                         'phone_number_1' => $client['phone_number_2'],
                         'last_purchase_date' => $last_purchase_date_per_client[$store_id],
+                        'category' => self::CLIENT_CATEGORY_INDEX[$client['category']],
                     ];
                 }
             }
 
             // Generate PDF 
+            GeneratePDF::last_purchase_date($clients);
         }
         catch(Exception $e) {
             echo $e -> getMessage();
