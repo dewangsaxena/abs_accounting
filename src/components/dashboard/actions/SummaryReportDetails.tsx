@@ -19,7 +19,7 @@ import {
   showToast,
 } from "../../../shared/functions";
 import { CiTimer } from "react-icons/ci";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 // Http Service
 const httpService = new HTTPService();
@@ -35,12 +35,14 @@ interface SummaryReportDetails {
   profitMargin: number;
   receiptPayments: number;
   receiptDiscount: number;
+  lastUpdated?: Date;
 }
 
 // Summary Report Details Store
 interface SummaryReportDetailsStore extends SummaryReportDetails {
   fetch: () => any;
   setStats: (details: SummaryReportDetails) => void;
+  setLastUpdated: (lastUpdated: Date) => void;
 }
 
 export const summaryReportDetails = create<SummaryReportDetailsStore>(
@@ -54,6 +56,7 @@ export const summaryReportDetails = create<SummaryReportDetailsStore>(
     profitMargin: 0,
     receiptPayments: 0,
     receiptDiscount: 0,
+    lastUpdated: new Date(),
     fetch: async () => {
       return httpService.fetch<SummaryReportDetails>({}, "stats");
     },
@@ -67,6 +70,9 @@ export const summaryReportDetails = create<SummaryReportDetailsStore>(
       set({ profitMargin: details.profitMargin });
       set({ receiptPayments: details.receiptPayments });
       set({ receiptDiscount: details.receiptDiscount });
+    },
+    setLastUpdated: (lastUpdated: Date) => {
+      set({ lastUpdated: lastUpdated });
     },
   })
 );
@@ -98,6 +104,7 @@ const InventoryReport = () => {
     receiptDiscount,
     fetch,
     setStats,
+    setLastUpdated,
   } = summaryReportDetails((state) => ({
     cogs: state.cogs,
     cogsMargin: state.cogsMargin,
@@ -110,17 +117,27 @@ const InventoryReport = () => {
     receiptDiscount: state.receiptDiscount,
     fetch: state.fetch,
     setStats: state.setStats,
+    setLastUpdated: state.setLastUpdated,
   }));
 
   // Toast Handle
   const toast = useToast();
 
+  // Update Stats
+  const updateStats = (response: SummaryReportDetails) => {
+    setStats(response);
+    setLastUpdated(new Date());
+  };
+
+  const ERROR_MESSAGE: string = "Unable to Fetch Stats.";
+
   // Execute Once only...
   useEffect(() => {
     fetch().then((res: any) => {
       let response: APIResponse<SummaryReportDetails> = res.data;
-      if (response.status && response.data) setStats(response.data);
-      else showToast(toast, false, "Unable to Fetch Stats.");
+      if (response.status && response.data) {
+        updateStats(response.data);
+      } else showToast(toast, false, ERROR_MESSAGE);
     });
   }, []);
 
@@ -129,8 +146,9 @@ const InventoryReport = () => {
   useInterval(() => {
     fetch().then((res: any) => {
       let response: APIResponse<SummaryReportDetails> = res.data;
-      if (response.status && response.data) setStats(response.data);
-      else showToast(toast, false, "Unable to Fetch Stats.");
+      if (response.status && response.data) {
+        updateStats(response.data);
+      } else showToast(toast, false, ERROR_MESSAGE);
     });
   }, INTERVAL);
 
@@ -273,13 +291,29 @@ const InventoryReport = () => {
 };
 
 const StatsUpdateMsg = () => {
+  const { lastUpdated } = summaryReportDetails();
   return (
-    <HStack>
-      <CiTimer color="purple" />
-      <_Label fontSize="0.6em" fontFamily={numberFont}>
-        <i>Stats are updated every 15 Minutes.</i>
-      </_Label>
-    </HStack>
+    <VStack align="start">
+      <HStack>
+        <CiTimer color="purple" />
+        <_Label fontSize="0.6em" fontFamily={numberFont}>
+          <i>Stats are updated every 15 Minutes.</i>
+        </_Label>
+      </HStack>
+      <HStack>
+        <_Label fontSize="0.6em" fontFamily={numberFont}>
+          Last Updated:
+        </_Label>
+        <_Label
+          fontSize="0.6em"
+          fontFamily={numberFont}
+          letterSpacing={2}
+          fontWeight="bold"
+        >
+          {lastUpdated?.toLocaleTimeString()}
+        </_Label>
+      </HStack>
+    </VStack>
   );
 };
 
