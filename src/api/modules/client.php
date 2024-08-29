@@ -1167,7 +1167,7 @@ class Client {
                     $clients[]= [
                         'name' => $client['name'],
                         'contact_name' => $client['contact_name'],
-                        'phone_number_1' => isset($client['phone_number_1'][0]) ? $client['phone_number_1']: 'N/A',
+                        'phone_number_1' => isset($client['phone_number_1'][0]) ? Utils::format_phone_number($client['phone_number_1']): 'N/A',
                         'last_purchase_date' => Utils::format_to_human_readable_date($last_purchase_date_per_client[$store_id]),
                         'category' => self::CLIENT_CATEGORY_INDEX[$client['category']],
                     ];

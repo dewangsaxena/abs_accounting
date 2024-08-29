@@ -2929,8 +2929,9 @@ class __GenerateLastPurchaseDateReport {
     // Header
     private static function header(): void {
         // Set Font 
-        self::$pdf -> SetFont(self::COURIER, 'B', 10,);
-        self::$pdf -> Cell(w: 0, h: 5, txt: 'Last Purchase Date till Date: '. self::$details['till_date'], border: 0, ln: 0);
+        self::$pdf -> SetFont(self::COURIER, 'B', 12,);
+        self::$pdf -> Cell(w: 0, h: 5, txt: 'Last Purchase Date till Date: '. self::$details['till_date'], border: 0, ln: 1);
+        self::$pdf -> Ln(2);
         self::$pdf -> SetFont(self::COURIER, 'B', 10,);
         self::$pdf -> Cell(w: 60, h: 5, txt: 'Client Name', border: 0, ln: 0);
         self::$pdf -> Cell(w: 70, h: 5, txt: 'Contact Name', border: 0, ln: 0);
