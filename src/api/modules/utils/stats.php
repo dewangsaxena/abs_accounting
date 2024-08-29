@@ -18,7 +18,7 @@ class Stats {
             $store_id = intval($_SESSION['store_id']);  
 
             // Current Date
-            $current_date = '2024-01-05';//Utils::get_business_date($store_id);
+            $current_date = Utils::get_business_date($store_id);
 
             // Stats
             $revenue = 0;
