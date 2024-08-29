@@ -1115,4 +1115,33 @@ class Client {
             if($is_successful !== true && $statement -> rowCount() < 1) throw new Exception('Cannot Update Last Purchase Date for Client.');
         }
     }
+
+    /**
+     * This method 
+     */
+    public static function fetch_client_list(array $data): array {
+        try {
+            $db = get_db_instance();
+            $query = <<<'EOS'
+            SELECT DISTINCT
+                `name`,
+                `contact_name`,
+                `phone_number_1`,
+                `phone_number_2`
+            FROM
+                clients AS c
+            LEFT JOIN 
+                sales_invoice AS si
+            ON 
+                c.id = si.client_id
+            WHERE 
+                si.store_id = :store_id;
+            EOS;            
+            if(isset($data['lastPurchaseDate'][0]))
+            return ['status' => true];
+        }
+        catch(Exception $e) {
+            return ['status' => false, 'message' => $e -> getMessage()];
+        }
+    }
 }
