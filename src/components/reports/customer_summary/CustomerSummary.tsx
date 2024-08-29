@@ -52,8 +52,9 @@ import { useState } from "react";
 import { IoReloadCircleOutline } from "react-icons/io5";
 import { FcInfo } from "react-icons/fc";
 import { MdOutlineCategory } from "react-icons/md";
-import { FaUser } from "react-icons/fa";
 import { SlCalender } from "react-icons/sl";
+import DatePicker from "react-datepicker";
+import { FaUser } from "react-icons/fa";
 
 /**
  * Customer Summary
@@ -622,6 +623,9 @@ const Filter = ({
     ...clientCategory,
   };
 
+  // Last Purchase Date
+  const [lastPurchaseDate, setLastPurchaseDate] = useState<Date | null>(null);
+
   return (
     <Card bgColor="#EEF5FF">
       <CardBody padding={2}>
@@ -733,6 +737,35 @@ const Filter = ({
               ></_Select>
             </Box>
           </HStack>
+          <_Divider margin={1} />
+          <Box width="100%">
+            <_Label fontSize="0.7em" textTransform={"uppercase"}>
+              Search Clients by Last Purchase Date.
+            </_Label>
+          </Box>
+          <HStack width="100%">
+            <_Label fontSize="0.8em">Before Date:</_Label>
+            <DatePicker
+              wrapperClassName="datepicker_style"
+              dateFormat={"MM/dd/yyyy"}
+              placeholderText="Txn. Date"
+              selected={lastPurchaseDate}
+              onChange={(date: any) => {
+                console.log(date);
+                setLastPurchaseDate(date);
+              }}
+              closeOnScroll={true}
+              maxDate={new Date()}
+            />
+          </HStack>
+          <_Button
+            color={"#ADD8E6"}
+            bgColor="black"
+            onClick={() => {}}
+            fontSize="1.5em"
+            icon={<FaUser fontSize="0.8em" />}
+            label="View Clients"
+          ></_Button>
           <_Divider margin={2} />
           <_Button
             isDisabled={isLoading}

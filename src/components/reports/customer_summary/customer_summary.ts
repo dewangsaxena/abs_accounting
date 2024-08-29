@@ -58,6 +58,7 @@ interface CustomerSummaryReportDetails {
   yearTill: number;
   category: number;
   report: AttributeType<CustomerSummaryReport>;
+  lastPurchaseDate: null | Date;
   __offset: number;
   setDetail: (detailName: string, value: any) => void;
   fetch: (sendOffset: boolean) => any;
@@ -76,6 +77,7 @@ export const customerSummaryReport = create<CustomerSummaryReportDetails>(
     yearTill: currentYear,
     category: 0,
     report: {} as AttributeType,
+    lastPurchaseDate: null,
     __offset: 0,
     setDetail: (detailName: string, value: any) => {
       if (detailName === "selectedClients") set({ selectedClients: [value] });
@@ -84,6 +86,8 @@ export const customerSummaryReport = create<CustomerSummaryReportDetails>(
       else if (detailName === "yearFrom") set({ yearFrom: value });
       else if (detailName === "yearTill") set({ yearTill: value });
       else if (detailName === "category") set({ category: value });
+      else if (detailName === "lastPurchaseDate")
+        set({ lastPurchaseDate: value });
     },
     fetch: async (sendOffset: boolean) => {
       let payload: AttributeType = {
@@ -93,6 +97,7 @@ export const customerSummaryReport = create<CustomerSummaryReportDetails>(
         yearFrom: get().yearFrom,
         yearTill: get().yearTill,
         category: get().category,
+        lastPurchaseDate: get().lastPurchaseDate,
         __offset: sendOffset ? get().__offset : 0,
       };
 
