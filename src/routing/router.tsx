@@ -13,6 +13,7 @@ import BalanceSheet from "../components/reports/balance_sheet/BalanceSheet";
 import CustomerAgedSummary from "../components/reports/customer_aged_summary/CustomerAgedSummary";
 import CustomerStatement from "../components/reports/customer_statement/CustomerStatement";
 import CustomerSummary from "../components/reports/customer_summary/CustomerSummary";
+import CustomerList from "../components/reports/customer_list/CustomerList";
 
 const router = createBrowserRouter([
   {
@@ -198,8 +199,11 @@ const router = createBrowserRouter([
   {
     path: "/customer_summary",
     element: <CustomerSummary />,
-    
   },
+  {
+    path: "/customer_list",
+    element: <CustomerList/>
+  }
 ]);
 
 export default router;
