@@ -1117,9 +1117,9 @@ class Client {
     }
 
     /**
-     * This method 
+     * This method will fetch clients by last purchase date.
      */
-    public static function fetch_client_list(array $data): array {
+    public static function fetch_clients_by_last_purchase_date(array $data): array {
         try {
             $db = get_db_instance();
             $query = <<<'EOS'
@@ -1127,7 +1127,8 @@ class Client {
                 `name`,
                 `contact_name`,
                 `phone_number_1`,
-                `phone_number_2`
+                `phone_number_2`,
+                `last_purchase_date`
             FROM
                 clients AS c
             LEFT JOIN 
@@ -1136,7 +1137,7 @@ class Client {
                 c.id = si.client_id
             WHERE 
                 si.store_id = :store_id;
-            EOS;            
+            EOS;
             if(isset($data['lastPurchaseDate'][0]))
             return ['status' => true];
         }

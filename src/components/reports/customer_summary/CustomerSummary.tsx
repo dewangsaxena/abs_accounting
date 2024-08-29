@@ -758,8 +758,9 @@ const Filter = ({
             />
           </HStack>
           <_Button
-            color={"#ADD8E6"}
-            bgColor="black"
+            color={"green"}
+            bgColor="white"
+            isDisabled={lastPurchaseDate !== null ? false : true}
             onClick={() => {}}
             fontSize="1.5em"
             icon={<FaUser fontSize="0.8em" />}
