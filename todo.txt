@@ -153,3 +153,5 @@ SELECT SUM(sum_total) FROM debit_note WHERE store_id = 7;
 SELECT SUM(sum_total) FROM credit_note WHERE store_id = 7;
 
 ////////////////////////////
+
+select * FROM (SELECT c.`name`, c.`contact_name`, c.id, count(c.id) as _count FROM `sales_invoice` as si left join clients as c on si.client_id = c.id where si.date >= '2024-07-01' and si.date <= '2024-08-29' and si.store_id = 3 group by client_id) as _tmp where _count = 1;
