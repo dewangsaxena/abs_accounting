@@ -125,7 +125,7 @@ const InventoryReport = () => {
   }, []);
 
   // Interval
-  const INTERVAL: number = 900;
+  const INTERVAL: number = 900_000;
   useInterval(() => {
     fetch().then((res: any) => {
       let response: APIResponse<SummaryReportDetails> = res.data;
