@@ -20,7 +20,6 @@ import { APIResponse } from "../../../service/api-client";
 import {
   buildSearchListForClient,
   formatNumberWithDecimalPlaces,
-  getAttributeFromSession,
   getUUID,
   showToast,
 } from "../../../shared/functions";
@@ -777,7 +776,7 @@ const Filter = ({
                 urlWithParam.searchParams.append("op", "last_purchase_date");
                 urlWithParam.searchParams.append(
                   "storeId",
-                  getAttributeFromSession("storeId")
+                  localStorage.getItem("storeId") || "0"
                 );
                 urlWithParam.searchParams.append("lastPurchaseDate", _date);
                 window.open(urlWithParam.href);
