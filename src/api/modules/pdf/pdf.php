@@ -2933,7 +2933,7 @@ class __GenerateLastPurchaseDateReport {
         self::$pdf -> Cell(w: 60, h: 5, txt: 'Client Name', border: 0, ln: 0);
         self::$pdf -> Cell(w: 70, h: 5, txt: 'Contact Name', border: 0, ln: 0);
         self::$pdf -> Cell(w: 40, h: 5, txt: 'Phone Number', border: 0, ln: 0);
-        self::$pdf -> Cell(w: 20, h: 5, txt: 'Category', border: 0, ln: 0);
+        self::$pdf -> Cell(w: 40, h: 5, txt: 'Category', border: 0, ln: 0);
         self::$pdf -> Cell(w: 0, h: 5, txt: 'Last Purchase Date', border: 0, ln: 1);
     }
     
@@ -2944,7 +2944,7 @@ class __GenerateLastPurchaseDateReport {
             self::$pdf -> Cell(w: 60, h: 5, txt: $client['name'], border: 0, ln: 0);
             self::$pdf -> Cell(w: 70, h: 5, txt: $client['contact_name'], border: 0, ln: 0);
             self::$pdf -> Cell(w: 40, h: 5, txt: $client['phone_number_1'], border: 0, ln: 0);
-            self::$pdf -> Cell(w: 20, h: 5, txt: $client['category'], border: 0, ln:0);
+            self::$pdf -> Cell(w: 40, h: 5, txt: $client['category'], border: 0, ln:0);
             self::$pdf -> Cell(w: 0, h: 5, txt: $client['last_purchase_date'], border: 0, ln: 1);
         }
     }
