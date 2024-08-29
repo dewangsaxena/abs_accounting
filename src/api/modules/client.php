@@ -1118,10 +1118,11 @@ class Client {
 
     /**
      * This method will fetch clients by last purchase date.
+     * @param data
+     * @return void
      */
-    public static function fetch_clients_by_last_purchase_date(array $data): array {
+    public static function fetch_clients_by_last_purchase_date(array $data): void {
         try {
-            $db = get_db_instance();
             $query = <<<'EOS'
             SELECT DISTINCT
                 `name`,
@@ -1138,11 +1139,34 @@ class Client {
             WHERE 
                 si.store_id = :store_id;
             EOS;
-            if(isset($data['lastPurchaseDate'][0]))
-            return ['status' => true];
+            if(isset($data['lastPurchaseDate'][0]) === false) throw new Exception('Invalid Last Purchase Date.');
+            $last_purchase_date = $data['lastPurchaseDate'];
+
+            // Store Id 
+            $store_id = intval($_SESSION['store_id']);
+
+            $db = get_db_instance();
+            $statement = $db -> prepare($query);
+            $statement -> execute([':store_id' => $store_id]);
+            $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
+            $clients = [];
+            foreach($result as $client) {
+                $last_purchase_date_per_client = json_decode($client['last_purchase_date'], true, flags: JSON_THROW_ON_ERROR);
+                if(isset($last_purchase_date_per_client[$store_id][0]) && $last_purchase_date_per_client[$store_id] < $last_purchase_date) {
+                    $clients[]= [
+                        'name' => $client['name'],
+                        'contact_name' => $client['contact_name'],
+                        'phone_number_1' => $client['phone_number_1'],
+                        'phone_number_1' => $client['phone_number_2'],
+                        'last_purchase_date' => $last_purchase_date_per_client[$store_id],
+                    ];
+                }
+            }
+
+            // Generate PDF 
         }
         catch(Exception $e) {
-            return ['status' => false, 'message' => $e -> getMessage()];
+            echo $e -> getMessage();
         }
     }
 }
