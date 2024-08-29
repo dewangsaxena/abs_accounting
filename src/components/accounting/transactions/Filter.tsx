@@ -402,7 +402,7 @@ const SearchPanel = ({ type, setShowSpinner }: FilterProps) => {
     <>
       <Card bgColor="#EEF5FF">
         <CardBody padding={2}>
-          <VStack align={"start"}>
+          <VStack align={"normal"}>
             <HomeNavButton />
             {/* Transaction ID  */}
             <HStack>
