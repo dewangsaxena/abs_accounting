@@ -751,7 +751,6 @@ const Filter = ({
               placeholderText="Txn. Date"
               selected={lastPurchaseDate}
               onChange={(date: any) => {
-                console.log(date);
                 setLastPurchaseDate(date);
               }}
               closeOnScroll={true}
