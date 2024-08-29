@@ -278,7 +278,7 @@ const InventoryReport = () => {
         <Box width="10vw">
           <Tooltip label="Receipts discounts">
             <Badge color="#F88379" bgColor="#79EEF8" letterSpacing={2}>
-              Receipt Discounts
+              Receipt Discount
             </Badge>
           </Tooltip>
         </Box>
