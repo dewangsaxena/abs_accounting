@@ -1133,10 +1133,9 @@ class Client {
     /**
      * This method will fetch clients by last purchase date.
      * @param last_purchase_date
-     * @param store_id
      * @return void
      */
-    public static function fetch_clients_by_last_purchase_date(string $last_purchase_date, int $store_id): void {
+    public static function fetch_clients_by_last_purchase_date(string $last_purchase_date): void {
         try {
             $query = <<<'EOS'
             SELECT DISTINCT
@@ -1155,6 +1154,9 @@ class Client {
                 si.store_id = :store_id;
             EOS;
             if(isset($last_purchase_date[0]) === false) throw new Exception('Invalid Last Purchase Date.');
+
+            // Store Id
+            $store_id = intval($_SESSION['store_id']);
 
             $db = get_db_instance();
             $statement = $db -> prepare($query);

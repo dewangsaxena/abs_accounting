@@ -68,6 +68,10 @@ if(isset($_GET['op'])) {
         else $message = 'Invalid Store.';
         die($message);
     }
+    else if($_GET['op'] === 'last_purchase_date') {
+        Client::fetch_clients_by_last_purchase_date($_GET['lastPurchaseDate']);
+        die;
+    }
     else {
         require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/pdf/pdf.php";
         $transaction_type = intval($_GET['t'] ?? 0);
@@ -86,7 +90,7 @@ if(isset($_GET['op'])) {
         else $params['txn_queue'] = [['type' => $transaction_type, 'id' => $_GET['i'], 'version' => $_GET['version'] ?? null]];
         $response = handle_transactions($params);
         if($response['status'] === false) die($response['message']);
-    }
+    }    
 
     /* Terminate Script */
     die;

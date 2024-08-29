@@ -761,7 +761,18 @@ const Filter = ({
             color={"green"}
             bgColor="white"
             isDisabled={lastPurchaseDate !== null ? false : true}
-            onClick={() => {}}
+            onClick={() => {
+              let _date: string =
+                lastPurchaseDate?.getFullYear() +
+                "-" +
+                lastPurchaseDate?.getMonth() +
+                "-" +
+                lastPurchaseDate?.getDate();
+              const urlWithParam = new URL("/last_purchase_date");
+              urlWithParam.searchParams.append("op", "last_purchase_date");
+              urlWithParam.searchParams.append("lastPurchaseDate", _date);
+              window.open(urlWithParam.href);
+            }}
             fontSize="1.5em"
             icon={<FaUser fontSize="0.8em" />}
             label="View Clients"

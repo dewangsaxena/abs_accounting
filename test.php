@@ -303,5 +303,5 @@ function generate_table(array $quantity_table, PDO &$db, int $store_id): void {
 
 // generate_table($quantity_table, $db, $store_id);
 
-Client::fetch_clients_by_last_purchase_date('2024-01-01', StoreDetails::EDMONTON);
+// Client::fetch_clients_by_last_purchase_date('2024-01-01');
 ?>
