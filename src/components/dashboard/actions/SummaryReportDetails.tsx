@@ -125,7 +125,7 @@ const InventoryReport = () => {
   }, []);
 
   // Interval
-  const INTERVAL: number = 900000;
+  const INTERVAL: number = 900;
   useInterval(() => {
     fetch().then((res: any) => {
       let response: APIResponse<SummaryReportDetails> = res.data;
@@ -143,7 +143,7 @@ const InventoryReport = () => {
           </Badge>
         </Box>
         <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2}>
-          $ {formatNumberWithDecimalPlaces(totalRevenue)}
+          $ {formatNumberWithDecimalPlaces(totalRevenue, 2)}
         </_Label>
       </HStack>
       <HStack>
@@ -155,8 +155,8 @@ const InventoryReport = () => {
         <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2}>
           ${" "}
           {salesReturn > 0
-            ? "-"
-            : "" + formatNumberWithDecimalPlaces(salesReturn)}
+            ? "" + formatNumberWithDecimalPlaces(salesReturn, 2)
+            : "-"}
         </_Label>
       </HStack>
       <HStack>
@@ -168,7 +168,7 @@ const InventoryReport = () => {
           </Tooltip>
         </Box>
         <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2}>
-          $ {cogs > 0 ? "-" : "" + formatNumberWithDecimalPlaces(cogs)}
+          $ {cogs > 0 ? "" + formatNumberWithDecimalPlaces(cogs, 2) : "-"}
         </_Label>
       </HStack>
       <HStack>
@@ -180,7 +180,8 @@ const InventoryReport = () => {
           </Tooltip>
         </Box>
         <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2}>
-          $ {cogs > 0 ? "-" : "" + formatNumberWithDecimalPlaces(discount)}
+          ${" "}
+          {discount > 0 ? "" + formatNumberWithDecimalPlaces(discount, 2) : "-"}
         </_Label>
       </HStack>
       <HStack width="100%">
@@ -201,7 +202,7 @@ const InventoryReport = () => {
           hide={true}
           toggleVisibility={true}
         >
-          $ {formatNumberWithDecimalPlaces(netIncome)}
+          $ {formatNumberWithDecimalPlaces(netIncome, 2)}
         </_Label>
       </HStack>
       <HStack>
@@ -219,7 +220,7 @@ const InventoryReport = () => {
           hide={true}
           toggleVisibility={true}
         >
-          <b>{formatNumberWithDecimalPlaces(profitMargin)} %</b>
+          <b>{formatNumberWithDecimalPlaces(profitMargin, 2)} %</b>
         </_Label>
       </HStack>
       <HStack>
@@ -237,7 +238,7 @@ const InventoryReport = () => {
           hide={true}
           toggleVisibility={true}
         >
-          <b>{formatNumberWithDecimalPlaces(cogsMargin)} %</b>
+          <b>{formatNumberWithDecimalPlaces(cogsMargin, 2)} %</b>
         </_Label>
       </HStack>
       <HStack width="100%">
@@ -252,7 +253,7 @@ const InventoryReport = () => {
           </Tooltip>
         </Box>
         <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2}>
-          <b>$ {formatNumberWithDecimalPlaces(receiptPayments)}</b>
+          <b>$ {formatNumberWithDecimalPlaces(receiptPayments, 2)}</b>
         </_Label>
       </HStack>
       <HStack>
@@ -264,7 +265,7 @@ const InventoryReport = () => {
           </Tooltip>
         </Box>
         <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2}>
-          <b>$ {formatNumberWithDecimalPlaces(receiptDiscount)}</b>
+          <b>$ {formatNumberWithDecimalPlaces(receiptDiscount, 2)}</b>
         </_Label>
       </HStack>
     </VStack>
