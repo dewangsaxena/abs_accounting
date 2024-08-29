@@ -31,20 +31,20 @@ class Stats {
             // Params
             $params = [':date' => $current_date, ':store_id' => $store_id];
 
-            $statement = $db -> prepare('SELECT sum_total, sub_total, txn_discount, cogs FROM sales_invoice WHERE `date` = :date AND store_id = :store_id;');
+            $statement = $db -> prepare('SELECT sub_total, sub_total, txn_discount, cogs FROM sales_invoice WHERE `date` = :date AND store_id = :store_id;');
             $statement -> execute($params);
             $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
             foreach($result as $r) {
-                $revenue += $r['sum_total'];
+                $revenue += $r['sub_total'];
                 $cogs += $r['cogs'];
                 $discount += $r['txn_discount'];
             }
 
-            $statement = $db -> prepare('SELECT sum_total, sub_total, txn_discount, cogr FROM sales_return WHERE `date` = :date AND store_id = :store_id;');
+            $statement = $db -> prepare('SELECT sub_total, sub_total, txn_discount, cogr FROM sales_return WHERE `date` = :date AND store_id = :store_id;');
             $statement -> execute($params);
             $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
             foreach($result as $r) {
-                $sales_return += $r['sum_total'];
+                $sales_return += $r['sub_total'];
                 $cogs -= $r['cogr'];
                 $discount -= $r['txn_discount'];
             }
