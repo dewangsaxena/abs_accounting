@@ -28,6 +28,7 @@ interface SummaryReportDetails {
   salesReturn: number;
   profitMargin: number;
   receiptPayments: number;
+  receiptDiscount: number;
 }
 
 // Summary Report Details Store
@@ -44,7 +45,10 @@ export const summaryReportDetails = create<SummaryReportDetailsStore>(
     salesReturn: 0,
     profitMargin: 0,
     receiptPayments: 0,
-    fetch: async () => {},
+    receiptDiscount: 0,
+    fetch: async () => {
+      httpService.fetch<SummaryReportDetails>({}, "stats");
+    },
   })
 );
 
@@ -65,28 +69,36 @@ const Header = () => {
 const InventoryReport = () => {
   const {
     cogs,
+    cogsMargin,
     totalRevenue,
     salesReturn,
     profitMargin,
     netIncome,
     receiptPayments,
+    receiptDiscount,
+    fetch,
   } = summaryReportDetails((state) => ({
     cogs: state.cogs,
+    cogsMargin: state.cogsMargin,
     totalRevenue: state.totalRevenue,
     salesReturn: state.salesReturn,
     profitMargin: state.profitMargin,
     netIncome: state.netIncome,
     receiptPayments: state.receiptPayments,
+    receiptDiscount: state.receiptDiscount,
+    fetch: state.fetch,
   }));
+
+  fetch().then((res: any) => {
+    console.log(res);
+  });
   return (
     <VStack align={"start"} width="100%">
       <HStack width="100%">
         <Box width="10vw">
-          <Tooltip label="Total Revenue includes Sales Returns">
-            <Badge bgColor="#04AF70" color="white" letterSpacing={2}>
-              Total Revenue
-            </Badge>
-          </Tooltip>
+          <Badge bgColor="#04AF70" color="white" letterSpacing={2}>
+            Total Revenue
+          </Badge>
         </Box>
         <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2}>
           $ {formatNumberWithDecimalPlaces(totalRevenue)}

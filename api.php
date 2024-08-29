@@ -16,6 +16,7 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/balance_sheet.
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_aged_summary.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_statement.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_summary.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/stats.php";
 
 // Perform External Operation.
 if(isset($_GET['op'])) {
@@ -222,6 +223,9 @@ if(isset($_POST['action'])) {
                 intval($_SESSION['store_id']),
             ); 
             break;
+
+        /* Stats */ 
+        case 'stats': $response = Stats::stats(); break;
     }
 
     // Send Response Back 
