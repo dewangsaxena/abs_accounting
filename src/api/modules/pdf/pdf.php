@@ -2932,7 +2932,7 @@ class __GenerateLastPurchaseDateReport {
         self::$pdf -> SetFont(self::COURIER, 'B', 10,);
         self::$pdf -> Cell(w: 60, h: 5, txt: 'Client Name', border: 0, ln: 0);
         self::$pdf -> Cell(w: 70, h: 5, txt: 'Contact Name', border: 0, ln: 0);
-        self::$pdf -> Cell(w: 40, h: 5, txt: 'Phone Number(s)', border: 0, ln: 0);
+        self::$pdf -> Cell(w: 40, h: 5, txt: 'Phone Number', border: 0, ln: 0);
         self::$pdf -> Cell(w: 20, h: 5, txt: 'Category', border: 0, ln: 0);
         self::$pdf -> Cell(w: 0, h: 5, txt: 'Last Purchase Date', border: 0, ln: 1);
     }

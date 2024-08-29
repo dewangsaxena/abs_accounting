@@ -1143,7 +1143,6 @@ class Client {
                 `name`,
                 `contact_name`,
                 `phone_number_1`,
-                `phone_number_2`,
                 `last_purchase_date`,
                 `category`
             FROM
@@ -1168,8 +1167,7 @@ class Client {
                     $clients[]= [
                         'name' => $client['name'],
                         'contact_name' => $client['contact_name'],
-                        'phone_number_1' => $client['phone_number_1'],
-                        'phone_number_1' => $client['phone_number_2'],
+                        'phone_number_1' => isset($client['phone_number_1'][0]) ? $client['phone_number_1']: 'N/A',
                         'last_purchase_date' => $last_purchase_date_per_client[$store_id],
                         'category' => self::CLIENT_CATEGORY_INDEX[$client['category']],
                     ];
