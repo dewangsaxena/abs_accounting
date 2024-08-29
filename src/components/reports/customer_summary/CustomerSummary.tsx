@@ -20,10 +20,12 @@ import { APIResponse } from "../../../service/api-client";
 import {
   buildSearchListForClient,
   formatNumberWithDecimalPlaces,
+  getAttributeFromSession,
   getUUID,
   showToast,
 } from "../../../shared/functions";
 import {
+  APP_HOST,
   AttributeType,
   clientCategory,
   MONTHS,
@@ -762,16 +764,24 @@ const Filter = ({
             bgColor="white"
             isDisabled={lastPurchaseDate !== null ? false : true}
             onClick={() => {
-              let _date: string =
-                lastPurchaseDate?.getFullYear() +
-                "-" +
-                lastPurchaseDate?.getMonth() +
-                "-" +
-                lastPurchaseDate?.getDate();
-              const urlWithParam = new URL("/last_purchase_date");
-              urlWithParam.searchParams.append("op", "last_purchase_date");
-              urlWithParam.searchParams.append("lastPurchaseDate", _date);
-              window.open(urlWithParam.href);
+              if (lastPurchaseDate) {
+                let month: number | string = lastPurchaseDate.getMonth();
+                if (month < 10) month = `0${month}`;
+                let _date: string =
+                  lastPurchaseDate.getFullYear() +
+                  "-" +
+                  month +
+                  "-" +
+                  lastPurchaseDate.getDate();
+                const urlWithParam = new URL(APP_HOST + "/api.php");
+                urlWithParam.searchParams.append("op", "last_purchase_date");
+                urlWithParam.searchParams.append(
+                  "storeId",
+                  getAttributeFromSession("storeId")
+                );
+                urlWithParam.searchParams.append("lastPurchaseDate", _date);
+                window.open(urlWithParam.href);
+              }
             }}
             fontSize="1.5em"
             icon={<FaUser fontSize="0.8em" />}

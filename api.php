@@ -69,7 +69,7 @@ if(isset($_GET['op'])) {
         die($message);
     }
     else if($_GET['op'] === 'last_purchase_date') {
-        Client::fetch_clients_by_last_purchase_date($_GET['lastPurchaseDate']);
+        Client::fetch_clients_by_last_purchase_date($_GET['lastPurchaseDate'], intval($_GET['storeId']));
         die;
     }
     else {
