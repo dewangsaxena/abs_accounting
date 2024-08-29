@@ -1175,7 +1175,10 @@ class Client {
             }
 
             // Generate PDF 
-            GeneratePDF::last_purchase_date($clients);
+            GeneratePDF::last_purchase_date([
+                'till_date' => Utils::format_to_human_readable_date($last_purchase_date), 
+                'clients' => $clients]
+            );
         }
         catch(Exception $e) {
             echo $e -> getMessage();

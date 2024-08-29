@@ -2930,6 +2930,8 @@ class __GenerateLastPurchaseDateReport {
     private static function header(): void {
         // Set Font 
         self::$pdf -> SetFont(self::COURIER, 'B', 10,);
+        self::$pdf -> Cell(w: 0, h: 5, txt: 'Last Purchase Date till Date: '. self::$details['till_date'], border: 0, ln: 0);
+        self::$pdf -> SetFont(self::COURIER, 'B', 10,);
         self::$pdf -> Cell(w: 60, h: 5, txt: 'Client Name', border: 0, ln: 0);
         self::$pdf -> Cell(w: 70, h: 5, txt: 'Contact Name', border: 0, ln: 0);
         self::$pdf -> Cell(w: 40, h: 5, txt: 'Phone Number', border: 0, ln: 0);
@@ -2940,12 +2942,20 @@ class __GenerateLastPurchaseDateReport {
     // List
     private static function list(): void {
         self::$pdf -> SetFont(self::COURIER, '', 8,);
-        foreach (self::$details as $client) {
-            self::$pdf -> Cell(w: 60, h: 5, txt: $client['name'], border: 0, ln: 0);
-            self::$pdf -> Cell(w: 70, h: 5, txt: $client['contact_name'], border: 0, ln: 0);
-            self::$pdf -> Cell(w: 40, h: 5, txt: $client['phone_number_1'], border: 0, ln: 0);
-            self::$pdf -> Cell(w: 40, h: 5, txt: $client['category'], border: 0, ln:0);
-            self::$pdf -> Cell(w: 0, h: 5, txt: $client['last_purchase_date'], border: 0, ln: 1);
+        $index = 0;
+        $clients = self::$details['clients'];
+        foreach ($clients as $client) {
+
+            if($index) self::$pdf -> SetFillColor(224, 224, 224);
+            else self::$pdf -> SetFillColor(255, 255, 255);
+            self::$pdf -> Cell(w: 60, h: 5, txt: $client['name'], border: 0, ln: 0, fill: true);
+            self::$pdf -> Cell(w: 70, h: 5, txt: $client['contact_name'], border: 0, ln: 0, fill: true);
+            self::$pdf -> Cell(w: 40, h: 5, txt: $client['phone_number_1'], border: 0, ln: 0, fill: true);
+            self::$pdf -> Cell(w: 40, h: 5, txt: $client['category'], border: 0, ln:0, fill: true);
+            self::$pdf -> Cell(w: 0, h: 5, txt: $client['last_purchase_date'], border: 0, ln: 1, fill: true);
+
+            // Toggle Flag
+            $index ^= 1;
         }
     }
 
