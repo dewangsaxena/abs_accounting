@@ -19,7 +19,7 @@ import {
   showToast,
 } from "../../../shared/functions";
 import { CiTimer } from "react-icons/ci";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 // Http Service
 const httpService = new HTTPService();
