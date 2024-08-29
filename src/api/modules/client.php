@@ -1163,7 +1163,7 @@ class Client {
             $clients = [];
             foreach($result as $client) {
                 $last_purchase_date_per_client = json_decode($client['last_purchase_date'], true, flags: JSON_THROW_ON_ERROR);
-                if(isset($last_purchase_date_per_client[$store_id][0]) && $last_purchase_date_per_client[$store_id] < $last_purchase_date) {
+                if(isset($last_purchase_date_per_client[$store_id][0]) && $last_purchase_date_per_client[$store_id] <= $last_purchase_date) {
                     $clients[]= [
                         'name' => $client['name'],
                         'contact_name' => $client['contact_name'],
