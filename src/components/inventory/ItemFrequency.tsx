@@ -69,7 +69,13 @@ export const frequencyDetailsStore = create<_FrequencyDetails>((set, get) => ({
 }));
 
 // Search Filter
-const SearchFilter = () => {
+const SearchFilter = ({
+  loadingState,
+  setLoadingState,
+}: {
+  loadingState: boolean;
+  setLoadingState: any;
+}) => {
   const { startDate, endDate, fetch, setDetail, setReport } =
     frequencyDetailsStore((state) => ({
       startDate: state.startDate,
@@ -219,10 +225,14 @@ const SearchFilter = () => {
 };
 
 const ItemFrequency = () => {
+  const [loadingState, setLoadingState] = useState<boolean>(false);
   return (
     <HStack>
       <Box width="25%">
-        <SearchFilter />
+        <SearchFilter
+          loadingState={loadingState}
+          setLoadingState={setLoadingState}
+        />
       </Box>
     </HStack>
   );
