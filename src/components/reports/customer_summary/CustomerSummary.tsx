@@ -766,19 +766,18 @@ const Filter = ({
               if (lastPurchaseDate) {
                 let month: number | string = lastPurchaseDate.getMonth() + 1;
                 if (month < 10) month = `0${month}`;
+
+                let date: number | string = lastPurchaseDate.getDate();
+                if (date < 10) date = `0${date}`;
                 let _date: string =
-                  lastPurchaseDate.getFullYear() +
-                  "-" +
-                  month +
-                  "-" +
-                  lastPurchaseDate.getDate();
+                  lastPurchaseDate.getFullYear() + "-" + month + "-" + date;
                 const urlWithParam = new URL(APP_HOST + "/api.php");
-                urlWithParam.searchParams.append("op", "last_purchase_date");
+                urlWithParam.searchParams.append("op", "last_purchase_before");
                 urlWithParam.searchParams.append(
                   "storeId",
                   localStorage.getItem("storeId") || "0"
                 );
-                urlWithParam.searchParams.append("lastPurchaseDate", _date);
+                urlWithParam.searchParams.append("lastPurchaseBefore", _date);
                 window.open(urlWithParam.href);
               }
             }}

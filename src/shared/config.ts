@@ -1,7 +1,7 @@
 /**
  * Configurations used the application.
  */
-export const APP_VERSION = "2.2.15";
+export const APP_VERSION = "2.2.16";
 
 // Stores
 export class Stores {
@@ -16,7 +16,7 @@ export class Stores {
     5: "Vancouver",
     6: "Slave Lake",
     7: "Delta",
-    // 8: "Regina",
+    8: "Regina",
   };
 
   // Inactive Stores
