@@ -13,6 +13,7 @@ import BalanceSheet from "../components/reports/balance_sheet/BalanceSheet";
 import CustomerAgedSummary from "../components/reports/customer_aged_summary/CustomerAgedSummary";
 import CustomerStatement from "../components/reports/customer_statement/CustomerStatement";
 import CustomerSummary from "../components/reports/customer_summary/CustomerSummary";
+import ItemFrequency from "../components/inventory/ItemFrequency";
 
 const router = createBrowserRouter([
   {
@@ -198,6 +199,10 @@ const router = createBrowserRouter([
   {
     path: "/customer_summary",
     element: <CustomerSummary />,
+  },
+  {
+    path: "/item_frequency",
+    element: <ItemFrequency />,
   },
 ]);
 
