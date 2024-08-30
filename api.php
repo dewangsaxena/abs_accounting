@@ -226,6 +226,9 @@ if(isset($_POST['action'])) {
 
         /* Stats */ 
         case 'stats': $response = Stats::stats(); break;
+
+        /* Item Frequency */
+        case 'item_frequency': $response = Inventory::frequency($data['partId'], $data['startDate'], $data['endDate']); break;
     }
 
     // Send Response Back 
