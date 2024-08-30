@@ -41,7 +41,9 @@ export const frequencyDetailsStore = create<_FrequencyDetails>((set, get) => ({
   partId: null,
   startDate: null,
   endDate: null,
-  fetch: async () => {},
+  fetch: async () => {
+    console.log(get().partId, get().startDate, get().endDate);
+  },
   setDetail: (detailName: string, value: any) => {
     if (detailName === "partId") set({ partId: value });
     else if (detailName === "startDate") set({ startDate: value });
@@ -67,8 +69,10 @@ const SearchFilter = () => {
   const [selectedItem, setSelectedItem] = useState<string>("");
   const [itemSuggestions, setItemSuggestions] = useState<any>([]);
 
+  // Toast Handle
   const toast = useToast();
 
+  // Load options for Itme
   const loadOptionsForItem = (searchTerm: string) => {
     httpService
       .fetch<any[]>(
@@ -89,6 +93,11 @@ const SearchFilter = () => {
         }
       })
       .catch((_: any) => {});
+  };
+
+  // Click Handler
+  const onClickHandler = () => {
+    fetch();
   };
 
   return (
@@ -177,7 +186,7 @@ const SearchFilter = () => {
             </Box>
           </HStack>
           <_Button
-            onClick={() => {}}
+            onClick={onClickHandler}
             icon={<FaSearchengin />}
             label="Fetch Frequency"
             color="#BDB5D5"
