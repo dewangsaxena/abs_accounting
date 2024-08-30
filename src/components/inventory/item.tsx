@@ -195,7 +195,7 @@ const PricesCard = ({
                 width={"100%"}
                 leftElement={<CurrencyIcon></CurrencyIcon>}
                 onBlur={(event: any) => {
-                  if (event) {
+                  if (event && currentStoreId === storeId) {
                     if (identifier === undefined || identifier === "") {
                       alert("Item Identifier is Invalid.");
                     }
@@ -236,7 +236,7 @@ const PricesCard = ({
                 width={"100%"}
                 leftElement={<CurrencyIcon></CurrencyIcon>}
                 onBlur={(event: any) => {
-                  if (event) {
+                  if (event && storeId === currentStoreId) {
                     let preferredPrice = parseFloat(
                       event.target.value.trim() || 0
                     );
@@ -259,35 +259,35 @@ const PricesCard = ({
             <Box transform="translateY(-25%);" width="100%">
               <_InputLeftElement
                 onBlur={(event: any) => {
-                  if (event) {
+                  if (event && storeId === currentStoreId) {
                     if (identifier === undefined || identifier === "") {
                       alert("Item Identifier is Invalid.");
                       return;
                     }
-                  }
 
-                  // Buying Cost
-                  let buyingCost: number = parseFloat(
-                    event.target.value.trim() || "0"
-                  );
-
-                  let sellingPrice = buyingCost;
-
-                  // Calculate Profit Margin Percentage
-                  let profitMarginPercentage =
-                    getProfitMarginByItemIdentifierPrefix(
-                      profitMargins,
-                      identifier
+                    // Buying Cost
+                    let buyingCost: number = parseFloat(
+                      event.target.value.trim() || "0"
                     );
 
-                  let temp = (buyingCost * profitMarginPercentage) / 100;
-                  sellingPrice += temp;
+                    let sellingPrice = buyingCost;
 
-                  // Update Prices
-                  setField("buyingCost", [
-                    toFixed(buyingCost),
-                    toFixed(sellingPrice),
-                  ]);
+                    // Calculate Profit Margin Percentage
+                    let profitMarginPercentage =
+                      getProfitMarginByItemIdentifierPrefix(
+                        profitMargins,
+                        identifier
+                      );
+
+                    let temp = (buyingCost * profitMarginPercentage) / 100;
+                    sellingPrice += temp;
+
+                    // Update Prices
+                    setField("buyingCost", [
+                      toFixed(buyingCost),
+                      toFixed(sellingPrice),
+                    ]);
+                  }
                 }}
                 isDisabled={isDisabled}
                 key={currentStorePrices.buyingCost}
