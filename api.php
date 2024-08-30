@@ -228,7 +228,7 @@ if(isset($_POST['action'])) {
         case 'stats': $response = Stats::stats(); break;
 
         /* Item Frequency */
-        case 'item_frequency': $response = Inventory::frequency($data['partId'], $data['startDate'], $data['endDate']); break;
+        case 'item_frequency': $response = Inventory::frequency($data['partId'] ?? null, $data['startDate'] ?? null, $data['endDate'] ?? null); break;
     }
 
     // Send Response Back 

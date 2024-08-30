@@ -1580,9 +1580,12 @@ class Inventory {
      * @param start_date
      * @param end_date
      */
-    public static function frequency(int $part_id, string|null $start_date, string|null $end_date): array {
+    public static function frequency(int|null $part_id, string|null $start_date, string|null $end_date): array {
         $db = get_db_instance();
         try {
+            // Part Not Selected
+            if(is_numeric($part_id) === false) throw new Exception('Invalid Part Selected.');
+
             $report = [];
             $query = <<<'EOS'
             SELECT 
