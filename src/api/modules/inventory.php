@@ -1654,22 +1654,22 @@ class Inventory {
                 $month = intval($date_parts[1]);
 
                 // Add Year
-                if(!isset($details[$year])) $details[$year] = $month_template;
+                if(!isset($report[$year])) $report[$year] = $month_template;
 
                 foreach($details as $item) {
                     if($item['itemId'] === $part_id) {
 
                         // Quantity
-                        $details[$year][$month]['quantity'] += ($item['quantity']);
+                        $report[$year][$month]['quantity'] += ($item['quantity']);
 
                         // Selling Cost 
-                        $details[$year][$month]['sellingCost'] += ($item['pricePerItem'] * $item['quantity']);
+                        $report[$year][$month]['sellingCost'] += ($item['pricePerItem'] * $item['quantity']);
 
                         // Profit 
-                        $details[$year][$month]['profit'] += ($item['pricePerItem'] - $item['buyingCost']);
+                        $report[$year][$month]['profit'] += ($item['pricePerItem'] - $item['buyingCost']);
 
                         // C.O.G.S
-                        $details[$year][$month]['cogs'] += ($item['buyingCost'] * $item['quantity']);
+                        $report[$year][$month]['cogs'] += ($item['buyingCost'] * $item['quantity']);
                     }
                 }
             }
@@ -1677,7 +1677,7 @@ class Inventory {
             return ['status' => true, 'data' => $report];
         }
         catch(Exception $e) {
-            return ['status' => false];
+            return ['status' => false, 'message' => $e -> getMessage()];
         }
     }
 }
