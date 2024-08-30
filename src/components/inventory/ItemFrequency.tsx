@@ -20,20 +20,28 @@ import AutoSuggest from "react-autosuggest";
 import { AutoSuggestStyle, navBgColor } from "../../shared/style";
 import DatePicker from "react-datepicker";
 import { FaSearchengin } from "react-icons/fa6";
+import { ItemDetails } from "./itemStore";
 
 // HTTP Service.
 const httpService = new HTTPService();
+
+// Report
+interface Report {
+  year: AttributeType;
+}
 
 // Frequency
 interface FrequencyDetails {
   partId: number | null | undefined;
   startDate: Date | null | undefined;
   endDate: Date | null | undefined;
+  report?: Report;
 }
 
 interface _FrequencyDetails extends FrequencyDetails {
   fetch: () => any;
   setDetail: (detailName: string, value: any) => void;
+  setReport: (data: Report) => void;
 }
 
 // Freuqnecy Detail Store
@@ -48,6 +56,9 @@ export const frequencyDetailsStore = create<_FrequencyDetails>((set, get) => ({
     if (detailName === "partId") set({ partId: value });
     else if (detailName === "startDate") set({ startDate: value });
     else if (detailName === "endDate") set({ endDate: value });
+  },
+  setReport: (report: Report) => {
+    set({ report: report });
   },
 }));
 
@@ -75,13 +86,10 @@ const SearchFilter = () => {
   // Load options for Itme
   const loadOptionsForItem = (searchTerm: string) => {
     httpService
-      .fetch<any[]>(
-        { search_term: searchTerm, store_id: localStorage.getItem("storeId") },
-        "inv_item_details_for_transactions"
-      )
+      .fetch<ItemDetails[]>({ term: searchTerm }, "inv_fetch")
       .then((res: any) => {
         if (res.status === 200) {
-          let response: APIResponse<any[]> = res.data;
+          let response: APIResponse<ItemDetails[]> = res.data;
           if (response.status === true) {
             setItemSuggestions(buildSearchListForItem(response.data));
           } else
