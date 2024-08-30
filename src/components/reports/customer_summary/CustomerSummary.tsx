@@ -764,7 +764,7 @@ const Filter = ({
             isDisabled={lastPurchaseDate !== null ? false : true}
             onClick={() => {
               if (lastPurchaseDate) {
-                let month: number | string = lastPurchaseDate.getMonth();
+                let month: number | string = lastPurchaseDate.getMonth() + 1;
                 if (month < 10) month = `0${month}`;
                 let _date: string =
                   lastPurchaseDate.getFullYear() +
