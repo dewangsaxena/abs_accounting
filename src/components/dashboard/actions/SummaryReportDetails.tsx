@@ -191,8 +191,8 @@ const InventoryReport = () => {
       </HStack>
       <HStack>
         <Box width="10vw">
-          <Tooltip label="Cost of Goods Sold">
-            <Badge color="#C8375D" bgColor="#37C8A2" letterSpacing={2}>
+          <Tooltip label="Transaction Discount">
+            <Badge color="white" bgColor="#F88379" letterSpacing={2}>
               Discount
             </Badge>
           </Tooltip>
@@ -277,7 +277,7 @@ const InventoryReport = () => {
       <HStack>
         <Box width="10vw">
           <Tooltip label="Receipts discounts">
-            <Badge color="#F88379" bgColor="#79EEF8" letterSpacing={2}>
+            <Badge color="white" bgColor="#F88379" letterSpacing={2}>
               Receipt Discount
             </Badge>
           </Tooltip>
