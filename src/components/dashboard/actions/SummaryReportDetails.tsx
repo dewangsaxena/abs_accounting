@@ -350,7 +350,7 @@ const StatsUpdateMsg = () => {
 const Stats = () => {
   return (
     <Card>
-      <CardBody borderLeftColor={"#7BDB03"} borderLeftWidth={5}>
+      <CardBody borderLeftColor={"#5D3FD3"} borderLeftWidth={5}>
         <VStack align={"start"}>
           {/* Header */}
           <Header />
