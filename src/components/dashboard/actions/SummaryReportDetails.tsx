@@ -156,7 +156,12 @@ const InventoryReport = () => {
     <VStack align={"start"} width="100%">
       <HStack width="100%">
         <Box width="10vw">
-          <Badge bgColor="#04AF70" color="white" letterSpacing={2}>
+          <Badge
+            bgColor="#04AF70"
+            color="white"
+            letterSpacing={2}
+            borderRadius={0}
+          >
             Total Revenue
           </Badge>
         </Box>
@@ -166,7 +171,7 @@ const InventoryReport = () => {
       </HStack>
       <HStack>
         <Box width="10vw">
-          <Badge colorScheme="red" letterSpacing={2}>
+          <Badge colorScheme="red" letterSpacing={2} borderRadius={0}>
             Sales Return
           </Badge>
         </Box>
@@ -180,7 +185,7 @@ const InventoryReport = () => {
       <HStack>
         <Box width="10vw">
           <Tooltip label="Cost of Goods Sold">
-            <Badge colorScheme="orange" letterSpacing={2}>
+            <Badge colorScheme="orange" letterSpacing={2} borderRadius={0}>
               C.O.G.S
             </Badge>
           </Tooltip>
@@ -192,7 +197,12 @@ const InventoryReport = () => {
       <HStack>
         <Box width="10vw">
           <Tooltip label="Transaction Discount">
-            <Badge color="white" bgColor="#F88379" letterSpacing={2}>
+            <Badge
+              color="white"
+              bgColor="#F88379"
+              letterSpacing={2}
+              borderRadius={0}
+            >
               Discount
             </Badge>
           </Tooltip>
@@ -208,7 +218,7 @@ const InventoryReport = () => {
       <HStack>
         <Box width="10vw">
           <Tooltip label="Net income after deducting Sales Returns and C.O.G.S">
-            <Badge colorScheme="green" letterSpacing={2}>
+            <Badge colorScheme="green" letterSpacing={2} borderRadius={0}>
               Net Income
             </Badge>
           </Tooltip>
@@ -226,7 +236,12 @@ const InventoryReport = () => {
       <HStack>
         <Box width="10vw">
           <Tooltip label="Profit Margin Adjusted for Sales Return">
-            <Badge color="#5D3FD3" bgColor="#CCCCFF" letterSpacing={2}>
+            <Badge
+              color="#5D3FD3"
+              bgColor="#CCCCFF"
+              letterSpacing={2}
+              borderRadius={0}
+            >
               Profit Margin
             </Badge>
           </Tooltip>
@@ -244,7 +259,12 @@ const InventoryReport = () => {
       <HStack>
         <Box width="10vw">
           <Tooltip label="C.O.G.S Margin">
-            <Badge color="#376EC8" bgColor="#C89137" letterSpacing={2}>
+            <Badge
+              color="#14EB71"
+              bgColor="#1422EB"
+              letterSpacing={2}
+              borderRadius={0}
+            >
               C.O.G.S Margin
             </Badge>
           </Tooltip>
@@ -265,7 +285,12 @@ const InventoryReport = () => {
       <HStack>
         <Box width="10vw">
           <Tooltip label="Receipts Payments received">
-            <Badge color="#5D3FD3" bgColor="#B5D33F" letterSpacing={2}>
+            <Badge
+              color="#5D3FD3"
+              bgColor="#B5D33F"
+              letterSpacing={2}
+              borderRadius={0}
+            >
               Receipt Payments
             </Badge>
           </Tooltip>
@@ -277,7 +302,12 @@ const InventoryReport = () => {
       <HStack>
         <Box width="10vw">
           <Tooltip label="Receipts discounts">
-            <Badge color="white" bgColor="#F88379" letterSpacing={2}>
+            <Badge
+              color="white"
+              bgColor="#F88379"
+              letterSpacing={2}
+              borderRadius={0}
+            >
               Receipt Discount
             </Badge>
           </Tooltip>
