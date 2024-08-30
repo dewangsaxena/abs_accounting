@@ -41,7 +41,7 @@ interface FrequencyDetails {
 interface _FrequencyDetails extends FrequencyDetails {
   fetch: () => any;
   setDetail: (detailName: string, value: any) => void;
-  setReport: (data: Report) => void;
+  setReport: (data: Report | null) => void;
 }
 
 // Freuqnecy Detail Store
@@ -51,7 +51,12 @@ export const frequencyDetailsStore = create<_FrequencyDetails>((set, get) => ({
   endDate: null,
   report: null,
   fetch: async () => {
-    console.log(get().partId, get().startDate, get().endDate);
+    let payload = {
+      partId: get().partId,
+      startDate: get().startDate,
+      endDate: get().endDate,
+    };
+    return httpService.fetch(payload, "item_frequency");
   },
   setDetail: (detailName: string, value: any) => {
     if (detailName === "partId") set({ partId: value });
