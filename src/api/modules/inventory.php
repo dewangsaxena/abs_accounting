@@ -1573,5 +1573,112 @@ class Inventory {
             $store_id,
         );
     }
+
+    /**
+     * This method will fetch item frequency.
+     * @param part_id
+     * @param start_date
+     * @param end_date
+     */
+    public static function frequency(int $part_id, string|null $start_date, string|null $end_date): array {
+        $db = get_db_instance();
+        try {
+            $report = [];
+            $query = <<<'EOS'
+            SELECT 
+                `date`, 
+                `details` 
+            FROM 
+                sales_invoice 
+            WHERE 
+                store_id = :store_id 
+            AND 
+                `details` LIKE :part_id
+            EOS;
+
+            // Store Id
+            $store_id = intval($_SESSION['store_id']);
+
+            // Params
+            $params = [':store_id' => $store_id];
+            if(isset($start_date[0])) {
+                $query .= ' AND `date` >= :start_date ';
+                $params[':start_date'] = $start_date;
+            }
+            if(isset($end_date[0])) {
+                $query .= ' AND `date` <= :end_date ';
+                $params[':end_date'] = $end_date;
+            }
+
+            $params[':part_id'] = <<<EOS
+            %"itemId":$part_id,%
+            EOS;
+            $statement = $db -> prepare($query);
+            $statement -> execute($params);
+            $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
+
+            // Details Template
+            $details_template = [
+                'cogs' => 0,
+                'profit' => 0,
+                'sellingCost' => 0,
+                'quantity' => 0,
+            ];
+
+            // Months Template
+            $month_template = [
+                1 => $details_template,
+                2 => $details_template,
+                3 => $details_template,
+                4 => $details_template,
+                5 => $details_template,
+                6 => $details_template,
+                7 => $details_template,
+                8 => $details_template,
+                9 => $details_template,
+                10 => $details_template,
+                11 => $details_template,
+                12 => $details_template,
+            ];
+
+            foreach($result as $r) {
+
+                // Split Date By Month and Year
+                $date_parts = explode('-', $r['date']);
+
+                // Decode Details
+                $details = json_decode($r['details'], true, flags: JSON_THROW_ON_ERROR | JSON_NUMERIC_CHECK);
+
+                // Year and Month
+                $year = intval($date_parts[0]);
+                $month = intval($date_parts[1]);
+
+                // Add Year
+                if(!isset($details[$year])) $details[$year] = $month_template;
+
+                foreach($details as $item) {
+                    if($item['itemId'] === $part_id) {
+
+                        // Quantity
+                        $details[$year][$month]['quantity'] += ($item['quantity']);
+
+                        // Selling Cost 
+                        $details[$year][$month]['sellingCost'] += ($item['pricePerItem'] * $item['quantity']);
+
+                        // Profit 
+                        $details[$year][$month]['profit'] += ($item['pricePerItem'] - $item['buyingCost']);
+
+                        // C.O.G.S
+                        $details[$year][$month]['cogs'] += ($item['buyingCost'] * $item['quantity']);
+                    }
+                }
+            }
+
+            return ['status' => true, 'data' => $report];
+        }
+        catch(Exception $e) {
+            return ['status' => false];
+        }
+    }
 }
 ?>
