@@ -35,7 +35,7 @@ interface FrequencyDetails {
   partId: number | null | undefined;
   startDate: Date | null | undefined;
   endDate: Date | null | undefined;
-  report?: Report;
+  report: Report | null;
 }
 
 interface _FrequencyDetails extends FrequencyDetails {
@@ -49,6 +49,7 @@ export const frequencyDetailsStore = create<_FrequencyDetails>((set, get) => ({
   partId: null,
   startDate: null,
   endDate: null,
+  report: null,
   fetch: async () => {
     console.log(get().partId, get().startDate, get().endDate);
   },
@@ -57,21 +58,21 @@ export const frequencyDetailsStore = create<_FrequencyDetails>((set, get) => ({
     else if (detailName === "startDate") set({ startDate: value });
     else if (detailName === "endDate") set({ endDate: value });
   },
-  setReport: (report: Report) => {
+  setReport: (report: Report | null) => {
     set({ report: report });
   },
 }));
 
 // Search Filter
 const SearchFilter = () => {
-  const { startDate, endDate, fetch, setDetail } = frequencyDetailsStore(
-    (state) => ({
+  const { startDate, endDate, fetch, setDetail, setReport } =
+    frequencyDetailsStore((state) => ({
       startDate: state.startDate,
       endDate: state.endDate,
       fetch: state.fetch,
       setDetail: state.setDetail,
-    })
-  );
+      setReport: state.setReport,
+    }));
 
   const labelConfig: AttributeType = {
     fontSize: "0.7em",
@@ -105,7 +106,12 @@ const SearchFilter = () => {
 
   // Click Handler
   const onClickHandler = () => {
-    fetch();
+    fetch().then((res: any) => {
+      let response: APIResponse<Report> = res.data;
+      if (response.status && response.data) {
+        setReport(response.data);
+      } else setReport(null);
+    });
   };
 
   return (
