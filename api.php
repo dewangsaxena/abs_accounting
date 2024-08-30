@@ -69,7 +69,7 @@ if(isset($_GET['op'])) {
         else $message = 'Invalid Store.';
         die($message);
     }
-    else if($_GET['op'] === 'lastPurchaseBefore') {
+    else if($_GET['op'] === 'last_purchase_before') {
         Client::fetch_clients_by_last_purchase_date($_GET['lastPurchaseBefore'], intval($_GET['storeId']));
         die;
     }
