@@ -41,6 +41,8 @@ interface Report {
 // Frequency
 interface FrequencyDetails {
   partId: number | null | undefined;
+  identifier: string | null;
+  description: string | null;
   startDate: Date | null | undefined;
   endDate: Date | null | undefined;
   report: Report | null;
@@ -55,6 +57,8 @@ interface _FrequencyDetails extends FrequencyDetails {
 // Freuqnecy Detail Store
 export const frequencyDetailsStore = create<_FrequencyDetails>((set, get) => ({
   partId: null,
+  identifier: null,
+  description: null,
   startDate: null,
   endDate: null,
   report: null,
@@ -67,7 +71,11 @@ export const frequencyDetailsStore = create<_FrequencyDetails>((set, get) => ({
     return httpService.fetch(payload, "item_frequency");
   },
   setDetail: (detailName: string, value: any) => {
-    if (detailName === "partId") set({ partId: value });
+    if (detailName === "itemDetails") {
+      set({ partId: value.id });
+      set({identifier: value.identifier});
+      set({description: value.description});
+    }
     else if (detailName === "startDate") set({ startDate: value });
     else if (detailName === "endDate") set({ endDate: value });
   },
@@ -161,8 +169,8 @@ const SearchFilter = ({
                 }}
                 onSuggestionSelected={(_: any, { suggestionIndex }) => {
                   setDetail(
-                    "partId",
-                    itemSuggestions[suggestionIndex].value.id
+                    "itemDetails",
+                    itemSuggestions[suggestionIndex].value
                   );
                 }}
                 getSuggestionValue={(suggestion: any) => {
