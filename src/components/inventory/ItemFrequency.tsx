@@ -272,6 +272,12 @@ const YTDReport = () => {
   // Current Year
   const currentYear: number = new Date().getFullYear();
 
+  // Month Keys
+  let month: string[] = Object.keys(report || []);
+
+  let ytdCOGS: number = 0;
+  let;
+  for (let i = 0; i < month.length; ++i) {}
   return (
     <Card borderRadius={0}>
       <CardBody padding={2}>
