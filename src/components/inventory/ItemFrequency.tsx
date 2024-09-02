@@ -385,10 +385,7 @@ const ViewYearlyReport = ({ year }: { year: number }) => {
     <Card borderRadius={0}>
       <CardBody>
         <VStack>
-          <HStack>
-            <_Label {...labelStyleConfig}>Show Report for the year: </_Label>
-            <_Select></_Select>
-          </HStack>
+          <HStack></HStack>
         </VStack>
       </CardBody>
     </Card>
@@ -443,19 +440,26 @@ const Report = () => {
           </HStack>
           <_Divider margin={0} />
           <YTDReport />
-          <VStack>
-            <HStack>
-              <_Label {...labelStyleConfig}>Show Report for the year:</_Label>
-              <_Select
-                value={selectedYear}
-                fontSize="0.9em"
-                fontFamily={numberFont}
-                options={__years}
-                onChange={(event: any) => {
-                  setSelectedYear(parseInt(event.target.value));
-                }}
-              ></_Select>
+          <_Divider margin={0} />
+          <VStack width="100%" align="start">
+            <HStack width="100%">
+              <Box width="20%">
+                <_Label {...labelStyleConfig}>Show Report for the year:</_Label>
+              </Box>
+              <Box width="10%">
+                <_Select
+                  value={selectedYear}
+                  fontSize="0.9em"
+                  fontFamily={numberFont}
+                  options={__years}
+                  onChange={(event: any) => {
+                    setSelectedYear(parseInt(event.target.value));
+                  }}
+                ></_Select>
+              </Box>
             </HStack>
+            <_Divider margin={0} />
+            <ViewYearlyReport year={selectedYear} />
           </VStack>
         </VStack>
       </CardBody>
