@@ -3,6 +3,7 @@ import {
   Box,
   Card,
   CardBody,
+  Center,
   Grid,
   GridItem,
   HStack,
@@ -24,6 +25,7 @@ import { AutoSuggestStyle, navBgColor } from "../../shared/style";
 import DatePicker from "react-datepicker";
 import { FaSearchengin } from "react-icons/fa6";
 import { ItemDetails } from "./itemStore";
+import { Spinner } from "@chakra-ui/react";
 
 // HTTP Service.
 const httpService = new HTTPService();
@@ -288,11 +290,9 @@ const Report = () => {
 
 const ItemFrequency = () => {
   const [loadingState, setLoadingState] = useState<boolean>(false);
-  const { partId } = frequencyDetailsStore(
-    (state) => ({
-      partId: state.partId,
-    })
-  );
+  const { partId } = frequencyDetailsStore((state) => ({
+    partId: state.partId,
+  }));
   return (
     <Grid
       templateAreas={`"filter report"`}
@@ -305,9 +305,19 @@ const ItemFrequency = () => {
           setLoadingState={setLoadingState}
         />
       </GridItem>
-      {partId && <GridItem area={"report"}>
-        <Report />
-      </GridItem>}
+      <GridItem area={"report"}>
+        {loadingState && (
+          <Center>
+            <Spinner
+              speed="0.8s"
+              size="xl"
+              thickness="2px"
+              color="#10EFA7"
+              emptyColor="#EF1058"
+            ></Spinner>
+          </Center>
+        )}
+      </GridItem>
     </Grid>
   );
 };
