@@ -220,6 +220,7 @@ const SearchFilter = ({
                     if (newValue.trim() === "") {
                       setDetail("itemDetails", null);
                     }
+                    setReport(null);
                   },
                   disabled: false,
                 }}
