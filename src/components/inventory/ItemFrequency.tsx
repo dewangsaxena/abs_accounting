@@ -264,10 +264,16 @@ const SearchFilter = ({
 
 // Report for Current Year
 const YTDReport = () => {
+  const { report } = frequencyDetailsStore((state) => ({
+    report: state.report,
+  }));
+
+  // Current Year
+  const currentYear: number = new Date().getFullYear();
   return (
     <Card borderRadius={0}>
       <CardBody padding={2}>
-        <VStack>
+        <VStack align={"start"}>
           <HStack>
             <FaRegCalendarAlt color="purple" fontSize="1em" />
             <Badge
@@ -276,11 +282,14 @@ const YTDReport = () => {
               fontSize="0.9em"
               letterSpacing={2}
             >
-              YTD Details for {new Date().getFullYear()}
+              YTD Details for {currentYear}
             </Badge>
           </HStack>
           <_Divider margin={2} />
-          <_Label {...labelStyleConfig}>Total Purchased:</_Label>
+          <HStack>
+            <_Label {...labelStyleConfig}>Total Purchased:</_Label>
+            <Badge>{}</Badge>
+          </HStack>
         </VStack>
       </CardBody>
     </Card>
@@ -289,6 +298,9 @@ const YTDReport = () => {
 
 // Yearly Report
 const ViewYearlyReport = ({ year }: { year: number }) => {
+  const { report } = frequencyDetailsStore((state) => ({
+    report: state.report,
+  }));
   return (
     <Card>
       <CardBody></CardBody>
@@ -334,7 +346,7 @@ const Report = () => {
 };
 
 const labelStyleConfig: AttributeType = {
-  fontSize: "0.8em",
+  fontSize: "0.75em",
   letterSpacing: 2,
 };
 
