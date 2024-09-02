@@ -535,6 +535,7 @@ const Report = () => {
               borderRadius={0}
               fontSize={"0.8em"}
               letterSpacing={2}
+              fontFamily={numberFont}
             >
               {identifier}
             </Badge>
