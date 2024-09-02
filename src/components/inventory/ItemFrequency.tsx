@@ -2,6 +2,8 @@ import {
   Box,
   Card,
   CardBody,
+  Grid,
+  GridItem,
   HStack,
   useToast,
   VStack,
@@ -256,8 +258,7 @@ const Report = () => {
     description: state.description,
     report: state.report,
   }));
-  console.log(identifier);
-  return <Card>
+  return <Card borderLeftColor={"purple"} borderLeftWidth={5} borderRadius={0}>
       <CardBody>
         <_Label>{identifier}</_Label>
       </CardBody>
@@ -267,15 +268,15 @@ const Report = () => {
 const ItemFrequency = () => {
   const [loadingState, setLoadingState] = useState<boolean>(false);
   return (
-    <HStack>
-      <Box width="25%">
+    <Grid templateAreas={`"filter report"`}  gridTemplateColumns={'25% 75%'} gap={2}>
+      <GridItem area={"filter"}>
         <SearchFilter
           loadingState={loadingState}
           setLoadingState={setLoadingState}
         />
-      </Box>
-      <Box width="75%"><Report/></Box>
-    </HStack>
+      </GridItem>
+      <GridItem  area={"report"}><Report/></GridItem>
+    </Grid>
   );
 };
 
