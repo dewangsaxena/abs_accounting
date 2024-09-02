@@ -1,21 +1,23 @@
-<?php 
+<?php
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/utils.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/configurations.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/database.php";
 
-class Stats {
+class Stats
+{
 
     /**
      * This method will fetch stats. 
      * @return array
      */
-    public static function stats(): array {
+    public static function stats(): array
+    {
         try {
             $db = get_db_instance();
             $data = [];
 
             // Store Id
-            $store_id = intval($_SESSION['store_id']);  
+            $store_id = intval($_SESSION['store_id']);
 
             // Current Date
             $current_date = Utils::get_business_date($store_id);
@@ -31,33 +33,33 @@ class Stats {
             // Params
             $params = [':date' => $current_date, ':store_id' => $store_id];
 
-            $statement = $db -> prepare('SELECT sub_total, sub_total, txn_discount, cogs FROM sales_invoice WHERE `date` = :date AND store_id = :store_id;');
-            $statement -> execute($params);
-            $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
-            foreach($result as $r) {
+            $statement = $db->prepare('SELECT sub_total, sub_total, txn_discount, cogs FROM sales_invoice WHERE `date` = :date AND store_id = :store_id;');
+            $statement->execute($params);
+            $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($result as $r) {
                 $revenue += $r['sub_total'];
                 $cogs += $r['cogs'];
                 $discount += $r['txn_discount'];
             }
 
-            $statement = $db -> prepare('SELECT sub_total, sub_total, txn_discount, cogr FROM sales_return WHERE `date` = :date AND store_id = :store_id;');
-            $statement -> execute($params);
-            $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
-            foreach($result as $r) {
+            $statement = $db->prepare('SELECT sub_total, sub_total, txn_discount, cogr FROM sales_return WHERE `date` = :date AND store_id = :store_id;');
+            $statement->execute($params);
+            $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($result as $r) {
                 $sales_return += $r['sub_total'];
                 $cogs -= $r['cogr'];
                 $discount -= $r['txn_discount'];
             }
 
-            $statement = $db -> prepare('SELECT sum_total, total_discount FROM receipt WHERE `date` = :date AND store_id = :store_id;');
-            $statement -> execute($params);
-            $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
-            foreach($result as $r) {
+            $statement = $db->prepare('SELECT sum_total, total_discount FROM receipt WHERE `date` = :date AND store_id = :store_id;');
+            $statement->execute($params);
+            $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($result as $r) {
                 $receipt_payment += $r['sum_total'];
                 $receipt_discount += $r['total_discount'];
             }
 
-            $net_income = $revenue - $sales_return;
+            $net_income = $revenue - $sales_return - $cogs;
             $profit_margin = Utils::calculateProfitMargin($net_income, $cogs);
             $cogs_margin = Utils::calculateCOGSMargin($net_income, $cogs);
 
@@ -72,13 +74,10 @@ class Stats {
                 'receiptPayments' => $receipt_payment,
                 'receiptDiscount' => $receipt_discount,
             ];
-            
+
             return ['status' => true, 'data' => $data];
-        }
-        catch(Exception $e) {
-            return ['status' => false, 'message' => $e -> getMessage()];
+        } catch (Exception $e) {
+            return ['status' => false, 'message' => $e->getMessage()];
         }
     }
 }
-
-?>
