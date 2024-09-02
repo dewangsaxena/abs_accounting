@@ -379,8 +379,9 @@ const ViewYearlyReport = ({ year }: { year: number }) => {
   const { report } = frequencyDetailsStore((state) => ({
     report: state.report,
   }));
+
   return (
-    <Card>
+    <Card borderRadius={0}>
       <CardBody></CardBody>
     </Card>
   );
@@ -395,6 +396,13 @@ const Report = () => {
       report: state.report,
     })
   );
+
+  let years: string[];
+  if (report) {
+    years = Object.keys(report);
+    console.log(years);
+  }
+
   return (
     <Card borderLeftColor={"green"} borderLeftWidth={5} borderRadius={0}>
       <CardBody padding={2}>
@@ -417,6 +425,7 @@ const Report = () => {
           </HStack>
           <_Divider margin={0} />
           <YTDReport />
+          <ViewYearlyReport year={2024} />
         </VStack>
       </CardBody>
     </Card>
