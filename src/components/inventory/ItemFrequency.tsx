@@ -272,8 +272,6 @@ const YTDReport = () => {
   // Current Year
   const currentYear: number = new Date().getFullYear();
 
-  console.log(report[currentYear][1]);
-
   return (
     <Card borderRadius={0}>
       <CardBody padding={2}>
