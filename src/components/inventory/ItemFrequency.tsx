@@ -68,6 +68,7 @@ interface FrequencyDetails {
   startDate: Date | null | undefined;
   endDate: Date | null | undefined;
   report: Report | null;
+  existingQuantity: number;
 }
 
 interface _FrequencyDetails extends FrequencyDetails {
@@ -84,6 +85,7 @@ export const frequencyDetailsStore = create<_FrequencyDetails>((set, get) => ({
   startDate: null,
   endDate: null,
   report: null,
+  existingQuantity: 0,
   fetch: async () => {
     let payload = {
       partId: get().partId,
@@ -98,10 +100,12 @@ export const frequencyDetailsStore = create<_FrequencyDetails>((set, get) => ({
         set({ partId: value.id });
         set({ identifier: value.identifier });
         set({ description: value.description });
+        set({ existingQuantity: value.quantity });
       } else {
         set({ partId: null });
         set({ identifier: null });
         set({ description: null });
+        set({ existingQuantity: 0 });
       }
     } else if (detailName === "startDate") set({ startDate: value });
     else if (detailName === "endDate") set({ endDate: value });
@@ -500,13 +504,13 @@ const BreakDownByMonth = ({ year }: { year: number }) => {
 
 // Report
 const Report = () => {
-  const { identifier, description, report } = frequencyDetailsStore(
-    (state) => ({
+  const { identifier, description, existingQuantity, report } =
+    frequencyDetailsStore((state) => ({
       identifier: state.identifier,
       description: state.description,
+      existingQuantity: state.existingQuantity,
       report: state.report,
-    })
-  );
+    }));
 
   let yearsKeys: string[] = [];
   let __years: AttributeType = {};
@@ -544,6 +548,17 @@ const Report = () => {
             <_Label fontSize={"0.8em"} letterSpacing={2} color="green">
               <i>{description}</i>
             </_Label>
+            <_Label>~</_Label>
+            <Tooltip label="Existing Quantity">
+              <Badge
+                fontSize="0.8em"
+                letterSpacing={2}
+                fontWeight="bold"
+                bgColor="transparent"
+              >
+                {existingQuantity}
+              </Badge>
+            </Tooltip>
           </HStack>
           <_Divider margin={0} />
           {yearsKeys.length > 0 ? (
