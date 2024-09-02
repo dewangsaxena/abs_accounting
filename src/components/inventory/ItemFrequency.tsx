@@ -252,7 +252,9 @@ const SearchFilter = ({
 // Report 
 const Report = () => {
   const { report } = frequencyDetailsStore((state) => ({report: state.report}));
-  return <Card><CardBody></CardBody></Card>
+  return <Card><CardBody>
+    
+    </CardBody></Card>
 }
 
 const ItemFrequency = () => {
@@ -265,6 +267,7 @@ const ItemFrequency = () => {
           setLoadingState={setLoadingState}
         />
       </Box>
+      <Box width="75%"><Report/></Box>
     </HStack>
   );
 };
