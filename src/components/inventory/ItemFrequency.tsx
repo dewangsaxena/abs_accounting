@@ -430,25 +430,29 @@ const Report = () => {
             </_Label>
           </HStack>
           <_Divider margin={0} />
-          <VStack width="100%" align="start">
-            <HStack width="100%">
-              <Box width="20%">
-                <_Label {...labelStyleConfig}>Show Report for the year:</_Label>
-              </Box>
-              <Box width="10%">
-                <_Select
-                  value={selectedYear}
-                  fontSize="0.9em"
-                  fontFamily={numberFont}
-                  options={__years}
-                  onChange={(event: any) => {
-                    setSelectedYear(parseInt(event.target.value));
-                  }}
-                ></_Select>
-              </Box>
-            </HStack>
-            <ReportCard year={selectedYear} />
-          </VStack>
+          {yearsKeys.length > 0 && (
+            <VStack width="100%" align="start">
+              <HStack width="100%">
+                <Box width="20%">
+                  <_Label {...labelStyleConfig}>
+                    Show Report for the year:
+                  </_Label>
+                </Box>
+                <Box width="10%">
+                  <_Select
+                    value={selectedYear}
+                    fontSize="0.9em"
+                    fontFamily={numberFont}
+                    options={__years}
+                    onChange={(event: any) => {
+                      setSelectedYear(parseInt(event.target.value));
+                    }}
+                  ></_Select>
+                </Box>
+              </HStack>
+              <ReportCard year={selectedYear} />
+            </VStack>
+          )}
         </VStack>
       </CardBody>
     </Card>
