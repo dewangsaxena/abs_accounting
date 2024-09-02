@@ -15,6 +15,7 @@ import {
   _Button,
   _Divider,
   _Label,
+  _Select,
   HomeNavButton,
 } from "../../shared/Components";
 import {
@@ -382,7 +383,14 @@ const ViewYearlyReport = ({ year }: { year: number }) => {
 
   return (
     <Card borderRadius={0}>
-      <CardBody></CardBody>
+      <CardBody>
+        <VStack>
+          <HStack>
+            <_Label {...labelStyleConfig}>Show Report for the year: </_Label>
+            <_Select></_Select>
+          </HStack>
+        </VStack>
+      </CardBody>
     </Card>
   );
 };
@@ -397,11 +405,21 @@ const Report = () => {
     })
   );
 
-  let years: string[];
+  let yearsKeys: string[] = [];
+  let __years: AttributeType = {};
+
   if (report) {
-    years = Object.keys(report);
-    console.log(years);
+    yearsKeys = Object.keys(report);
+    for (let i = 0; i < yearsKeys.length; ++i) {
+      __years[yearsKeys[i]] = parseInt(yearsKeys[i]);
+    }
   }
+
+  const [selectedYear, setSelectedYear] = useState<number>(
+    yearsKeys.length > 0
+      ? parseInt(yearsKeys[yearsKeys.length - 1])
+      : new Date().getFullYear()
+  );
 
   return (
     <Card borderLeftColor={"green"} borderLeftWidth={5} borderRadius={0}>
@@ -425,7 +443,20 @@ const Report = () => {
           </HStack>
           <_Divider margin={0} />
           <YTDReport />
-          <ViewYearlyReport year={2024} />
+          <VStack>
+            <HStack>
+              <_Label {...labelStyleConfig}>Show Report for the year:</_Label>
+              <_Select
+                value={selectedYear}
+                fontSize="0.9em"
+                fontFamily={numberFont}
+                options={__years}
+                onChange={(event: any) => {
+                  setSelectedYear(parseInt(event.target.value));
+                }}
+              ></_Select>
+            </HStack>
+          </VStack>
         </VStack>
       </CardBody>
     </Card>
