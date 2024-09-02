@@ -126,8 +126,8 @@ const SearchFilter = ({
       });
   };
 
-  // Click Handler
-  const onClickHandler = () => {
+  // Fetch Item Frequency
+  const fetchItemFrequency = () => {
     setLoadingState(true);
     fetch().then((res: any) => {
       let response: APIResponse<Report> = res.data;
@@ -228,7 +228,7 @@ const SearchFilter = ({
           </HStack>
           <_Button
             isDisabled={loadingState}
-            onClick={onClickHandler}
+            onClick={fetchItemFrequency}
             icon={<FaSearchengin />}
             label="Fetch Frequency"
             color="#BDB5D5"
