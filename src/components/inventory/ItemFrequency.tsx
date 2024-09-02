@@ -26,12 +26,13 @@ import { useState } from "react";
 import { APIResponse, HTTPService } from "../../service/api-client";
 import {
   buildSearchListForItem,
+  calculateCOGSMargin,
   calculateProfitMargin,
   formatNumberWithDecimalPlaces,
   showToast,
 } from "../../shared/functions";
 import AutoSuggest from "react-autosuggest";
-import { AutoSuggestStyle, navBgColor } from "../../shared/style";
+import { AutoSuggestStyle, navBgColor, numberFont } from "../../shared/style";
 import DatePicker from "react-datepicker";
 import { FaSearchengin } from "react-icons/fa6";
 import { ItemDetails } from "./itemStore";
@@ -294,6 +295,13 @@ const YTDReport = () => {
     }
   }
 
+  const badgeStyleConfig: AttributeType = {
+    width: "100%",
+    textAlign: "right",
+    fontFamily: numberFont,
+    letterSpacing: 2,
+  };
+
   return (
     <Card borderRadius={0} width="40%">
       <CardBody padding={2}>
@@ -315,18 +323,8 @@ const YTDReport = () => {
               <_Label {...labelStyleConfig}>Total Purchased:</_Label>
             </Box>
             <Box width="50%">
-              <Badge width="100%" textAlign={"right"} bgColor="purple.100">
+              <Badge {...badgeStyleConfig} bgColor="purple.100">
                 $ {formatNumberWithDecimalPlaces(sellingCost, 2)}
-              </Badge>
-            </Box>
-          </HStack>
-          <HStack width="100%">
-            <Box width="50%">
-              <_Label {...labelStyleConfig}>C.O.G.S:</_Label>
-            </Box>
-            <Box width="50%">
-              <Badge width="100%" textAlign={"right"} colorScheme="orange">
-                $ {formatNumberWithDecimalPlaces(cogs, 2)}
               </Badge>
             </Box>
           </HStack>
@@ -335,7 +333,7 @@ const YTDReport = () => {
               <_Label {...labelStyleConfig}>Profit:</_Label>
             </Box>
             <Box width="50%">
-              <Badge width="100%" textAlign={"right"} colorScheme="green">
+              <Badge {...badgeStyleConfig} colorScheme="green">
                 $ {formatNumberWithDecimalPlaces(profit, 2)}
               </Badge>
             </Box>
@@ -345,9 +343,33 @@ const YTDReport = () => {
               <_Label {...labelStyleConfig}>Profit Margin:</_Label>
             </Box>
             <Box width="50%">
-              <Badge width="100%" textAlign={"right"} colorScheme="cyan">
+              <Badge {...badgeStyleConfig} colorScheme="cyan">
                 {formatNumberWithDecimalPlaces(
                   calculateProfitMargin(sellingCost, cogs),
+                  2
+                )}{" "}
+                %
+              </Badge>
+            </Box>
+          </HStack>
+          <HStack width="100%">
+            <Box width="50%">
+              <_Label {...labelStyleConfig}>C.O.G.S:</_Label>
+            </Box>
+            <Box width="50%">
+              <Badge {...badgeStyleConfig} colorScheme="orange">
+                $ {formatNumberWithDecimalPlaces(cogs, 2)}
+              </Badge>
+            </Box>
+          </HStack>
+          <HStack width="100%">
+            <Box width="50%">
+              <_Label {...labelStyleConfig}>C.O.G.S Margin:</_Label>
+            </Box>
+            <Box width="50%">
+              <Badge {...badgeStyleConfig} colorScheme="orange">
+                {formatNumberWithDecimalPlaces(
+                  calculateCOGSMargin(sellingCost, cogs),
                   2
                 )}{" "}
                 %
@@ -359,7 +381,7 @@ const YTDReport = () => {
               <_Label {...labelStyleConfig}>Quantity Sold:</_Label>
             </Box>
             <Box width="50%">
-              <Badge width="100%" textAlign={"right"} colorScheme="teal">
+              <Badge {...badgeStyleConfig} colorScheme="teal">
                 {quantity}
               </Badge>
             </Box>
