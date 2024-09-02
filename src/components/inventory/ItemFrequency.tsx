@@ -21,6 +21,7 @@ import {
 import {
   AttributeType,
   AUTO_SUGGEST_MIN_INPUT_LENGTH,
+  MONTHS,
   UNKNOWN_SERVER_ERROR_MSG,
 } from "../../shared/config";
 import { useState } from "react";
@@ -377,10 +378,103 @@ const ReportCard = ({ year }: { year: number }) => {
               </Badge>
             </Box>
           </HStack>
+          <_Divider margin={2} />
+          <BreakDownByMonth year={year} />
         </VStack>
       </CardBody>
     </Card>
   );
+};
+
+// Months
+const MONTHS_INDEX = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+/**
+ * Breakdown by month
+ * @param year
+ * @returns
+ */
+const BreakDownByMonth = ({ year }: { year: number }) => {
+  const { report } = frequencyDetailsStore((state) => ({
+    report: state.report,
+  }));
+
+  if (report) {
+    return (
+      <VStack align={"start"} width="100%">
+        {MONTHS_INDEX.map((month: number) => {
+          return (
+            <HStack width="100%">
+              <Box width="20%">
+                <_Label {...labelStyleConfig}>{MONTHS[month]}</_Label>
+              </Box>
+              <Box width="80%">
+                <VStack width="100%" align="start">
+                  {/* Selling Cost  */}
+                  <HStack width="100%">
+                    <Box width="50%">
+                      <Badge
+                        {...labelStyleConfig}
+                        borderRadius={0}
+                        width="100%"
+                        colorScheme="green"
+                      >
+                        Selling Cost
+                      </Badge>
+                    </Box>
+                    <Box width="100%">
+                      <Badge
+                        {...labelStyleConfig}
+                        width="100%"
+                        bgColor="transparent"
+                        fontFamily={numberFont}
+                        letterSpacing={2}
+                      >
+                        ${" "}
+                        {formatNumberWithDecimalPlaces(
+                          report[year][month].sellingCost,
+                          2
+                        )}
+                      </Badge>
+                    </Box>
+                  </HStack>
+
+                  {/* Selling Cost  */}
+                  <HStack width="100%">
+                    <Box width="50%">
+                      <Badge
+                        width="100%"
+                        {...labelStyleConfig}
+                        borderRadius={0}
+                        colorScheme="orange"
+                      >
+                        C.O.G.S
+                      </Badge>
+                    </Box>
+                    <Box width="100%">
+                      <Badge
+                        width="100%"
+                        {...labelStyleConfig}
+                        bgColor="transparent"
+                        fontFamily={numberFont}
+                        letterSpacing={2}
+                      >
+                        ${" "}
+                        {formatNumberWithDecimalPlaces(
+                          report[year][month].cogs,
+                          2
+                        )}
+                      </Badge>
+                    </Box>
+                  </HStack>
+                </VStack>
+              </Box>
+            </HStack>
+          );
+        })}
+      </VStack>
+    );
+  } else return <></>;
 };
 
 // Report
