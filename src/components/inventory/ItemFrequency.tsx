@@ -25,9 +25,17 @@ import { ItemDetails } from "./itemStore";
 // HTTP Service.
 const httpService = new HTTPService();
 
+// Yearly Report
+interface YearlyReport {
+  cogs: number;
+  profit: number;
+  sellingCost: number;
+  quantity: number;
+}
+
 // Report
 interface Report {
-  year: AttributeType;
+  year: AttributeType<YearlyReport>;
 }
 
 // Frequency
@@ -97,7 +105,7 @@ const SearchFilter = ({
 
   // Load options for Itme
   const loadOptionsForItem = (searchTerm: string) => {
-    setLoadingState(true);
+
     httpService
       .fetch<ItemDetails[]>({ term: searchTerm }, "inv_fetch")
       .then((res: any) => {
@@ -113,18 +121,23 @@ const SearchFilter = ({
             );
         }
       })
-      .catch((_: any) => {}).finally (() => {
-        setLoadingState(false);
+      .catch((err: any) => {
+        showToast(toast, false, err.message || UNKNOWN_SERVER_ERROR_MSG);
       });
   };
 
   // Click Handler
   const onClickHandler = () => {
+    setLoadingState(true);
     fetch().then((res: any) => {
       let response: APIResponse<Report> = res.data;
       if (response.status && response.data) {
         setReport(response.data);
       } else setReport(null);
+    }).catch((err:any) => {
+      showToast(toast, false, err.message || UNKNOWN_SERVER_ERROR_MSG);
+    }).finally(() => {
+      setLoadingState(false);
     });
   };
 
