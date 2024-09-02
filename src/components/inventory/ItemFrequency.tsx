@@ -92,9 +92,15 @@ export const frequencyDetailsStore = create<_FrequencyDetails>((set, get) => ({
   },
   setDetail: (detailName: string, value: any) => {
     if (detailName === "itemDetails") {
-      set({ partId: value.id });
-      set({ identifier: value.identifier });
-      set({ description: value.description });
+      if (value) {
+        set({ partId: value.id });
+        set({ identifier: value.identifier });
+        set({ description: value.description });
+      } else {
+        set({ partId: null });
+        set({ identifier: null });
+        set({ description: null });
+      }
     } else if (detailName === "startDate") set({ startDate: value });
     else if (detailName === "endDate") set({ endDate: value });
   },
