@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 /**
  * This module will implements method to manage inventory.
  * @author Dewang Saxena, <dewang2610@gmail.com>
@@ -14,9 +15,10 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/utils.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/csrf.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/store_details.php";
 
-class Inventory {
-    
-    /* Operation Tags */ 
+class Inventory
+{
+
+    /* Operation Tags */
     public const ADD = 'inv_add';
     public const UPDATE = 'inv_update';
     public const FETCH = 'inv_fetch';
@@ -36,14 +38,26 @@ class Inventory {
      * Stores where flyer discount is eligible.
      */
     private const FLYER_APPLICABLE_STORES = [
-        StoreDetails::EDMONTON, 
+        StoreDetails::EDMONTON,
     ];
 
     // Flyer Items
     private const FLYER_ITEMS = [
-        8080, 7364, 19730, 12862, 
-        15003, 18937, 14998, 7319, 13394,
-        9178, 6802, 2790, 23708, 4892, 23588
+        8080,
+        7364,
+        19730,
+        12862,
+        15003,
+        18937,
+        14998,
+        7319,
+        13394,
+        9178,
+        6802,
+        2790,
+        23708,
+        4892,
+        23588
     ];
 
     // Flyer Eligible
@@ -62,7 +76,8 @@ class Inventory {
      * @param store_id
      * @return bool
      */
-    private static function check_item_eligible_for_discount(int $item_id, int $store_id): bool {
+    private static function check_item_eligible_for_discount(int $item_id, int $store_id): bool
+    {
         return in_array($store_id, self::FLYER_APPLICABLE_STORES) && in_array($item_id, self::FLYER_ITEMS);
     }
 
@@ -74,7 +89,8 @@ class Inventory {
      * @param buying_cost
      * @return array
      */
-    private static function add(PDO &$db, array $values, int $initial_quantity, float $buying_cost): array {
+    private static function add(PDO &$db, array $values, int $initial_quantity, float $buying_cost): array
+    {
         $query = <<<'EOS'
         INSERT INTO
             items
@@ -118,17 +134,17 @@ class Inventory {
             :reorder_quantity
         );
         EOS;
-        $statement = $db -> prepare($query);
-        $statement -> execute($values);
+        $statement = $db->prepare($query);
+        $statement->execute($values);
 
         // Last Insert ID
-        $last_insert_id = $db -> lastInsertId();
+        $last_insert_id = $db->lastInsertId();
 
         // Unable to Add Item
-        if($last_insert_id === false) return ['status' => false];
+        if ($last_insert_id === false) return ['status' => false];
 
         // Add to inventory
-        if($initial_quantity > 0 && $buying_cost > 0) {
+        if ($initial_quantity > 0 && $buying_cost > 0) {
             // Build Params
             $params = [
                 0 => [
@@ -144,13 +160,12 @@ class Inventory {
 
             // Store id 
             $store_id = intval($_SESSION['store_id']);
-            
+
             // Adjust Inventory
             $ret = self::adjust_inventory($params, $store_id, $db);
-            if($ret['status'] === true) return ['status' => true];
+            if ($ret['status'] === true) return ['status' => true];
             else return $ret;
-        }
-        else return ['status' => $last_insert_id !== false];
+        } else return ['status' => $last_insert_id !== false];
     }
 
     /**
@@ -159,17 +174,18 @@ class Inventory {
      * @param values 
      * @return array
      */
-    private static function update(PDO &$db, array $values): array {
+    private static function update(PDO &$db, array $values): array
+    {
 
         // Item Id 
         $item_id = $values[':id'];
 
         /* Check for Latest Copy of Items Details */
         $query = 'SELECT `category`, prices, modified FROM items WHERE id = :id;';
-        $statement = $db -> prepare($query);
-        $statement -> execute([':id' => $item_id]);
-        $record = $statement -> fetchAll(PDO::FETCH_ASSOC);
-        if($record[0]['modified'] != $values[':last_modified_timestamp']) return [
+        $statement = $db->prepare($query);
+        $statement->execute([':id' => $item_id]);
+        $record = $statement->fetchAll(PDO::FETCH_ASSOC);
+        if ($record[0]['modified'] != $values[':last_modified_timestamp']) return [
             'message' => 'Cannot Update Stale Copy of Item. Reload the item and try again!.',
             'status' => false,
         ];
@@ -187,11 +203,11 @@ class Inventory {
         $new_buying_cost = $new_prices[$store_id]['buyingCost'];
 
         // Only Adjust for Inventory Type
-        if($record[0]['category'] === CATEGORY_INVENTORY && $old_buying_cost !== $new_buying_cost) {
+        if ($record[0]['category'] === CATEGORY_INVENTORY && $old_buying_cost !== $new_buying_cost) {
 
             // Fetch Inventory Quantity
             $inventory_details = self::fetch_item_inventory_details_by_id([$item_id], $store_id, $db);
-            if($inventory_details['status'] !== true) throw new Exception($inventory_details['message']);
+            if ($inventory_details['status'] !== true) throw new Exception($inventory_details['message']);
             else $inventory_details = $inventory_details['data'];
 
             // Existing Quantity
@@ -206,7 +222,7 @@ class Inventory {
             // Remove Old Value
             BalanceSheetActions::update_account_value(
                 $bs,
-                AccountsConfig::INVENTORY_A, 
+                AccountsConfig::INVENTORY_A,
                 -$existing_value
             );
 
@@ -214,7 +230,7 @@ class Inventory {
             $new_value = $existing_quantity * $new_buying_cost;
             BalanceSheetActions::update_account_value(
                 $bs,
-                AccountsConfig::INVENTORY_A, 
+                AccountsConfig::INVENTORY_A,
                 $new_value
             );
 
@@ -249,9 +265,9 @@ class Inventory {
             modified = :last_modified_timestamp;
         EOS;
 
-        $statement = $db -> prepare($query);
-        $is_successful = $statement -> execute($values);
-        return ['status' => ($is_successful === true && $statement -> rowCount () > 0)];
+        $statement = $db->prepare($query);
+        $is_successful = $statement->execute($values);
+        return ['status' => ($is_successful === true && $statement->rowCount() > 0)];
     }
 
     /**
@@ -259,16 +275,17 @@ class Inventory {
      * @param prices
      * @return bool|string
      */
-    private static function validate_prices(array &$prices): bool|string {
+    private static function validate_prices(array &$prices): bool|string
+    {
         // Fetch Stores 
         $stores = array_keys($prices);
 
-        foreach($stores as $store) {
-            if(!is_numeric($prices[$store]['sellingPrice'] ?? null) || $prices[$store]['sellingPrice'] < 0) return 'Invalid Selling Price';
-            else if(!is_numeric($prices[$store]['buyingCost'] ?? null) || $prices[$store]['buyingCost'] < 0) return 'Invalid Buying Cost';
+        foreach ($stores as $store) {
+            if (!is_numeric($prices[$store]['sellingPrice'] ?? null) || $prices[$store]['sellingPrice'] < 0) return 'Invalid Selling Price';
+            else if (!is_numeric($prices[$store]['buyingCost'] ?? null) || $prices[$store]['buyingCost'] < 0) return 'Invalid Buying Cost';
             else {
                 /* Preferred Price can be left blank */
-                if(!is_numeric($prices[$store]['preferredPrice'] ?? null)) $prices[$store]['preferredPrice'] = 0;
+                if (!is_numeric($prices[$store]['preferredPrice'] ?? null)) $prices[$store]['preferredPrice'] = 0;
                 else if ($prices[$store]['preferredPrice'] < 0) return 'Invalid Preferred Price';
             }
 
@@ -284,49 +301,48 @@ class Inventory {
      * This method will add/update item.
      * @return string
      */
-    public static function process_item(array $data): array {
+    public static function process_item(array $data): array
+    {
         try {
             // Current store
             $store_id = $_SESSION['store_id'];
-            
+
             // Create DB Instance
             $db = get_db_instance();
 
             // Begin Transaction
-            $db -> beginTransaction();
+            $db->beginTransaction();
 
             // Sanitize Values
             $data = Utils::sanitize_values($data);
-        
+
             // Validate Prices
             $ret = self::validate_prices($data['prices']);
-            if($ret !== true) throw new Exception($ret);
+            if ($ret !== true) throw new Exception($ret);
 
             // Validate Field Values
-            if(!isset($data['identifier'][0])) throw new Exception('Identifier is Invalid.');
-            else if(!isset($data['description'][0])) throw new Exception('Description is Invalid.');
-            else if($data['category'] != 0 && $data['category'] != 1) throw new Exception('Category is Invalid.');
-            else if($data['isCore'] != 0 && $data['isCore'] != 1) throw new Exception('Core is Invalid.');
-            else if(!isset($data['unit'][0])) throw new Exception('Unit is Invalid.');
-            if(is_numeric($data['reorderQuantity'][$store_id] ?? null)) {
+            if (!isset($data['identifier'][0])) throw new Exception('Identifier is Invalid.');
+            else if (!isset($data['description'][0])) throw new Exception('Description is Invalid.');
+            else if ($data['category'] != 0 && $data['category'] != 1) throw new Exception('Category is Invalid.');
+            else if ($data['isCore'] != 0 && $data['isCore'] != 1) throw new Exception('Core is Invalid.');
+            else if (!isset($data['unit'][0])) throw new Exception('Unit is Invalid.');
+            if (is_numeric($data['reorderQuantity'][$store_id] ?? null)) {
                 $data['reorderQuantity'][$store_id] = intval($data['reorderQuantity'][$store_id]);
-                if($data['reorderQuantity'][$store_id] < 0) throw new Exception('Reorder quantity is Invalid.');
-            }
-            else $data['reorderQuantity'][$store_id] = 0;
+                if ($data['reorderQuantity'][$store_id] < 0) throw new Exception('Reorder quantity is Invalid.');
+            } else $data['reorderQuantity'][$store_id] = 0;
 
             // Validate Initial Quantity
-            if($data['action'] === 'add') {
-                if(is_numeric($data['initialQuantity'] ?? null)) {
+            if ($data['action'] === 'add') {
+                if (is_numeric($data['initialQuantity'] ?? null)) {
                     $data['initialQuantity'] = intval($data['initialQuantity']);
-                    if($data['initialQuantity'] < 0) throw new Exception('Reorder quantity is Invalid.');
-                }
-                else $data['initialQuantity'] = 0;
+                    if ($data['initialQuantity'] < 0) throw new Exception('Reorder quantity is Invalid.');
+                } else $data['initialQuantity'] = 0;
             }
 
             // Remove Tag
             $data['identifier'] = str_replace(self::ITEM_DETAILS_TAG, '', $data['identifier']);
             $data['description'] = str_replace(self::ITEM_DETAILS_TAG, '', $data['description']);
-            
+
             // Values
             $values = [
                 ':code' => "{$data['identifier']} {$data['description']}",
@@ -346,19 +362,18 @@ class Inventory {
                 ':additional_information' => $data['additionalInformation'],
                 ':reorder_quantity' => json_encode($data['reorderQuantity'], JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
             ];
-            
+
             // Select Action
-            if($data['action'] === 'inv_add') {
+            if ($data['action'] === 'inv_add') {
                 $is_inactive = $data['isInactive'] ?? [];
-                if(!array_key_exists($store_id, $is_inactive)) $is_inactive[$store_id] = 0;
+                if (!array_key_exists($store_id, $is_inactive)) $is_inactive[$store_id] = 0;
                 $values[':is_inactive'] = json_encode($is_inactive, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
                 $success_status = self::add($db, $values, $data['initialQuantity'], $data['prices'][$store_id]['buyingCost']);
-            }
-            else if($data['action'] === 'inv_update') {
+            } else if ($data['action'] === 'inv_update') {
                 $item_id = intval($data['id']);
                 $values[':id'] = $item_id;
                 $is_inactive = $data['isInactive'] ?? [];
-                if(!array_key_exists($store_id, $data['isInactive'])) $is_inactive[$store_id] = 0;
+                if (!array_key_exists($store_id, $data['isInactive'])) $is_inactive[$store_id] = 0;
 
                 // Last Modified Timestamp
                 $values[':last_modified_timestamp'] = $data['lastModifiedTimestamp'];
@@ -366,25 +381,22 @@ class Inventory {
                 // Convert to JSON 
                 $values[':is_inactive'] = json_encode($is_inactive, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
                 $response = self::update($db, $values);
-                if($response['status'] === false) throw new Exception($response['message']);
+                if ($response['status'] === false) throw new Exception($response['message']);
 
                 // Set Flag
                 $success_status = $response['status'];
-            }
-            else $success_status = false;
+            } else $success_status = false;
 
             // Assert
             assert_success();
-            
-            if($success_status) {
-                if($db -> inTransaction()) $db -> commit();
+
+            if ($success_status) {
+                if ($db->inTransaction()) $db->commit();
                 return ['status' => true];
-            }
-            else throw new Exception('Unable to Process Item.');
-        }
-        catch(Throwable $th) {
-            if($db -> inTransaction()) $db -> rollBack();
-            return ['status' => false, 'message' => $th -> getMessage()];
+            } else throw new Exception('Unable to Process Item.');
+        } catch (Throwable $th) {
+            if ($db->inTransaction()) $db->rollBack();
+            return ['status' => false, 'message' => $th->getMessage()];
         }
     }
 
@@ -396,24 +408,25 @@ class Inventory {
      * @param db
      * @return array 
      */
-    public static function fetch(array|null $params, int $store_id, bool $set_id_as_index=false, PDO &$db=null) : array {
+    public static function fetch(array|null $params, int $store_id, bool $set_id_as_index = false, PDO &$db = null): array
+    {
         try {
             // Get DB Instance
-            if(is_null($db)) $db = get_db_instance();
+            if (is_null($db)) $db = get_db_instance();
 
             // Validate Store Id
-            if(!is_numeric($store_id)) throw new Exception('Invalid Store Id.');
+            if (!is_numeric($store_id)) throw new Exception('Invalid Store Id.');
 
             // Fetch Profit Margins 
             $profit_margins = self::fetch_profit_margins($store_id)['profitMargins'];
-            
+
             // Search Params
             $values = [];
 
             // Flag 
             $exclude_inactive = 0;
 
-            if(isset($params['id'])) {
+            if (isset($params['id'])) {
                 $query = <<<'EOS'
                 SELECT * FROM 
                     items 
@@ -421,8 +434,7 @@ class Inventory {
                     id = :id;
                 EOS;
                 $values[':id'] = $params['id'];
-            }
-            else if(isset($params['item_ids'])) {
+            } else if (isset($params['item_ids'])) {
 
                 // Build Query
                 $ret_value = Utils::mysql_in_placeholder(
@@ -440,8 +452,7 @@ class Inventory {
                 // Set Params
                 $query = $ret_value['query'];
                 $values = $ret_value['values'];
-            }
-            else if(isset($params['term'])) {
+            } else if (isset($params['term'])) {
                 $query = <<<'EOS'
                 SELECT 
                     * 
@@ -452,37 +463,36 @@ class Inventory {
                     OR description LIKE :term
                     OR oem LIKE :term
                 EOS;
-                $values[':term'] = '%'. $params['term']. '%';
+                $values[':term'] = '%' . $params['term'] . '%';
                 $exclude_inactive = intval($params['exclude_inactive'] ?? 0);
 
                 // Add Limit
                 $query .= ' LIMIT 100;';
-            }
-            else throw new Exception('Invalid Request.');
+            } else throw new Exception('Invalid Request.');
 
             // Fetch Data
-            $statement = $db -> prepare($query);
-            $statement -> execute($values);
-            $records = $statement -> fetchAll(PDO::FETCH_ASSOC);
+            $statement = $db->prepare($query);
+            $statement->execute($values);
+            $records = $statement->fetchAll(PDO::FETCH_ASSOC);
             $items = [];
             $items_id = [];
 
-            foreach($records as $record) {
+            foreach ($records as $record) {
 
                 // Is Inactive
                 $is_inactive = json_decode($record['is_inactive'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
 
                 // Add Key if not exists
-                if(!array_key_exists($store_id, $is_inactive)) $is_inactive[$store_id] = 0;
+                if (!array_key_exists($store_id, $is_inactive)) $is_inactive[$store_id] = 0;
 
-                /* Include Only Active Items */ 
-                if(($exclude_inactive === 1 && $is_inactive[$store_id] === $exclude_inactive) === false) {
+                /* Include Only Active Items */
+                if (($exclude_inactive === 1 && $is_inactive[$store_id] === $exclude_inactive) === false) {
                     $item_id = $record['id'];
-                    $items_id[]= $item_id;
-                    $items[$item_id]= [
+                    $items_id[] = $item_id;
+                    $items[$item_id] = [
                         'id' => $item_id,
-                        'identifier' => self::ITEM_DETAILS_TAG. $record['identifier'],
-                        'description' => self::ITEM_DETAILS_TAG. $record['description'],
+                        'identifier' => self::ITEM_DETAILS_TAG . $record['identifier'],
+                        'description' => self::ITEM_DETAILS_TAG . $record['description'],
                         'oem' => $record['oem'],
                         'category' => $record['category'],
                         'unit' => $record['unit'],
@@ -497,9 +507,9 @@ class Inventory {
                         'isCore' => $record['is_core'],
                         'memo' => $record['memo'],
                         'additionalInformation' => $record['additional_information'],
-                        'reorderQuantity' => json_decode($record['reorder_quantity'], associative:true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
+                        'reorderQuantity' => json_decode($record['reorder_quantity'], associative: true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
                         'profitMargins' => $profit_margins,
-                        /* Default */ 
+                        /* Default */
                         'quantity' => 0,
                         'quantitiesAllStores' => [],
                         'lastModifiedTimestamp' => $record['modified'],
@@ -509,26 +519,26 @@ class Inventory {
                         'column' => '',
                     ];
 
-                    if(self::FLYER_ELIGIBLE) {
+                    if (self::FLYER_ELIGIBLE) {
                         /* Check for Flyer Specific Discount Eligible */
-                        if(self::check_item_eligible_for_discount($item_id, $store_id)) $items[$item_id]['disableDiscount'] = true;
+                        if (self::check_item_eligible_for_discount($item_id, $store_id)) $items[$item_id]['disableDiscount'] = true;
                     }
 
                     // Add Is Inactive 
                     $items[$item_id]['isInactive'] = $is_inactive;
                 }
             }
-            
+
             // Fetch Inventory Details for Items...
-            if(count($items) > 0) {
+            if (count($items) > 0) {
                 $inventory_details = self::fetch_item_inventory_details_by_id($items_id, db: $db);
-                if(count($inventory_details['data']) > 0) {
-                    
+                if (count($inventory_details['data']) > 0) {
+
                     $all_items = $inventory_details['data'];
                     $items_keys = array_keys($all_items);
-                    foreach($items_keys as $item_id) {
+                    foreach ($items_keys as $item_id) {
                         $current_item = $all_items[$item_id];
-                        if(isset($current_item[$store_id]) === true) {
+                        if (isset($current_item[$store_id]) === true) {
                             $item_details_current_store = $current_item[$store_id];
                             $items[$item_id]['quantity'] = $item_details_current_store['quantity'];
                             $items[$item_id]['aisle'] = $item_details_current_store['aisle'] ?? '';
@@ -539,28 +549,26 @@ class Inventory {
                         // Add Details for All Stores
                         $all_stores = array_keys($current_item);
                         $quantities_all_stores = [];
-                        foreach($all_stores as $store) {
+                        foreach ($all_stores as $store) {
                             $quantities_all_stores[$store] = $current_item[$store]['quantity'] ?? 0;
                         }
                         $items[$item_id]['quantitiesAllStores'] = $quantities_all_stores;
                     }
                 }
             }
-            
+
             // Format results
             $formatted_results = [];
-            if($set_id_as_index) {
-                foreach($items as $item) {
+            if ($set_id_as_index) {
+                foreach ($items as $item) {
                     $id = $item['id'];
                     $formatted_results[$id] = $item;
                 }
-            }
-            else foreach($items as $item) $formatted_results[]= $item;
-            
+            } else foreach ($items as $item) $formatted_results[] = $item;
+
             return ['status' => true, 'data' => $formatted_results];
-        }
-        catch(Throwable $th) {
-            return ['status' => false, 'message' => $th -> getMessage()];
+        } catch (Throwable $th) {
+            return ['status' => false, 'message' => $th->getMessage()];
         }
     }
 
@@ -570,22 +578,22 @@ class Inventory {
      * @param db
      * @return array
      */
-    public static function fetch_profit_margins(int $store_id, PDO &$db=null): array {
+    public static function fetch_profit_margins(int $store_id, PDO &$db = null): array
+    {
         try {
-            if(is_null($db)) $db = get_db_instance();
-            $statement = $db -> prepare('SELECT profit_margins, modified FROM store_details WHERE id = :store_id;');
-            $statement -> execute([':store_id' => $store_id]);
-            $records = $statement -> fetchAll(PDO::FETCH_ASSOC);
-            if(!isset($records[0]['profit_margins'])) throw new Exception('Unable to fetch Price Margins.');
+            if (is_null($db)) $db = get_db_instance();
+            $statement = $db->prepare('SELECT profit_margins, modified FROM store_details WHERE id = :store_id;');
+            $statement->execute([':store_id' => $store_id]);
+            $records = $statement->fetchAll(PDO::FETCH_ASSOC);
+            if (!isset($records[0]['profit_margins'])) throw new Exception('Unable to fetch Price Margins.');
             $profit_margins = json_decode($records[0]['profit_margins'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
 
             // Set Default Key
-            if(!isset($profit_margins[DEFAULT_PROFIT_MARGIN_KEY])) $profit_margins[DEFAULT_PROFIT_MARGIN_KEY] = 0;
-            
+            if (!isset($profit_margins[DEFAULT_PROFIT_MARGIN_KEY])) $profit_margins[DEFAULT_PROFIT_MARGIN_KEY] = 0;
+
             assert_success();
             return ['profitMargins' => $profit_margins, 'lastModifiedTimestamp' => $records[0]['modified']];
-        }
-        catch(Throwable $th) {
+        } catch (Throwable $th) {
 
             // Default 
             return ['profitMargins' => [DEFAULT_PROFIT_MARGIN_KEY => 0], 'lastModifiedTimestamp' => null];
@@ -597,30 +605,31 @@ class Inventory {
      * @param data
      * @return array 
      */
-    public static function update_profit_margins(array $data): array {
+    public static function update_profit_margins(array $data): array
+    {
         $db = get_db_instance();
         try {
             // Profit Margins
             $profit_margins = $data['profitMargins'] ?? [];
-            
+
             // Item Prefixes
             $item_prefixes = array_keys($profit_margins);
 
             // Validate Keys
-            foreach($item_prefixes as $key) {
-                if(!is_numeric($profit_margins[$key] ?? null)) throw new Exception("$key is Invalid.");
+            foreach ($item_prefixes as $key) {
+                if (!is_numeric($profit_margins[$key] ?? null)) throw new Exception("$key is Invalid.");
                 $profit_margins[$key] = Utils::round(floatval($profit_margins[$key]));
-                if($profit_margins[$key] <= 0) throw new Exception("$key margin must be non-zero positive.");
+                if ($profit_margins[$key] <= 0) throw new Exception("$key margin must be non-zero positive.");
             }
 
             // Check for Default Key
-            if(isset($profit_margins[DEFAULT_PROFIT_MARGIN_KEY]) === false) throw new Exception('"'.DEFAULT_PROFIT_MARGIN_KEY. '" key is required.');
+            if (isset($profit_margins[DEFAULT_PROFIT_MARGIN_KEY]) === false) throw new Exception('"' . DEFAULT_PROFIT_MARGIN_KEY . '" key is required.');
 
             // Begin transaction
-            $db -> beginTransaction();
+            $db->beginTransaction();
 
             // Prepare statement
-            $statement = $db -> prepare(<<<'EOS'
+            $statement = $db->prepare(<<<'EOS'
             UPDATE 
                 store_details 
             SET 
@@ -635,27 +644,26 @@ class Inventory {
             // Params
             $params = [
                 ':profit_margins' => json_encode($profit_margins, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
-                ':store_id' => $_SESSION['store_id'], 
+                ':store_id' => $_SESSION['store_id'],
                 ':last_modified_timestamp' => $data['lastModifiedTimestamp'],
             ];
 
             // Execute
-            $is_successful = $statement -> execute($params);
-            
+            $is_successful = $statement->execute($params);
+
             // Check for success
-            if($is_successful !== true || $statement -> rowCount() < 1) throw new Exception('Unable to update price margins.');
+            if ($is_successful !== true || $statement->rowCount() < 1) throw new Exception('Unable to update price margins.');
 
             assert_success();
-            
+
             // Commit changes
-            $db -> commit();
+            $db->commit();
 
             // Fetch Latest
             return ['status' => true, 'data' => self::fetch_profit_margins($_SESSION['store_id'], $db)];
-        }
-        catch(Throwable $th) {
-            if($db -> inTransaction()) $db -> rollBack();
-            return ['status' => false, 'message' => $th -> getMessage()];
+        } catch (Throwable $th) {
+            if ($db->inTransaction()) $db->rollBack();
+            return ['status' => false, 'message' => $th->getMessage()];
         }
     }
 
@@ -665,7 +673,8 @@ class Inventory {
      * @param store_id
      * @return array 
      */
-    public static function fetch_item_inventory_details_by_id(array $ids, ?int $store_id=null, PDO &$db=null): array {
+    public static function fetch_item_inventory_details_by_id(array $ids, ?int $store_id = null, PDO &$db = null): array
+    {
         try {
             $query = <<<EOS
             SELECT 
@@ -685,20 +694,20 @@ class Inventory {
             $query = $ret['query'];
 
             // Add Store Id.
-            if(is_numeric($store_id)) $query .= " AND store_id = $store_id ";
+            if (is_numeric($store_id)) $query .= " AND store_id = $store_id ";
 
             // Create new Connection
-            if($db === null) $db = get_db_instance();
-            
-            $statement = $db -> prepare("$query;");
-            $statement -> execute($values);
-            $records = $statement -> fetchAll(PDO::FETCH_ASSOC);
+            if ($db === null) $db = get_db_instance();
+
+            $statement = $db->prepare("$query;");
+            $statement->execute($values);
+            $records = $statement->fetchAll(PDO::FETCH_ASSOC);
             $results = [];
             $store_id = null;
-            foreach($records as $record) {
+            foreach ($records as $record) {
                 $store_id = intval($record['store_id']);
                 $item_id = intval($record['item_id']);
-                if(!isset($results[$item_id])) $results[$item_id] = [];
+                if (!isset($results[$item_id])) $results[$item_id] = [];
                 $results[$item_id][$store_id] = [
                     'item_id' => $item_id,
                     'quantity' => $record['quantity'],
@@ -709,8 +718,7 @@ class Inventory {
             }
 
             return ['status' => true, 'data' => $results];
-        }
-        catch(Throwable $th) {
+        } catch (Throwable $th) {
             return ['status' => false, 'message' => $th->getMessage()];
         }
     }
@@ -721,12 +729,13 @@ class Inventory {
      * @param store_id
      * @return array 
      */
-    public static function fetch_item_details_for_adjust_inventory(string $search_term, int $store_id): array {
+    public static function fetch_item_details_for_adjust_inventory(string $search_term, int $store_id): array
+    {
         try {
             $db = get_db_instance();
 
             // Statement 
-            $statement = $db -> prepare(<<<'EOS'
+            $statement = $db->prepare(<<<'EOS'
             SELECT 
                 it.id, 
                 it.identifier,
@@ -743,32 +752,32 @@ class Inventory {
             EOS);
 
             // Execute statement
-            $statement -> execute([':code' => "%$search_term%"]);
+            $statement->execute([':code' => "%$search_term%"]);
 
             // Fetch Records
-            $item_records = $statement -> fetchAll(PDO::FETCH_ASSOC);
+            $item_records = $statement->fetchAll(PDO::FETCH_ASSOC);
 
             // Return with no record.
-            if(!isset($item_records[0])) return ['status' => true, 'data' => []];
+            if (!isset($item_records[0])) return ['status' => true, 'data' => []];
 
             // Response
             $response = [];
 
             // Fetch Item Location from Inventory
             $ids = [];
-            foreach($item_records as $record) {
+            foreach ($item_records as $record) {
 
                 $is_inactive = json_decode($record['is_inactive'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
 
                 // Skip Inactive Items.
-                if(isset($is_inactive[$store_id]) && $is_inactive[$store_id] === 1) continue;
+                if (isset($is_inactive[$store_id]) && $is_inactive[$store_id] === 1) continue;
 
-                $ids[]= $record['id']; 
+                $ids[] = $record['id'];
                 $prices = json_decode($record['prices'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
                 $response[$record['id']] = [
                     'id' => $record['id'],
-                    'identifier' => self::ITEM_DETAILS_TAG. $record['identifier'],
-                    'description' => self::ITEM_DETAILS_TAG. $record['description'],
+                    'identifier' => self::ITEM_DETAILS_TAG . $record['identifier'],
+                    'description' => self::ITEM_DETAILS_TAG . $record['description'],
                     'unit' => $record['unit'],
                     'buyingCost' => $prices[$store_id]['buyingCost'],
                     'aisle' => '',
@@ -779,7 +788,7 @@ class Inventory {
 
             // Formatted Results
             $formatted_results = [];
-            if(count($ids) > 0) {
+            if (count($ids) > 0) {
                 // Query
                 $query = <<<EOS
                 SELECT 
@@ -799,11 +808,11 @@ class Inventory {
                 $values = $ret['values'];
                 $query = $ret['query'];
 
-                $statement = $db -> prepare($query);
-                $statement -> execute($values);
-                $inv_records = $statement -> fetchAll(PDO::FETCH_ASSOC);
+                $statement = $db->prepare($query);
+                $statement->execute($values);
+                $inv_records = $statement->fetchAll(PDO::FETCH_ASSOC);
                 $no_of_records = count($inv_records);
-                for($i = 0; $i < $no_of_records; ++$i) {
+                for ($i = 0; $i < $no_of_records; ++$i) {
                     $current_record = $inv_records[$i];
                     $item_id = $current_record['item_id'];
                     $response[$item_id]['aisle'] = $current_record['aisle'];
@@ -813,15 +822,14 @@ class Inventory {
                 }
 
                 // Format Resonse
-                foreach($response as $r) {
-                    $formatted_results[]= $r;
+                foreach ($response as $r) {
+                    $formatted_results[] = $r;
                 }
             }
-            
+
             return ['status' => true, 'data' => $formatted_results];
-        }
-        catch(Throwable $th) {
-            return ['status' => false, 'message' => $th-> getMessage()];
+        } catch (Throwable $th) {
+            return ['status' => false, 'message' => $th->getMessage()];
         }
     }
 
@@ -831,30 +839,31 @@ class Inventory {
      * @param profit_margin
      * @return float
      */
-    private static function get_profit_margin_by_item_identifier(string $item_identifier, array $profit_margins): float {
+    private static function get_profit_margin_by_item_identifier(string $item_identifier, array $profit_margins): float
+    {
         $item_identifier = strtoupper(trim($item_identifier));
         $prefixes = array_keys($profit_margins);
         $no_of_prefixes = count($prefixes);
         $__profit_margin = null;
         $matching_prefixes = [];
 
-        for($i = 0; $i < $no_of_prefixes; ++$i) {
-            if(str_starts_with($item_identifier, $prefixes[$i])) {
+        for ($i = 0; $i < $no_of_prefixes; ++$i) {
+            if (str_starts_with($item_identifier, $prefixes[$i])) {
                 $__profit_margin = $profit_margins[$prefixes[$i]];
-                $matching_prefixes[]= $prefixes[$i];
+                $matching_prefixes[] = $prefixes[$i];
             }
         }
 
         // In case of matching prefixes
         // Always select the one with the largest length
-        if(count($matching_prefixes) > 0) {
+        if (count($matching_prefixes) > 0) {
             $max_length = 0;
             $index = 0;
             $count = count($matching_prefixes);
 
-            for($i = 0; $i < $count; ++$i) {
+            for ($i = 0; $i < $count; ++$i) {
                 $prefix_length = strlen($matching_prefixes[$i]);
-                if($prefix_length > $max_length) {
+                if ($prefix_length > $max_length) {
                     $max_length = $prefix_length;
                     $index = $i;
                 }
@@ -865,7 +874,7 @@ class Inventory {
         }
 
         // Send DEFAULT Profit Margin
-        if(is_null($__profit_margin)) $__profit_margin = $profit_margins[DEFAULT_PROFIT_MARGIN_KEY];
+        if (is_null($__profit_margin)) $__profit_margin = $profit_margins[DEFAULT_PROFIT_MARGIN_KEY];
         return $__profit_margin;
     }
 
@@ -878,7 +887,8 @@ class Inventory {
      * @param item_identifier
      * @return array
      */
-    private static function calculate_selling_price(int $store_id, array $existing_prices, array $profit_margins, float $buying_cost, string $item_identifier) : array {
+    private static function calculate_selling_price(int $store_id, array $existing_prices, array $profit_margins, float $buying_cost, string $item_identifier): array
+    {
 
         // Set Base Price
         $selling_price = $buying_cost;
@@ -888,12 +898,12 @@ class Inventory {
 
         // Adjust Selling prices to consider Profit Margin
         $selling_price += (($buying_cost * $new_profit_margin) / 100);
-        
+
         // Round off selling price
         $selling_price = Utils::round($selling_price);
 
         // Choose the higher value
-        if($existing_prices[$store_id]['sellingPrice'] < $selling_price) {
+        if ($existing_prices[$store_id]['sellingPrice'] < $selling_price) {
             $existing_prices[$store_id]['sellingPrice'] = $selling_price;
         }
 
@@ -907,7 +917,8 @@ class Inventory {
      * @param db
      * @throws Exception
      */
-    private static function insert_inventory_history(array $details, int $store_id, PDO &$db): void {
+    private static function insert_inventory_history(array $details, int $store_id, PDO &$db): void
+    {
         $query = <<<'EOS'
         INSERT INTO inventory_history
         (
@@ -926,7 +937,7 @@ class Inventory {
         // Remove Dedundant Details
         $count = count($details);
 
-        for($i = 0; $i < $count; ++$i) {
+        for ($i = 0; $i < $count; ++$i) {
             unset($details[$i]['aisle']);
             unset($details[$i]['column']);
             unset($details[$i]['shelf']);
@@ -935,14 +946,14 @@ class Inventory {
             unset($details[$i]['unit']);
         }
 
-        $statement = $db -> prepare($query);
-        $is_successful = $statement -> execute([
+        $statement = $db->prepare($query);
+        $is_successful = $statement->execute([
             ':details' => json_encode($details, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
             ':store_id' => $store_id,
             ':sales_rep_id' => $_SESSION['user_id']
         ]);
 
-        if($is_successful !== true || $statement -> rowCount() < 0) throw new Exception('Unable to Insert Inventory History.');
+        if ($is_successful !== true || $statement->rowCount() < 0) throw new Exception('Unable to Insert Inventory History.');
     }
 
     /**
@@ -952,28 +963,29 @@ class Inventory {
      * @param db
      * @return array 
      */
-    public static function adjust_inventory(array|null $details, int $store_id, PDO &$db=null): array {
+    public static function adjust_inventory(array|null $details, int $store_id, PDO &$db = null): array
+    {
 
         // Check for Wash
-        if(SYSTEM_INIT_MODE === WASH) return ['status' => true];
+        if (SYSTEM_INIT_MODE === WASH) return ['status' => true];
 
         // Create Transaction
-        if($details === null) return ['status'=> false, 'message' => 'Invalid Request.'];
+        if ($details === null) return ['status' => false, 'message' => 'Invalid Request.'];
         try {
             // New DB Connection
             $is_new_db_connection = $db === null;
 
             // Establish New DB Connection
-            if($db === null) {
+            if ($db === null) {
                 $db = get_db_instance();
-                $db -> beginTransaction();
+                $db->beginTransaction();
             }
 
             // Insert Inventory History 
             self::insert_inventory_history($details, $store_id, $db);
 
             // Prepare Statements
-            $statement_fetch_existing_prices = $db -> prepare(<<<'EOS'
+            $statement_fetch_existing_prices = $db->prepare(<<<'EOS'
             SELECT 
                 id,
                 identifier,
@@ -984,7 +996,7 @@ class Inventory {
                 id = :item_id;
             EOS);
 
-            $statement_check = $db -> prepare(<<<'EOS'
+            $statement_check = $db->prepare(<<<'EOS'
             SELECT 
                 it.identifier,
                 it.id,
@@ -1002,7 +1014,7 @@ class Inventory {
                 inv.store_id = :store_id;
             EOS);
 
-            $statement_update = $db -> prepare(<<<'EOS'
+            $statement_update = $db->prepare(<<<'EOS'
             UPDATE 
                 inventory 
             SET 
@@ -1016,8 +1028,8 @@ class Inventory {
             AND 
                 store_id = :store_id;
             EOS);
-            
-            $statement_insert = $db -> prepare(<<<'EOS'
+
+            $statement_insert = $db->prepare(<<<'EOS'
             INSERT INTO inventory 
             (
                 `item_id`,
@@ -1039,7 +1051,7 @@ class Inventory {
             EOS);
 
             // Update Price Margins
-            $statement_update_prices = $db -> prepare(<<<'EOS'
+            $statement_update_prices = $db->prepare(<<<'EOS'
             UPDATE
                 items 
             SET 
@@ -1056,28 +1068,28 @@ class Inventory {
 
             // Keys
             $keys = array_keys($details);
-            foreach($keys as $key) {
+            foreach ($keys as $key) {
 
                 // Identifier
                 $identifier = str_replace(self::ITEM_DETAILS_TAG, '', $details[$key]['identifier']);
-                
+
                 // Quantity
                 $quantity_to_be_adjusted = is_numeric($details[$key]['quantity']) ? intval($details[$key]['quantity']) : null;
 
                 // Quantity Can be negative but not NULL
-                if($quantity_to_be_adjusted === null) continue;
+                if ($quantity_to_be_adjusted === null) continue;
 
                 // Buying Cost
                 $buying_cost = is_numeric($details[$key]['buyingCost']) ? Utils::round(floatval($details[$key]['buyingCost'])) : null;
 
                 // Buying Cost cannot be negative or null
-                if($buying_cost <= 0 || $buying_cost === null) throw new Exception('Invalid Buying Cost for '. $identifier);
+                if ($buying_cost <= 0 || $buying_cost === null) throw new Exception('Invalid Buying Cost for ' . $identifier);
 
                 // Item Id
                 $item_id = $details[$key]['id'];
 
                 // Check for entry
-                $statement_check -> execute([':item_id' => $item_id, ':store_id' => $store_id]);
+                $statement_check->execute([':item_id' => $item_id, ':store_id' => $store_id]);
 
                 // Values
                 $values = [
@@ -1090,16 +1102,16 @@ class Inventory {
                 ];
 
                 // Fetch Quantity and Value Records for validation
-                $records = $statement_check -> fetchAll(PDO::FETCH_ASSOC);
-                if(isset($records[0])) {
+                $records = $statement_check->fetchAll(PDO::FETCH_ASSOC);
+                if (isset($records[0])) {
                     $item_record = $records[0];
 
                     // Fetch Existing Prices
-                    $existing_prices = json_decode($item_record['prices'], associative:true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
-                    if(json_last_error() !== JSON_ERROR_NONE) throw new Exception('Prices JSON is invalid for '. $identifier);
+                    $existing_prices = json_decode($item_record['prices'], associative: true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+                    if (json_last_error() !== JSON_ERROR_NONE) throw new Exception('Prices JSON is invalid for ' . $identifier);
 
                     // Set Default Prices
-                    if(!isset($existing_prices[$store_id])) {
+                    if (!isset($existing_prices[$store_id])) {
                         $existing_prices[$store_id] = [
                             'storeId' => $store_id,
                             'sellingPrice' => 0,
@@ -1113,17 +1125,17 @@ class Inventory {
                     $existing_inv_value = $existing_inv_quantity * $existing_prices[$store_id]['buyingCost'];
 
                     // Validate Quantity
-                    if($quantity_to_be_adjusted < 0 && abs($quantity_to_be_adjusted) > $existing_inv_quantity) {
-                        throw new Exception('Trying to deduct more quantity than what is in inventory for '. $identifier);
+                    if ($quantity_to_be_adjusted < 0 && abs($quantity_to_be_adjusted) > $existing_inv_quantity) {
+                        throw new Exception('Trying to deduct more quantity than what is in inventory for ' . $identifier);
                     }
-                    
+
                     // Adjust Quantity 
                     $new_inv_quantity = $existing_inv_quantity + $quantity_to_be_adjusted;
 
                     // Only Update the Prices if quantity adjusted is positive.
                     // Web could be voiding all inventory without affecting the prices.
-                    /* ADDING TO INVENTORY */ 
-                    if($quantity_to_be_adjusted > 0) {
+                    /* ADDING TO INVENTORY */
+                    if ($quantity_to_be_adjusted > 0) {
 
                         // Deduct Existing Inventory Value
                         BalanceSheetActions::update_account_value(
@@ -1135,8 +1147,8 @@ class Inventory {
                         // Calculate Inventory Value to be adjusted
                         $value_to_be_adjusted = Utils::round($quantity_to_be_adjusted * $buying_cost);
 
-                        if($value_to_be_adjusted < 0 && abs($value_to_be_adjusted) > $existing_inv_value) {
-                            throw new Exception('Cannot process negative value balance for '. $identifier);
+                        if ($value_to_be_adjusted < 0 && abs($value_to_be_adjusted) > $existing_inv_value) {
+                            throw new Exception('Cannot process negative value balance for ' . $identifier);
                         }
 
                         // Adjust Inventory value
@@ -1164,14 +1176,13 @@ class Inventory {
                         );
 
                         // Update Prices
-                        $is_successful = $statement_update_prices -> execute([
+                        $is_successful = $statement_update_prices->execute([
                             ':item_id' => $item_id,
                             ':prices' => json_encode($new_prices, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
                         ]);
-                        if($is_successful !== true && $statement_update_prices -> rowCount () < 1) throw new Exception('Unable to Update Price for '. $identifier);
+                        if ($is_successful !== true && $statement_update_prices->rowCount() < 1) throw new Exception('Unable to Update Price for ' . $identifier);
                     }
-                    /* DEDUCTING FROM INVENTORY */ 
-                    else {
+                    /* DEDUCTING FROM INVENTORY */ else {
                         // Existing Buying Cost
                         $existing_buying_cost = $existing_prices[$store_id]['buyingCost'];
 
@@ -1180,8 +1191,8 @@ class Inventory {
                         $value_to_be_adjusted = Utils::round($quantity_to_be_adjusted * $existing_buying_cost);
 
                         // Validate 
-                        if(abs($value_to_be_adjusted) > $existing_inv_value) {
-                            throw new Exception('Cannot process negative value balance for '. $identifier);
+                        if (abs($value_to_be_adjusted) > $existing_inv_value) {
+                            throw new Exception('Cannot process negative value balance for ' . $identifier);
                         }
 
                         // Deduct Existing Inventory Value
@@ -1191,16 +1202,15 @@ class Inventory {
                             $value_to_be_adjusted,  /* THIS IS ALREADY NEGATIVE */
                         );
                     }
-                    
+
                     // Update Inventory 
-                    $is_successful = $statement_update -> execute($values);
-                    if($is_successful !== true || $statement_update -> rowCount() < 1) throw new Exception('Unable to Adjust Item(s).');
+                    $is_successful = $statement_update->execute($values);
+                    if ($is_successful !== true || $statement_update->rowCount() < 1) throw new Exception('Unable to Adjust Item(s).');
                 }
-                /* No Inventory Records Exists for this Item, So add a record */
-                else {
+                /* No Inventory Records Exists for this Item, So add a record */ else {
                     // Only Update the Prices if quantity adjusted is positive.
                     // We could be voiding all inventory without affecting the prices.
-                    if($quantity_to_be_adjusted > 0) {
+                    if ($quantity_to_be_adjusted > 0) {
 
                         // Value to be adjusted
                         $value_to_be_adjusted = Utils::round($quantity_to_be_adjusted * $buying_cost);
@@ -1213,24 +1223,24 @@ class Inventory {
                         );
 
                         // Insert record
-                        $statement_insert -> execute($values);
-                        if($db -> lastInsertId() === false) throw new Exception('Unable to Insert Record for '. $identifier);
+                        $statement_insert->execute($values);
+                        if ($db->lastInsertId() === false) throw new Exception('Unable to Insert Record for ' . $identifier);
 
                         // Validate quantity 
                         self::validate_quantity_added($item_id, $quantity_to_be_adjusted);
 
                         // Fetch Existing Prices
-                        $statement_fetch_existing_prices -> execute([':item_id' => $item_id]);
-                        $item_record = $statement_fetch_existing_prices -> fetchAll(PDO::FETCH_ASSOC);
-                        if(isset($item_record[0])) $item_record = $item_record[0];
-                        else throw new Exception('Unable to fetch Existing Prices for Item for '. $identifier);
+                        $statement_fetch_existing_prices->execute([':item_id' => $item_id]);
+                        $item_record = $statement_fetch_existing_prices->fetchAll(PDO::FETCH_ASSOC);
+                        if (isset($item_record[0])) $item_record = $item_record[0];
+                        else throw new Exception('Unable to fetch Existing Prices for Item for ' . $identifier);
 
                         // Calculate New Prices
-                        $existing_prices = json_decode($item_record['prices'], associative:true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
-                        if(json_last_error() !== JSON_ERROR_NONE) throw new Exception('Prices JSON is invalid for '. $identifier);
+                        $existing_prices = json_decode($item_record['prices'], associative: true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+                        if (json_last_error() !== JSON_ERROR_NONE) throw new Exception('Prices JSON is invalid for ' . $identifier);
 
                         // Default Prices
-                        if(!isset($existing_prices[$store_id])) {
+                        if (!isset($existing_prices[$store_id])) {
                             $existing_prices[$store_id] = [
                                 'storeId' => $store_id,
                                 'sellingPrice' => 0,
@@ -1247,14 +1257,13 @@ class Inventory {
                         $existing_prices[$store_id]['buyingCost'] = self::calculate_buying_cost($value_to_be_adjusted, $quantity_to_be_adjusted);
 
                         // Update Prices
-                        $is_successful = $statement_update_prices -> execute([
+                        $is_successful = $statement_update_prices->execute([
                             ':item_id' => $item_id,
                             ':prices' => json_encode($existing_prices, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
                         ]);
 
-                        if($is_successful !== true && $statement_update_prices -> rowCount() < 1) throw new Exception('Unable to Update Price for '. $identifier);
-                    }
-                    else throw new Exception('Item does not exists in Inventory: '. $identifier);
+                        if ($is_successful !== true && $statement_update_prices->rowCount() < 1) throw new Exception('Unable to Update Price for ' . $identifier);
+                    } else throw new Exception('Item does not exists in Inventory: ' . $identifier);
                 }
             }
 
@@ -1265,13 +1274,12 @@ class Inventory {
             assert_success();
 
             // DB Commit
-            if($is_new_db_connection && $db -> inTransaction()) $db -> commit();
+            if ($is_new_db_connection && $db->inTransaction()) $db->commit();
 
             return ['status' => true];
-        }
-        catch(Throwable $th) {
-            if($is_new_db_connection && $db -> inTransaction()) $db -> rollBack();
-            return ['status' => false, 'message' => $th -> getMessage()];
+        } catch (Throwable $th) {
+            if ($is_new_db_connection && $db->inTransaction()) $db->rollBack();
+            return ['status' => false, 'message' => $th->getMessage()];
         }
     }
 
@@ -1281,7 +1289,8 @@ class Inventory {
      * @param quantity 
      * @return float
      */
-    private static function calculate_buying_cost(float $value, int $quantity) : float {
+    private static function calculate_buying_cost(float $value, int $quantity): float
+    {
         return Utils::round($value / $quantity);
     }
 
@@ -1290,15 +1299,14 @@ class Inventory {
      * @param item_id
      * @param quantity
      */
-    private static function validate_quantity_added(int $item_id, float $quantity) : void {
-        if($_SESSION['store_id'] == StoreDetails::EDMONTON && $_SESSION['access_level'] != ADMIN && LOCK_INVENTORY_LIMIT) {
-            if(in_array($item_id, self::EXEMPT_ITEMS_ID_CAT_2)) {
-                if($quantity > 200) throw new Exception('Cannot add more than 200.');
-            }
-            else if(in_array($item_id, self::EXEMPT_ITEMS_ID_CAT_1)) {
-                if($quantity > 100) throw new Exception('Cannot add more than 100.');
-            }
-            else if($quantity > 20) throw new Exception('Cannot add more than 20.');
+    private static function validate_quantity_added(int $item_id, float $quantity): void
+    {
+        if ($_SESSION['store_id'] == StoreDetails::EDMONTON && $_SESSION['access_level'] != ADMIN && LOCK_INVENTORY_LIMIT) {
+            if (in_array($item_id, self::EXEMPT_ITEMS_ID_CAT_2)) {
+                if ($quantity > 200) throw new Exception('Cannot add more than 200.');
+            } else if (in_array($item_id, self::EXEMPT_ITEMS_ID_CAT_1)) {
+                if ($quantity > 100) throw new Exception('Cannot add more than 100.');
+            } else if ($quantity > 20) throw new Exception('Cannot add more than 20.');
         }
     }
 
@@ -1307,7 +1315,8 @@ class Inventory {
      * @param search_term
      * @return array 
      */
-    public static function item_details_for_transactions(string $search_term): array {
+    public static function item_details_for_transactions(string $search_term): array
+    {
         $params = [
             'exclude_inactive' => 1,
             'term' => $search_term,
@@ -1319,7 +1328,8 @@ class Inventory {
      * This method will fetch low stock items in the inventory for the store.
      * @param store_id
      */
-    public static function fetch_low_stock(int $store_id): void {
+    public static function fetch_low_stock(int $store_id): void
+    {
         $db = get_db_instance();
         $query = <<<'EOS'
         SELECT 
@@ -1337,22 +1347,22 @@ class Inventory {
             inv.store_id = :store_id;
         EOS;
 
-        $statement = $db -> prepare($query);
-        $statement -> execute([':store_id' => $store_id]);
-            
+        $statement = $db->prepare($query);
+        $statement->execute([':store_id' => $store_id]);
+
         // Fetch items and inventory 
-        $items = $statement -> fetchAll(PDO::FETCH_ASSOC);
+        $items = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         // Low Stock Items
         $low_stock_items = [];
 
-        foreach($items as $item) {
-            $reorder_quantity = json_decode(json: $item['reorder_quantity'], associative:true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
-            if(json_last_error() !== JSON_ERROR_NONE) throw new Exception('Unable to Decode Reorder quantity for Current store.');
+        foreach ($items as $item) {
+            $reorder_quantity = json_decode(json: $item['reorder_quantity'], associative: true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+            if (json_last_error() !== JSON_ERROR_NONE) throw new Exception('Unable to Decode Reorder quantity for Current store.');
 
             $inventory_quantity = floatval($item['quantity']);
-            if(isset($reorder_quantity[$store_id]) && $inventory_quantity < $reorder_quantity[$store_id]) {
-                $low_stock_items[]= [
+            if (isset($reorder_quantity[$store_id]) && $inventory_quantity < $reorder_quantity[$store_id]) {
+                $low_stock_items[] = [
                     'identifier' => $item['identifier'],
                     'description' => $item['description'],
                     'deficit' => $reorder_quantity[$store_id] - $inventory_quantity,
@@ -1370,11 +1380,12 @@ class Inventory {
      * @param till_date
      * @return array 
      */
-    private static function fetch_item_details_from_transactions(int $transaction_type, ?int $item_id, ?string $from_date=null, ?string $till_date=null): array {
-        
+    private static function fetch_item_details_from_transactions(int $transaction_type, ?int $item_id, ?string $from_date = null, ?string $till_date = null): array
+    {
+
         try {
-            if($transaction_type === SALES_INVOICE) $table_name = ' sales_invoice ';
-            else if($transaction_type === SALES_RETURN) $table_name = ' sales_return ';
+            if ($transaction_type === SALES_INVOICE) $table_name = ' sales_invoice ';
+            else if ($transaction_type === SALES_RETURN) $table_name = ' sales_return ';
             else throw new Exception('Invalid Transaction Type.');
 
             // Build Query
@@ -1393,11 +1404,11 @@ class Inventory {
             $values = [':store_id' => intval($_SESSION['store_id'])];
 
             // Date Range
-            if(isset($from_date)) {
+            if (isset($from_date)) {
                 $query .= ' AND `date` >= :from_date ';
                 $values[':from_date'] = $from_date;
             }
-            if(isset($till_date)) {
+            if (isset($till_date)) {
                 $query .= ' AND `date` <= :till_date ';
                 $values[':till_date'] = $till_date;
             }
@@ -1406,7 +1417,7 @@ class Inventory {
             $is_item_specified = false;
 
             // Filter for Specific item?
-            if(isset($item_id)) {
+            if (isset($item_id)) {
                 $is_item_specified = true;
                 $query .= ' AND details LIKE :item_id ';
                 $values[':item_id'] = "%\"item_id\":$item_id,%";
@@ -1414,14 +1425,14 @@ class Inventory {
             $query .= ' ORDER BY `date` ASC';
 
             $db = get_db_instance();
-            $statement = $db -> prepare($query);
-            $statement -> execute($values);
-            $records = $statement -> fetchAll(PDO::FETCH_ASSOC);
+            $statement = $db->prepare($query);
+            $statement->execute($values);
+            $records = $statement->fetchAll(PDO::FETCH_ASSOC);
 
             // Transaction Record Details
             $transaction_record_details = [];
 
-            foreach($records as $record) {
+            foreach ($records as $record) {
                 // Get Year and Month from Transaction Date
                 $parts = explode('-', $record['date']);
                 $year = intval($parts[0]);
@@ -1429,18 +1440,16 @@ class Inventory {
 
                 // Decode Items 
                 $items = json_decode($record['details'], associative: true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
-                if(json_last_error() !== JSON_ERROR_NONE) throw new Exception('Unable to Decode Items for Txn Id: '. $record['id'].' ('. TRANSACTION_NAMES[$transaction_type]. ')');
+                if (json_last_error() !== JSON_ERROR_NONE) throw new Exception('Unable to Decode Items for Txn Id: ' . $record['id'] . ' (' . TRANSACTION_NAMES[$transaction_type] . ')');
 
-                foreach($items as $item) {
-                    if($is_item_specified && $item_id !== $item['id']) continue;
-                    if(!isset($transaction_record_details[$item['id']][$year][$month])) {
-                        if(!isset($transaction_record_details[$item['id']])) {
+                foreach ($items as $item) {
+                    if ($is_item_specified && $item_id !== $item['id']) continue;
+                    if (!isset($transaction_record_details[$item['id']][$year][$month])) {
+                        if (!isset($transaction_record_details[$item['id']])) {
                             $transaction_record_details[$item['id']] = [$year => [$month => ['quantity' => 0, 'total_sold' => 0, 'total_cost' => 0]]];
-                        }
-                        else if(!isset($transaction_record_details[$item['id']][$year])) {
+                        } else if (!isset($transaction_record_details[$item['id']][$year])) {
                             $transaction_record_details[$item['id']][$year] = [$month => ['quantity' => 0, 'total_sold' => 0, 'total_cost' => 0]];
-                        }
-                        else if(!isset($transaction_record_details[$item['id']][$year][$month])) {
+                        } else if (!isset($transaction_record_details[$item['id']][$year][$month])) {
                             $transaction_record_details[$item['id']][$year][$month] = ['quantity' => 0, 'total_sold' => 0, 'total_cost' => 0];
                         }
                     }
@@ -1450,9 +1459,8 @@ class Inventory {
                 }
             }
             return ['status' => true, 'data' => $transaction_record_details];
-        }
-        catch(Exception $e) {
-            return ['status' => false, 'message' => $e -> getMessage()];
+        } catch (Exception $e) {
+            return ['status' => false, 'message' => $e->getMessage()];
         }
     }
 
@@ -1462,23 +1470,22 @@ class Inventory {
      * @param items_from_sales_returns 
      * @return array
      */
-    private function adjust_quantity_for_all_items(array $items_from_sales_invoices, array $items_from_sales_returns): array {
+    private function adjust_quantity_for_all_items(array $items_from_sales_invoices, array $items_from_sales_returns): array
+    {
         $adjusted_items = $items_from_sales_invoices;
 
         // Process Sales Return
         $items = array_keys($items_from_sales_returns);
-        foreach($items as $item) {
+        foreach ($items as $item) {
             $years = array_keys($items_from_sales_returns[$item]);
-            foreach($years as $year) {
+            foreach ($years as $year) {
                 $months = array_keys($items_from_sales_returns[$item][$year]);
-                foreach($months as $month) {
-                    if(!isset($adjusted_items[$item])) {
+                foreach ($months as $month) {
+                    if (!isset($adjusted_items[$item])) {
                         $adjusted_items[$item] = [$year => [$month => ['quantity' => 0, 'total_sold' => 0, 'total_cost' => 0]]];
-                    }
-                    else if(!isset($adjusted_items[$item][$year])) {
+                    } else if (!isset($adjusted_items[$item][$year])) {
                         $adjusted_items[$item][$year] = [$month => ['quantity' => 0, 'total_sold' => 0, 'total_cost' => 0]];
-                    }
-                    else if(!isset($adjusted_items[$item][$year][$month])) {
+                    } else if (!isset($adjusted_items[$item][$year][$month])) {
                         $adjusted_items[$item][$year][$month] = ['quantity' => 0, 'total_sold' => 0, 'total_cost' => 0];
                     }
                     $adjusted_items[$item][$year][$month]['quantity'] -= $items_from_sales_returns[$item][$year][$month]['quantity'];
@@ -1495,7 +1502,8 @@ class Inventory {
      * @param item_ids
      * @return array
      */
-    private static function fetch_item_details_by_id(array $item_ids=[]): array {
+    private static function fetch_item_details_by_id(array $item_ids = []): array
+    {
         try {
             $db = get_db_instance();
             $query = <<<'EOS'
@@ -1510,28 +1518,28 @@ class Inventory {
             $query = $ret_value['query'];
             $values = $ret_value['values'];
 
-            $statement = $db -> prepare($query);
-            $statement -> execute($values);
-            $records = $statement -> fetchAll(PDO::FETCH_ASSOC);
+            $statement = $db->prepare($query);
+            $statement->execute($values);
+            $records = $statement->fetchAll(PDO::FETCH_ASSOC);
 
             // Items
             $items = [];
 
             // Set Item ID as Index
-            foreach($records as $record) $items[$record['id']] = $record;
+            foreach ($records as $record) $items[$record['id']] = $record;
 
             return ['status' => true, 'data' => $items];
-        }
-        catch(Exception $e) {
-            return ['status' => false, 'message' => $e -> getMessage()];
+        } catch (Exception $e) {
+            return ['status' => false, 'message' => $e->getMessage()];
         }
     }
-    
+
     /**
      * This method will fetch the item Sale Frequency.
      * @return array 
      */
-    public static function fetch_item_sale_frequency(?int $item_id=null, ?string $from_date=null, ?string $till_date=null) : array {
+    public static function fetch_item_sale_frequency(?int $item_id = null, ?string $from_date = null, ?string $till_date = null): array
+    {
         try {
 
             // Adjusted Frequency
@@ -1542,13 +1550,13 @@ class Inventory {
 
             // Get all item ids
             $ids = array_keys($items_adjusted_frequency);
-            if(!isset($ids[0])) return [];
+            if (!isset($ids[0])) return [];
 
             // Fetch Items by ID
             $items = self::fetch_item_details_by_id($ids);
 
             $item_frequency = [];
-            foreach($items as $item) {
+            foreach ($items as $item) {
                 $id = $item['id'];
                 $item_frequency[$id] = [
                     'identifier' => $item['identifier'],
@@ -1557,9 +1565,8 @@ class Inventory {
                 ];
             }
             return ['status' => true, 'data' => $item_frequency];
-        }
-        catch(Exception $e) {
-            return ['status' => false, 'message' => $e -> getMessage()];
+        } catch (Exception $e) {
+            return ['status' => false, 'message' => $e->getMessage()];
         }
     }
 
@@ -1567,7 +1574,8 @@ class Inventory {
      * This method will generate inventory list.
      * @param details
      */
-    public static function generate_inventory_list(int $store_id): void {
+    public static function generate_inventory_list(int $store_id): void
+    {
         GeneratePDF::generate_inventory_list(
             PrepareDetails_Inventory::generate_inventory_list($store_id),
             $store_id,
@@ -1581,11 +1589,12 @@ class Inventory {
      * @param end_date
      * @return array
      */
-    public static function frequency(int|null $part_id, string|null $start_date, string|null $end_date): array {
+    public static function frequency(int|null $part_id, string|null $start_date, string|null $end_date): array
+    {
         $db = get_db_instance();
         try {
             // Part Not Selected
-            if(is_numeric($part_id) === false) throw new Exception('Invalid Part Selected.');
+            if (is_numeric($part_id) === false) throw new Exception('Invalid Part Selected.');
 
             $report = [];
             $query = <<<'EOS'
@@ -1605,11 +1614,11 @@ class Inventory {
 
             // Params
             $params = [':store_id' => $store_id];
-            if(isset($start_date[0])) {
+            if (isset($start_date[0])) {
                 $query .= ' AND `date` >= :start_date ';
                 $params[':start_date'] = $start_date;
             }
-            if(isset($end_date[0])) {
+            if (isset($end_date[0])) {
                 $query .= ' AND `date` <= :end_date ';
                 $params[':end_date'] = $end_date;
             }
@@ -1617,9 +1626,9 @@ class Inventory {
             $params[':part_id'] = <<<EOS
             %"itemId":$part_id,%
             EOS;
-            $statement = $db -> prepare($query);
-            $statement -> execute($params);
-            $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
+            $statement = $db->prepare($query);
+            $statement->execute($params);
+            $result = $statement->fetchAll(PDO::FETCH_ASSOC);
 
             // Details Template
             $details_template = [
@@ -1645,7 +1654,7 @@ class Inventory {
                 12 => $details_template,
             ];
 
-            foreach($result as $r) {
+            foreach ($result as $r) {
 
                 // Split Date By Month and Year
                 $date_parts = explode('-', $r['date']);
@@ -1658,10 +1667,10 @@ class Inventory {
                 $month = intval($date_parts[1]);
 
                 // Add Year
-                if(!isset($report[$year])) $report[$year] = $month_template;
+                if (!isset($report[$year])) $report[$year] = $month_template;
 
-                foreach($details as $item) {
-                    if($item['itemId'] === $part_id) {
+                foreach ($details as $item) {
+                    if ($item['itemId'] === $part_id) {
 
                         // Quantity
                         $report[$year][$month]['quantity'] += ($item['quantity']);
@@ -1670,7 +1679,7 @@ class Inventory {
                         $report[$year][$month]['sellingCost'] += ($item['pricePerItem'] * $item['quantity']);
 
                         // Profit 
-                        $report[$year][$month]['profit'] += ($item['pricePerItem'] - $item['buyingCost']);
+                        $report[$year][$month]['profit'] += (($item['pricePerItem'] - $item['buyingCost']) * $item['quantity']);
 
                         // C.O.G.S
                         $report[$year][$month]['cogs'] += ($item['buyingCost'] * $item['quantity']);
@@ -1679,10 +1688,8 @@ class Inventory {
             }
 
             return ['status' => true, 'data' => $report];
-        }
-        catch(Exception $e) {
-            return ['status' => false, 'message' => $e -> getMessage()];
+        } catch (Exception $e) {
+            return ['status' => false, 'message' => $e->getMessage()];
         }
     }
 }
-?>
