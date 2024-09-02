@@ -7,7 +7,6 @@ import {
   Grid,
   GridItem,
   HStack,
-  SimpleGrid,
   Tooltip,
   useToast,
   VStack,
