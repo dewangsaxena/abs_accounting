@@ -50,7 +50,7 @@ const httpService = new HTTPService();
 interface ReportDetail {
   cogs: number;
   profit: number;
-  sellingPrice: number;
+  totalSold: number;
   quantity: number;
 }
 
@@ -296,7 +296,7 @@ const ReportCard = ({ year }: { year: number }) => {
   // Stats
   let cogs: number = 0;
   let profit: number = 0;
-  let sellingPrice: number = 0;
+  let totalSold: number = 0;
   let quantity: number = 0;
   if (report) {
     let currentMonth: number = 0;
@@ -305,7 +305,7 @@ const ReportCard = ({ year }: { year: number }) => {
       currentMonth = parseInt(month[i]);
       cogs += report[year][currentMonth].cogs;
       profit += report[year][currentMonth].profit;
-      sellingPrice += report[year][currentMonth].sellingPrice;
+      totalSold += report[year][currentMonth].totalSold;
       quantity += report[year][currentMonth].quantity;
     }
   }
@@ -343,7 +343,7 @@ const ReportCard = ({ year }: { year: number }) => {
               </Box>
               <Box width="30%">
                 <Badge {...badgeStyleConfig} bgColor="purple.100">
-                  $ {formatNumberWithDecimalPlaces(sellingPrice, 2)}
+                  $ {formatNumberWithDecimalPlaces(totalSold, 2)}
                 </Badge>
               </Box>
             </HStack>
@@ -355,7 +355,7 @@ const ReportCard = ({ year }: { year: number }) => {
                 <Badge {...badgeStyleConfig} colorScheme="green">
                   $ {formatNumberWithDecimalPlaces(profit, 2)} /{" "}
                   {formatNumberWithDecimalPlaces(
-                    calculateProfitMargin(sellingPrice, cogs),
+                    calculateProfitMargin(totalSold, cogs),
                     2
                   )}{" "}
                   %
@@ -370,7 +370,7 @@ const ReportCard = ({ year }: { year: number }) => {
                 <Badge {...badgeStyleConfig} colorScheme="orange">
                   $ {formatNumberWithDecimalPlaces(cogs, 2)} /{" "}
                   {formatNumberWithDecimalPlaces(
-                    calculateCOGSMargin(sellingPrice, cogs),
+                    calculateCOGSMargin(totalSold, cogs),
                     2
                   )}{" "}
                   %
@@ -427,12 +427,12 @@ const BreakDownByMonth = ({ year }: { year: number }) => {
       <>
         {MONTHS_INDEX.map((month: number) => {
           let profitMargin: number = calculateProfitMargin(
-            report[year][month].sellingPrice,
+            report[year][month].totalSold,
             report[year][month].cogs
           );
 
           let cogsMargin: number = calculateCOGSMargin(
-            report[year][month].sellingPrice,
+            report[year][month].totalSold,
             report[year][month].cogs
           );
           return (
@@ -442,11 +442,11 @@ const BreakDownByMonth = ({ year }: { year: number }) => {
                   {MONTHS[month]}
                 </Badge>
               </Box>
-              <Tooltip label="Selling Price">
+              <Tooltip label="Total Sold">
                 <Badge {...badgeConfig2} colorScheme="white">
                   ${" "}
                   {formatNumberWithDecimalPlaces(
-                    report[year][month].sellingPrice,
+                    report[year][month].totalSold,
                     2
                   )}
                 </Badge>
