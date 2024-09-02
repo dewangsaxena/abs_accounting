@@ -251,10 +251,17 @@ const SearchFilter = ({
 
 // Report 
 const Report = () => {
-  const { report } = frequencyDetailsStore((state) => ({report: state.report}));
-  return <Card><CardBody>
-    
-    </CardBody></Card>
+  const {identifier, description, report } = frequencyDetailsStore((state) => ({
+    identifier: state.identifier,
+    description: state.description,
+    report: state.report,
+  }));
+  console.log(identifier);
+  return <Card>
+      <CardBody>
+        <_Label>{identifier}</_Label>
+      </CardBody>
+    </Card>
 }
 
 const ItemFrequency = () => {
