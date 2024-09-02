@@ -92,11 +92,10 @@ const SearchFilter = ({
   loadingState: boolean;
   setLoadingState: any;
 }) => {
-  const { startDate, endDate, report, fetch, setDetail, setReport } =
+  const { startDate, endDate, fetch, setDetail, setReport } =
     frequencyDetailsStore((state) => ({
       startDate: state.startDate,
       endDate: state.endDate,
-      report: state.report,
       fetch: state.fetch,
       setDetail: state.setDetail,
       setReport: state.setReport,
