@@ -310,6 +310,7 @@ const ReportCard = ({ year }: { year: number }) => {
     textAlign: "right",
     fontFamily: numberFont,
     letterSpacing: 2,
+    borderRadius: 0,
   };
 
   return (
