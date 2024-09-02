@@ -249,6 +249,12 @@ const SearchFilter = ({
   );
 };
 
+// Report 
+const Report = () => {
+  const { report } = frequencyDetailsStore((state) => ({report: state.report}));
+  return <Card><CardBody></CardBody></Card>
+}
+
 const ItemFrequency = () => {
   const [loadingState, setLoadingState] = useState<boolean>(false);
   return (
