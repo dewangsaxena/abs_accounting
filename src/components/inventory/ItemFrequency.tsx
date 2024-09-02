@@ -210,7 +210,7 @@ const SearchFilter = ({
                   onChange: (_, { newValue }) => {
                     setSelectedItem(newValue);
                     if (newValue.trim() === "") {
-                      setDetail("partId", null);
+                      setDetail("itemDetails", null);
                     }
                   },
                   disabled: false,
