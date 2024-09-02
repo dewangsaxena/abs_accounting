@@ -270,14 +270,15 @@ const SearchFilter = ({
   );
 };
 
-// Report for Current Year
-const YTDReport = () => {
+/**
+ * Report Card
+ * @param year
+ * @returns
+ */
+const ReportCard = ({ year }: { year: number }) => {
   const { report } = frequencyDetailsStore((state) => ({
     report: state.report,
   }));
-
-  // Current Year
-  const currentYear: number = new Date().getFullYear();
 
   // Stats
   let cogs: number = 0;
@@ -286,13 +287,13 @@ const YTDReport = () => {
   let quantity: number = 0;
   if (report) {
     let currentMonth: number = 0;
-    let month: string[] = Object.keys(report[currentYear] || []);
+    let month: string[] = Object.keys(report[year] || []);
     for (let i = 0; i < month.length; ++i) {
       currentMonth = parseInt(month[i]);
-      cogs += report[currentYear][currentMonth].cogs;
-      profit += report[currentYear][currentMonth].profit;
-      sellingCost += report[currentYear][currentMonth].sellingCost;
-      quantity += report[currentYear][currentMonth].quantity;
+      cogs += report[year][currentMonth].cogs;
+      profit += report[year][currentMonth].profit;
+      sellingCost += report[year][currentMonth].sellingCost;
+      quantity += report[year][currentMonth].quantity;
     }
   }
 
@@ -315,10 +316,11 @@ const YTDReport = () => {
               fontSize="0.9em"
               letterSpacing={2}
             >
-              YTD Details for {currentYear}
+              YTD Details for {year}
             </Badge>
           </HStack>
           <_Divider margin={2} />
+
           <HStack width="100%">
             <Box width="50%">
               <_Label {...labelStyleConfig}>Total Purchased:</_Label>
@@ -375,23 +377,6 @@ const YTDReport = () => {
   );
 };
 
-// Yearly Report
-const ViewYearlyReport = ({ year }: { year: number }) => {
-  const { report } = frequencyDetailsStore((state) => ({
-    report: state.report,
-  }));
-
-  return (
-    <Card borderRadius={0}>
-      <CardBody>
-        <VStack>
-          <HStack></HStack>
-        </VStack>
-      </CardBody>
-    </Card>
-  );
-};
-
 // Report
 const Report = () => {
   const { identifier, description, report } = frequencyDetailsStore(
@@ -439,8 +424,6 @@ const Report = () => {
             </_Label>
           </HStack>
           <_Divider margin={0} />
-          <YTDReport />
-          <_Divider margin={0} />
           <VStack width="100%" align="start">
             <HStack width="100%">
               <Box width="20%">
@@ -458,8 +441,7 @@ const Report = () => {
                 ></_Select>
               </Box>
             </HStack>
-            <_Divider margin={0} />
-            <ViewYearlyReport year={selectedYear} />
+            <ReportCard year={selectedYear} />
           </VStack>
         </VStack>
       </CardBody>
