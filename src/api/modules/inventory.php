@@ -1634,7 +1634,7 @@ class Inventory
             $details_template = [
                 'cogs' => 0,
                 'profit' => 0,
-                'sellingCost' => 0,
+                'sellingPrice' => 0,
                 'quantity' => 0,
             ];
 
@@ -1675,8 +1675,8 @@ class Inventory
                         // Quantity
                         $report[$year][$month]['quantity'] += ($item['quantity']);
 
-                        // Selling Cost 
-                        $report[$year][$month]['sellingCost'] += ($item['pricePerItem'] * $item['quantity']);
+                        // Selling Price 
+                        $report[$year][$month]['sellingPrice'] += ($item['pricePerItem'] * $item['quantity']);
 
                         // Profit 
                         $report[$year][$month]['profit'] += (($item['pricePerItem'] - $item['buyingCost']) * $item['quantity']);
