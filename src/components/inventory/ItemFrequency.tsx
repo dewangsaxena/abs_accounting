@@ -288,6 +288,11 @@ const Report = () => {
 
 const ItemFrequency = () => {
   const [loadingState, setLoadingState] = useState<boolean>(false);
+  const { partId } = frequencyDetailsStore(
+    (state) => ({
+      partId: state.partId,
+    })
+  );
   return (
     <Grid
       templateAreas={`"filter report"`}
@@ -300,9 +305,9 @@ const ItemFrequency = () => {
           setLoadingState={setLoadingState}
         />
       </GridItem>
-      <GridItem area={"report"}>
+      {partId && <GridItem area={"report"}>
         <Report />
-      </GridItem>
+      </GridItem>}
     </Grid>
   );
 };
