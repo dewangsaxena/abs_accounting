@@ -11,7 +11,12 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { create } from "zustand";
-import { _Button, _Label, HomeNavButton } from "../../shared/Components";
+import {
+  _Button,
+  _Divider,
+  _Label,
+  HomeNavButton,
+} from "../../shared/Components";
 import {
   AttributeType,
   AUTO_SUGGEST_MIN_INPUT_LENGTH,
@@ -26,6 +31,8 @@ import DatePicker from "react-datepicker";
 import { FaSearchengin } from "react-icons/fa6";
 import { ItemDetails } from "./itemStore";
 import { Spinner } from "@chakra-ui/react";
+import { CiSettings } from "react-icons/ci";
+import { FaRegCalendarAlt } from "react-icons/fa";
 
 // HTTP Service.
 const httpService = new HTTPService();
@@ -255,6 +262,40 @@ const SearchFilter = ({
   );
 };
 
+// Report for Current Year
+const YTDReport = () => {
+  return (
+    <Card borderRadius={0}>
+      <CardBody padding={2}>
+        <VStack>
+          <HStack>
+            <FaRegCalendarAlt color="purple" fontSize="1em" />
+            <Badge
+              colorScheme="green"
+              borderRadius={0}
+              fontSize="0.9em"
+              letterSpacing={2}
+            >
+              YTD Details for {new Date().getFullYear()}
+            </Badge>
+          </HStack>
+          <_Divider margin={2} />
+          <_Label {...labelStyleConfig}>Total Purchased:</_Label>
+        </VStack>
+      </CardBody>
+    </Card>
+  );
+};
+
+// Yearly Report
+const ViewYearlyReport = ({ year }: { year: number }) => {
+  return (
+    <Card>
+      <CardBody></CardBody>
+    </Card>
+  );
+};
+
 // Report
 const Report = () => {
   const { identifier, description, report } = frequencyDetailsStore(
@@ -265,27 +306,36 @@ const Report = () => {
     })
   );
   return (
-    <Card borderLeftColor={"purple"} borderLeftWidth={5} borderRadius={0}>
-      <CardBody>
-        <HStack>
-          <Badge
-            padding={2}
-            bgColor="transparent"
-            borderLeftColor="green"
-            borderLeftWidth={5}
-            borderRadius={0}
-            fontSize={"0.8em"}
-            letterSpacing={2}
-          >
-            {identifier}
-          </Badge>
-          <_Label fontSize={"0.8em"} letterSpacing={2}>
-            <i>{description}</i>
-          </_Label>
-        </HStack>
+    <Card borderLeftColor={"green"} borderLeftWidth={5} borderRadius={0}>
+      <CardBody padding={2}>
+        <VStack align="start" width="100%">
+          <HStack>
+            <CiSettings color="green" />
+            <Badge
+              padding={2}
+              colorScheme="transparent"
+              color="green.500"
+              borderRadius={0}
+              fontSize={"0.8em"}
+              letterSpacing={2}
+            >
+              {identifier}
+            </Badge>
+            <_Label fontSize={"0.8em"} letterSpacing={2} color="green">
+              <i>{description}</i>
+            </_Label>
+          </HStack>
+          <_Divider margin={0} />
+          <YTDReport />
+        </VStack>
       </CardBody>
     </Card>
   );
+};
+
+const labelStyleConfig: AttributeType = {
+  fontSize: "0.8em",
+  letterSpacing: 2,
 };
 
 const ItemFrequency = () => {
@@ -309,14 +359,15 @@ const ItemFrequency = () => {
         {loadingState && (
           <Center>
             <Spinner
-              speed="0.8s"
-              size="xl"
-              thickness="2px"
-              color="#10EFA7"
-              emptyColor="#EF1058"
-            ></Spinner>
+              speed="1s"
+              thickness="4px"
+              color="#5D3FD3"
+              boxSize={"12vh"}
+              emptyColor="#CCCCFF"
+            />
           </Center>
         )}
+        {partId && loadingState === false && <Report />}
       </GridItem>
     </Grid>
   );
