@@ -24,7 +24,11 @@ import {
 } from "../../shared/config";
 import { useState } from "react";
 import { APIResponse, HTTPService } from "../../service/api-client";
-import { buildSearchListForItem, showToast } from "../../shared/functions";
+import {
+  buildSearchListForItem,
+  formatNumberWithDecimalPlaces,
+  showToast,
+} from "../../shared/functions";
 import AutoSuggest from "react-autosuggest";
 import { AutoSuggestStyle, navBgColor } from "../../shared/style";
 import DatePicker from "react-datepicker";
@@ -272,14 +276,25 @@ const YTDReport = () => {
   // Current Year
   const currentYear: number = new Date().getFullYear();
 
-  // Month Keys
-  let month: string[] = Object.keys(report || []);
+  // Stats
+  let cogs: number = 0;
+  let profit: number = 0;
+  let sellingCost: number = 0;
+  let quantity: number = 0;
+  if (report) {
+    let currentMonth: number = 0;
+    let month: string[] = Object.keys(report[currentYear] || []);
+    for (let i = 0; i < month.length; ++i) {
+      currentMonth = parseInt(month[i]);
+      cogs += report[currentYear][currentMonth].cogs;
+      profit += report[currentYear][currentMonth].profit;
+      sellingCost += report[currentYear][currentMonth].sellingCost;
+      quantity += report[currentYear][currentMonth].quantity;
+    }
+  }
 
-  let ytdCOGS: number = 0;
-  let;
-  for (let i = 0; i < month.length; ++i) {}
   return (
-    <Card borderRadius={0}>
+    <Card borderRadius={0} width="40%">
       <CardBody padding={2}>
         <VStack align={"start"}>
           <HStack>
@@ -294,9 +309,55 @@ const YTDReport = () => {
             </Badge>
           </HStack>
           <_Divider margin={2} />
-          <HStack>
-            <_Label {...labelStyleConfig}>Total Purchased:</_Label>
-            {/* <Badge>{report ? report[currentYear].cogs : 0}</Badge> */}
+          <HStack width="100%">
+            <Box width="50%">
+              <_Label {...labelStyleConfig}>Total Purchased:</_Label>
+            </Box>
+            <Box width="50%">
+              <Badge width="100%" textAlign={"right"} bgColor="purple.100">
+                $ {formatNumberWithDecimalPlaces(sellingCost)}
+              </Badge>
+            </Box>
+          </HStack>
+          <HStack width="100%">
+            <Box width="50%">
+              <_Label {...labelStyleConfig}>C.O.G.S:</_Label>
+            </Box>
+            <Box width="50%">
+              <Badge width="100%" textAlign={"right"} colorScheme="orange">
+                $ {formatNumberWithDecimalPlaces(cogs)}
+              </Badge>
+            </Box>
+          </HStack>
+          <HStack width="100%">
+            <Box width="50%">
+              <_Label {...labelStyleConfig}>Profit:</_Label>
+            </Box>
+            <Box width="50%">
+              <Badge width="100%" textAlign={"right"} colorScheme="green">
+                $ {formatNumberWithDecimalPlaces(profit)}
+              </Badge>
+            </Box>
+          </HStack>
+          <HStack width="100%">
+            <Box width="50%">
+              <_Label {...labelStyleConfig}>Profit Margin:</_Label>
+            </Box>
+            <Box width="50%">
+              <Badge width="100%" textAlign={"right"} colorScheme="cyan">
+                $ {formatNumberWithDecimalPlaces(cogs)}
+              </Badge>
+            </Box>
+          </HStack>
+          <HStack width="100%">
+            <Box width="50%">
+              <_Label {...labelStyleConfig}>Quantity Sold:</_Label>
+            </Box>
+            <Box width="50%">
+              <Badge width="100%" textAlign={"right"} colorScheme="teal">
+                $ {formatNumberWithDecimalPlaces(cogs)}
+              </Badge>
+            </Box>
           </HStack>
         </VStack>
       </CardBody>
@@ -356,6 +417,7 @@ const Report = () => {
 const labelStyleConfig: AttributeType = {
   fontSize: "0.75em",
   letterSpacing: 2,
+  textTransform: "uppercase",
 };
 
 const ItemFrequency = () => {
