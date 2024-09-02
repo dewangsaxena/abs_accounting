@@ -60,7 +60,7 @@ class Stats
             }
 
             $net_income = $revenue - $sales_return - $cogs;
-            $profit_margin = Utils::calculateProfitMargin($net_income, $cogs);
+            $profit_margin = Utils::calculateProfitMargin($revenue, $cogs);
             $cogs_margin = Utils::calculateCOGSMargin($net_income, $cogs);
 
             $data = [
