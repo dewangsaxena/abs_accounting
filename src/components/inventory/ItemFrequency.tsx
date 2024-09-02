@@ -37,18 +37,19 @@ import { FaRegCalendarAlt } from "react-icons/fa";
 // HTTP Service.
 const httpService = new HTTPService();
 
-// Yearly Report
-interface YearlyReport {
+// Report Report
+interface ReportDetail {
   cogs: number;
   profit: number;
   sellingCost: number;
   quantity: number;
 }
 
-// Report
-interface Report {
-  year: AttributeType<YearlyReport>;
-}
+// Month
+type Month = AttributeType<ReportDetail>;
+
+// Report Type
+type Report = AttributeType<Month>;
 
 // Frequency
 interface FrequencyDetails {
@@ -270,6 +271,9 @@ const YTDReport = () => {
 
   // Current Year
   const currentYear: number = new Date().getFullYear();
+
+  console.log(report[currentYear][1]);
+
   return (
     <Card borderRadius={0}>
       <CardBody padding={2}>
@@ -288,7 +292,7 @@ const YTDReport = () => {
           <_Divider margin={2} />
           <HStack>
             <_Label {...labelStyleConfig}>Total Purchased:</_Label>
-            <Badge>{}</Badge>
+            {/* <Badge>{report ? report[currentYear].cogs : 0}</Badge> */}
           </HStack>
         </VStack>
       </CardBody>
@@ -352,8 +356,9 @@ const labelStyleConfig: AttributeType = {
 
 const ItemFrequency = () => {
   const [loadingState, setLoadingState] = useState<boolean>(false);
-  const { partId } = frequencyDetailsStore((state) => ({
+  const { partId, report } = frequencyDetailsStore((state) => ({
     partId: state.partId,
+    report: state.report,
   }));
   return (
     <Grid
@@ -379,7 +384,7 @@ const ItemFrequency = () => {
             />
           </Center>
         )}
-        {partId && loadingState === false && <Report />}
+        {partId && loadingState === false && report && <Report />}
       </GridItem>
     </Grid>
   );
