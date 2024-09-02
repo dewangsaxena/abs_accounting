@@ -7,6 +7,7 @@ import {
   Grid,
   GridItem,
   HStack,
+  SimpleGrid,
   useToast,
   VStack,
 } from "@chakra-ui/react";
@@ -412,60 +413,126 @@ const BreakDownByMonth = ({ year }: { year: number }) => {
                 <VStack width="100%" align="start">
                   {/* Selling Cost  */}
                   <HStack width="100%">
-                    <Box width="50%">
-                      <Badge
-                        {...labelStyleConfig}
-                        borderRadius={0}
-                        width="100%"
-                        colorScheme="green"
-                      >
-                        Selling Cost
-                      </Badge>
-                    </Box>
-                    <Box width="100%">
-                      <Badge
-                        {...labelStyleConfig}
-                        width="100%"
-                        bgColor="transparent"
-                        fontFamily={numberFont}
-                        letterSpacing={2}
-                      >
-                        ${" "}
-                        {formatNumberWithDecimalPlaces(
-                          report[year][month].sellingCost,
-                          2
-                        )}
-                      </Badge>
-                    </Box>
+                    <SimpleGrid columns={2} spacing={10}>
+                      <Box width="100%">
+                        <Badge
+                          {...labelStyleConfig}
+                          borderRadius={0}
+                          width="100%"
+                          colorScheme="green"
+                        >
+                          Selling Cost
+                        </Badge>
+                      </Box>
+                      <Box width="100%">
+                        <Badge
+                          {...labelStyleConfig}
+                          width="100%"
+                          bgColor="transparent"
+                          fontFamily={numberFont}
+                          letterSpacing={2}
+                        >
+                          ${" "}
+                          {formatNumberWithDecimalPlaces(
+                            report[year][month].sellingCost,
+                            2
+                          )}
+                        </Badge>
+                      </Box>
+                    </SimpleGrid>
                   </HStack>
 
-                  {/* Selling Cost  */}
+                  {/* C.O.G.S */}
                   <HStack width="100%">
-                    <Box width="50%">
-                      <Badge
-                        width="100%"
-                        {...labelStyleConfig}
-                        borderRadius={0}
-                        colorScheme="orange"
-                      >
-                        C.O.G.S
-                      </Badge>
-                    </Box>
-                    <Box width="100%">
-                      <Badge
-                        width="100%"
-                        {...labelStyleConfig}
-                        bgColor="transparent"
-                        fontFamily={numberFont}
-                        letterSpacing={2}
-                      >
-                        ${" "}
-                        {formatNumberWithDecimalPlaces(
-                          report[year][month].cogs,
-                          2
-                        )}
-                      </Badge>
-                    </Box>
+                    <SimpleGrid columns={2} spacing={10}>
+                      <Box width="100%">
+                        <Badge
+                          {...labelStyleConfig}
+                          borderRadius={0}
+                          width="100%"
+                          colorScheme="green"
+                        >
+                          C.O.G.S
+                        </Badge>
+                      </Box>
+                      <Box width="100%">
+                        <Badge
+                          {...labelStyleConfig}
+                          width="100%"
+                          bgColor="transparent"
+                          fontFamily={numberFont}
+                          letterSpacing={2}
+                        >
+                          ${" "}
+                          {formatNumberWithDecimalPlaces(
+                            report[year][month].cogs,
+                            2
+                          )}
+                        </Badge>
+                      </Box>
+                    </SimpleGrid>
+                  </HStack>
+
+                  {/* Profit  */}
+                  <HStack width="100%">
+                    <SimpleGrid columns={2} spacing={10}>
+                      <Box width="100%">
+                        <Badge
+                          {...labelStyleConfig}
+                          borderRadius={0}
+                          width="100%"
+                          colorScheme="green"
+                        >
+                          Profit
+                        </Badge>
+                      </Box>
+                      <Box width="100%">
+                        <Badge
+                          {...labelStyleConfig}
+                          width="100%"
+                          bgColor="transparent"
+                          fontFamily={numberFont}
+                          letterSpacing={2}
+                        >
+                          ${" "}
+                          {formatNumberWithDecimalPlaces(
+                            report[year][month].profit,
+                            2
+                          )}
+                        </Badge>
+                      </Box>
+                    </SimpleGrid>
+                  </HStack>
+
+                  {/* Quantity  */}
+                  <HStack width="100%">
+                    <SimpleGrid columns={2} spacing={10}>
+                      <Box width="100%">
+                        <Badge
+                          {...labelStyleConfig}
+                          borderRadius={0}
+                          width="100%"
+                          colorScheme="green"
+                        >
+                          Quantity Sold
+                        </Badge>
+                      </Box>
+                      <Box width="100%">
+                        <Badge
+                          {...labelStyleConfig}
+                          width="100%"
+                          bgColor="transparent"
+                          fontFamily={numberFont}
+                          letterSpacing={2}
+                        >
+                          ${" "}
+                          {formatNumberWithDecimalPlaces(
+                            report[year][month].quantity,
+                            2
+                          )}
+                        </Badge>
+                      </Box>
+                    </SimpleGrid>
                   </HStack>
                 </VStack>
               </Box>
