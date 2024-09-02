@@ -303,7 +303,7 @@ const YTDReport = () => {
   };
 
   return (
-    <Card borderRadius={0} width="40%">
+    <Card borderRadius={0} width="50%">
       <CardBody padding={2}>
         <VStack align={"start"}>
           <HStack>
@@ -330,20 +330,11 @@ const YTDReport = () => {
           </HStack>
           <HStack width="100%">
             <Box width="50%">
-              <_Label {...labelStyleConfig}>Profit:</_Label>
+              <_Label {...labelStyleConfig}>Profit / Profit Margin:</_Label>
             </Box>
             <Box width="50%">
               <Badge {...badgeStyleConfig} colorScheme="green">
-                $ {formatNumberWithDecimalPlaces(profit, 2)}
-              </Badge>
-            </Box>
-          </HStack>
-          <HStack width="100%">
-            <Box width="50%">
-              <_Label {...labelStyleConfig}>Profit Margin:</_Label>
-            </Box>
-            <Box width="50%">
-              <Badge {...badgeStyleConfig} colorScheme="cyan">
+                $ {formatNumberWithDecimalPlaces(profit, 2)} /{" "}
                 {formatNumberWithDecimalPlaces(
                   calculateProfitMargin(sellingCost, cogs),
                   2
@@ -354,20 +345,11 @@ const YTDReport = () => {
           </HStack>
           <HStack width="100%">
             <Box width="50%">
-              <_Label {...labelStyleConfig}>C.O.G.S:</_Label>
+              <_Label {...labelStyleConfig}>C.O.G.S / C.O.G.S Margin:</_Label>
             </Box>
             <Box width="50%">
               <Badge {...badgeStyleConfig} colorScheme="orange">
-                $ {formatNumberWithDecimalPlaces(cogs, 2)}
-              </Badge>
-            </Box>
-          </HStack>
-          <HStack width="100%">
-            <Box width="50%">
-              <_Label {...labelStyleConfig}>C.O.G.S Margin:</_Label>
-            </Box>
-            <Box width="50%">
-              <Badge {...badgeStyleConfig} colorScheme="orange">
+                $ {formatNumberWithDecimalPlaces(cogs, 2)} /{" "}
                 {formatNumberWithDecimalPlaces(
                   calculateCOGSMargin(sellingCost, cogs),
                   2
