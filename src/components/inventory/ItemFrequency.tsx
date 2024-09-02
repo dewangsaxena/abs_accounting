@@ -26,6 +26,7 @@ import { useState } from "react";
 import { APIResponse, HTTPService } from "../../service/api-client";
 import {
   buildSearchListForItem,
+  calculateProfitMargin,
   formatNumberWithDecimalPlaces,
   showToast,
 } from "../../shared/functions";
@@ -315,7 +316,7 @@ const YTDReport = () => {
             </Box>
             <Box width="50%">
               <Badge width="100%" textAlign={"right"} bgColor="purple.100">
-                $ {formatNumberWithDecimalPlaces(sellingCost)}
+                $ {formatNumberWithDecimalPlaces(sellingCost, 2)}
               </Badge>
             </Box>
           </HStack>
@@ -325,7 +326,7 @@ const YTDReport = () => {
             </Box>
             <Box width="50%">
               <Badge width="100%" textAlign={"right"} colorScheme="orange">
-                $ {formatNumberWithDecimalPlaces(cogs)}
+                $ {formatNumberWithDecimalPlaces(cogs, 2)}
               </Badge>
             </Box>
           </HStack>
@@ -335,7 +336,7 @@ const YTDReport = () => {
             </Box>
             <Box width="50%">
               <Badge width="100%" textAlign={"right"} colorScheme="green">
-                $ {formatNumberWithDecimalPlaces(profit)}
+                $ {formatNumberWithDecimalPlaces(profit, 2)}
               </Badge>
             </Box>
           </HStack>
@@ -345,7 +346,11 @@ const YTDReport = () => {
             </Box>
             <Box width="50%">
               <Badge width="100%" textAlign={"right"} colorScheme="cyan">
-                $ {formatNumberWithDecimalPlaces(cogs)}
+                {formatNumberWithDecimalPlaces(
+                  calculateProfitMargin(sellingCost, cogs),
+                  2
+                )}{" "}
+                %
               </Badge>
             </Box>
           </HStack>
@@ -355,7 +360,7 @@ const YTDReport = () => {
             </Box>
             <Box width="50%">
               <Badge width="100%" textAlign={"right"} colorScheme="teal">
-                $ {formatNumberWithDecimalPlaces(cogs)}
+                {quantity}
               </Badge>
             </Box>
           </HStack>
