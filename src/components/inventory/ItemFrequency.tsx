@@ -430,7 +430,7 @@ const Report = () => {
             </_Label>
           </HStack>
           <_Divider margin={0} />
-          {yearsKeys.length > 0 && (
+          {yearsKeys.length > 0 ? (
             <VStack width="100%" align="start">
               <HStack width="100%">
                 <Box width="20%">
@@ -452,6 +452,10 @@ const Report = () => {
               </HStack>
               <ReportCard year={selectedYear} />
             </VStack>
+          ) : (
+            <_Label {...labelStyleConfig}>
+              No Record found for this item.
+            </_Label>
           )}
         </VStack>
       </CardBody>
