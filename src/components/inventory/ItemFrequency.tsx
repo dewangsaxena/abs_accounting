@@ -420,6 +420,15 @@ const BreakDownByMonth = ({ year }: { year: number }) => {
     return (
       <>
         {MONTHS_INDEX.map((month: number) => {
+          let profitMargin: number = calculateProfitMargin(
+            report[year][month].sellingCost,
+            report[year][month].cogs
+          );
+
+          let cogsMargin: number = calculateCOGSMargin(
+            report[year][month].sellingCost,
+            report[year][month].cogs
+          );
           return (
             <HStack width="100%">
               <Box width="20%">
@@ -445,15 +454,12 @@ const BreakDownByMonth = ({ year }: { year: number }) => {
               </Tooltip>
               <_Label>~</_Label>
               <Tooltip label="Profit Margin">
-                <Badge {...badgeConfig2} colorScheme="white">
-                  {formatNumberWithDecimalPlaces(
-                    calculateProfitMargin(
-                      report[year][month].sellingCost,
-                      report[year][month].cogs
-                    ),
-                    2
-                  )}{" "}
-                  %
+                <Badge
+                  {...badgeConfig2}
+                  bgColor={profitMargin > 0 ? "#0BDA51" : "white"}
+                  color={profitMargin > 0 ? "white" : "black"}
+                >
+                  {formatNumberWithDecimalPlaces(profitMargin, 2)} %
                 </Badge>
               </Tooltip>
               <_Label>~</_Label>
@@ -464,20 +470,21 @@ const BreakDownByMonth = ({ year }: { year: number }) => {
               </Tooltip>
               <_Label>~</_Label>
               <Tooltip label="C.O.G.S Margin">
-                <Badge {...badgeConfig2} colorScheme="white">
-                  {formatNumberWithDecimalPlaces(
-                    calculateCOGSMargin(
-                      report[year][month].sellingCost,
-                      report[year][month].cogs
-                    ),
-                    2
-                  )}{" "}
-                  %
+                <Badge
+                  {...badgeConfig2}
+                  bgColor={cogsMargin > 0 ? "#DFFF00" : "white"}
+                  color="black"
+                >
+                  {formatNumberWithDecimalPlaces(cogsMargin, 2)} %
                 </Badge>
               </Tooltip>
               <_Label>~</_Label>
-              <Tooltip label="Quantity">
-                <Badge {...badgeConfig2} colorScheme="white">
+              <Tooltip label="Quantity Sold">
+                <Badge
+                  {...badgeConfig2}
+                  colorScheme="white"
+                  fontWeight={"bold"}
+                >
                   {report[year][month].quantity}
                 </Badge>
               </Tooltip>
