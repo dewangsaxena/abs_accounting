@@ -555,6 +555,7 @@ const Report = () => {
                 letterSpacing={2}
                 fontWeight="bold"
                 bgColor="transparent"
+                fontFamily={numberFont}
               >
                 {existingQuantity}
               </Badge>
