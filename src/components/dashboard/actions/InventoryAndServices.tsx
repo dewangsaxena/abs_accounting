@@ -383,6 +383,7 @@ const InventoryAndServices = () => {
                 label: "Frequency",
                 onClick: () => {
                   if (systemConfigMode !== MODE_PARTS) return;
+                  window.open("/item_frequency", "_blank");
                 },
               },
             ]}
