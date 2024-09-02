@@ -59,8 +59,11 @@ class Stats
                 $receipt_discount += $r['total_discount'];
             }
 
+            // Calculate Net Amounts
             $net_income = $revenue - $sales_return - $cogs - $receipt_discount;
             $net_revenue = $revenue - $sales_return - $receipt_discount;
+
+            // Calculate Margins
             $profit_margin = Utils::calculateProfitMargin($net_revenue, $cogs);
             $cogs_margin = Utils::calculateCOGSMargin($net_income, $cogs);
 
