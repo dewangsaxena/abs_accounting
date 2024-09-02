@@ -8,6 +8,7 @@ import {
   GridItem,
   HStack,
   SimpleGrid,
+  Tooltip,
   useToast,
   VStack,
 } from "@chakra-ui/react";
@@ -313,7 +314,7 @@ const ReportCard = ({ year }: { year: number }) => {
   };
 
   return (
-    <Card borderRadius={0} width="50%">
+    <Card borderRadius={0} width="80%">
       <CardBody padding={2}>
         <VStack align={"start"}>
           <HStack>
@@ -322,63 +323,66 @@ const ReportCard = ({ year }: { year: number }) => {
               colorScheme="green"
               borderRadius={0}
               fontSize="0.9em"
-              letterSpacing={2}
+              letterSpacing={5}
+              fontFamily={numberFont}
             >
               YTD Details for {year}
             </Badge>
           </HStack>
           <_Divider margin={2} />
 
-          <HStack width="100%">
-            <Box width="50%">
-              <_Label {...labelStyleConfig}>Total Purchased:</_Label>
-            </Box>
-            <Box width="50%">
-              <Badge {...badgeStyleConfig} bgColor="purple.100">
-                $ {formatNumberWithDecimalPlaces(sellingCost, 2)}
-              </Badge>
-            </Box>
-          </HStack>
-          <HStack width="100%">
-            <Box width="50%">
-              <_Label {...labelStyleConfig}>Profit / Profit Margin:</_Label>
-            </Box>
-            <Box width="50%">
-              <Badge {...badgeStyleConfig} colorScheme="green">
-                $ {formatNumberWithDecimalPlaces(profit, 2)} /{" "}
-                {formatNumberWithDecimalPlaces(
-                  calculateProfitMargin(sellingCost, cogs),
-                  2
-                )}{" "}
-                %
-              </Badge>
-            </Box>
-          </HStack>
-          <HStack width="100%">
-            <Box width="50%">
-              <_Label {...labelStyleConfig}>C.O.G.S / C.O.G.S Margin:</_Label>
-            </Box>
-            <Box width="50%">
-              <Badge {...badgeStyleConfig} colorScheme="orange">
-                $ {formatNumberWithDecimalPlaces(cogs, 2)} /{" "}
-                {formatNumberWithDecimalPlaces(
-                  calculateCOGSMargin(sellingCost, cogs),
-                  2
-                )}{" "}
-                %
-              </Badge>
-            </Box>
-          </HStack>
-          <HStack width="100%">
-            <Box width="50%">
-              <_Label {...labelStyleConfig}>Quantity Sold:</_Label>
-            </Box>
-            <Box width="50%">
-              <Badge {...badgeStyleConfig} colorScheme="teal">
-                {quantity}
-              </Badge>
-            </Box>
-          </HStack>
+          <Box width="80%">
+            <HStack width="100%">
+              <Box width="50%">
+                <_Label {...labelStyleConfig}>Total Purchased:</_Label>
+              </Box>
+              <Box width="30%">
+                <Badge {...badgeStyleConfig} bgColor="purple.100">
+                  $ {formatNumberWithDecimalPlaces(sellingCost, 2)}
+                </Badge>
+              </Box>
+            </HStack>
+            <HStack width="100%">
+              <Box width="50%">
+                <_Label {...labelStyleConfig}>Profit / Profit Margin:</_Label>
+              </Box>
+              <Box width="30%">
+                <Badge {...badgeStyleConfig} colorScheme="green">
+                  $ {formatNumberWithDecimalPlaces(profit, 2)} /{" "}
+                  {formatNumberWithDecimalPlaces(
+                    calculateProfitMargin(sellingCost, cogs),
+                    2
+                  )}{" "}
+                  %
+                </Badge>
+              </Box>
+            </HStack>
+            <HStack width="100%">
+              <Box width="50%">
+                <_Label {...labelStyleConfig}>C.O.G.S / C.O.G.S Margin:</_Label>
+              </Box>
+              <Box width="30%">
+                <Badge {...badgeStyleConfig} colorScheme="orange">
+                  $ {formatNumberWithDecimalPlaces(cogs, 2)} /{" "}
+                  {formatNumberWithDecimalPlaces(
+                    calculateCOGSMargin(sellingCost, cogs),
+                    2
+                  )}{" "}
+                  %
+                </Badge>
+              </Box>
+            </HStack>
+            <HStack width="100%">
+              <Box width="50%">
+                <_Label {...labelStyleConfig}>Quantity Sold:</_Label>
+              </Box>
+              <Box width="30%">
+                <Badge {...badgeStyleConfig} colorScheme="teal">
+                  {quantity}
+                </Badge>
+              </Box>
+            </HStack>
+          </Box>
           <_Divider margin={2} />
           <BreakDownByMonth year={year} />
         </VStack>
@@ -400,146 +404,88 @@ const BreakDownByMonth = ({ year }: { year: number }) => {
     report: state.report,
   }));
 
+  const badgeConfig = {
+    letterSpacing: 2,
+    fontSize: "0.7em",
+    borderRadius: 0,
+  };
+  const badgeConfig2 = {
+    fontSize: "0.75em",
+    letterSpacing: 2,
+    fontFamily: numberFont,
+    borderRadius: 0,
+    fontWeight: "normal",
+  };
+
   if (report) {
     return (
-      <VStack align={"start"} width="100%">
+      <>
         {MONTHS_INDEX.map((month: number) => {
           return (
             <HStack width="100%">
               <Box width="20%">
-                <_Label {...labelStyleConfig}>{MONTHS[month]}</_Label>
+                <Badge {...badgeConfig} colorScheme="blue" variant="subtle">
+                  {MONTHS[month]}
+                </Badge>
               </Box>
-              <Box width="80%">
-                <VStack width="100%" align="start">
-                  {/* Selling Cost  */}
-                  <HStack width="100%">
-                    <SimpleGrid columns={2} spacing={10}>
-                      <Box width="100%">
-                        <Badge
-                          {...labelStyleConfig}
-                          borderRadius={0}
-                          width="100%"
-                          colorScheme="green"
-                        >
-                          Selling Cost
-                        </Badge>
-                      </Box>
-                      <Box width="100%">
-                        <Badge
-                          {...labelStyleConfig}
-                          width="100%"
-                          bgColor="transparent"
-                          fontFamily={numberFont}
-                          letterSpacing={2}
-                        >
-                          ${" "}
-                          {formatNumberWithDecimalPlaces(
-                            report[year][month].sellingCost,
-                            2
-                          )}
-                        </Badge>
-                      </Box>
-                    </SimpleGrid>
-                  </HStack>
-
-                  {/* C.O.G.S */}
-                  <HStack width="100%">
-                    <SimpleGrid columns={2} spacing={10}>
-                      <Box width="100%">
-                        <Badge
-                          {...labelStyleConfig}
-                          borderRadius={0}
-                          width="100%"
-                          colorScheme="green"
-                        >
-                          C.O.G.S
-                        </Badge>
-                      </Box>
-                      <Box width="100%">
-                        <Badge
-                          {...labelStyleConfig}
-                          width="100%"
-                          bgColor="transparent"
-                          fontFamily={numberFont}
-                          letterSpacing={2}
-                        >
-                          ${" "}
-                          {formatNumberWithDecimalPlaces(
-                            report[year][month].cogs,
-                            2
-                          )}
-                        </Badge>
-                      </Box>
-                    </SimpleGrid>
-                  </HStack>
-
-                  {/* Profit  */}
-                  <HStack width="100%">
-                    <SimpleGrid columns={2} spacing={10}>
-                      <Box width="100%">
-                        <Badge
-                          {...labelStyleConfig}
-                          borderRadius={0}
-                          width="100%"
-                          colorScheme="green"
-                        >
-                          Profit
-                        </Badge>
-                      </Box>
-                      <Box width="100%">
-                        <Badge
-                          {...labelStyleConfig}
-                          width="100%"
-                          bgColor="transparent"
-                          fontFamily={numberFont}
-                          letterSpacing={2}
-                        >
-                          ${" "}
-                          {formatNumberWithDecimalPlaces(
-                            report[year][month].profit,
-                            2
-                          )}
-                        </Badge>
-                      </Box>
-                    </SimpleGrid>
-                  </HStack>
-
-                  {/* Quantity  */}
-                  <HStack width="100%">
-                    <SimpleGrid columns={2} spacing={10}>
-                      <Box width="100%">
-                        <Badge
-                          {...labelStyleConfig}
-                          borderRadius={0}
-                          width="100%"
-                          colorScheme="green"
-                        >
-                          Quantity Sold
-                        </Badge>
-                      </Box>
-                      <Box width="100%">
-                        <Badge
-                          {...labelStyleConfig}
-                          width="100%"
-                          bgColor="transparent"
-                          fontFamily={numberFont}
-                          letterSpacing={2}
-                        >
-                          ${" "}
-                          {formatNumberWithDecimalPlaces(
-                            report[year][month].quantity,
-                            2
-                          )}
-                        </Badge>
-                      </Box>
-                    </SimpleGrid>
-                  </HStack>
-                </VStack>
-              </Box>
+              <Tooltip label="Selling Cost">
+                <Badge {...badgeConfig2} colorScheme="white">
+                  ${" "}
+                  {formatNumberWithDecimalPlaces(
+                    report[year][month].sellingCost,
+                    2
+                  )}
+                </Badge>
+              </Tooltip>
+              <_Label>~</_Label>
+              <Tooltip label="Profit">
+                <Badge {...badgeConfig2} colorScheme="white">
+                  ${" "}
+                  {formatNumberWithDecimalPlaces(report[year][month].profit, 2)}
+                </Badge>
+              </Tooltip>
+              <_Label>~</_Label>
+              <Tooltip label="Profit Margin">
+                <Badge {...badgeConfig2} colorScheme="white">
+                  {formatNumberWithDecimalPlaces(
+                    calculateProfitMargin(
+                      report[year][month].sellingCost,
+                      report[year][month].cogs
+                    ),
+                    2
+                  )}{" "}
+                  %
+                </Badge>
+              </Tooltip>
+              <_Label>~</_Label>
+              <Tooltip label="C.O.G.S">
+                <Badge {...badgeConfig2} colorScheme="white">
+                  $ {formatNumberWithDecimalPlaces(report[year][month].cogs, 2)}
+                </Badge>
+              </Tooltip>
+              <_Label>~</_Label>
+              <Tooltip label="C.O.G.S Margin">
+                <Badge {...badgeConfig2} colorScheme="white">
+                  {formatNumberWithDecimalPlaces(
+                    calculateCOGSMargin(
+                      report[year][month].sellingCost,
+                      report[year][month].cogs
+                    ),
+                    2
+                  )}{" "}
+                  %
+                </Badge>
+              </Tooltip>
+              <_Label>~</_Label>
+              <Tooltip label="Quantity">
+                <Badge {...badgeConfig2} colorScheme="white">
+                  {report[year][month].quantity}
+                </Badge>
+              </Tooltip>
             </HStack>
           );
         })}
-      </VStack>
+      </>
     );
   } else return <></>;
 };
