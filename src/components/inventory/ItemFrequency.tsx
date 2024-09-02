@@ -97,6 +97,7 @@ const SearchFilter = ({
 
   // Load options for Itme
   const loadOptionsForItem = (searchTerm: string) => {
+    setLoadingState(true);
     httpService
       .fetch<ItemDetails[]>({ term: searchTerm }, "inv_fetch")
       .then((res: any) => {
@@ -112,7 +113,9 @@ const SearchFilter = ({
             );
         }
       })
-      .catch((_: any) => {});
+      .catch((_: any) => {}).finally (() => {
+        setLoadingState(false);
+      });
   };
 
   // Click Handler
@@ -211,6 +214,7 @@ const SearchFilter = ({
             </Box>
           </HStack>
           <_Button
+            isDisabled={loadingState}
             onClick={onClickHandler}
             icon={<FaSearchengin />}
             label="Fetch Frequency"
