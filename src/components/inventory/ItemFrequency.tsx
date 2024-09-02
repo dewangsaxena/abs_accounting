@@ -1,4 +1,5 @@
 import {
+  Badge,
   Box,
   Card,
   CardBody,
@@ -75,10 +76,9 @@ export const frequencyDetailsStore = create<_FrequencyDetails>((set, get) => ({
   setDetail: (detailName: string, value: any) => {
     if (detailName === "itemDetails") {
       set({ partId: value.id });
-      set({identifier: value.identifier});
-      set({description: value.description});
-    }
-    else if (detailName === "startDate") set({ startDate: value });
+      set({ identifier: value.identifier });
+      set({ description: value.description });
+    } else if (detailName === "startDate") set({ startDate: value });
     else if (detailName === "endDate") set({ endDate: value });
   },
   setReport: (report: Report | null) => {
@@ -115,7 +115,6 @@ const SearchFilter = ({
 
   // Load options for Itme
   const loadOptionsForItem = (searchTerm: string) => {
-
     httpService
       .fetch<ItemDetails[]>({ term: searchTerm }, "inv_fetch")
       .then((res: any) => {
@@ -139,16 +138,19 @@ const SearchFilter = ({
   // Fetch Item Frequency
   const fetchItemFrequency = () => {
     setLoadingState(true);
-    fetch().then((res: any) => {
-      let response: APIResponse<Report> = res.data;
-      if (response.status && response.data) {
-        setReport(response.data);
-      } else setReport(null);
-    }).catch((err:any) => {
-      showToast(toast, false, err.message || UNKNOWN_SERVER_ERROR_MSG);
-    }).finally(() => {
-      setLoadingState(false);
-    });
+    fetch()
+      .then((res: any) => {
+        let response: APIResponse<Report> = res.data;
+        if (response.status && response.data) {
+          setReport(response.data);
+        } else setReport(null);
+      })
+      .catch((err: any) => {
+        showToast(toast, false, err.message || UNKNOWN_SERVER_ERROR_MSG);
+      })
+      .finally(() => {
+        setLoadingState(false);
+      });
   };
 
   return (
@@ -251,31 +253,56 @@ const SearchFilter = ({
   );
 };
 
-// Report 
+// Report
 const Report = () => {
-  const {identifier, description, report } = frequencyDetailsStore((state) => ({
-    identifier: state.identifier,
-    description: state.description,
-    report: state.report,
-  }));
-  return <Card borderLeftColor={"purple"} borderLeftWidth={5} borderRadius={0}>
+  const { identifier, description, report } = frequencyDetailsStore(
+    (state) => ({
+      identifier: state.identifier,
+      description: state.description,
+      report: state.report,
+    })
+  );
+  return (
+    <Card borderLeftColor={"purple"} borderLeftWidth={5} borderRadius={0}>
       <CardBody>
-        <_Label>{identifier}</_Label>
+        <HStack>
+          <Badge
+            padding={2}
+            bgColor="transparent"
+            borderLeftColor="green"
+            borderLeftWidth={5}
+            borderRadius={0}
+            fontSize={"0.8em"}
+            letterSpacing={2}
+          >
+            {identifier}
+          </Badge>
+          <_Label fontSize={"0.8em"} letterSpacing={2}>
+            <i>{description}</i>
+          </_Label>
+        </HStack>
       </CardBody>
     </Card>
-}
+  );
+};
 
 const ItemFrequency = () => {
   const [loadingState, setLoadingState] = useState<boolean>(false);
   return (
-    <Grid templateAreas={`"filter report"`}  gridTemplateColumns={'25% 75%'} gap={2}>
+    <Grid
+      templateAreas={`"filter report"`}
+      gridTemplateColumns={"25% 75%"}
+      gap={2}
+    >
       <GridItem area={"filter"}>
         <SearchFilter
           loadingState={loadingState}
           setLoadingState={setLoadingState}
         />
       </GridItem>
-      <GridItem  area={"report"}><Report/></GridItem>
+      <GridItem area={"report"}>
+        <Report />
+      </GridItem>
     </Grid>
   );
 };
