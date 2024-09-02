@@ -1579,6 +1579,7 @@ class Inventory {
      * @param part_id
      * @param start_date
      * @param end_date
+     * @return array
      */
     public static function frequency(int|null $part_id, string|null $start_date, string|null $end_date): array {
         $db = get_db_instance();
