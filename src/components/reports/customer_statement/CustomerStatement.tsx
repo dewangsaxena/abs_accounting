@@ -115,11 +115,24 @@ interface CustomerAgedSummary {
 }
 
 /**
+ * Customer List props
+ */
+interface CustomerListProps {
+  list: CustomerAgedSummary[];
+  selectedClient: number[];
+  deleteClient: any;
+}
+
+/**
  * Customer List
  * @param list
  * @returns
  */
-const _CustomerList = ({ list }: { list: CustomerAgedSummary[] }) => {
+const _CustomerList = ({
+  list,
+  selectedClient,
+  deleteClient,
+}: CustomerListProps) => {
   const contentFontStyle: AttributeType = {
     fontSize: "0.7em",
     fontFamily: numberFont,
@@ -194,7 +207,7 @@ const _CustomerList = ({ list }: { list: CustomerAgedSummary[] }) => {
                   </_Label>
                 </Box>
                 <Box width="10%">
-                  <Checkbox defaultChecked>Checkbox</Checkbox>
+                  <Checkbox size="md"></Checkbox>
                 </Box>
               </HStack>
             </>
