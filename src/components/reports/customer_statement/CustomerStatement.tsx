@@ -39,18 +39,32 @@ import {
 import { IoMdAddCircle } from "react-icons/io";
 import AutoSuggest from "react-autosuggest";
 
-interface CustomerListDetails {
+// Http Service
+const httpService = new HTTPService();
+
+/**
+ * Customer Details List
+ */
+interface CustomerDetailsList {
   id: number;
   name: string;
 }
 
-// Props
-interface CustomerListProps {
-  list: { [id: number]: CustomerListDetails };
+/**
+ * Customer Details List Props
+ */
+interface CustomerDetailsListProps {
+  list: { [id: number]: CustomerDetailsList };
   deleteClient: any;
 }
 
-const CustomerList = ({ list, deleteClient }: CustomerListProps) => {
+/**
+ * Customer List
+ * @param list
+ * @param deleteClient
+ * @returns
+ */
+const CustomerList = ({ list, deleteClient }: CustomerDetailsListProps) => {
   return (
     <SimpleGrid columns={2} spacingX={"1em"} spacingY={"1em"}>
       {Object.keys(list).map((clientId: string, index: number) => {
@@ -79,6 +93,26 @@ const CustomerList = ({ list, deleteClient }: CustomerListProps) => {
 };
 
 /**
+ * Customer Aged Summary List.
+ * @returns
+ */
+const CustomerAgedSummaryList = () => {
+  const fetchCustomerAgedSummary = () => {
+    httpService.fetch({}, "customer_aged_summary").then((res: any) => {
+      let response: APIResponse = res.data;
+      console.log(response);
+    });
+  };
+
+  fetchCustomerAgedSummary();
+  return (
+    <VStack align="start">
+      <_Label>sda</_Label>
+    </VStack>
+  );
+};
+
+/**
  * Customer Statement
  * @returns
  */
@@ -103,16 +137,13 @@ const CustomerStatement = () => {
 
   // Selected Client State
   const [selectedClients, setSelectedClients] = useState<{
-    [id: number]: CustomerListDetails;
+    [id: number]: CustomerDetailsList;
   }>({});
 
   const [noOfSelectedClient, setNoOfSelectedClients] = useState<number>(0);
 
   // Max Client Limit
   const maxSelectedClientAllowed: number = 5;
-
-  // Http Service
-  const httpService = new HTTPService();
 
   // Send Email
   const sendEmail = async (payload: any) => {
@@ -201,7 +232,7 @@ const CustomerStatement = () => {
       clientId &&
       clientName
     ) {
-      let newClientList: { [id: number]: CustomerListDetails } =
+      let newClientList: { [id: number]: CustomerDetailsList } =
         selectedClients;
 
       if (newClientList[clientId] === undefined) {
@@ -214,7 +245,7 @@ const CustomerStatement = () => {
 
   // Delete Client
   const deleteClient = (clientIdToDelete: number) => {
-    let newClientList: { [id: number]: CustomerListDetails } = selectedClients;
+    let newClientList: { [id: number]: CustomerDetailsList } = selectedClients;
     if (clientIdToDelete in newClientList) {
       delete newClientList[clientIdToDelete];
       setSelectedClients(newClientList);
@@ -391,6 +422,8 @@ const CustomerStatement = () => {
               </Box>
             </HStack>
           </VStack>
+          <_Divider />
+          <CustomerAgedSummaryList />
           <_Divider />
           <VStack align="start">
             <CustomerList list={selectedClients} deleteClient={deleteClient} />
