@@ -265,12 +265,15 @@ if (isset($_POST['action'])) {
 
             /* Customer Aged Summary */
         case 'customer_aged_summary': 
-            $response = CustomerAgedSummary::fetch_customer_aged_summary(
-                $data['storeId'], 
-                null, 
-                $data['tillDate'], 
-                $data['sort'],
-            );
+            $response = [
+                'status' => true, 
+                'data' => CustomerAgedSummary::fetch_customer_aged_summary(
+                    $data['storeId'], 
+                    null, 
+                    $data['tillDate'], 
+                    $data['sort'],
+                ),
+            ];
             break;
 
             /* Customer Summary */

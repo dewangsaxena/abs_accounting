@@ -3,6 +3,7 @@ import {
   Box,
   Card,
   CardBody,
+  Checkbox,
   HStack,
   SimpleGrid,
   Switch,
@@ -12,12 +13,17 @@ import {
   VStack,
   useToast,
 } from "@chakra-ui/react";
-import { AutoSuggestStyle, navBgColor } from "../../../shared/style";
+import {
+  AutoSuggestStyle,
+  navBgColor,
+  numberFont,
+} from "../../../shared/style";
 import { APIResponse, HTTPService } from "../../../service/api-client";
 import { ClientDetails, clientStore } from "../../client/store";
 import {
   buildSearchListForClient,
   checkForValidSession,
+  formatNumberWithDecimalPlaces,
   getUUID,
   showToast,
 } from "../../../shared/functions";
@@ -33,6 +39,7 @@ import { MdAlternateEmail } from "react-icons/md";
 import { useState } from "react";
 import {
   APP_HOST,
+  AttributeType,
   AUTO_SUGGEST_MIN_INPUT_LENGTH,
   UNKNOWN_SERVER_ERROR_MSG,
 } from "../../../shared/config";
@@ -106,6 +113,97 @@ interface CustomerAgedSummary {
   phone_number: string;
   total: number;
 }
+
+/**
+ * Customer List
+ * @param list
+ * @returns
+ */
+const _CustomerList = ({ list }: { list: CustomerAgedSummary[] }) => {
+  const contentFontStyle: AttributeType = {
+    fontSize: "0.7em",
+    fontFamily: numberFont,
+    letterSpacing: 2,
+    textTransform: "uppercase",
+  };
+  return (
+    <Box height="60vh" overflowY={"scroll"} width="100%">
+      <VStack align="start">
+        <HStack width="100%">
+          <Box width="30%">
+            <Badge {...contentFontStyle} variant={"outline"}>
+              Customer Name
+            </Badge>
+          </Box>
+          <Box width="10%">
+            <Badge {...contentFontStyle} variant={"outline"}>
+              Total
+            </Badge>
+          </Box>
+          <Box width="10%">
+            <Badge {...contentFontStyle} variant={"outline"}>
+              Current
+            </Badge>
+          </Box>
+          <Box width="10%">
+            <Badge {...contentFontStyle} variant={"outline"}>
+              30-60
+            </Badge>
+          </Box>
+          <Box width="10%">
+            <Badge {...contentFontStyle} variant={"outline"}>
+              61-90
+            </Badge>
+          </Box>
+          <Box width="10%">
+            <Badge {...contentFontStyle} variant={"outline"}>
+              91+
+            </Badge>
+          </Box>
+        </HStack>
+        {list.map((customer: CustomerAgedSummary) => {
+          return (
+            <>
+              <HStack width="100%">
+                <Box width="30%">
+                  <_Label {...contentFontStyle}>{customer.client_name}</_Label>
+                </Box>
+                <Box width="10%">
+                  <_Label {...contentFontStyle}>
+                    $ {formatNumberWithDecimalPlaces(customer.total, 2)}
+                  </_Label>
+                </Box>
+                <Box width="10%">
+                  <_Label {...contentFontStyle}>
+                    $ {formatNumberWithDecimalPlaces(customer.current, 2)}
+                  </_Label>
+                </Box>
+                <Box width="10%">
+                  <_Label {...contentFontStyle}>
+                    $ {formatNumberWithDecimalPlaces(customer["31-60"], 2)}
+                  </_Label>
+                </Box>
+                <Box width="10%">
+                  <_Label {...contentFontStyle}>
+                    $ {formatNumberWithDecimalPlaces(customer["61-90"], 2)}
+                  </_Label>
+                </Box>
+                <Box width="10%">
+                  <_Label {...contentFontStyle}>
+                    $ {formatNumberWithDecimalPlaces(customer["91+"], 2)}
+                  </_Label>
+                </Box>
+                <Box width="10%">
+                  <Checkbox defaultChecked>Checkbox</Checkbox>
+                </Box>
+              </HStack>
+            </>
+          );
+        })}
+      </VStack>
+    </Box>
+  );
+};
 
 /**
  * Customer Aged Summary List.
@@ -188,6 +286,8 @@ const CustomerAgedSummaryList = () => {
           width="25%"
         ></_Button>
       </HStack>
+      <_Divider margin={0} />
+      <_CustomerList list={customerAgedSummary} />
     </VStack>
   );
 };
@@ -504,10 +604,9 @@ const CustomerStatement = () => {
           </VStack>
           <_Divider />
           <CustomerAgedSummaryList />
-          <_Divider />
-          <VStack align="start">
+          {/* <VStack align="start">
             <CustomerList list={selectedClients} deleteClient={deleteClient} />
-          </VStack>
+          </VStack> */}
         </CardBody>
       </Card>
     </Box>
