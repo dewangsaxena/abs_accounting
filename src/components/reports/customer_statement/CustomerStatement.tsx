@@ -38,8 +38,9 @@ import {
 } from "../../../shared/config";
 import { IoMdAddCircle } from "react-icons/io";
 import AutoSuggest from "react-autosuggest";
+import { FcMoneyTransfer } from "react-icons/fc";
 
-// Http Service
+/** HTTP Service */
 const httpService = new HTTPService();
 
 /**
@@ -93,21 +94,100 @@ const CustomerList = ({ list, deleteClient }: CustomerDetailsListProps) => {
 };
 
 /**
+ * Customer Aged Summary
+ */
+interface CustomerAgedSummary {
+  "31-60": number;
+  "61-90": number;
+  "91+": number;
+  client_id: number;
+  client_name: number;
+  current: number;
+  phone_number: string;
+  total: number;
+}
+
+/**
  * Customer Aged Summary List.
  * @returns
  */
 const CustomerAgedSummaryList = () => {
-  const fetchCustomerAgedSummary = () => {
-    httpService.fetch({}, "customer_aged_summary").then((res: any) => {
-      let response: APIResponse = res.data;
-      console.log(response);
-    });
-  };
+  const toast = useToast();
+  const currentStore = parseInt(localStorage.getItem("storeId") || "0");
+  const [date, setDate] = useState<Date>(new Date());
+  const [sortAscending, setSortAscending] = useState<number>(0);
+  const [customerAgedSummary, setCustomerAgedSummary] = useState<
+    CustomerAgedSummary[]
+  >([]);
+  const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
 
-  fetchCustomerAgedSummary();
+  /**
+   * Fetch Customer Aged Summary
+   */
+  const fetchCustomerAgedSummary = () => {
+    setIsButtonDisabled(true);
+    httpService
+      .fetch(
+        {
+          storeId: currentStore,
+          tillDate: date,
+          sort: sortAscending,
+        },
+        "customer_aged_summary"
+      )
+      .then((res: any) => {
+        let response: APIResponse<CustomerAgedSummary[]> = res.data;
+        if (response.status && response.data) {
+          setCustomerAgedSummary(response.data);
+        } else {
+          showToast(toast, false, response.message || UNKNOWN_SERVER_ERROR_MSG);
+          setCustomerAgedSummary([]);
+        }
+      })
+      .catch((err: any) => {
+        setCustomerAgedSummary([]);
+        showToast(toast, false, err.message);
+      })
+      .finally(() => {
+        setIsButtonDisabled(false);
+      });
+  };
   return (
     <VStack align="start">
-      <_Label>sda</_Label>
+      <HStack width="100%">
+        <_Label fontSize={"0.8em"}>Generate Client Summary till:</_Label>
+        <DatePicker
+          wrapperClassName="datepicker_style"
+          dateFormat={"MM/dd/yyyy"}
+          placeholderText="Txn. Date"
+          selected={date}
+          onChange={(date: any) => {
+            setDate(date);
+          }}
+          closeOnScroll={true}
+          maxDate={new Date()}
+        />
+        <HStack>
+          <_Label fontSize="0.8em">Sort by Lowest Amount owing:</_Label>
+          <Switch
+            id="email-alerts"
+            colorScheme="teal"
+            onChange={() => {
+              setSortAscending(sortAscending ^ 1);
+            }}
+          />
+        </HStack>
+        <_Button
+          isDisabled={isButtonDisabled}
+          icon={<FcMoneyTransfer />}
+          color="#90EE90"
+          bgColor="black"
+          fontSize="1.2em"
+          label="Fetch Customer Aged Summary"
+          onClick={fetchCustomerAgedSummary}
+          width="25%"
+        ></_Button>
+      </HStack>
     </VStack>
   );
 };
