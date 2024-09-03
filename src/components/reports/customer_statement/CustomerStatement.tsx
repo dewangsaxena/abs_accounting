@@ -3,7 +3,6 @@ import {
   Box,
   Card,
   CardBody,
-  Checkbox,
   HStack,
   SimpleGrid,
   Switch,
@@ -13,17 +12,12 @@ import {
   VStack,
   useToast,
 } from "@chakra-ui/react";
-import {
-  AutoSuggestStyle,
-  navBgColor,
-  numberFont,
-} from "../../../shared/style";
+import { AutoSuggestStyle, navBgColor } from "../../../shared/style";
 import { APIResponse, HTTPService } from "../../../service/api-client";
 import { ClientDetails, clientStore } from "../../client/store";
 import {
   buildSearchListForClient,
   checkForValidSession,
-  formatNumberWithDecimalPlaces,
   getUUID,
   showToast,
 } from "../../../shared/functions";
@@ -39,13 +33,11 @@ import { MdAlternateEmail } from "react-icons/md";
 import { useState } from "react";
 import {
   APP_HOST,
-  AttributeType,
   AUTO_SUGGEST_MIN_INPUT_LENGTH,
   UNKNOWN_SERVER_ERROR_MSG,
 } from "../../../shared/config";
 import { IoMdAddCircle } from "react-icons/io";
 import AutoSuggest from "react-autosuggest";
-import { FcMoneyTransfer } from "react-icons/fc";
 
 /** HTTP Service */
 const httpService = new HTTPService();
@@ -97,211 +89,6 @@ const CustomerList = ({ list, deleteClient }: CustomerDetailsListProps) => {
         );
       })}
     </SimpleGrid>
-  );
-};
-
-/**
- * Customer Aged Summary
- */
-interface CustomerAgedSummary {
-  "31-60": number;
-  "61-90": number;
-  "91+": number;
-  client_id: number;
-  client_name: number;
-  current: number;
-  phone_number: string;
-  total: number;
-}
-
-/**
- * Customer List props
- */
-interface CustomerListProps {
-  list: CustomerAgedSummary[];
-  selectedClient: number[];
-  deleteClient: any;
-}
-
-/**
- * Customer List
- * @param list
- * @returns
- */
-const _CustomerList = ({
-  list,
-  selectedClient,
-  deleteClient,
-}: CustomerListProps) => {
-  const contentFontStyle: AttributeType = {
-    fontSize: "0.7em",
-    fontFamily: numberFont,
-    letterSpacing: 2,
-    textTransform: "uppercase",
-  };
-  return (
-    <Box height="60vh" overflowY={"scroll"} width="100%">
-      <VStack align="start">
-        <HStack width="100%">
-          <Box width="30%">
-            <Badge {...contentFontStyle} variant={"outline"}>
-              Customer Name
-            </Badge>
-          </Box>
-          <Box width="10%">
-            <Badge {...contentFontStyle} variant={"outline"}>
-              Total
-            </Badge>
-          </Box>
-          <Box width="10%">
-            <Badge {...contentFontStyle} variant={"outline"}>
-              Current
-            </Badge>
-          </Box>
-          <Box width="10%">
-            <Badge {...contentFontStyle} variant={"outline"}>
-              30-60
-            </Badge>
-          </Box>
-          <Box width="10%">
-            <Badge {...contentFontStyle} variant={"outline"}>
-              61-90
-            </Badge>
-          </Box>
-          <Box width="10%">
-            <Badge {...contentFontStyle} variant={"outline"}>
-              91+
-            </Badge>
-          </Box>
-        </HStack>
-        {list.map((customer: CustomerAgedSummary) => {
-          return (
-            <>
-              <HStack width="100%">
-                <Box width="30%">
-                  <_Label {...contentFontStyle}>{customer.client_name}</_Label>
-                </Box>
-                <Box width="10%">
-                  <_Label {...contentFontStyle}>
-                    $ {formatNumberWithDecimalPlaces(customer.total, 2)}
-                  </_Label>
-                </Box>
-                <Box width="10%">
-                  <_Label {...contentFontStyle}>
-                    $ {formatNumberWithDecimalPlaces(customer.current, 2)}
-                  </_Label>
-                </Box>
-                <Box width="10%">
-                  <_Label {...contentFontStyle}>
-                    $ {formatNumberWithDecimalPlaces(customer["31-60"], 2)}
-                  </_Label>
-                </Box>
-                <Box width="10%">
-                  <_Label {...contentFontStyle}>
-                    $ {formatNumberWithDecimalPlaces(customer["61-90"], 2)}
-                  </_Label>
-                </Box>
-                <Box width="10%">
-                  <_Label {...contentFontStyle}>
-                    $ {formatNumberWithDecimalPlaces(customer["91+"], 2)}
-                  </_Label>
-                </Box>
-                <Box width="10%">
-                  <Checkbox size="md"></Checkbox>
-                </Box>
-              </HStack>
-            </>
-          );
-        })}
-      </VStack>
-    </Box>
-  );
-};
-
-/**
- * Customer Aged Summary List.
- * @returns
- */
-const CustomerAgedSummaryList = () => {
-  const toast = useToast();
-  const currentStore = parseInt(localStorage.getItem("storeId") || "0");
-  const [date, setDate] = useState<Date>(new Date());
-  const [sortAscending, setSortAscending] = useState<number>(0);
-  const [customerAgedSummary, setCustomerAgedSummary] = useState<
-    CustomerAgedSummary[]
-  >([]);
-  const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
-
-  /**
-   * Fetch Customer Aged Summary
-   */
-  const fetchCustomerAgedSummary = () => {
-    setIsButtonDisabled(true);
-    httpService
-      .fetch(
-        {
-          storeId: currentStore,
-          tillDate: date,
-          sort: sortAscending,
-        },
-        "customer_aged_summary"
-      )
-      .then((res: any) => {
-        let response: APIResponse<CustomerAgedSummary[]> = res.data;
-        if (response.status && response.data) {
-          setCustomerAgedSummary(response.data);
-        } else {
-          showToast(toast, false, response.message || UNKNOWN_SERVER_ERROR_MSG);
-          setCustomerAgedSummary([]);
-        }
-      })
-      .catch((err: any) => {
-        setCustomerAgedSummary([]);
-        showToast(toast, false, err.message);
-      })
-      .finally(() => {
-        setIsButtonDisabled(false);
-      });
-  };
-  return (
-    <VStack align="start">
-      <HStack width="100%">
-        <_Label fontSize={"0.8em"}>Generate Client Summary till:</_Label>
-        <DatePicker
-          wrapperClassName="datepicker_style"
-          dateFormat={"MM/dd/yyyy"}
-          placeholderText="Txn. Date"
-          selected={date}
-          onChange={(date: any) => {
-            setDate(date);
-          }}
-          closeOnScroll={true}
-          maxDate={new Date()}
-        />
-        <HStack>
-          <_Label fontSize="0.8em">Sort by Lowest Amount owing:</_Label>
-          <Switch
-            id="email-alerts"
-            colorScheme="teal"
-            onChange={() => {
-              setSortAscending(sortAscending ^ 1);
-            }}
-          />
-        </HStack>
-        <_Button
-          isDisabled={isButtonDisabled}
-          icon={<FcMoneyTransfer />}
-          color="#90EE90"
-          bgColor="black"
-          fontSize="1.2em"
-          label="Fetch Customer Aged Summary"
-          onClick={fetchCustomerAgedSummary}
-          width="25%"
-        ></_Button>
-      </HStack>
-      <_Divider margin={0} />
-      <_CustomerList list={customerAgedSummary} />
-    </VStack>
   );
 };
 
@@ -616,10 +403,9 @@ const CustomerStatement = () => {
             </HStack>
           </VStack>
           <_Divider />
-          <CustomerAgedSummaryList />
-          {/* <VStack align="start">
+          <VStack align="start">
             <CustomerList list={selectedClients} deleteClient={deleteClient} />
-          </VStack> */}
+          </VStack>
         </CardBody>
       </Card>
     </Box>
