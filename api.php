@@ -263,6 +263,16 @@ if (isset($_POST['action'])) {
         default:
             break;
 
+            /* Customer Aged Summary */
+        case 'customer_aged_summary': 
+            $response = CustomerAgedSummary::fetch_customer_aged_summary(
+                $data['storeId'], 
+                $data['fromDate'], 
+                $data['tillDate'], 
+                $data['sort'],
+            );
+            break;
+
             /* Customer Summary */
         case 'customer_summary':
             $response = CustomerSummary::fetch(

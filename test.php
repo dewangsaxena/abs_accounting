@@ -301,9 +301,11 @@ function generate_table(array $quantity_table, PDO &$db, int $store_id): void {
     EOS;
 }
 
-// generate_table($quantity_table, $db, $store_id);
+$store_id = StoreDetails::EDMONTON;
+$from_date = null;
+$till_date = '2024-08-31';
+$sort = 0;
+$customer_aged_summary = CustomerAgedSummary::fetch_customer_aged_summary($store_id, $from_date, $till_date, $sort, exclude_self: false);
+print_r($customer_aged_summary);
 
-// Client::fetch_clients_by_last_purchase_date('2024-01-01');
-$x = Inventory::frequency(1, null, null);
-print_r($x);
 ?>
