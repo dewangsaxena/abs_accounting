@@ -54,6 +54,9 @@ class Client {
         
         /* 1721534 AB LTD */
         16630 => StoreDetails::EDMONTON,
+
+        /* ABS TRUCK AND TRAILER PARTS SK LTD. */
+        20432 => StoreDetails::REGINA,
     ];
 
     /**
