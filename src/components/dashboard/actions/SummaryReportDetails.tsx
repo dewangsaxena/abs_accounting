@@ -91,6 +91,10 @@ const Header = () => {
   );
 };
 
+// Update Interval
+const UPDATE_INTERVAL: number = 300_000;
+const INTERVAL_IN_MINUTES: number = UPDATE_INTERVAL / 1000 / 60;
+
 const InventoryReport = () => {
   const {
     cogs,
@@ -141,8 +145,6 @@ const InventoryReport = () => {
     });
   }, []);
 
-  // Interval
-  const INTERVAL: number = 900_000;
   useInterval(() => {
     fetch().then((res: any) => {
       let response: APIResponse<SummaryReportDetails> = res.data;
@@ -150,7 +152,7 @@ const InventoryReport = () => {
         updateStats(response.data);
       } else showToast(toast, false, ERROR_MESSAGE);
     });
-  }, INTERVAL);
+  }, UPDATE_INTERVAL);
 
   return (
     <VStack align={"start"} width="100%">
@@ -253,7 +255,7 @@ const InventoryReport = () => {
           hide={true}
           toggleVisibility={true}
         >
-          <b>{formatNumberWithDecimalPlaces(profitMargin, 2)} %</b>
+          {formatNumberWithDecimalPlaces(profitMargin, 2)} %
         </_Label>
       </HStack>
       <HStack>
@@ -276,7 +278,7 @@ const InventoryReport = () => {
           hide={true}
           toggleVisibility={true}
         >
-          <b>{formatNumberWithDecimalPlaces(cogsMargin, 2)} %</b>
+          {formatNumberWithDecimalPlaces(cogsMargin, 2)} %
         </_Label>
       </HStack>
       <HStack width="100%">
@@ -296,7 +298,7 @@ const InventoryReport = () => {
           </Tooltip>
         </Box>
         <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2}>
-          <b>$ {formatNumberWithDecimalPlaces(receiptPayments, 2)}</b>
+          $ {formatNumberWithDecimalPlaces(receiptPayments, 2)}
         </_Label>
       </HStack>
       <HStack>
@@ -313,7 +315,7 @@ const InventoryReport = () => {
           </Tooltip>
         </Box>
         <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2}>
-          <b>$ {formatNumberWithDecimalPlaces(receiptDiscount, 2)}</b>
+          $ {formatNumberWithDecimalPlaces(receiptDiscount, 2)}
         </_Label>
       </HStack>
     </VStack>
@@ -327,7 +329,7 @@ const StatsUpdateMsg = () => {
       <HStack>
         <CiTimer color="purple" />
         <_Label fontSize="0.6em" fontFamily={numberFont}>
-          <i>Stats are updated every 15 Minutes.</i>
+          <i>Stats are updated every {INTERVAL_IN_MINUTES} Minutes.</i>
         </_Label>
       </HStack>
       <HStack>
