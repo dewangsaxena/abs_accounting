@@ -57,7 +57,8 @@ class Inventory
         2790,
         23708,
         4892,
-        23588
+        23588,
+        32130
     ];
 
     // Flyer Eligible
