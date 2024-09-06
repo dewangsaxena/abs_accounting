@@ -19,6 +19,7 @@ import { ClientDetails, clientStore } from "../../client/store";
 import { APIResponse } from "../../../service/api-client";
 import {
   buildSearchListForClient,
+  checkForValidSession,
   formatNumberWithDecimalPlaces,
   getUUID,
   showToast,
@@ -62,6 +63,8 @@ import { FaUser } from "react-icons/fa";
  * @returns
  */
 const CustomerSummary = () => {
+  checkForValidSession();
+
   // Loading Status
   const [isLoading, setLoadingStatus] = useState<boolean>(false);
 
