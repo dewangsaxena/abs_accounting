@@ -20,6 +20,7 @@ import {
   redirectIfInvalidSession,
   getUUID,
   showToast,
+  isSessionActive,
 } from "../../../shared/functions";
 import DatePicker from "react-datepicker";
 import {
@@ -240,175 +241,180 @@ const CustomerStatement = () => {
   };
 
   return (
-    <Box width="100%">
-      <Card
-        height={window.screen.availHeight - window.screen.availHeight * 0.15}
-      >
-        <CardBody>
-          <Box width="20%">
-            <HomeNavButton></HomeNavButton>
-          </Box>
-          <VStack align="start" width="100%">
-            <HStack width="100%">
-              <Box>
-                <_Button
-                  isDisabled={noOfSelectedClient >= maxSelectedClientAllowed}
-                  label=""
-                  icon={<IoMdAddCircle color="#90EE90" />}
-                  onClick={addClient}
-                  fontSize="1.2em"
-                  bgColor="black"
-                ></_Button>
-              </Box>
-              <Box width="25%">
-                <AutoSuggest
-                  suggestions={clientSuggestions}
-                  onSuggestionsClearRequested={() => setClientSuggestions([])}
-                  onSuggestionsFetchRequested={({ value }) => {
-                    if (value.length < AUTO_SUGGEST_MIN_INPUT_LENGTH) return;
-                    loadOptions(value);
-                  }}
-                  onSuggestionSelected={(_: any, { suggestionIndex }) => {
-                    onClientSelect(clientSuggestions[suggestionIndex]);
-                  }}
-                  getSuggestionValue={(suggestion: any) => {
-                    return `${suggestion.value.primaryDetails.name}`;
-                  }}
-                  renderSuggestion={(suggestion: any) => (
-                    <span>&nbsp;{suggestion.label}</span>
-                  )}
-                  inputProps={{
-                    style: {
-                      width: "22vw",
-                      ...AutoSuggestStyle,
-                    },
-                    placeholder:
-                      `Search clients...` +
-                      (AUTO_SUGGEST_MIN_INPUT_LENGTH > 1
-                        ? `(min ${AUTO_SUGGEST_MIN_INPUT_LENGTH} chars)`
-                        : ""),
-                    value: selectedClient,
-                    onChange: (_, { newValue }) => {
-                      setSelectedClient(newValue);
-                      if (newValue.trim() === "") {
-                        setClientId(null);
-                        setClientName(null);
-                      }
-                    },
-                    disabled: noOfSelectedClient >= maxSelectedClientAllowed,
-                  }}
-                  highlightFirstSuggestion={true}
-                ></AutoSuggest>
-              </Box>
-              <Box>
-                <HStack spacing={10}>
-                  <_Label fontSize="0.8em">Start Date:</_Label>
-                  <DatePicker
-                    disabled={clientId === null}
-                    wrapperClassName="datepicker_style"
-                    dateFormat={"MM/dd/yyyy"}
-                    placeholderText="Txn. Date"
-                    selected={startDate}
-                    onChange={(date) => {
-                      if (date !== null) {
-                        setStartDate(date);
-                      }
+    isSessionActive() && (
+      <Box width="100%">
+        <Card
+          height={window.screen.availHeight - window.screen.availHeight * 0.15}
+        >
+          <CardBody>
+            <Box width="20%">
+              <HomeNavButton></HomeNavButton>
+            </Box>
+            <VStack align="start" width="100%">
+              <HStack width="100%">
+                <Box>
+                  <_Button
+                    isDisabled={noOfSelectedClient >= maxSelectedClientAllowed}
+                    label=""
+                    icon={<IoMdAddCircle color="#90EE90" />}
+                    onClick={addClient}
+                    fontSize="1.2em"
+                    bgColor="black"
+                  ></_Button>
+                </Box>
+                <Box width="25%">
+                  <AutoSuggest
+                    suggestions={clientSuggestions}
+                    onSuggestionsClearRequested={() => setClientSuggestions([])}
+                    onSuggestionsFetchRequested={({ value }) => {
+                      if (value.length < AUTO_SUGGEST_MIN_INPUT_LENGTH) return;
+                      loadOptions(value);
                     }}
-                    closeOnScroll={true}
-                    maxDate={new Date()}
-                  />
-                </HStack>
-              </Box>
-              <Box>
-                <HStack spacing={10}>
-                  <_Label fontSize="0.8em">End Date:</_Label>
-                  <DatePicker
-                    disabled={clientId === null}
-                    wrapperClassName="datepicker_style"
-                    dateFormat={"MM/dd/yyyy"}
-                    placeholderText="Txn. Date"
-                    selected={endDate}
-                    onChange={(date) => {
-                      if (date !== null) {
-                        setEndDate(date);
-                      }
+                    onSuggestionSelected={(_: any, { suggestionIndex }) => {
+                      onClientSelect(clientSuggestions[suggestionIndex]);
                     }}
-                    closeOnScroll={true}
-                    maxDate={new Date()}
-                  />
-                </HStack>
-              </Box>
-            </HStack>
-          </VStack>
-          <VStack align={"start"} marginTop={5}>
-            <HStack>
-              <Box>
-                <_Button
-                  isDisabled={clientId === null}
-                  color="white"
-                  fontSize="1.2em"
-                  bgColor={navBgColor}
-                  label="Show Statement"
-                  onClick={() => {
-                    handleOperation("print");
-                  }}
-                  icon={<TfiReceipt color="#00A36C" />}
-                ></_Button>
-              </Box>
-              <Box>
-                <_Button
-                  isDisabled={clientId === null || disableButton}
-                  color="white"
-                  fontSize="1.2em"
-                  bgColor={navBgColor}
-                  label="Email Statement(s)"
-                  onClick={() => {
-                    handleOperation("email");
-                  }}
-                  icon={<MdAlternateEmail color="#0096FF" />}
-                ></_Button>
-              </Box>
-              <Box>
-                <HStack spacing={5}>
-                  <Badge colorScheme={"green"} fontSize="0.8em">
-                    ATTACH TRANSACTIONS?
-                  </Badge>
-                  <Switch
+                    getSuggestionValue={(suggestion: any) => {
+                      return `${suggestion.value.primaryDetails.name}`;
+                    }}
+                    renderSuggestion={(suggestion: any) => (
+                      <span>&nbsp;{suggestion.label}</span>
+                    )}
+                    inputProps={{
+                      style: {
+                        width: "22vw",
+                        ...AutoSuggestStyle,
+                      },
+                      placeholder:
+                        `Search clients...` +
+                        (AUTO_SUGGEST_MIN_INPUT_LENGTH > 1
+                          ? `(min ${AUTO_SUGGEST_MIN_INPUT_LENGTH} chars)`
+                          : ""),
+                      value: selectedClient,
+                      onChange: (_, { newValue }) => {
+                        setSelectedClient(newValue);
+                        if (newValue.trim() === "") {
+                          setClientId(null);
+                          setClientName(null);
+                        }
+                      },
+                      disabled: noOfSelectedClient >= maxSelectedClientAllowed,
+                    }}
+                    highlightFirstSuggestion={true}
+                  ></AutoSuggest>
+                </Box>
+                <Box>
+                  <HStack spacing={10}>
+                    <_Label fontSize="0.8em">Start Date:</_Label>
+                    <DatePicker
+                      disabled={clientId === null}
+                      wrapperClassName="datepicker_style"
+                      dateFormat={"MM/dd/yyyy"}
+                      placeholderText="Txn. Date"
+                      selected={startDate}
+                      onChange={(date) => {
+                        if (date !== null) {
+                          setStartDate(date);
+                        }
+                      }}
+                      closeOnScroll={true}
+                      maxDate={new Date()}
+                    />
+                  </HStack>
+                </Box>
+                <Box>
+                  <HStack spacing={10}>
+                    <_Label fontSize="0.8em">End Date:</_Label>
+                    <DatePicker
+                      disabled={clientId === null}
+                      wrapperClassName="datepicker_style"
+                      dateFormat={"MM/dd/yyyy"}
+                      placeholderText="Txn. Date"
+                      selected={endDate}
+                      onChange={(date) => {
+                        if (date !== null) {
+                          setEndDate(date);
+                        }
+                      }}
+                      closeOnScroll={true}
+                      maxDate={new Date()}
+                    />
+                  </HStack>
+                </Box>
+              </HStack>
+            </VStack>
+            <VStack align={"start"} marginTop={5}>
+              <HStack>
+                <Box>
+                  <_Button
                     isDisabled={clientId === null}
-                    colorScheme="orange"
-                    size="md"
-                    onChange={() => {
-                      setAttachTransactions(!attachTransactions);
+                    color="white"
+                    fontSize="1.2em"
+                    bgColor={navBgColor}
+                    label="Show Statement"
+                    onClick={() => {
+                      handleOperation("print");
                     }}
-                  />
-                </HStack>
-              </Box>
-              <Box>
-                <HStack spacing={5}>
-                  <Badge colorScheme={"green"} fontSize="0.8em">
-                    Generate Record of All Transactions?
-                  </Badge>
-                  <Switch
-                    isDisabled={clientId === null}
-                    colorScheme="blue"
-                    size="md"
-                    onChange={() => {
-                      setGenerateRecordOfAllTransactions(
-                        !generateRecordOfAllTransactions
-                      );
+                    icon={<TfiReceipt color="#00A36C" />}
+                  ></_Button>
+                </Box>
+                <Box>
+                  <_Button
+                    isDisabled={clientId === null || disableButton}
+                    color="white"
+                    fontSize="1.2em"
+                    bgColor={navBgColor}
+                    label="Email Statement(s)"
+                    onClick={() => {
+                      handleOperation("email");
                     }}
-                  />
-                </HStack>
-              </Box>
-            </HStack>
-          </VStack>
-          <_Divider />
-          <VStack align="start">
-            <CustomerList list={selectedClients} deleteClient={deleteClient} />
-          </VStack>
-        </CardBody>
-      </Card>
-    </Box>
+                    icon={<MdAlternateEmail color="#0096FF" />}
+                  ></_Button>
+                </Box>
+                <Box>
+                  <HStack spacing={5}>
+                    <Badge colorScheme={"green"} fontSize="0.8em">
+                      ATTACH TRANSACTIONS?
+                    </Badge>
+                    <Switch
+                      isDisabled={clientId === null}
+                      colorScheme="orange"
+                      size="md"
+                      onChange={() => {
+                        setAttachTransactions(!attachTransactions);
+                      }}
+                    />
+                  </HStack>
+                </Box>
+                <Box>
+                  <HStack spacing={5}>
+                    <Badge colorScheme={"green"} fontSize="0.8em">
+                      Generate Record of All Transactions?
+                    </Badge>
+                    <Switch
+                      isDisabled={clientId === null}
+                      colorScheme="blue"
+                      size="md"
+                      onChange={() => {
+                        setGenerateRecordOfAllTransactions(
+                          !generateRecordOfAllTransactions
+                        );
+                      }}
+                    />
+                  </HStack>
+                </Box>
+              </HStack>
+            </VStack>
+            <_Divider />
+            <VStack align="start">
+              <CustomerList
+                list={selectedClients}
+                deleteClient={deleteClient}
+              />
+            </VStack>
+          </CardBody>
+        </Card>
+      </Box>
+    )
   );
 };
 

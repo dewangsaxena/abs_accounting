@@ -515,77 +515,79 @@ const AdjustInventory = memo(() => {
   };
 
   return (
-    <>
-      <Box width="20%">
-        <HomeNavButton />
-      </Box>
-      <Box>
-        <Box
-          height="82vh"
-          maxHeight="82vh"
-          overflowY={"scroll"}
-          tabIndex={1}
-          onKeyUp={(e) => {
-            if (isDisabled === false && e.key === "Enter")
-              setCounter(counter + 1);
-          }}
-        >
-          <Card height="85vh">
-            <CardBody padding={1}>
-              <_Label letterSpacing={2} fontSize={"1em"} fontWeight="bold">
-                ADJUST INVENTORY
-              </_Label>
-              <_Divider margin={2}></_Divider>
-              <Header></Header>
-              {iterIds.map((id, index) => {
-                return (
-                  <Box
-                    key={index}
-                    marginTop={iterIds.length && index > 0 ? 2 : 0}
-                  >
-                    <Row
-                      isDisabled={isDisabled}
-                      invDetails={invDetails}
-                      key={id}
-                      _key={id}
-                    ></Row>
-                  </Box>
-                );
-              })}
-            </CardBody>
-          </Card>
+    isSessionActive() && (
+      <>
+        <Box width="20%">
+          <HomeNavButton />
         </Box>
-        <_Divider></_Divider>
-        <HStack width="100%" spacing={10} justifyItems={"right"}>
-          {isDisabled === false && (
-            <Box width="15%">
-              <_Button
-                loadingText="Adjusting..."
-                size="sm"
-                fontSize={"1.2em"}
-                label="Adjust Inventory"
-                icon={<TbAdjustments color={iconColor} />}
-                bgColor={navBgColor}
-                onClick={clickHandler}
-                isLoading={isLoading}
-                isDisabled={isDisabled}
-              ></_Button>
-            </Box>
-          )}
-          <Box width="85%">
-            <_Label
-              color={isDisabled ? "#5BCC3C" : "red"}
-              textTransform="uppercase"
-              fontSize={"0.8em"}
-              fontWeight="bold"
-              letterSpacing={2}
-            >
-              {label}
-            </_Label>
+        <Box>
+          <Box
+            height="82vh"
+            maxHeight="82vh"
+            overflowY={"scroll"}
+            tabIndex={1}
+            onKeyUp={(e) => {
+              if (isDisabled === false && e.key === "Enter")
+                setCounter(counter + 1);
+            }}
+          >
+            <Card height="85vh">
+              <CardBody padding={1}>
+                <_Label letterSpacing={2} fontSize={"1em"} fontWeight="bold">
+                  ADJUST INVENTORY
+                </_Label>
+                <_Divider margin={2}></_Divider>
+                <Header></Header>
+                {iterIds.map((id, index) => {
+                  return (
+                    <Box
+                      key={index}
+                      marginTop={iterIds.length && index > 0 ? 2 : 0}
+                    >
+                      <Row
+                        isDisabled={isDisabled}
+                        invDetails={invDetails}
+                        key={id}
+                        _key={id}
+                      ></Row>
+                    </Box>
+                  );
+                })}
+              </CardBody>
+            </Card>
           </Box>
-        </HStack>
-      </Box>
-    </>
+          <_Divider></_Divider>
+          <HStack width="100%" spacing={10} justifyItems={"right"}>
+            {isDisabled === false && (
+              <Box width="15%">
+                <_Button
+                  loadingText="Adjusting..."
+                  size="sm"
+                  fontSize={"1.2em"}
+                  label="Adjust Inventory"
+                  icon={<TbAdjustments color={iconColor} />}
+                  bgColor={navBgColor}
+                  onClick={clickHandler}
+                  isLoading={isLoading}
+                  isDisabled={isDisabled}
+                ></_Button>
+              </Box>
+            )}
+            <Box width="85%">
+              <_Label
+                color={isDisabled ? "#5BCC3C" : "red"}
+                textTransform="uppercase"
+                fontSize={"0.8em"}
+                fontWeight="bold"
+                letterSpacing={2}
+              >
+                {label}
+              </_Label>
+            </Box>
+          </HStack>
+        </Box>
+      </>
+    )
   );
 });
 

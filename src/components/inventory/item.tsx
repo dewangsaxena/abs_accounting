@@ -57,6 +57,7 @@ import {
   getProfitMarginByItemIdentifierPrefix,
   showToast,
   toFixed,
+  isSessionActive,
 } from "../../shared/functions";
 import { accountsConfig } from "../../shared/accounts";
 import { ProfitMarginIndex, getProfitMargins } from "./profitMarginStore";
@@ -499,325 +500,365 @@ const Item = ({ isViewOrUpdate = false }: { isViewOrUpdate?: boolean }) => {
   }
 
   return (
-    <>
-      <Box paddingLeft={5} paddingRight={5} bgColor="white">
-        <Tabs>
-          <TabList marginBottom={5}>
-            <Tab>
-              <TabButton icon={<RiNumbersFill />} label="Quantity" />
-            </Tab>
-            <Tab>
-              <TabButton icon={<AiFillTags />} label="Pricing" />
-            </Tab>
-            {isViewOrUpdate === false && (
+    isSessionActive() && (
+      <>
+        <Box paddingLeft={5} paddingRight={5} bgColor="white">
+          <Tabs>
+            <TabList marginBottom={5}>
               <Tab>
-                <TabButton icon={<TbTallymarks />} label="Add Quantity" />
+                <TabButton icon={<RiNumbersFill />} label="Quantity" />
               </Tab>
-            )}
-            <Tab>
-              <TabButton icon={<TbCategory2 />} label="Unit" />
-            </Tab>
-            <Tab>
-              <TabButton icon={<MdOutlineAccountBalance />} label="Linked" />
-            </Tab>
-            <Tab>
-              <TabButton icon={<HiOutlineInformationCircle />} label="Memo" />
-            </Tab>
-            <Tab>
-              <TabButton
-                icon={<IoMdInformation />}
-                label="Additional Information"
-              />
-            </Tab>
-          </TabList>
+              <Tab>
+                <TabButton icon={<AiFillTags />} label="Pricing" />
+              </Tab>
+              {isViewOrUpdate === false && (
+                <Tab>
+                  <TabButton icon={<TbTallymarks />} label="Add Quantity" />
+                </Tab>
+              )}
+              <Tab>
+                <TabButton icon={<TbCategory2 />} label="Unit" />
+              </Tab>
+              <Tab>
+                <TabButton icon={<MdOutlineAccountBalance />} label="Linked" />
+              </Tab>
+              <Tab>
+                <TabButton icon={<HiOutlineInformationCircle />} label="Memo" />
+              </Tab>
+              <Tab>
+                <TabButton
+                  icon={<IoMdInformation />}
+                  label="Additional Information"
+                />
+              </Tab>
+            </TabList>
 
-          {/* Show Search Param  */}
-          {isViewOrUpdate && (
-            <Box>
-              <HStack spacing={20}>
-                <Box width="10%">
-                  <_Label fontSize="0.8em">Showing Details for: </_Label>
+            {/* Show Search Param  */}
+            {isViewOrUpdate && (
+              <Box>
+                <HStack spacing={20}>
+                  <Box width="10%">
+                    <_Label fontSize="0.8em">Showing Details for: </_Label>
+                  </Box>
+                  <Box width="80%">
+                    <AutoSuggest
+                      suggestions={itemSuggestions}
+                      onSuggestionsClearRequested={() => setItemSuggestions([])}
+                      onSuggestionsFetchRequested={({ value }) => {
+                        if (value.length < AUTO_SUGGEST_MIN_INPUT_LENGTH)
+                          return;
+                        loadOptionsForItem(value);
+                      }}
+                      onSuggestionSelected={(_: any, { suggestionIndex }) => {
+                        setIsItemLoadedStatus(true);
+                        setDetails(itemSuggestions[suggestionIndex].value);
+                      }}
+                      getSuggestionValue={(suggestion: any) => {
+                        return `${suggestion.value.identifier}`;
+                      }}
+                      renderSuggestion={(suggestion: any) => (
+                        <span>&nbsp;{suggestion.label}</span>
+                      )}
+                      inputProps={{
+                        style: { width: "100%", ...AutoSuggestStyle },
+                        placeholder:
+                          `Search item...` +
+                          (AUTO_SUGGEST_MIN_INPUT_LENGTH > 1
+                            ? `(min ${AUTO_SUGGEST_MIN_INPUT_LENGTH} chars)`
+                            : ""),
+                        value: selectedItem,
+                        onChange: (_, { newValue }) => {
+                          setSelectedItem(newValue);
+                          if (newValue.trim() === "") {
+                            setIsItemLoadedStatus(false);
+                            reset();
+                          }
+                        },
+                        disabled: false,
+                      }}
+                      highlightFirstSuggestion={true}
+                    ></AutoSuggest>
+                  </Box>
+                </HStack>
+                <_Divider />
+              </Box>
+            )}
+
+            <Box width="100%">
+              <HStack spacing={2}>
+                <Box width="25%">
+                  <_InputLeftElement
+                    defaultValue={identifier}
+                    placeholder="Item Identifier"
+                    fontWeight="bold"
+                    borderRadius={inputConfig.borderRadius}
+                    borderBottomColor={"red"}
+                    borderBottomWidth={inputConfig.borderWidth}
+                    size={inputConfig.size}
+                    fontSize={inputConfig.fontSize}
+                    fontFamily={numberFont}
+                    letterSpacing={inputConfig.letterSpacing}
+                    width={"100%"}
+                    leftElement={<AiOutlineBarcode color={"#4169e1"} />}
+                    onBlur={(event: any) => {
+                      if (event) {
+                        setField("identifier", event.target.value.trim());
+                      }
+                    }}
+                  ></_InputLeftElement>
                 </Box>
-                <Box width="80%">
-                  <AutoSuggest
-                    suggestions={itemSuggestions}
-                    onSuggestionsClearRequested={() => setItemSuggestions([])}
-                    onSuggestionsFetchRequested={({ value }) => {
-                      if (value.length < AUTO_SUGGEST_MIN_INPUT_LENGTH) return;
-                      loadOptionsForItem(value);
+                <Box width="45%">
+                  <_InputLeftElement
+                    defaultValue={description}
+                    placeholder="Item Description"
+                    fontWeight="bold"
+                    borderRadius={inputConfig.borderRadius}
+                    borderBottomColor={"red"}
+                    borderBottomWidth={inputConfig.borderWidth}
+                    size={inputConfig.size}
+                    fontSize={inputConfig.fontSize}
+                    letterSpacing={inputConfig.letterSpacing}
+                    width={"100%"}
+                    leftElement={<BiDetail color={"#2AAA8A"} />}
+                    onBlur={(event: any) => {
+                      if (event) {
+                        setField("description", event.target.value.trim());
+                      }
                     }}
-                    onSuggestionSelected={(_: any, { suggestionIndex }) => {
-                      setIsItemLoadedStatus(true);
-                      setDetails(itemSuggestions[suggestionIndex].value);
+                  ></_InputLeftElement>
+                </Box>
+                <Box width="15%">
+                  <_InputLeftElement
+                    placeholder="OEM"
+                    defaultValue={oem}
+                    borderRadius={inputConfig.borderRadius}
+                    borderBottomColor={inputConfig.borderColor}
+                    borderBottomWidth={inputConfig.borderWidth}
+                    size={inputConfig.size}
+                    fontSize={inputConfig.fontSize}
+                    letterSpacing={inputConfig.letterSpacing}
+                    width={"100%"}
+                    leftElement={
+                      <MdOutlinePrecisionManufacturing color={"#2AAA8A"} />
+                    }
+                    onBlur={(event: any) => {
+                      if (event) {
+                        setField("oem", event.target.value.trim());
+                      }
                     }}
-                    getSuggestionValue={(suggestion: any) => {
-                      return `${suggestion.value.identifier}`;
-                    }}
-                    renderSuggestion={(suggestion: any) => (
-                      <span>&nbsp;{suggestion.label}</span>
-                    )}
-                    inputProps={{
-                      style: { width: "100%", ...AutoSuggestStyle },
-                      placeholder:
-                        `Search item...` +
-                        (AUTO_SUGGEST_MIN_INPUT_LENGTH > 1
-                          ? `(min ${AUTO_SUGGEST_MIN_INPUT_LENGTH} chars)`
-                          : ""),
-                      value: selectedItem,
-                      onChange: (_, { newValue }) => {
-                        setSelectedItem(newValue);
-                        if (newValue.trim() === "") {
-                          setIsItemLoadedStatus(false);
-                          reset();
-                        }
-                      },
-                      disabled: false,
-                    }}
-                    highlightFirstSuggestion={true}
-                  ></AutoSuggest>
+                  ></_InputLeftElement>
+                </Box>
+                <Box width="15%" transform="translateY(25%);">
+                  <_Select
+                    size="xs"
+                    isDisabled={true}
+                    value={category}
+                    options={{ 0: "Service", 1: "Inventory" }}
+                    onChange={() => {}}
+                  ></_Select>
                 </Box>
               </HStack>
-              <_Divider />
             </Box>
-          )}
-
-          <Box width="100%">
-            <HStack spacing={2}>
-              <Box width="25%">
-                <_InputLeftElement
-                  defaultValue={identifier}
-                  placeholder="Item Identifier"
-                  fontWeight="bold"
-                  borderRadius={inputConfig.borderRadius}
-                  borderBottomColor={"red"}
-                  borderBottomWidth={inputConfig.borderWidth}
-                  size={inputConfig.size}
-                  fontSize={inputConfig.fontSize}
-                  fontFamily={numberFont}
-                  letterSpacing={inputConfig.letterSpacing}
-                  width={"100%"}
-                  leftElement={<AiOutlineBarcode color={"#4169e1"} />}
-                  onBlur={(event: any) => {
-                    if (event) {
-                      setField("identifier", event.target.value.trim());
-                    }
-                  }}
-                ></_InputLeftElement>
-              </Box>
-              <Box width="45%">
-                <_InputLeftElement
-                  defaultValue={description}
-                  placeholder="Item Description"
-                  fontWeight="bold"
-                  borderRadius={inputConfig.borderRadius}
-                  borderBottomColor={"red"}
-                  borderBottomWidth={inputConfig.borderWidth}
-                  size={inputConfig.size}
-                  fontSize={inputConfig.fontSize}
-                  letterSpacing={inputConfig.letterSpacing}
-                  width={"100%"}
-                  leftElement={<BiDetail color={"#2AAA8A"} />}
-                  onBlur={(event: any) => {
-                    if (event) {
-                      setField("description", event.target.value.trim());
-                    }
-                  }}
-                ></_InputLeftElement>
-              </Box>
-              <Box width="15%">
-                <_InputLeftElement
-                  placeholder="OEM"
-                  defaultValue={oem}
-                  borderRadius={inputConfig.borderRadius}
-                  borderBottomColor={inputConfig.borderColor}
-                  borderBottomWidth={inputConfig.borderWidth}
-                  size={inputConfig.size}
-                  fontSize={inputConfig.fontSize}
-                  letterSpacing={inputConfig.letterSpacing}
-                  width={"100%"}
-                  leftElement={
-                    <MdOutlinePrecisionManufacturing color={"#2AAA8A"} />
-                  }
-                  onBlur={(event: any) => {
-                    if (event) {
-                      setField("oem", event.target.value.trim());
-                    }
-                  }}
-                ></_InputLeftElement>
-              </Box>
-              <Box width="15%" transform="translateY(25%);">
-                <_Select
-                  size="xs"
-                  isDisabled={true}
-                  value={category}
-                  options={{ 0: "Service", 1: "Inventory" }}
-                  onChange={() => {}}
-                ></_Select>
-              </Box>
-            </HStack>
-          </Box>
-          <_Divider></_Divider>
-          <TabPanels>
-            <TabPanel padding={0}>
-              <VStack alignItems={"left"}>
-                <Box>
-                  <_Label
-                    letterSpacing={2}
-                    fontSize={"0.8em"}
-                    fontWeight={"bold"}
-                  >
-                    AVAILABLE
-                  </_Label>
-                </Box>
-                <Box>
-                  <HStack>
-                    <Box width="25%">
-                      <HStack spacing={10}>
-                        <_Label letterSpacing={2} fontSize="0.8em">
-                          Quantity:
-                        </_Label>
-                        <_Label
-                          fontFamily={numberFont}
-                          fontWeight="bold"
-                          letterSpacing={3}
-                          fontSize="0.8em"
-                        >
-                          {isNaN(quantity) ? 0 : formatNumber(quantity)}
-                        </_Label>
-                      </HStack>
-                    </Box>
-                    <Box width="25%">
-                      <HStack spacing={5}>
-                        <_Label letterSpacing={2} fontSize="0.8em">
-                          Value:
-                        </_Label>
-                        <Box width="100%">
-                          <HStack>
-                            <CurrencyIcon></CurrencyIcon>
-                            <_Label
-                              fontFamily={numberFont}
-                              fontWeight="bold"
-                              letterSpacing={3}
-                              fontSize="0.8em"
-                            >
-                              {isNaN(quantity * prices[storeId]?.buyingCost)
-                                ? 0
-                                : formatNumber(
-                                    quantity * prices[storeId].buyingCost
-                                  )}
-                            </_Label>
-                          </HStack>
-                        </Box>
-                      </HStack>
-                    </Box>
-                  </HStack>
-                </Box>
-              </VStack>
-              <_Divider></_Divider>
-              <VStack alignItems={"left"}>
-                <Box>
-                  <_Label
-                    letterSpacing={2}
-                    fontSize={"0.8em"}
-                    fontWeight={"bold"}
-                  >
-                    REORDER QUANTITY
-                  </_Label>
-                </Box>
-                <Box>
-                  <HStack>
-                    <Box width="100%">
-                      <HStack spacing={2}>
-                        <Box width="15%">
+            <_Divider></_Divider>
+            <TabPanels>
+              <TabPanel padding={0}>
+                <VStack alignItems={"left"}>
+                  <Box>
+                    <_Label
+                      letterSpacing={2}
+                      fontSize={"0.8em"}
+                      fontWeight={"bold"}
+                    >
+                      AVAILABLE
+                    </_Label>
+                  </Box>
+                  <Box>
+                    <HStack>
+                      <Box width="25%">
+                        <HStack spacing={10}>
                           <_Label letterSpacing={2} fontSize="0.8em">
-                            Minimum level:
+                            Quantity:
                           </_Label>
-                        </Box>
-                        <Box width="75%" transform="translateY(-30%);">
-                          <_InputLeftElement
+                          <_Label
                             fontFamily={numberFont}
-                            type="number"
-                            defaultValue={reorderQuantity[currentStoreId] || 0}
-                            placeholder="Minimum level"
-                            borderRadius={inputConfig.borderRadius}
-                            borderBottomColor={inputConfig.borderColor}
-                            borderBottomWidth={inputConfig.borderWidth}
-                            size={inputConfig.size}
                             fontWeight="bold"
-                            fontSize={inputConfig.fontSize}
-                            letterSpacing={inputConfig.letterSpacing}
-                            width={"25%"}
-                            leftElement={<BsGraphDown color={"#FFBD33"} />}
-                            onBlur={(event: any) => {
-                              if (event) {
-                                setField(
-                                  "reorderQuantity",
-                                  event.target.value.trim()
-                                );
+                            letterSpacing={3}
+                            fontSize="0.8em"
+                          >
+                            {isNaN(quantity) ? 0 : formatNumber(quantity)}
+                          </_Label>
+                        </HStack>
+                      </Box>
+                      <Box width="25%">
+                        <HStack spacing={5}>
+                          <_Label letterSpacing={2} fontSize="0.8em">
+                            Value:
+                          </_Label>
+                          <Box width="100%">
+                            <HStack>
+                              <CurrencyIcon></CurrencyIcon>
+                              <_Label
+                                fontFamily={numberFont}
+                                fontWeight="bold"
+                                letterSpacing={3}
+                                fontSize="0.8em"
+                              >
+                                {isNaN(quantity * prices[storeId]?.buyingCost)
+                                  ? 0
+                                  : formatNumber(
+                                      quantity * prices[storeId].buyingCost
+                                    )}
+                              </_Label>
+                            </HStack>
+                          </Box>
+                        </HStack>
+                      </Box>
+                    </HStack>
+                  </Box>
+                </VStack>
+                <_Divider></_Divider>
+                <VStack alignItems={"left"}>
+                  <Box>
+                    <_Label
+                      letterSpacing={2}
+                      fontSize={"0.8em"}
+                      fontWeight={"bold"}
+                    >
+                      REORDER QUANTITY
+                    </_Label>
+                  </Box>
+                  <Box>
+                    <HStack>
+                      <Box width="100%">
+                        <HStack spacing={2}>
+                          <Box width="15%">
+                            <_Label letterSpacing={2} fontSize="0.8em">
+                              Minimum level:
+                            </_Label>
+                          </Box>
+                          <Box width="75%" transform="translateY(-30%);">
+                            <_InputLeftElement
+                              fontFamily={numberFont}
+                              type="number"
+                              defaultValue={
+                                reorderQuantity[currentStoreId] || 0
                               }
-                            }}
-                          ></_InputLeftElement>
-                        </Box>
-                      </HStack>
-                    </Box>
-                  </HStack>
-                </Box>
-              </VStack>
-            </TabPanel>
+                              placeholder="Minimum level"
+                              borderRadius={inputConfig.borderRadius}
+                              borderBottomColor={inputConfig.borderColor}
+                              borderBottomWidth={inputConfig.borderWidth}
+                              size={inputConfig.size}
+                              fontWeight="bold"
+                              fontSize={inputConfig.fontSize}
+                              letterSpacing={inputConfig.letterSpacing}
+                              width={"25%"}
+                              leftElement={<BsGraphDown color={"#FFBD33"} />}
+                              onBlur={(event: any) => {
+                                if (event) {
+                                  setField(
+                                    "reorderQuantity",
+                                    event.target.value.trim()
+                                  );
+                                }
+                              }}
+                            ></_InputLeftElement>
+                          </Box>
+                        </HStack>
+                      </Box>
+                    </HStack>
+                  </Box>
+                </VStack>
+              </TabPanel>
 
-            <TabPanel padding={0}>
-              <Box overflowX="scroll" overflowY={"hidden"} width="100%">
-                <HStack spacing={5}>
-                  {/* On view or update */}
-                  {isItemLoaded === true &&
-                    isViewOrUpdate === true &&
-                    pricesStores.map((_storeId) => {
-                      const storeId = parseInt(_storeId);
-                      return (
+              <TabPanel padding={0}>
+                <Box overflowX="scroll" overflowY={"hidden"} width="100%">
+                  <HStack spacing={5}>
+                    {/* On view or update */}
+                    {isItemLoaded === true &&
+                      isViewOrUpdate === true &&
+                      pricesStores.map((_storeId) => {
+                        const storeId = parseInt(_storeId);
+                        return (
+                          <PricesCard
+                            quantitiesAllStores={quantitiesAllStores}
+                            doesPricesExistsForCurrentStore={
+                              doesPricesExistsForCurrentStore
+                            }
+                            key={storeId}
+                            profitMargins={profitMargins}
+                            storeId={storeId}
+                            currentStoreId={currentStoreId}
+                          ></PricesCard>
+                        );
+                      })}
+
+                    {/* Adding Item  */}
+                    {isViewOrUpdate === false && (
+                      <Box>
                         <PricesCard
                           quantitiesAllStores={quantitiesAllStores}
                           doesPricesExistsForCurrentStore={
                             doesPricesExistsForCurrentStore
                           }
-                          key={storeId}
                           profitMargins={profitMargins}
                           storeId={storeId}
                           currentStoreId={currentStoreId}
                         ></PricesCard>
-                      );
-                    })}
+                      </Box>
+                    )}
+                  </HStack>
+                </Box>
+              </TabPanel>
 
-                  {/* Adding Item  */}
-                  {isViewOrUpdate === false && (
+              {isViewOrUpdate === false && (
+                <TabPanel>
+                  <HStack>
                     <Box>
-                      <PricesCard
-                        quantitiesAllStores={quantitiesAllStores}
-                        doesPricesExistsForCurrentStore={
-                          doesPricesExistsForCurrentStore
-                        }
-                        profitMargins={profitMargins}
-                        storeId={storeId}
-                        currentStoreId={currentStoreId}
-                      ></PricesCard>
+                      <_Label fontSize="0.8em" letterSpacing={2}>
+                        ADD INITIAL QUANTITY:
+                      </_Label>
                     </Box>
-                  )}
-                </HStack>
-              </Box>
-            </TabPanel>
+                    <Box transform="translateY(-25%);">
+                      <_InputLeftElement
+                        type="number"
+                        defaultValue={0}
+                        placeholder={"Qty."}
+                        borderRadius={inputConfig.borderRadius}
+                        borderBottomColor={inputConfig.borderColor}
+                        borderBottomWidth={inputConfig.borderWidth}
+                        size={inputConfig.size}
+                        fontWeight="bold"
+                        fontSize={inputConfig.fontSize}
+                        letterSpacing={inputConfig.letterSpacing}
+                        width={"100%"}
+                        leftElement={<TbTallymarks color={"#34495E"} />}
+                        onBlur={(event: any) => {
+                          if (event) {
+                            setField(
+                              "initialQuantity",
+                              event.target.value.trim()
+                            );
+                          }
+                        }}
+                      ></_InputLeftElement>
+                    </Box>
+                  </HStack>
+                </TabPanel>
+              )}
 
-            {isViewOrUpdate === false && (
               <TabPanel>
-                <HStack>
+                <HStack spacing={5}>
                   <Box>
                     <_Label fontSize="0.8em" letterSpacing={2}>
-                      ADD INITIAL QUANTITY:
+                      UNIT:
                     </_Label>
                   </Box>
                   <Box transform="translateY(-25%);">
                     <_InputLeftElement
-                      type="number"
-                      defaultValue={0}
-                      placeholder={"Qty."}
+                      type="text"
+                      key={unit}
+                      defaultValue={unit}
+                      placeholder={"Unit"}
                       borderRadius={inputConfig.borderRadius}
                       borderBottomColor={inputConfig.borderColor}
                       borderBottomWidth={inputConfig.borderWidth}
@@ -826,219 +867,186 @@ const Item = ({ isViewOrUpdate = false }: { isViewOrUpdate?: boolean }) => {
                       fontSize={inputConfig.fontSize}
                       letterSpacing={inputConfig.letterSpacing}
                       width={"100%"}
-                      leftElement={<TbTallymarks color={"#34495E"} />}
+                      leftElement={<TbCategory2 color={"#add8e6"} />}
                       onBlur={(event: any) => {
                         if (event) {
-                          setField(
-                            "initialQuantity",
-                            event.target.value.trim()
-                          );
+                          setField("unit", event.target.value.trim());
                         }
                       }}
                     ></_InputLeftElement>
                   </Box>
                 </HStack>
               </TabPanel>
-            )}
 
-            <TabPanel>
-              <HStack spacing={5}>
-                <Box>
-                  <_Label fontSize="0.8em" letterSpacing={2}>
-                    UNIT:
-                  </_Label>
-                </Box>
-                <Box transform="translateY(-25%);">
-                  <_InputLeftElement
-                    type="text"
-                    key={unit}
-                    defaultValue={unit}
-                    placeholder={"Unit"}
-                    borderRadius={inputConfig.borderRadius}
-                    borderBottomColor={inputConfig.borderColor}
-                    borderBottomWidth={inputConfig.borderWidth}
-                    size={inputConfig.size}
-                    fontWeight="bold"
-                    fontSize={inputConfig.fontSize}
-                    letterSpacing={inputConfig.letterSpacing}
-                    width={"100%"}
-                    leftElement={<TbCategory2 color={"#add8e6"} />}
-                    onBlur={(event: any) => {
-                      if (event) {
-                        setField("unit", event.target.value.trim());
-                      }
-                    }}
-                  ></_InputLeftElement>
-                </Box>
-              </HStack>
-            </TabPanel>
+              <TabPanel>
+                <VStack alignItems={"left"} width="100%">
+                  <HStack>
+                    <Box width="10%">
+                      <_Label fontSize="0.8em">Assets:</_Label>
+                    </Box>
+                    <Box>
+                      <_Select
+                        fontSize="0.8em"
+                        options={accountsConfig}
+                        value={account.assets}
+                        isDisabled={true}
+                        onChange={() => {}}
+                      ></_Select>
+                    </Box>
+                  </HStack>
+                  <HStack>
+                    <Box width="10%">
+                      <_Label fontSize="0.8em">Revenue:</_Label>
+                    </Box>
+                    <Box>
+                      <_Select
+                        fontSize="0.8em"
+                        options={accountsConfig}
+                        value={account.revenue}
+                        isDisabled={true}
+                        onChange={() => {}}
+                      ></_Select>
+                    </Box>
+                  </HStack>
+                  <HStack>
+                    <Box width="10%">
+                      <_Label fontSize="0.8em">C.O.G.S:</_Label>
+                    </Box>
+                    <Box>
+                      <_Select
+                        fontSize="0.8em"
+                        options={accountsConfig}
+                        value={account.cogs}
+                        isDisabled={true}
+                        onChange={() => {}}
+                      ></_Select>
+                    </Box>
+                  </HStack>
+                  <HStack>
+                    <Box width="10%">
+                      <_Label fontSize="0.8em">Variance:</_Label>
+                    </Box>
+                    <Box>
+                      <_Select
+                        fontSize="0.8em"
+                        options={accountsConfig}
+                        value={account.variance}
+                        isDisabled={true}
+                        onChange={() => {}}
+                      ></_Select>
+                    </Box>
+                  </HStack>
+                </VStack>
+              </TabPanel>
 
-            <TabPanel>
-              <VStack alignItems={"left"} width="100%">
-                <HStack>
-                  <Box width="10%">
-                    <_Label fontSize="0.8em">Assets:</_Label>
-                  </Box>
-                  <Box>
-                    <_Select
-                      fontSize="0.8em"
-                      options={accountsConfig}
-                      value={account.assets}
-                      isDisabled={true}
-                      onChange={() => {}}
-                    ></_Select>
-                  </Box>
-                </HStack>
-                <HStack>
-                  <Box width="10%">
-                    <_Label fontSize="0.8em">Revenue:</_Label>
-                  </Box>
-                  <Box>
-                    <_Select
-                      fontSize="0.8em"
-                      options={accountsConfig}
-                      value={account.revenue}
-                      isDisabled={true}
-                      onChange={() => {}}
-                    ></_Select>
-                  </Box>
-                </HStack>
-                <HStack>
-                  <Box width="10%">
-                    <_Label fontSize="0.8em">C.O.G.S:</_Label>
-                  </Box>
-                  <Box>
-                    <_Select
-                      fontSize="0.8em"
-                      options={accountsConfig}
-                      value={account.cogs}
-                      isDisabled={true}
-                      onChange={() => {}}
-                    ></_Select>
-                  </Box>
-                </HStack>
-                <HStack>
-                  <Box width="10%">
-                    <_Label fontSize="0.8em">Variance:</_Label>
-                  </Box>
-                  <Box>
-                    <_Select
-                      fontSize="0.8em"
-                      options={accountsConfig}
-                      value={account.variance}
-                      isDisabled={true}
-                      onChange={() => {}}
-                    ></_Select>
-                  </Box>
-                </HStack>
-              </VStack>
-            </TabPanel>
-
-            <TabPanel>
-              <Textarea
-                rows={8}
-                defaultValue={memo}
-                placeholder="Memo"
-                size="sm"
-                borderRadius={5}
-                resize={"none"}
-                onBlur={(event: any) => {
-                  if (event) {
-                    setField("memo", event.target.value.trim());
-                  }
-                }}
-              />
-            </TabPanel>
-            <TabPanel>
-              <Textarea
-                rows={8}
-                defaultValue={additionalInformation}
-                placeholder="Additional Information"
-                size="sm"
-                borderRadius={5}
-                resize={"none"}
-                onBlur={(event: any) => {
-                  if (event) {
-                    setField(
-                      "additionalInformation",
-                      event.target.value.trim()
-                    );
-                  }
-                }}
-              />
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
-        <_Divider></_Divider>
-        <HStack spacing={20}>
-          <Box width="80%">
-            <HStack>
-              <Box width="25%">
-                <Checkbox
-                  isChecked={
-                    currentStoreId in isInactive
-                      ? isInactive[currentStoreId]
-                        ? true
-                        : false
-                      : false
-                  }
-                  onChange={() => {
-                    if (currentStoreId in isInactive) {
-                      setField("isInactive", isInactive[currentStoreId] ^ 1);
-                    } else {
-                      setField("isInactive", 0);
+              <TabPanel>
+                <Textarea
+                  rows={8}
+                  defaultValue={memo}
+                  placeholder="Memo"
+                  size="sm"
+                  borderRadius={5}
+                  resize={"none"}
+                  onBlur={(event: any) => {
+                    if (event) {
+                      setField("memo", event.target.value.trim());
                     }
                   }}
-                  size="md"
-                  colorScheme="red"
-                >
-                  <_Label fontSize="0.8em">Is Inactive?</_Label>
-                </Checkbox>
-              </Box>
-              <Box width="25%">
-                <Checkbox
-                  isChecked={isCore ? true : false}
-                  onChange={() => {
-                    setField("isCore", isCore ^ 1);
-                  }}
-                  size="md"
-                  colorScheme="blue"
-                >
-                  <_Label fontSize="0.8em">Is Core?</_Label>
-                </Checkbox>
-              </Box>
-            </HStack>
-          </Box>
-          <Box width="20%">
-            <HStack>
-              <Box width="100%">
-                <_Button
-                  isDisabled={disableButton || (isViewOrUpdate && id === null)}
-                  icon={
-                    isViewOrUpdate ? (
-                      <AiFillEdit color={iconColor} />
-                    ) : (
-                      <AiFillEdit color={iconColor} />
-                    )
-                  }
+                />
+              </TabPanel>
+              <TabPanel>
+                <Textarea
+                  rows={8}
+                  defaultValue={additionalInformation}
+                  placeholder="Additional Information"
                   size="sm"
-                  label={isViewOrUpdate ? "Update" : "Add"}
-                  width="100%"
-                  bgColor={navBgColor}
-                  borderColor="gray.200"
-                  color={"white"}
-                  borderWidth={1}
-                  fontSize="1.2em"
-                  variant="outline"
-                  onClick={clickHandler}
-                  isLoading={loadingState}
-                ></_Button>
-              </Box>
-            </HStack>
-          </Box>
-        </HStack>
-      </Box>
-    </>
+                  borderRadius={5}
+                  resize={"none"}
+                  onBlur={(event: any) => {
+                    if (event) {
+                      setField(
+                        "additionalInformation",
+                        event.target.value.trim()
+                      );
+                    }
+                  }}
+                />
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+          <_Divider></_Divider>
+          <HStack spacing={20}>
+            <Box width="80%">
+              <HStack>
+                <Box width="25%">
+                  <Checkbox
+                    isChecked={
+                      currentStoreId in isInactive
+                        ? isInactive[currentStoreId]
+                          ? true
+                          : false
+                        : false
+                    }
+                    onChange={() => {
+                      if (currentStoreId in isInactive) {
+                        setField("isInactive", isInactive[currentStoreId] ^ 1);
+                      } else {
+                        setField("isInactive", 0);
+                      }
+                    }}
+                    size="md"
+                    colorScheme="red"
+                  >
+                    <_Label fontSize="0.8em">Is Inactive?</_Label>
+                  </Checkbox>
+                </Box>
+                <Box width="25%">
+                  <Checkbox
+                    isChecked={isCore ? true : false}
+                    onChange={() => {
+                      setField("isCore", isCore ^ 1);
+                    }}
+                    size="md"
+                    colorScheme="blue"
+                  >
+                    <_Label fontSize="0.8em">Is Core?</_Label>
+                  </Checkbox>
+                </Box>
+              </HStack>
+            </Box>
+            <Box width="20%">
+              <HStack>
+                <Box width="100%">
+                  <_Button
+                    isDisabled={
+                      disableButton || (isViewOrUpdate && id === null)
+                    }
+                    icon={
+                      isViewOrUpdate ? (
+                        <AiFillEdit color={iconColor} />
+                      ) : (
+                        <AiFillEdit color={iconColor} />
+                      )
+                    }
+                    size="sm"
+                    label={isViewOrUpdate ? "Update" : "Add"}
+                    width="100%"
+                    bgColor={navBgColor}
+                    borderColor="gray.200"
+                    color={"white"}
+                    borderWidth={1}
+                    fontSize="1.2em"
+                    variant="outline"
+                    onClick={clickHandler}
+                    isLoading={loadingState}
+                  ></_Button>
+                </Box>
+              </HStack>
+            </Box>
+          </HStack>
+        </Box>
+      </>
+    )
   );
 };
 

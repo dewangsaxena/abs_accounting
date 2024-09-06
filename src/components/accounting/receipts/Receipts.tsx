@@ -1052,26 +1052,28 @@ const Receipts = ({ isViewOrUpdate }: ReceiptProps) => {
     }
   }
   return (
-    <>
-      <Box>
-        <VStack align={"start"}>
-          <Header
-            isViewOrUpdate={isViewOrUpdate}
-            setClientChangeStatus={setClientChangeStatus}
-            enableEditing={enableEditing}
-            setEnableEditing={setEnableEditing}
-          ></Header>
-          <TransactionsList
-            isViewOrUpdate={isViewOrUpdate}
-            isClientChange={isClientChange}
-          />
-          <Footer
-            isViewOrUpdate={isViewOrUpdate}
-            enableEditing={enableEditing}
-          ></Footer>
-        </VStack>
-      </Box>
-    </>
+    isSessionActive() && (
+      <>
+        <Box>
+          <VStack align={"start"}>
+            <Header
+              isViewOrUpdate={isViewOrUpdate}
+              setClientChangeStatus={setClientChangeStatus}
+              enableEditing={enableEditing}
+              setEnableEditing={setEnableEditing}
+            ></Header>
+            <TransactionsList
+              isViewOrUpdate={isViewOrUpdate}
+              isClientChange={isClientChange}
+            />
+            <Footer
+              isViewOrUpdate={isViewOrUpdate}
+              enableEditing={enableEditing}
+            ></Footer>
+          </VStack>
+        </Box>
+      </>
+    )
   );
 };
 

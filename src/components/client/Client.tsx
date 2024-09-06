@@ -1668,171 +1668,176 @@ const Client = memo(
     };
 
     return (
-      <>
-        <Box bgColor="white" paddingLeft={5} paddingRight={5}>
-          <Tabs>
-            <TabList marginBottom={5}>
-              <Tab>
-                <TabButton icon={<FaAddressCard />} label="Address" />
-              </Tab>
-              <Tab>
-                <TabButton icon={<FaAddressCard />} label="Ship-to-Address" />
-              </Tab>
-              <Tab>
-                <TabButton icon={<IoIosOptions />} label="Options" />
-              </Tab>
-              <Tab>
-                <TabButton icon={<IoIosOptions />} label="Custom Price" />
-              </Tab>
-              <Tab>
-                <TabButton icon={<HiOutlineInformationCircle />} label="Memo" />
-              </Tab>
-              <Tab>
-                <TabButton
-                  icon={<IoMdInformation />}
-                  label="Additional Information"
-                />
-              </Tab>
-              <Tab>
-                <TabButton icon={<LuHistory />} label="Name History" />
-              </Tab>
-            </TabList>
+      isSessionActive() && (
+        <>
+          <Box bgColor="white" paddingLeft={5} paddingRight={5}>
+            <Tabs>
+              <TabList marginBottom={5}>
+                <Tab>
+                  <TabButton icon={<FaAddressCard />} label="Address" />
+                </Tab>
+                <Tab>
+                  <TabButton icon={<FaAddressCard />} label="Ship-to-Address" />
+                </Tab>
+                <Tab>
+                  <TabButton icon={<IoIosOptions />} label="Options" />
+                </Tab>
+                <Tab>
+                  <TabButton icon={<IoIosOptions />} label="Custom Price" />
+                </Tab>
+                <Tab>
+                  <TabButton
+                    icon={<HiOutlineInformationCircle />}
+                    label="Memo"
+                  />
+                </Tab>
+                <Tab>
+                  <TabButton
+                    icon={<IoMdInformation />}
+                    label="Additional Information"
+                  />
+                </Tab>
+                <Tab>
+                  <TabButton icon={<LuHistory />} label="Name History" />
+                </Tab>
+              </TabList>
 
-            {/* Show Search Param  */}
-            {isViewOrUpdate && (
-              <Box>
-                <HStack spacing={20}>
-                  <Box width="10%">
-                    <_Label fontSize="0.8em">Showing Details for: </_Label>
-                  </Box>
-                  <Box width="80%">
-                    <AutoSuggest
-                      suggestions={clientSuggestions}
-                      onSuggestionsClearRequested={() =>
-                        setClientSuggestions([])
-                      }
-                      onSuggestionsFetchRequested={({ value }) => {
-                        if (value.length < AUTO_SUGGEST_MIN_INPUT_LENGTH)
-                          return;
-                        loadOptions(value);
-                        setLoadingState(false);
-                        setInputDisable(false);
-                      }}
-                      onSuggestionSelected={(_: any, { suggestionIndex }) => {
-                        onClientSelect(clientSuggestions[suggestionIndex]);
-                      }}
-                      getSuggestionValue={(suggestion: any) => {
-                        return `${suggestion.value.primaryDetails.name}`;
-                      }}
-                      renderSuggestion={(suggestion: any) => (
-                        <span>&nbsp;{suggestion.label}</span>
-                      )}
-                      inputProps={{
-                        style: {
-                          width: "100%",
-                          ...AutoSuggestStyle,
-                        },
-                        placeholder:
-                          `Search clients...` +
-                          (AUTO_SUGGEST_MIN_INPUT_LENGTH > 1
-                            ? `(min ${AUTO_SUGGEST_MIN_INPUT_LENGTH} chars)`
-                            : ""),
-                        value: selectedClient,
-                        onChange: (_, { newValue }) => {
-                          setSelectedClient(newValue);
-                          if (newValue.trim() === "") {
-                            setLoadingState(true);
-                            setInputDisable(true);
-                            reset();
-                          }
-                        },
-                      }}
-                      highlightFirstSuggestion={true}
-                    ></AutoSuggest>
-                  </Box>
-                </HStack>
-                <_Divider borderColor="purple" />
-              </Box>
-            )}
+              {/* Show Search Param  */}
+              {isViewOrUpdate && (
+                <Box>
+                  <HStack spacing={20}>
+                    <Box width="10%">
+                      <_Label fontSize="0.8em">Showing Details for: </_Label>
+                    </Box>
+                    <Box width="80%">
+                      <AutoSuggest
+                        suggestions={clientSuggestions}
+                        onSuggestionsClearRequested={() =>
+                          setClientSuggestions([])
+                        }
+                        onSuggestionsFetchRequested={({ value }) => {
+                          if (value.length < AUTO_SUGGEST_MIN_INPUT_LENGTH)
+                            return;
+                          loadOptions(value);
+                          setLoadingState(false);
+                          setInputDisable(false);
+                        }}
+                        onSuggestionSelected={(_: any, { suggestionIndex }) => {
+                          onClientSelect(clientSuggestions[suggestionIndex]);
+                        }}
+                        getSuggestionValue={(suggestion: any) => {
+                          return `${suggestion.value.primaryDetails.name}`;
+                        }}
+                        renderSuggestion={(suggestion: any) => (
+                          <span>&nbsp;{suggestion.label}</span>
+                        )}
+                        inputProps={{
+                          style: {
+                            width: "100%",
+                            ...AutoSuggestStyle,
+                          },
+                          placeholder:
+                            `Search clients...` +
+                            (AUTO_SUGGEST_MIN_INPUT_LENGTH > 1
+                              ? `(min ${AUTO_SUGGEST_MIN_INPUT_LENGTH} chars)`
+                              : ""),
+                          value: selectedClient,
+                          onChange: (_, { newValue }) => {
+                            setSelectedClient(newValue);
+                            if (newValue.trim() === "") {
+                              setLoadingState(true);
+                              setInputDisable(true);
+                              reset();
+                            }
+                          },
+                        }}
+                        highlightFirstSuggestion={true}
+                      ></AutoSuggest>
+                    </Box>
+                  </HStack>
+                  <_Divider borderColor="purple" />
+                </Box>
+              )}
 
-            {/* Client Details */}
-            <TabPanels>
               {/* Client Details */}
-              <TabPanel>
-                <ClientPrimaryDetails
-                  toast={toast}
-                  inputDisable={inputDisable}
-                ></ClientPrimaryDetails>
-              </TabPanel>
-              {/* Ship to Address  */}
-              <TabPanel>
-                <ShippingAddressTab inputDisable={inputDisable} />
-              </TabPanel>
-              {/* OPTIONS  */}
-              <TabPanel padding={0}>
-                <ClientOptions inputDisable={inputDisable} />
-              </TabPanel>
-              {/* Custom  */}
-              <TabPanel padding={0}>
-                <SpecialPricingForItem />
-              </TabPanel>
-              {/* Memo  */}
-              <TabPanel>
-                <Textarea
-                  key={`memo.${id}`}
-                  isDisabled={inputDisable}
-                  defaultValue={memo}
-                  placeholder="Memo"
-                  size="sm"
-                  height={"20vh"}
-                  borderRadius={2}
-                  resize={"none"}
-                  onBlur={(event: any) => {
-                    if (event) {
-                      setField("memo", event.target.value.trim());
-                    }
-                  }}
-                />
-              </TabPanel>
-              {/* Additional Information  */}
-              <TabPanel>
-                <Textarea
-                  key={`additional_information.${id}`}
-                  isDisabled={inputDisable}
-                  defaultValue={additionalInformation}
-                  placeholder="Additional Information"
-                  size="sm"
-                  height={"20vh"}
-                  borderRadius={2}
-                  resize={"none"}
-                  onBlur={(event: any) => {
-                    if (event) {
-                      setField(
-                        "additionalInformation",
-                        event.target.value.trim()
-                      );
-                    }
-                  }}
-                />
-              </TabPanel>
+              <TabPanels>
+                {/* Client Details */}
+                <TabPanel>
+                  <ClientPrimaryDetails
+                    toast={toast}
+                    inputDisable={inputDisable}
+                  ></ClientPrimaryDetails>
+                </TabPanel>
+                {/* Ship to Address  */}
+                <TabPanel>
+                  <ShippingAddressTab inputDisable={inputDisable} />
+                </TabPanel>
+                {/* OPTIONS  */}
+                <TabPanel padding={0}>
+                  <ClientOptions inputDisable={inputDisable} />
+                </TabPanel>
+                {/* Custom  */}
+                <TabPanel padding={0}>
+                  <SpecialPricingForItem />
+                </TabPanel>
+                {/* Memo  */}
+                <TabPanel>
+                  <Textarea
+                    key={`memo.${id}`}
+                    isDisabled={inputDisable}
+                    defaultValue={memo}
+                    placeholder="Memo"
+                    size="sm"
+                    height={"20vh"}
+                    borderRadius={2}
+                    resize={"none"}
+                    onBlur={(event: any) => {
+                      if (event) {
+                        setField("memo", event.target.value.trim());
+                      }
+                    }}
+                  />
+                </TabPanel>
+                {/* Additional Information  */}
+                <TabPanel>
+                  <Textarea
+                    key={`additional_information.${id}`}
+                    isDisabled={inputDisable}
+                    defaultValue={additionalInformation}
+                    placeholder="Additional Information"
+                    size="sm"
+                    height={"20vh"}
+                    borderRadius={2}
+                    resize={"none"}
+                    onBlur={(event: any) => {
+                      if (event) {
+                        setField(
+                          "additionalInformation",
+                          event.target.value.trim()
+                        );
+                      }
+                    }}
+                  />
+                </TabPanel>
 
-              {/* Name History */}
-              <TabPanel>
-                <NameHistory />
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
-          <_Divider></_Divider>
+                {/* Name History */}
+                <TabPanel>
+                  <NameHistory />
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+            <_Divider></_Divider>
 
-          <HStack>
-            <ClientFooter
-              loadingState={loadingState}
-              isViewOrUpdate={isViewOrUpdate}
-              clickHandler={clickHandler}
-            ></ClientFooter>
-          </HStack>
-        </Box>
-      </>
+            <HStack>
+              <ClientFooter
+                loadingState={loadingState}
+                isViewOrUpdate={isViewOrUpdate}
+                clickHandler={clickHandler}
+              ></ClientFooter>
+            </HStack>
+          </Box>
+        </>
+      )
     );
   }
 );

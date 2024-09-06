@@ -12,7 +12,10 @@ import { useState } from "react";
 import DatePicker from "react-datepicker";
 import { Switch } from "@chakra-ui/react";
 import { FcMoneyTransfer } from "react-icons/fc";
-import { redirectIfInvalidSession } from "../../../shared/functions";
+import {
+  isSessionActive,
+  redirectIfInvalidSession,
+} from "../../../shared/functions";
 import { IoInformationCircleOutline } from "react-icons/io5";
 import { BsFiletypeCsv } from "react-icons/bs";
 
@@ -47,88 +50,90 @@ const CustomerAgedSummary = () => {
   };
 
   return (
-    <>
-      <Card>
-        <CardBody>
-          <VStack align={"start"}>
-            <Box width="20%">
-              <HomeNavButton />
-            </Box>
-            <Box width="100%">
-              <HStack>
-                <_Label fontSize={"0.8em"}>Generate Summary till:</_Label>
-                <DatePicker
-                  wrapperClassName="datepicker_style"
-                  dateFormat={"MM/dd/yyyy"}
-                  placeholderText="Txn. Date"
-                  selected={date}
-                  onChange={(date: any) => {
-                    setDate(date);
-                  }}
-                  closeOnScroll={true}
-                  maxDate={new Date()}
-                />
-              </HStack>
-            </Box>
-            <Box width="40%">
-              <HStack>
-                <_Label fontSize="0.8em">Sort by Lowest Amount owing:</_Label>
-                <Switch
-                  id="email-alerts"
-                  colorScheme="teal"
-                  onChange={() => {
-                    setSortAscending(sortAscending ^ 1);
-                  }}
-                />
-              </HStack>
-            </Box>
-            <Box width="100%">
-              <HStack>
-                <_Label fontSize="0.8em">Fetch Historical Record?</_Label>
-                <IoInformationCircleOutline color="blue" />
-                <_Label color="red" fontSize="0.8em">
-                  This record is NOT up-to-date and will NOT be updated. It is
-                  merely for historical record.
-                </_Label>
-                <Switch
-                  id="email-alerts"
-                  colorScheme="teal"
-                  onChange={() => {
-                    setFetchHistoricalRecord(fetchHistoricalRecord ^ 1);
-                  }}
-                />
-              </HStack>
-            </Box>
-            <HStack width="100%">
-              <Box width="25%">
-                <_Button
-                  icon={<FcMoneyTransfer />}
-                  color="#90EE90"
-                  bgColor="black"
-                  fontSize="1.2em"
-                  label="Fetch Customer Aged Summary"
-                  onClick={() => {
-                    clickHandler(false);
-                  }}
-                ></_Button>
+    isSessionActive() && (
+      <>
+        <Card>
+          <CardBody>
+            <VStack align={"start"}>
+              <Box width="20%">
+                <HomeNavButton />
               </Box>
-              <Box width="25%">
-                <_Button
-                  icon={<BsFiletypeCsv />}
-                  color="#ADD8E6"
-                  bgColor="black"
-                  fontSize="1.2em"
-                  label="Download CSV"
-                  onClick={() => {
-                    clickHandler(true);
-                  }}
-                ></_Button>
+              <Box width="100%">
+                <HStack>
+                  <_Label fontSize={"0.8em"}>Generate Summary till:</_Label>
+                  <DatePicker
+                    wrapperClassName="datepicker_style"
+                    dateFormat={"MM/dd/yyyy"}
+                    placeholderText="Txn. Date"
+                    selected={date}
+                    onChange={(date: any) => {
+                      setDate(date);
+                    }}
+                    closeOnScroll={true}
+                    maxDate={new Date()}
+                  />
+                </HStack>
               </Box>
-            </HStack>
-          </VStack>
-        </CardBody>
-      </Card>
-    </>
+              <Box width="40%">
+                <HStack>
+                  <_Label fontSize="0.8em">Sort by Lowest Amount owing:</_Label>
+                  <Switch
+                    id="email-alerts"
+                    colorScheme="teal"
+                    onChange={() => {
+                      setSortAscending(sortAscending ^ 1);
+                    }}
+                  />
+                </HStack>
+              </Box>
+              <Box width="100%">
+                <HStack>
+                  <_Label fontSize="0.8em">Fetch Historical Record?</_Label>
+                  <IoInformationCircleOutline color="blue" />
+                  <_Label color="red" fontSize="0.8em">
+                    This record is NOT up-to-date and will NOT be updated. It is
+                    merely for historical record.
+                  </_Label>
+                  <Switch
+                    id="email-alerts"
+                    colorScheme="teal"
+                    onChange={() => {
+                      setFetchHistoricalRecord(fetchHistoricalRecord ^ 1);
+                    }}
+                  />
+                </HStack>
+              </Box>
+              <HStack width="100%">
+                <Box width="25%">
+                  <_Button
+                    icon={<FcMoneyTransfer />}
+                    color="#90EE90"
+                    bgColor="black"
+                    fontSize="1.2em"
+                    label="Fetch Customer Aged Summary"
+                    onClick={() => {
+                      clickHandler(false);
+                    }}
+                  ></_Button>
+                </Box>
+                <Box width="25%">
+                  <_Button
+                    icon={<BsFiletypeCsv />}
+                    color="#ADD8E6"
+                    bgColor="black"
+                    fontSize="1.2em"
+                    label="Download CSV"
+                    onClick={() => {
+                      clickHandler(true);
+                    }}
+                  ></_Button>
+                </Box>
+              </HStack>
+            </VStack>
+          </CardBody>
+        </Card>
+      </>
+    )
   );
 };
 

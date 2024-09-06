@@ -3343,64 +3343,66 @@ const Transactions = ({
   }
 
   return (
-    <>
-      <Box height="100%" padding={1}>
-        <VStack>
-          <Box width="100%">
-            <Header
-              id={id !== null ? id : -1}
-              type={type}
-              isViewOrUpdate={isViewOrUpdate}
-              enableEditing={enableEditing}
-              enableEditingHandler={enableEditingHandler}
-              hidePrivateDetails={hidePrivateDetails}
-              setPrivateDetailsVisibility={setPrivateDetailsVisibility}
-            ></Header>
-          </Box>
-          <_Divider margin={1}></_Divider>
-          <Box width="100%">
-            <TransactionHeaderDetails
-              enableEditing={enableEditing}
-              type={type}
-              name={name}
-              isViewOrUpdate={isViewOrUpdate}
-              setIsClientChangedSuccessfully={setIsClientChangedSuccessfully}
-            />
-          </Box>
-          {isClientChangedSuccessfully === false && (
-            <Box marginTop={5}>
-              <Spinner
-                speed="1s"
-                thickness="4px"
-                color="#5D3FD3"
-                size="xl"
-                emptyColor="#CCCCFF"
+    isSessionActive() && (
+      <>
+        <Box height="100%" padding={1}>
+          <VStack>
+            <Box width="100%">
+              <Header
+                id={id !== null ? id : -1}
+                type={type}
+                isViewOrUpdate={isViewOrUpdate}
+                enableEditing={enableEditing}
+                enableEditingHandler={enableEditingHandler}
+                hidePrivateDetails={hidePrivateDetails}
+                setPrivateDetailsVisibility={setPrivateDetailsVisibility}
+              ></Header>
+            </Box>
+            <_Divider margin={1}></_Divider>
+            <Box width="100%">
+              <TransactionHeaderDetails
+                enableEditing={enableEditing}
+                type={type}
+                name={name}
+                isViewOrUpdate={isViewOrUpdate}
+                setIsClientChangedSuccessfully={setIsClientChangedSuccessfully}
               />
             </Box>
-          )}
-          {isClientChangedSuccessfully && (
-            <Box width="100%">
-              <Box>
-                <ItemsTable
-                  enableEditing={enableEditing}
-                  setIsClientChangedSuccessfully={
-                    setIsClientChangedSuccessfully
-                  }
-                  type={type}
-                  hidePrivateDetails={hidePrivateDetails}
-                ></ItemsTable>
+            {isClientChangedSuccessfully === false && (
+              <Box marginTop={5}>
+                <Spinner
+                  speed="1s"
+                  thickness="4px"
+                  color="#5D3FD3"
+                  size="xl"
+                  emptyColor="#CCCCFF"
+                />
               </Box>
-              <Box>
-                <FooterDetails
-                  enableEditing={enableEditing}
-                  hidePrivateDetails={hidePrivateDetails}
-                ></FooterDetails>
+            )}
+            {isClientChangedSuccessfully && (
+              <Box width="100%">
+                <Box>
+                  <ItemsTable
+                    enableEditing={enableEditing}
+                    setIsClientChangedSuccessfully={
+                      setIsClientChangedSuccessfully
+                    }
+                    type={type}
+                    hidePrivateDetails={hidePrivateDetails}
+                  ></ItemsTable>
+                </Box>
+                <Box>
+                  <FooterDetails
+                    enableEditing={enableEditing}
+                    hidePrivateDetails={hidePrivateDetails}
+                  ></FooterDetails>
+                </Box>
               </Box>
-            </Box>
-          )}
-        </VStack>
-      </Box>
-    </>
+            )}
+          </VStack>
+        </Box>
+      </>
+    )
   );
 };
 

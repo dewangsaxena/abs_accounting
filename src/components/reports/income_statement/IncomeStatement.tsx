@@ -652,14 +652,16 @@ const Segment = ({ currentStore }: { currentStore: number }) => {
 const IncomeStatement = () => {
   redirectIfInvalidSession();
   return (
-    <Box>
-      <VStack align={"start"}>
-        <Filter />
-        <Segment
-          currentStore={parseInt(localStorage.getItem("storeId") || "0")}
-        />
-      </VStack>
-    </Box>
+    isSessionActive() && (
+      <Box>
+        <VStack align={"start"}>
+          <Filter />
+          <Segment
+            currentStore={parseInt(localStorage.getItem("storeId") || "0")}
+          />
+        </VStack>
+      </Box>
+    )
   );
 };
 

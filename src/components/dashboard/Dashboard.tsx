@@ -4,7 +4,10 @@ import CustomerAndSales from "./actions/CustomerAndSales";
 import InventoryAndServices from "./actions/InventoryAndServices";
 import { interaction } from "./interaction";
 import Settings from "./actions/Settings";
-import { redirectIfInvalidSession } from "../../shared/functions";
+import {
+  isSessionActive,
+  redirectIfInvalidSession,
+} from "../../shared/functions";
 import Stats from "./actions/SummaryReportDetails";
 
 const Dashboard = () => {
@@ -18,33 +21,35 @@ const Dashboard = () => {
   redirectIfInvalidSession();
 
   return (
-    <>
-      <Grid
-        templateAreas={`"nav main stats"`}
-        gridTemplateRows={"98vh"}
-        gridTemplateColumns={{
-          base: "18% 50% 30%",
-          lg: "18% 50% 30%",
-          md: "18% 50% 30%",
-          sm: "50% 50% 10%",
-        }}
-        gap="1"
-      >
-        <GridItem area={"nav"}>
-          <Navigation></Navigation>
-        </GridItem>
-        <GridItem area={"main"}>
-          {customerAndSalesVisible && <CustomerAndSales></CustomerAndSales>}
-          {inventoryAndServicesVisible && (
-            <InventoryAndServices></InventoryAndServices>
-          )}
-          {settingsVisibile && <Settings></Settings>}
-        </GridItem>
-        <GridItem area={"stats"}>
-          <Stats />
-        </GridItem>
-      </Grid>
-    </>
+    isSessionActive() && (
+      <>
+        <Grid
+          templateAreas={`"nav main stats"`}
+          gridTemplateRows={"98vh"}
+          gridTemplateColumns={{
+            base: "18% 50% 30%",
+            lg: "18% 50% 30%",
+            md: "18% 50% 30%",
+            sm: "50% 50% 10%",
+          }}
+          gap="1"
+        >
+          <GridItem area={"nav"}>
+            <Navigation></Navigation>
+          </GridItem>
+          <GridItem area={"main"}>
+            {customerAndSalesVisible && <CustomerAndSales></CustomerAndSales>}
+            {inventoryAndServicesVisible && (
+              <InventoryAndServices></InventoryAndServices>
+            )}
+            {settingsVisibile && <Settings></Settings>}
+          </GridItem>
+          <GridItem area={"stats"}>
+            <Stats />
+          </GridItem>
+        </Grid>
+      </>
+    )
   );
 };
 

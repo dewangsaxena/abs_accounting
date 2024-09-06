@@ -52,6 +52,7 @@ import {
   formatNumberWithDecimalPlaces,
   getUUID,
   showToast,
+  isSessionActive,
 } from "../../../shared/functions";
 import AsyncSelect from "react-select/async";
 import { ItemDetailsForTransactions } from "./store";
@@ -1230,32 +1231,38 @@ const Filter = ({ type }: FilterProps) => {
 
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
   return (
-    <>
-      <Grid templateColumns="repeat(5, 1fr)" gap={2}>
-        <GridItem colSpan={1}>
-          <SearchPanel type={type} setShowSpinner={setShowSpinner} />
-        </GridItem>
-        <GridItem colSpan={4}>
-          {showSpinner ? (
-            <VStack paddingTop={"15%"} spacing={5}>
-              <Spinner
-                label="Fetching Transactions..."
-                thickness="2px"
-                speed="1s"
-                emptyColor="gray.100"
-                color="#8565c4"
-                boxSize={"24vh"}
-              />
-              <_Label fontSize="1em" fontFamily={numberFont} letterSpacing={5}>
-                Fetching Transactions...
-              </_Label>
-            </VStack>
-          ) : (
-            <TransactionsList type={type} />
-          )}
-        </GridItem>
-      </Grid>
-    </>
+    isSessionActive() && (
+      <>
+        <Grid templateColumns="repeat(5, 1fr)" gap={2}>
+          <GridItem colSpan={1}>
+            <SearchPanel type={type} setShowSpinner={setShowSpinner} />
+          </GridItem>
+          <GridItem colSpan={4}>
+            {showSpinner ? (
+              <VStack paddingTop={"15%"} spacing={5}>
+                <Spinner
+                  label="Fetching Transactions..."
+                  thickness="2px"
+                  speed="1s"
+                  emptyColor="gray.100"
+                  color="#8565c4"
+                  boxSize={"24vh"}
+                />
+                <_Label
+                  fontSize="1em"
+                  fontFamily={numberFont}
+                  letterSpacing={5}
+                >
+                  Fetching Transactions...
+                </_Label>
+              </VStack>
+            ) : (
+              <TransactionsList type={type} />
+            )}
+          </GridItem>
+        </Grid>
+      </>
+    )
   );
 };
 
