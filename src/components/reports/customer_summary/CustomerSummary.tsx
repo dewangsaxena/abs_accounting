@@ -23,6 +23,7 @@ import {
   formatNumberWithDecimalPlaces,
   getUUID,
   showToast,
+  isSessionActive,
 } from "../../../shared/functions";
 import {
   APP_HOST,
@@ -68,19 +69,19 @@ const CustomerSummary = () => {
   // Loading Status
   const [isLoading, setLoadingStatus] = useState<boolean>(false);
 
-  return localStorage.getItem("isSessionActive") === null ? (
-    <></>
-  ) : (
-    <Grid templateColumns="repeat(5, 1fr)" gap={2}>
-      <GridItem colSpan={1}>
-        <Filter isLoading={isLoading} setLoadingStatus={setLoadingStatus} />
-      </GridItem>
-      <GridItem colSpan={4}>
-        <Box overflow="auto" height="97vh">
-          <ClientList isLoading={isLoading} />
-        </Box>
-      </GridItem>
-    </Grid>
+  return (
+    isSessionActive() && (
+      <Grid templateColumns="repeat(5, 1fr)" gap={2}>
+        <GridItem colSpan={1}>
+          <Filter isLoading={isLoading} setLoadingStatus={setLoadingStatus} />
+        </GridItem>
+        <GridItem colSpan={4}>
+          <Box overflow="auto" height="97vh">
+            <ClientList isLoading={isLoading} />
+          </Box>
+        </GridItem>
+      </Grid>
+    )
   );
 };
 

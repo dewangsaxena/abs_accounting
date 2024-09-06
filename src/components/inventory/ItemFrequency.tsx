@@ -32,6 +32,8 @@ import {
   calculateCOGSMargin,
   calculateProfitMargin,
   formatNumberWithDecimalPlaces,
+  isSessionActive,
+  redirectIfInvalidSession,
   showToast,
 } from "../../shared/functions";
 import AutoSuggest from "react-autosuggest";
@@ -602,38 +604,41 @@ const labelStyleConfig: AttributeType = {
 };
 
 const ItemFrequency = () => {
+  redirectIfInvalidSession();
   const [loadingState, setLoadingState] = useState<boolean>(false);
   const { partId, report } = frequencyDetailsStore((state) => ({
     partId: state.partId,
     report: state.report,
   }));
   return (
-    <Grid
-      templateAreas={`"filter report"`}
-      gridTemplateColumns={"25% 75%"}
-      gap={2}
-    >
-      <GridItem area={"filter"}>
-        <SearchFilter
-          loadingState={loadingState}
-          setLoadingState={setLoadingState}
-        />
-      </GridItem>
-      <GridItem area={"report"}>
-        {loadingState && (
-          <Center>
-            <Spinner
-              speed="1s"
-              thickness="4px"
-              color="#5D3FD3"
-              boxSize={"12vh"}
-              emptyColor="#CCCCFF"
-            />
-          </Center>
-        )}
-        {partId && loadingState === false && report && <Report />}
-      </GridItem>
-    </Grid>
+    isSessionActive() && (
+      <Grid
+        templateAreas={`"filter report"`}
+        gridTemplateColumns={"25% 75%"}
+        gap={2}
+      >
+        <GridItem area={"filter"}>
+          <SearchFilter
+            loadingState={loadingState}
+            setLoadingState={setLoadingState}
+          />
+        </GridItem>
+        <GridItem area={"report"}>
+          {loadingState && (
+            <Center>
+              <Spinner
+                speed="1s"
+                thickness="4px"
+                color="#5D3FD3"
+                boxSize={"12vh"}
+                emptyColor="#CCCCFF"
+              />
+            </Center>
+          )}
+          {partId && loadingState === false && report && <Report />}
+        </GridItem>
+      </Grid>
+    )
   );
 };
 
