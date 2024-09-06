@@ -10,7 +10,10 @@ import {
 } from "../../../shared/Components";
 import { useState } from "react";
 import { LiaBalanceScaleSolid } from "react-icons/lia";
-import { redirectIfInvalidSession } from "../../../shared/functions";
+import {
+  isSessionActive,
+  redirectIfInvalidSession,
+} from "../../../shared/functions";
 
 const BalanceSheet = () => {
   redirectIfInvalidSession();

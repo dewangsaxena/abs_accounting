@@ -44,6 +44,7 @@ import {
   formatNumberWithDecimalPlaces,
   getUUID,
   showToast,
+  isSessionActive,
 } from "../../../shared/functions";
 import { navBgColor, numberFont } from "../../../shared/style";
 import { FaFilePdf } from "react-icons/fa";

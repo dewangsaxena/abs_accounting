@@ -87,6 +87,7 @@ import {
   calculateProfitMargin,
   calculateCOGSMargin,
   getAttributeFromSession,
+  isSessionActive,
 } from "../../../shared/functions";
 import {
   BiMessageDetail,

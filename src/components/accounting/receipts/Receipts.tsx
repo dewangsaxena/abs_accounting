@@ -46,6 +46,7 @@ import {
   formatNumberWithDecimalPlaces,
   getUUID,
   showToast,
+  isSessionActive,
 } from "../../../shared/functions";
 import { LuReceipt } from "react-icons/lu";
 import { IoPrint } from "react-icons/io5";

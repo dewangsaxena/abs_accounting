@@ -28,6 +28,7 @@ import { CiDollar } from "react-icons/ci";
 import { APIResponse, HTTPService } from "../../service/api-client";
 import {
   buildSearchListForItem,
+  isSessionActive,
   redirectIfInvalidSession,
   showToast,
   toFixed,
