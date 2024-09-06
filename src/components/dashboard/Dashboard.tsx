@@ -4,7 +4,7 @@ import CustomerAndSales from "./actions/CustomerAndSales";
 import InventoryAndServices from "./actions/InventoryAndServices";
 import { interaction } from "./interaction";
 import Settings from "./actions/Settings";
-import { checkForValidSession } from "../../shared/functions";
+import { redirectIfInvalidSession } from "../../shared/functions";
 import Stats from "./actions/SummaryReportDetails";
 
 const Dashboard = () => {
@@ -15,7 +15,7 @@ const Dashboard = () => {
   } = interaction();
 
   // Check for Valid Session
-  checkForValidSession();
+  redirectIfInvalidSession();
 
   return (
     <>

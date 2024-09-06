@@ -19,7 +19,7 @@ import { ClientDetails, clientStore } from "../../client/store";
 import { APIResponse } from "../../../service/api-client";
 import {
   buildSearchListForClient,
-  checkForValidSession,
+  redirectIfInvalidSession,
   formatNumberWithDecimalPlaces,
   getUUID,
   showToast,
@@ -63,12 +63,14 @@ import { FaUser } from "react-icons/fa";
  * @returns
  */
 const CustomerSummary = () => {
-  checkForValidSession();
+  redirectIfInvalidSession();
 
   // Loading Status
   const [isLoading, setLoadingStatus] = useState<boolean>(false);
 
-  return (
+  return localStorage.getItem("isSessionActive") === null ? (
+    <></>
+  ) : (
     <Grid templateColumns="repeat(5, 1fr)" gap={2}>
       <GridItem colSpan={1}>
         <Filter isLoading={isLoading} setLoadingStatus={setLoadingStatus} />

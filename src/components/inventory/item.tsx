@@ -52,7 +52,7 @@ import { ItemDetails, Prices, itemStore } from "./itemStore";
 import {
   buildSearchListForItem,
   calculateCOGSMargin,
-  checkForValidSession,
+  redirectIfInvalidSession,
   formatNumber,
   getProfitMarginByItemIdentifierPrefix,
   showToast,
@@ -319,7 +319,7 @@ const PricesCard = ({
  * @returns
  */
 const Item = ({ isViewOrUpdate = false }: { isViewOrUpdate?: boolean }) => {
-  checkForValidSession();
+  redirectIfInvalidSession();
 
   /**
    * Get Store Id.

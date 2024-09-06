@@ -17,7 +17,7 @@ import { APIResponse, HTTPService } from "../../../service/api-client";
 import { ClientDetails, clientStore } from "../../client/store";
 import {
   buildSearchListForClient,
-  checkForValidSession,
+  redirectIfInvalidSession,
   getUUID,
   showToast,
 } from "../../../shared/functions";
@@ -97,7 +97,7 @@ const CustomerList = ({ list, deleteClient }: CustomerDetailsListProps) => {
  * @returns
  */
 const CustomerStatement = () => {
-  checkForValidSession();
+  redirectIfInvalidSession();
   const toast = useToast();
 
   // Fetch

@@ -40,7 +40,7 @@ import { APIResponse } from "../../../service/api-client";
 import {
   calculateCOGSMargin,
   calculateProfitMargin,
-  checkForValidSession,
+  redirectIfInvalidSession,
   formatNumberWithDecimalPlaces,
   getUUID,
   showToast,
@@ -650,7 +650,7 @@ const Segment = ({ currentStore }: { currentStore: number }) => {
  * @returns
  */
 const IncomeStatement = () => {
-  checkForValidSession();
+  redirectIfInvalidSession();
   return (
     <Box>
       <VStack align={"start"}>

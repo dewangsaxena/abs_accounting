@@ -63,7 +63,7 @@ import { GiTakeMyMoney } from "react-icons/gi";
 import {
   buildSearchListForClient,
   buildSearchListForItem,
-  checkForValidSession,
+  redirectIfInvalidSession,
   formatNumberWithDecimalPlaces,
   getUUID,
   showToast,
@@ -1559,7 +1559,7 @@ const ClientFooter = memo(
 const Client = memo(
   ({ isViewOrUpdate = false }: { isViewOrUpdate?: boolean }) => {
     // Check for Active Session
-    checkForValidSession();
+    redirectIfInvalidSession();
 
     // Toast Handle.
     const toast = useToast();

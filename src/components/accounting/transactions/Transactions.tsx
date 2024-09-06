@@ -75,7 +75,7 @@ import {
 } from "./store";
 import {
   calculateCOGSMarginByMargin,
-  checkForValidSession,
+  redirectIfInvalidSession,
   formatNumberWithDecimalPlaces,
   getProfitMarginColorScheme,
   getProfitMarginByItemIdentifierPrefix,
@@ -2016,7 +2016,9 @@ const TransactionHeaderDetails = ({
   // Client Suggestions
   const [clientSuggestions, setClientSuggestions] = useState<any>([]);
   const [selectedClient, setSelectedClient] = useState<string>(
-    isViewOrUpdate && clientDetails && clientDetails.primaryDetails.name ? defaultClient.defaultValue.label : ""
+    isViewOrUpdate && clientDetails && clientDetails.primaryDetails.name
+      ? defaultClient.defaultValue.label
+      : ""
   );
 
   // Client Select
@@ -3252,7 +3254,7 @@ const Transactions = ({
   name,
   isViewOrUpdate = false,
 }: TransactionsProps) => {
-  checkForValidSession();
+  redirectIfInvalidSession();
 
   // Hooks
   const [enableEditing, setEnableEditing] = useState(!isViewOrUpdate);

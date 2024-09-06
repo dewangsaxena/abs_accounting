@@ -48,7 +48,7 @@ import {
   buildSearchListForClient,
   buildSearchListForItem,
   calculateProfitMargin,
-  checkForValidSession,
+  redirectIfInvalidSession,
   formatNumberWithDecimalPlaces,
   getUUID,
   showToast,
@@ -1226,7 +1226,7 @@ const TransactionDetailsRow = memo(
  * @returns
  */
 const Filter = ({ type }: FilterProps) => {
-  checkForValidSession();
+  redirectIfInvalidSession();
 
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
   return (

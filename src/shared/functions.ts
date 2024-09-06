@@ -12,10 +12,18 @@ import { ClientDetails } from "../components/client/store";
 import { InventoryResponseObject } from "../components/inventory/AdjustInventory";
 
 /**
+ * This method will check for active session.
+ * @returns bool
+ */
+export const isSessionActive = () => {
+  return localStorage.getItem("isSessionActive") !== null;
+};
+
+/**
  * Check for Valid Session.
  */
-export const checkForValidSession = () => {
-  if (localStorage.getItem("isSessionActive") === null) {
+export const redirectIfInvalidSession = () => {
+  if (isSessionActive() === false) {
     window.location.href = "/login";
   }
 };

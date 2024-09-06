@@ -28,7 +28,7 @@ import { CiDollar } from "react-icons/ci";
 import { APIResponse, HTTPService } from "../../service/api-client";
 import {
   buildSearchListForItem,
-  checkForValidSession,
+  redirectIfInvalidSession,
   showToast,
   toFixed,
 } from "../../shared/functions";
@@ -449,7 +449,7 @@ const Header = () => {
  * @returns
  */
 const AdjustInventory = memo(() => {
-  checkForValidSession();
+  redirectIfInvalidSession();
 
   const [counter, setCounter] = useState<number>(1);
   const [invDetails] = useState<InvDetailsType>({});

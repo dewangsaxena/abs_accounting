@@ -10,10 +10,10 @@ import {
 } from "../../../shared/Components";
 import { useState } from "react";
 import { LiaBalanceScaleSolid } from "react-icons/lia";
-import { checkForValidSession } from "../../../shared/functions";
+import { redirectIfInvalidSession } from "../../../shared/functions";
 
 const BalanceSheet = () => {
-  checkForValidSession();
+  redirectIfInvalidSession();
   const currentStore = parseInt(localStorage.getItem("storeId") || "0");
   const currentDate = new Date();
   const [store, setStore] = useState<number>(currentStore);

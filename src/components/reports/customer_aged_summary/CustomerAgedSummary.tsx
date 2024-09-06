@@ -12,12 +12,12 @@ import { useState } from "react";
 import DatePicker from "react-datepicker";
 import { Switch } from "@chakra-ui/react";
 import { FcMoneyTransfer } from "react-icons/fc";
-import { checkForValidSession } from "../../../shared/functions";
+import { redirectIfInvalidSession } from "../../../shared/functions";
 import { IoInformationCircleOutline } from "react-icons/io5";
 import { BsFiletypeCsv } from "react-icons/bs";
 
 const CustomerAgedSummary = () => {
-  checkForValidSession();
+  redirectIfInvalidSession();
   const currentStore = parseInt(localStorage.getItem("storeId") || "0");
   const [date, setDate] = useState<Date>(new Date());
   const [sortAscending, setSortAscending] = useState<number>(0);

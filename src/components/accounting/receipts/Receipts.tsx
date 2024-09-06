@@ -42,7 +42,7 @@ import { ClientDetails, clientStore } from "../../client/store";
 import AsyncSelect from "react-select/async";
 import {
   buildSearchListForClient,
-  checkForValidSession,
+  redirectIfInvalidSession,
   formatNumberWithDecimalPlaces,
   getUUID,
   showToast,
@@ -1016,7 +1016,7 @@ const Footer = memo(({ isViewOrUpdate, enableEditing }: ReceiptProps) => {
  * @param isViewOrUpdate
  */
 const Receipts = ({ isViewOrUpdate }: ReceiptProps) => {
-  checkForValidSession();
+  redirectIfInvalidSession();
   const [isClientChange, setClientChangeStatus] = useState<boolean>(true);
   const toast = useToast();
   const { id, load, setDetails } = receiptStore(
