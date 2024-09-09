@@ -1183,7 +1183,8 @@ class Inventory
                         ]);
                         if ($is_successful !== true && $statement_update_prices->rowCount() < 1) throw new Exception('Unable to Update Price for ' . $identifier);
                     }
-                    /* DEDUCTING FROM INVENTORY */ else {
+                    /* DEDUCTING FROM INVENTORY */ 
+                    else {
                         // Existing Buying Cost
                         $existing_buying_cost = $existing_prices[$store_id]['buyingCost'];
 
@@ -1208,7 +1209,8 @@ class Inventory
                     $is_successful = $statement_update->execute($values);
                     if ($is_successful !== true || $statement_update->rowCount() < 1) throw new Exception('Unable to Adjust Item(s).');
                 }
-                /* No Inventory Records Exists for this Item, So add a record */ else {
+                /* No Inventory Records Exists for this Item, So add a record */ 
+                else {
                     // Only Update the Prices if quantity adjusted is positive.
                     // We could be voiding all inventory without affecting the prices.
                     if ($quantity_to_be_adjusted > 0) {
