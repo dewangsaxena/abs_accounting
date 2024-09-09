@@ -1292,8 +1292,7 @@ class Inventory
      * @param quantity 
      * @return float
      */
-    private static function calculate_buying_cost(float $value, int $quantity): float
-    {
+    private static function calculate_buying_cost(float $value, int $quantity): float {
         return Utils::round($value / $quantity);
     }
 
