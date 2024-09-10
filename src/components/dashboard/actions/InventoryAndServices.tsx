@@ -154,12 +154,12 @@ const ProfitMarginsHandler = () => {
             <HStack>
               <Box>
                 <SectionHeader fontSize="0.8em" letterSpacing={2}>
-                  PROFIT MARGINS
+                  C.O.G.S MARGINS
                 </SectionHeader>
                 <HStack marginTop={1}>
                   <FcInfo />
                   <_Label fontSize="0.8em">
-                    <i>Add Profit Margin by Item Prefix.</i>
+                    <i>Add C.O.G.S Margin by Item Prefix.</i>
                   </_Label>
                 </HStack>
               </Box>
@@ -209,64 +209,72 @@ const ProfitMarginsHandler = () => {
             </Box>
           </HStack>
           <_Divider margin={2} />
-          {itemIdentifierPrefixKeys.map((prefix: string) => {
-            return (
-              <HStack width="100%" key={getUUID()}>
-                <Box width="30%">
-                  <Badge
-                    letterSpacing={1}
-                    fontSize="0.8em"
-                    colorScheme={
-                      prefix === DEFAULT_PROFIT_MARGIN_KEY ? "yellow" : "cyan"
-                    }
-                    variant={
-                      prefix === DEFAULT_PROFIT_MARGIN_KEY
-                        ? "outline"
-                        : "subtle"
-                    }
-                  >
-                    {prefix}
-                  </Badge>
-                </Box>
-                <Box transform={"translateY(-25%)"} width="50%">
-                  <_InputLeftElement
-                    fontFamily={numberFont}
-                    defaultValue={profitMargins[prefix]}
-                    type="number"
-                    isReadOnly={isReadOnly}
-                    borderBottomColor={inputConfig.borderColor}
-                    borderBottomWidth={inputConfig.borderWidth}
-                    borderRadius={inputConfig.borderRadius}
-                    letterSpacing={inputConfig.letterSpacing}
-                    size={inputConfig.size}
-                    fontSize={inputConfig.fontSize}
-                    leftElement={<CiDiscount1 color={"#33FFBD"} />}
-                    onBlur={(event: any) => {
-                      let _profitMargin = parseFloat(event.target.value.trim());
-                      if (isNaN(_profitMargin) === false) {
-                        let __profitMargins = profitMargins;
-                        __profitMargins[prefix] = _profitMargin;
-                        __setProfitMarginsState(__profitMargins);
-                      }
-                    }}
-                  ></_InputLeftElement>
-                </Box>
-                {prefix !== DEFAULT_PROFIT_MARGIN_KEY && (
-                  <Box width="10%">
-                    <_Button
-                      fontSize="1.2em"
-                      isDisabled={isReadOnly}
-                      icon={<FcFullTrash />}
-                      color="lightblue"
-                      bgColor="white"
-                      label=""
-                      onClick={() => deleteItemIdentifierPrefix(prefix)}
-                    ></_Button>
-                  </Box>
-                )}
-              </HStack>
-            );
-          })}
+          <Box overflowY={"scroll"} maxHeight="20vh">
+            <VStack align="start">
+              {itemIdentifierPrefixKeys.map((prefix: string) => {
+                return (
+                  <HStack width="100%" key={getUUID()}>
+                    <Box width="30%">
+                      <Badge
+                        letterSpacing={1}
+                        fontSize="0.8em"
+                        colorScheme={
+                          prefix === DEFAULT_PROFIT_MARGIN_KEY
+                            ? "yellow"
+                            : "cyan"
+                        }
+                        variant={
+                          prefix === DEFAULT_PROFIT_MARGIN_KEY
+                            ? "outline"
+                            : "subtle"
+                        }
+                      >
+                        {prefix}
+                      </Badge>
+                    </Box>
+                    <Box transform={"translateY(-25%)"} width="50%">
+                      <_InputLeftElement
+                        fontFamily={numberFont}
+                        defaultValue={profitMargins[prefix]}
+                        type="number"
+                        isReadOnly={isReadOnly}
+                        borderBottomColor={inputConfig.borderColor}
+                        borderBottomWidth={inputConfig.borderWidth}
+                        borderRadius={inputConfig.borderRadius}
+                        letterSpacing={inputConfig.letterSpacing}
+                        size={inputConfig.size}
+                        fontSize={inputConfig.fontSize}
+                        leftElement={<CiDiscount1 color={"#33FFBD"} />}
+                        onBlur={(event: any) => {
+                          let _profitMargin = parseFloat(
+                            event.target.value.trim()
+                          );
+                          if (isNaN(_profitMargin) === false) {
+                            let __profitMargins = profitMargins;
+                            __profitMargins[prefix] = _profitMargin;
+                            __setProfitMarginsState(__profitMargins);
+                          }
+                        }}
+                      ></_InputLeftElement>
+                    </Box>
+                    {prefix !== DEFAULT_PROFIT_MARGIN_KEY && (
+                      <Box width="10%">
+                        <_Button
+                          fontSize="1.2em"
+                          isDisabled={isReadOnly}
+                          icon={<FcFullTrash />}
+                          color="lightblue"
+                          bgColor="white"
+                          label=""
+                          onClick={() => deleteItemIdentifierPrefix(prefix)}
+                        ></_Button>
+                      </Box>
+                    )}
+                  </HStack>
+                );
+              })}
+            </VStack>
+          </Box>
           <_Divider margin={1}></_Divider>
           <HStack spacing={5}>
             <Box width="40%">
