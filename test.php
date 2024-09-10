@@ -300,30 +300,4 @@ function generate_table(array $quantity_table, PDO &$db, int $store_id): void {
     </tbody></table>
     EOS;
 }
-
-function check_prices() {
-    $db = get_db_instance();
-    $statement = $db -> prepare('SELECT id, prices FROM items');
-    $statement -> execute();
-    $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
-    foreach($result as $r) {
-        $stores = json_decode($r['prices'], true);
-        foreach($stores as $store) {
-            $selling_price_parts = explode('.', strval($store['sellingPrice']));
-            $buying_cost_price = explode('.', strval($store['buyingCost']));
-
-            if(isset($selling_price_parts[1]) && strlen($selling_price_parts[1]) > 4) {
-                echo 'Selling : '.$r['id'];
-                return;
-            }
-
-            if(isset($buying_cost_price[1]) && strlen($buying_cost_price[1]) > 4) {
-                echo 'Buying : '. $r['id'];
-                return;
-            }
-        }
-    }
-}
-
-check_prices();
 ?>
