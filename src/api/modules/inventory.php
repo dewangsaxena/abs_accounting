@@ -964,9 +964,7 @@ class Inventory
      * @param db
      * @return array 
      */
-    public static function adjust_inventory(array|null $details, int $store_id, PDO &$db = null): array
-    {
-
+    public static function adjust_inventory(array|null $details, int $store_id, PDO &$db = null): array {
         // Check for Wash
         if (SYSTEM_INIT_MODE === WASH) return ['status' => true];
 
