@@ -301,11 +301,29 @@ function generate_table(array $quantity_table, PDO &$db, int $store_id): void {
     EOS;
 }
 
-$store_id = StoreDetails::EDMONTON;
-$from_date = null;
-$till_date = '2024-08-31';
-$sort = 0;
-$customer_aged_summary = CustomerAgedSummary::fetch_customer_aged_summary($store_id, $from_date, $till_date, $sort, exclude_self: false);
-print_r($customer_aged_summary);
+function check_prices() {
+    $db = get_db_instance();
+    $statement = $db -> prepare('SELECT id, prices FROM items');
+    $statement -> execute();
+    $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
+    foreach($result as $r) {
+        $stores = json_decode($r['prices'], true);
+        foreach($stores as $store) {
+            $selling_price_parts = explode('.', strval($store['sellingPrice']));
+            $buying_cost_price = explode('.', strval($store['buyingCost']));
 
+            if(isset($selling_price_parts[1]) && strlen($selling_price_parts[1]) > 4) {
+                echo 'Selling : '.$r['id'];
+                return;
+            }
+
+            if(isset($buying_cost_price[1]) && strlen($buying_cost_price[1]) > 4) {
+                echo 'Buying : '. $r['id'];
+                return;
+            }
+        }
+    }
+}
+
+check_prices();
 ?>
