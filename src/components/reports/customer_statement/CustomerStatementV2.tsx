@@ -45,7 +45,7 @@ import {
   CustomerAgedSummary,
   customerStatementReport,
   MAX_SELECTED_CLIENT_LIMIT,
-} from "./";
+} from "./customerStatementStore";
 import { shallow } from "zustand/shallow";
 import { CiCircleInfo } from "react-icons/ci";
 
