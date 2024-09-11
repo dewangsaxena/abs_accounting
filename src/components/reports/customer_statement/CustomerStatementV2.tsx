@@ -21,6 +21,7 @@ import { ClientDetails, clientStore } from "../../client/store";
 import {
   buildSearchListForClient,
   formatNumberWithDecimalPlaces,
+  isSessionActive,
   redirectIfInvalidSession,
   showToast,
 } from "../../../shared/functions";
@@ -82,45 +83,47 @@ const CustomerDetailRow = memo(
     const toast = useToast();
 
     return (
-      <HStack width="100%">
-        <Box width="30%">
-          <_Label {...contentFontStyle}>{customer.client_name}</_Label>
-        </Box>
-        <Box width="10%">
-          <_Label {...contentFontStyle}>
-            $ {formatNumberWithDecimalPlaces(customer.total, 2)}
-          </_Label>
-        </Box>
-        <Box width="10%">
-          <_Label {...contentFontStyle}>
-            $ {formatNumberWithDecimalPlaces(customer.current, 2)}
-          </_Label>
-        </Box>
-        <Box width="10%">
-          <_Label {...contentFontStyle}>
-            $ {formatNumberWithDecimalPlaces(customer["31-60"], 2)}
-          </_Label>
-        </Box>
-        <Box width="10%">
-          <_Label {...contentFontStyle}>
-            $ {formatNumberWithDecimalPlaces(customer["61-90"], 2)}
-          </_Label>
-        </Box>
-        <Box width="10%">
-          <_Label {...contentFontStyle}>
-            $ {formatNumberWithDecimalPlaces(customer["91+"], 2)}
-          </_Label>
-        </Box>
-        <Box width="10%">
-          <Checkbox
-            size="md"
-            onChange={(_: any) => {
-              setRerender(rerender + 1);
-              setSelectedClient(customer.client_id);
-            }}
-          ></Checkbox>
-        </Box>
-      </HStack>
+      isSessionActive() && (
+        <HStack width="100%">
+          <Box width="30%">
+            <_Label {...contentFontStyle}>{customer.client_name}</_Label>
+          </Box>
+          <Box width="10%">
+            <_Label {...contentFontStyle}>
+              $ {formatNumberWithDecimalPlaces(customer.total, 2)}
+            </_Label>
+          </Box>
+          <Box width="10%">
+            <_Label {...contentFontStyle}>
+              $ {formatNumberWithDecimalPlaces(customer.current, 2)}
+            </_Label>
+          </Box>
+          <Box width="10%">
+            <_Label {...contentFontStyle}>
+              $ {formatNumberWithDecimalPlaces(customer["31-60"], 2)}
+            </_Label>
+          </Box>
+          <Box width="10%">
+            <_Label {...contentFontStyle}>
+              $ {formatNumberWithDecimalPlaces(customer["61-90"], 2)}
+            </_Label>
+          </Box>
+          <Box width="10%">
+            <_Label {...contentFontStyle}>
+              $ {formatNumberWithDecimalPlaces(customer["91+"], 2)}
+            </_Label>
+          </Box>
+          <Box width="10%">
+            <Checkbox
+              size="md"
+              onChange={(_: any) => {
+                setRerender(rerender + 1);
+                setSelectedClient(customer.client_id);
+              }}
+            ></Checkbox>
+          </Box>
+        </HStack>
+      )
     );
   }
 );
@@ -147,7 +150,7 @@ const CustomerList = memo(() => {
   );
 
   // Display Header
-  if (customerAgedSummaryList.length) {
+  if (isSessionActive() && customerAgedSummaryList.length) {
     return (
       <Box height="60vh" overflowY={"scroll"} width="100%">
         <VStack align="start">
@@ -235,58 +238,60 @@ const CustomerAgedSummaryList = memo(() => {
       });
   };
   return (
-    <>
-      <VStack align="start" width="100%">
-        <_Label fontSize="0.8em" textTransform={"uppercase"}>
-          Fetch Clients By Aged Summary
-        </_Label>
-        <HStack width="100%">
-          <HStack>
-            <_Label fontSize="0.8em">Sort by Lowest Amount owing:</_Label>
-            <Switch
-              id="email-alerts"
-              colorScheme="teal"
-              onChange={() => {
-                setDetail("setAscendingSort", sortAscending ^ 1);
-              }}
-            />
-          </HStack>
-          <_Button
-            isDisabled={isButtonDisabled}
-            icon={<FcMoneyTransfer />}
-            color="#90EE90"
-            bgColor="black"
-            fontSize="1.2em"
-            label="Fetch Customer Aged Summary"
-            onClick={fetchCustomerAgedSummaryHandler}
-            width="25%"
-          ></_Button>
-        </HStack>
-        <HStack>
-          <CiCircleInfo color="green" />
-          <_Label fontSize="0.8em" color="red" letterSpacing={2}>
-            Only first {MAX_SELECTED_CLIENT_LIMIT} selected clients will be
-            processed.
+    isSessionActive() && (
+      <>
+        <VStack align="start" width="100%">
+          <_Label fontSize="0.8em" textTransform={"uppercase"}>
+            Fetch Clients By Aged Summary
           </_Label>
-        </HStack>
-        <_Divider margin={0} />
-        {isLoading === false && <CustomerList />}
-      </VStack>
-      {isLoading && (
-        <VStack paddingTop={10}>
-          <Center>
-            <Spinner
-              label="Loading Customer Aged Summary"
-              thickness="2px"
-              speed="1s"
-              emptyColor="gray.100"
-              color="#8565c4"
-              boxSize={"24vh"}
-            />
-          </Center>
+          <HStack width="100%">
+            <HStack>
+              <_Label fontSize="0.8em">Sort by Lowest Amount owing:</_Label>
+              <Switch
+                id="email-alerts"
+                colorScheme="teal"
+                onChange={() => {
+                  setDetail("setAscendingSort", sortAscending ^ 1);
+                }}
+              />
+            </HStack>
+            <_Button
+              isDisabled={isButtonDisabled}
+              icon={<FcMoneyTransfer />}
+              color="#90EE90"
+              bgColor="black"
+              fontSize="1.2em"
+              label="Fetch Customer Aged Summary"
+              onClick={fetchCustomerAgedSummaryHandler}
+              width="25%"
+            ></_Button>
+          </HStack>
+          <HStack>
+            <CiCircleInfo color="green" />
+            <_Label fontSize="0.8em" color="red" letterSpacing={2}>
+              Only first {MAX_SELECTED_CLIENT_LIMIT} selected clients will be
+              processed.
+            </_Label>
+          </HStack>
+          <_Divider margin={0} />
+          {isLoading === false && <CustomerList />}
         </VStack>
-      )}
-    </>
+        {isLoading && (
+          <VStack paddingTop={10}>
+            <Center>
+              <Spinner
+                label="Loading Customer Aged Summary"
+                thickness="2px"
+                speed="1s"
+                emptyColor="gray.100"
+                color="#8565c4"
+                boxSize={"24vh"}
+              />
+            </Center>
+          </VStack>
+        )}
+      </>
+    )
   );
 });
 
@@ -388,165 +393,167 @@ const CustomerStatement = memo(() => {
   };
 
   return (
-    <Box width="100%">
-      <Card
-        height={window.screen.availHeight - window.screen.availHeight * 0.15}
-      >
-        <CardBody>
-          <Box width="20%">
-            <HomeNavButton></HomeNavButton>
-          </Box>
-          <VStack align="start" width="100%">
-            <HStack width="100%">
-              <Box width="25%">
-                <AutoSuggest
-                  suggestions={clientSuggestions}
-                  onSuggestionsClearRequested={() => setClientSuggestions([])}
-                  onSuggestionsFetchRequested={({ value }) => {
-                    if (value.length < AUTO_SUGGEST_MIN_INPUT_LENGTH) return;
-                    loadOptions(value);
-                  }}
-                  onSuggestionSelected={(_: any, { suggestionIndex }) => {
-                    setDetail(
-                      "clientId",
-                      clientSuggestions[suggestionIndex].value.id
-                    );
-                  }}
-                  getSuggestionValue={(suggestion: any) => {
-                    return `${suggestion.value.primaryDetails.name}`;
-                  }}
-                  renderSuggestion={(suggestion: any) => (
-                    <span>&nbsp;{suggestion.label}</span>
-                  )}
-                  inputProps={{
-                    style: {
-                      width: "22vw",
-                      ...AutoSuggestStyle,
-                    },
-                    placeholder:
-                      `Search clients...` +
-                      (AUTO_SUGGEST_MIN_INPUT_LENGTH > 1
-                        ? `(min ${AUTO_SUGGEST_MIN_INPUT_LENGTH} chars)`
-                        : ""),
-                    value: selectedClient,
-                    onChange: (_, { newValue }) => {
-                      setSelectedClient(newValue);
-                      if (newValue.trim() === "") {
-                        setDetail("clientId", null);
-                      }
-                    },
-                  }}
-                  highlightFirstSuggestion={true}
-                ></AutoSuggest>
-              </Box>
-              <Box>
-                <HStack spacing={10}>
-                  <_Label fontSize="0.8em">Start Date:</_Label>
-                  <DatePicker
-                    disabled={clientId === null}
-                    wrapperClassName="datepicker_style"
-                    dateFormat={"MM/dd/yyyy"}
-                    placeholderText="Txn. Date"
-                    selected={startDate}
-                    onChange={(date) => {
-                      if (date !== null) {
-                        setDetail("startDate", date);
-                      }
+    isSessionActive() && (
+      <Box width="100%">
+        <Card
+          height={window.screen.availHeight - window.screen.availHeight * 0.15}
+        >
+          <CardBody>
+            <Box width="20%">
+              <HomeNavButton></HomeNavButton>
+            </Box>
+            <VStack align="start" width="100%">
+              <HStack width="100%">
+                <Box width="25%">
+                  <AutoSuggest
+                    suggestions={clientSuggestions}
+                    onSuggestionsClearRequested={() => setClientSuggestions([])}
+                    onSuggestionsFetchRequested={({ value }) => {
+                      if (value.length < AUTO_SUGGEST_MIN_INPUT_LENGTH) return;
+                      loadOptions(value);
                     }}
-                    closeOnScroll={true}
-                    maxDate={new Date()}
-                  />
-                </HStack>
-              </Box>
-              <Box>
-                <HStack spacing={10}>
-                  <_Label fontSize="0.8em">End Date:</_Label>
-                  <DatePicker
-                    disabled={clientId === null}
-                    wrapperClassName="datepicker_style"
-                    dateFormat={"MM/dd/yyyy"}
-                    placeholderText="Txn. Date"
-                    selected={endDate}
-                    onChange={(date) => {
-                      if (date !== null) {
-                        setDetail("endDate", date);
-                      }
-                    }}
-                    closeOnScroll={true}
-                    maxDate={new Date()}
-                  />
-                </HStack>
-              </Box>
-            </HStack>
-          </VStack>
-          <VStack align={"start"} marginTop={5}>
-            <HStack>
-              <Box>
-                <_Button
-                  isDisabled={clientId === null}
-                  color="white"
-                  fontSize="1.2em"
-                  bgColor={navBgColor}
-                  label="Show Statement"
-                  onClick={() => {
-                    handleOperation("print");
-                  }}
-                  icon={<TfiReceipt color="#00A36C" />}
-                ></_Button>
-              </Box>
-              <Box>
-                <_Button
-                  isDisabled={clientId === null || disableButton}
-                  color="white"
-                  fontSize="1.2em"
-                  bgColor={navBgColor}
-                  label="Email Statement(s)"
-                  onClick={() => {
-                    handleOperation("email");
-                  }}
-                  icon={<MdAlternateEmail color="#0096FF" />}
-                ></_Button>
-              </Box>
-              <Box>
-                <HStack spacing={5}>
-                  <Badge colorScheme={"green"} fontSize="0.8em">
-                    ATTACH TRANSACTIONS?
-                  </Badge>
-                  <Switch
-                    isDisabled={clientId === null}
-                    colorScheme="orange"
-                    size="md"
-                    onChange={() => {
-                      setDetail("attachTransactions", !attachTransactions);
-                    }}
-                  />
-                </HStack>
-              </Box>
-              <Box>
-                <HStack spacing={5}>
-                  <Badge colorScheme={"green"} fontSize="0.8em">
-                    Generate Record of All Transactions?
-                  </Badge>
-                  <Switch
-                    isDisabled={clientId === null}
-                    colorScheme="blue"
-                    size="md"
-                    onChange={() => {
+                    onSuggestionSelected={(_: any, { suggestionIndex }) => {
                       setDetail(
-                        "generateRecordOfAllTransactions",
-                        !generateRecordOfAllTransactions
+                        "clientId",
+                        clientSuggestions[suggestionIndex].value.id
                       );
                     }}
-                  />
-                </HStack>
-              </Box>
-            </HStack>
-          </VStack>
-          <_Divider />
-          <CustomerAgedSummaryList />
-        </CardBody>
-      </Card>
-    </Box>
+                    getSuggestionValue={(suggestion: any) => {
+                      return `${suggestion.value.primaryDetails.name}`;
+                    }}
+                    renderSuggestion={(suggestion: any) => (
+                      <span>&nbsp;{suggestion.label}</span>
+                    )}
+                    inputProps={{
+                      style: {
+                        width: "22vw",
+                        ...AutoSuggestStyle,
+                      },
+                      placeholder:
+                        `Search clients...` +
+                        (AUTO_SUGGEST_MIN_INPUT_LENGTH > 1
+                          ? `(min ${AUTO_SUGGEST_MIN_INPUT_LENGTH} chars)`
+                          : ""),
+                      value: selectedClient,
+                      onChange: (_, { newValue }) => {
+                        setSelectedClient(newValue);
+                        if (newValue.trim() === "") {
+                          setDetail("clientId", null);
+                        }
+                      },
+                    }}
+                    highlightFirstSuggestion={true}
+                  ></AutoSuggest>
+                </Box>
+                <Box>
+                  <HStack spacing={10}>
+                    <_Label fontSize="0.8em">Start Date:</_Label>
+                    <DatePicker
+                      disabled={clientId === null}
+                      wrapperClassName="datepicker_style"
+                      dateFormat={"MM/dd/yyyy"}
+                      placeholderText="Txn. Date"
+                      selected={startDate}
+                      onChange={(date) => {
+                        if (date !== null) {
+                          setDetail("startDate", date);
+                        }
+                      }}
+                      closeOnScroll={true}
+                      maxDate={new Date()}
+                    />
+                  </HStack>
+                </Box>
+                <Box>
+                  <HStack spacing={10}>
+                    <_Label fontSize="0.8em">End Date:</_Label>
+                    <DatePicker
+                      disabled={clientId === null}
+                      wrapperClassName="datepicker_style"
+                      dateFormat={"MM/dd/yyyy"}
+                      placeholderText="Txn. Date"
+                      selected={endDate}
+                      onChange={(date) => {
+                        if (date !== null) {
+                          setDetail("endDate", date);
+                        }
+                      }}
+                      closeOnScroll={true}
+                      maxDate={new Date()}
+                    />
+                  </HStack>
+                </Box>
+              </HStack>
+            </VStack>
+            <VStack align={"start"} marginTop={5}>
+              <HStack>
+                <Box>
+                  <_Button
+                    isDisabled={clientId === null}
+                    color="white"
+                    fontSize="1.2em"
+                    bgColor={navBgColor}
+                    label="Show Statement"
+                    onClick={() => {
+                      handleOperation("print");
+                    }}
+                    icon={<TfiReceipt color="#00A36C" />}
+                  ></_Button>
+                </Box>
+                <Box>
+                  <_Button
+                    isDisabled={clientId === null || disableButton}
+                    color="white"
+                    fontSize="1.2em"
+                    bgColor={navBgColor}
+                    label="Email Statement(s)"
+                    onClick={() => {
+                      handleOperation("email");
+                    }}
+                    icon={<MdAlternateEmail color="#0096FF" />}
+                  ></_Button>
+                </Box>
+                <Box>
+                  <HStack spacing={5}>
+                    <Badge colorScheme={"green"} fontSize="0.8em">
+                      ATTACH TRANSACTIONS?
+                    </Badge>
+                    <Switch
+                      isDisabled={clientId === null}
+                      colorScheme="orange"
+                      size="md"
+                      onChange={() => {
+                        setDetail("attachTransactions", !attachTransactions);
+                      }}
+                    />
+                  </HStack>
+                </Box>
+                <Box>
+                  <HStack spacing={5}>
+                    <Badge colorScheme={"green"} fontSize="0.8em">
+                      Generate Record of All Transactions?
+                    </Badge>
+                    <Switch
+                      isDisabled={clientId === null}
+                      colorScheme="blue"
+                      size="md"
+                      onChange={() => {
+                        setDetail(
+                          "generateRecordOfAllTransactions",
+                          !generateRecordOfAllTransactions
+                        );
+                      }}
+                    />
+                  </HStack>
+                </Box>
+              </HStack>
+            </VStack>
+            <_Divider />
+            <CustomerAgedSummaryList />
+          </CardBody>
+        </Card>
+      </Box>
+    )
   );
 });
 
