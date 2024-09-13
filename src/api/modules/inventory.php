@@ -761,6 +761,9 @@ class Inventory
             LIMIT 100;
             EOS);
 
+            // Remove Item Detail tag
+            $search_term = self::remove_item_detail_tag($search_term);
+
             // Execute statement
             $statement->execute([':code' => "%$search_term%"]);
 
