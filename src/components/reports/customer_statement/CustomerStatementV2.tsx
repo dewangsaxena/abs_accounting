@@ -66,15 +66,15 @@ const contentFontStyle: AttributeType = {
 const CustomerDetailRow = memo(
   ({ customer }: { customer: CustomerAgedSummary }) => {
     // Customer Statement Report
-    const { noOfSelectedClients, selectedClients, setSelectedClient } =
-      customerStatementReport(
-        (state) => ({
-          noOfSelectedClients: state.noOfSelectedClients,
-          selectedClients: state.selectedClients,
-          setSelectedClient: state.setSelectedClient,
-        }),
-        shallow
-      );
+    // const { noOfSelectedClients, selectedClients, setSelectedClient } =
+    //   customerStatementReport(
+    //     (state) => ({
+    //       noOfSelectedClients: state.noOfSelectedClients,
+    //       selectedClients: state.selectedClients,
+    //       setSelectedClient: state.setSelectedClient,
+    //     }),
+    //     shallow
+    //   );
 
     // Rerender
     const [rerender, setRerender] = useState<number>(0);
@@ -118,7 +118,7 @@ const CustomerDetailRow = memo(
               size="md"
               onChange={(_: any) => {
                 setRerender(rerender + 1);
-                setSelectedClient(customer.client_id);
+                // setSelectedClient(customer.client_id);
               }}
             ></Checkbox>
           </Box>
