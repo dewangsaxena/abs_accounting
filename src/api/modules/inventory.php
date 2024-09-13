@@ -464,7 +464,7 @@ class Inventory
                     OR description LIKE :term
                     OR oem LIKE :term
                 EOS;
-                $values[':term'] = '%' . $params['term'] . '%';
+                $values[':term'] = str_replace(self::ITEM_DETAILS_TAG, '', '%' . $params['term'] . '%');
                 $exclude_inactive = intval($params['exclude_inactive'] ?? 0);
 
                 // Add Limit
