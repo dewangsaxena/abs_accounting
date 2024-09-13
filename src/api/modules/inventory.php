@@ -72,6 +72,15 @@ class Inventory
     public const ITEM_DETAILS_TAG = '85163d53-ace8-4140-b83c-1c89294f6464';
 
     /**
+     * This method will remove item detail tag.
+     * @param value
+     * @return string
+     */
+    private static function remove_item_detail_tag(string $value): string {
+        return str_replace(self::ITEM_DETAILS_TAG, '', $value);
+    }
+
+    /**
      * This method will check whether item is eligible for discount when creating a transaction.
      * @param item_id
      * @param store_id
@@ -341,8 +350,8 @@ class Inventory
             }
 
             // Remove Tag
-            $data['identifier'] = str_replace(self::ITEM_DETAILS_TAG, '', $data['identifier']);
-            $data['description'] = str_replace(self::ITEM_DETAILS_TAG, '', $data['description']);
+            $data['identifier'] = self::remove_item_detail_tag($data['identifier']);
+            $data['description'] = self::remove_item_detail_tag($data['description']);
 
             // Values
             $values = [
@@ -464,7 +473,7 @@ class Inventory
                     OR description LIKE :term
                     OR oem LIKE :term
                 EOS;
-                $values[':term'] = str_replace(self::ITEM_DETAILS_TAG, '', '%' . $params['term'] . '%');
+                $values[':term'] = self::remove_item_detail_tag('%' . $params['term'] . '%');
                 $exclude_inactive = intval($params['exclude_inactive'] ?? 0);
 
                 // Add Limit
@@ -1070,7 +1079,7 @@ class Inventory
             foreach ($keys as $key) {
 
                 // Identifier
-                $identifier = str_replace(self::ITEM_DETAILS_TAG, '', $details[$key]['identifier']);
+                $identifier = self::remove_item_detail_tag($details[$key]['identifier']);
 
                 // Quantity
                 $quantity_to_be_adjusted = is_numeric($details[$key]['quantity']) ? intval($details[$key]['quantity']) : null;
