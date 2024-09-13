@@ -95,7 +95,10 @@ const Row = memo(({ isDisabled, _key, invDetails }: RowProps) => {
   const loadOptions = (searchTerm: string) => {
     httpService
       .fetch<InventoryResponseObject[]>(
-        { search_term: searchTerm, store_id: localStorage.getItem("storeId") },
+        {
+          search_term: ITEM_DETAILS_TAG + searchTerm,
+          store_id: localStorage.getItem("storeId"),
+        },
         "inv_fetch_item_details_for_adjust_inventory"
       )
       .then((res: any) => {
