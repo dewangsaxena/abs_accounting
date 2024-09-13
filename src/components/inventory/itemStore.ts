@@ -273,7 +273,7 @@ export const itemStore = create<ItemStore>((set, get) => ({
   },
   fetch: async (searchTerm: string, excludeInactive: boolean = false) => {
     let payload = {
-      term: searchTerm,
+      term: ITEM_DETAILS_TAG + searchTerm,
       exclude_inactive: excludeInactive ? 1 : 0,
     };
     return await httpService.fetch<ItemDetails[]>(payload, "inv_fetch");

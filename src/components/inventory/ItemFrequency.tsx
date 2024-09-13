@@ -40,7 +40,7 @@ import AutoSuggest from "react-autosuggest";
 import { AutoSuggestStyle, navBgColor, numberFont } from "../../shared/style";
 import DatePicker from "react-datepicker";
 import { FaSearchengin } from "react-icons/fa6";
-import { ItemDetails } from "./itemStore";
+import { ItemDetails, itemStore } from "./itemStore";
 import { Spinner } from "@chakra-ui/react";
 import { CiSettings } from "react-icons/ci";
 import { FaRegCalendarAlt } from "react-icons/fa";
@@ -144,10 +144,12 @@ const SearchFilter = ({
   // Toast Handle
   const toast = useToast();
 
+  // Fetch Item
+  const { fetch: fetchItem } = itemStore();
+
   // Load options for Itme
   const loadOptionsForItem = (searchTerm: string) => {
-    httpService
-      .fetch<ItemDetails[]>({ term: searchTerm }, "inv_fetch")
+    fetchItem(searchTerm)
       .then((res: any) => {
         if (res.status === 200) {
           let response: APIResponse<ItemDetails[]> = res.data;
