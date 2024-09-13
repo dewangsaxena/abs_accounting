@@ -80,7 +80,7 @@ const CustomerDetailRow = memo(
     const [rerender, setRerender] = useState<number>(0);
 
     // Toast
-    const toast = useToast();
+    // const toast = useToast();
 
     return (
       isSessionActive() && (
