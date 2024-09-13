@@ -115,6 +115,7 @@ import { IoIosCloseCircle } from "react-icons/io";
 import { AiOutlineEyeInvisible } from "react-icons/ai";
 import { BiSolidShow } from "react-icons/bi";
 import AutoSuggest from "react-autosuggest";
+import { itemStore } from "../../inventory/itemStore";
 
 // Http Service Instance for Transactions
 const httpService = new HTTPService();
@@ -999,15 +1000,14 @@ const ItemFieldRow = memo(
 
     const [itemSuggestions, setItemSuggestions] = useState<any>([]);
 
+    // Item Store
+    const { fetchItemDetailsForTransactions } = itemStore();
+
     const loadOptionsForItem = (searchTerm: string) => {
-      httpService
-        .fetch<ItemDetailsForTransactions[]>(
-          {
-            search_term: searchTerm,
-            store_id: localStorage.getItem("storeId"),
-          },
-          "inv_item_details_for_transactions"
-        )
+      fetchItemDetailsForTransactions(
+        searchTerm,
+        localStorage.getItem("storeId")
+      )
         .then((res: any) => {
           if (res.status === 200) {
             let response: APIResponse<ItemDetailsForTransactions[]> = res.data;

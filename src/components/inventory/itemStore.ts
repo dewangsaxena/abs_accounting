@@ -7,6 +7,7 @@ import {
   systemConfigMode,
 } from "../../shared/config";
 import { ProfitMarginIndex } from "./profitMarginStore";
+import { ItemDetailsForTransactions } from "../accounting/transactions/store";
 
 // Http instance
 const httpService: HTTPService = new HTTPService();
@@ -92,6 +93,7 @@ interface ItemStore extends ItemDetails {
   ) => void;
   setDetails: (details: ItemDetails) => void;
   fetch: (searchTerm: string, excludeInactive?: boolean) => any;
+  fetchItemDetailsForTransactions: (searchTerm: string, storeId: any) => any;
   add: () => any;
   update: () => any;
   reset: () => any;
@@ -277,6 +279,16 @@ export const itemStore = create<ItemStore>((set, get) => ({
       exclude_inactive: excludeInactive ? 1 : 0,
     };
     return await httpService.fetch<ItemDetails[]>(payload, "inv_fetch");
+  },
+  fetchItemDetailsForTransactions: async (searchTerm: string, storeId: any) => {
+    let payload = {
+      search_term: ITEM_DETAILS_TAG + searchTerm,
+      store_id: storeId,
+    };
+    return await httpService.fetch<ItemDetailsForTransactions[]>(
+      payload,
+      "inv_item_details_for_transactions"
+    );
   },
   add: async () => {
     get().prependItemTag();

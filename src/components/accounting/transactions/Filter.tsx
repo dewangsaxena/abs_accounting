@@ -70,6 +70,7 @@ import { ClientDetails, clientStore } from "../../client/store";
 import AutoSuggest from "react-autosuggest";
 import { GrNext } from "react-icons/gr";
 import { GrPrevious } from "react-icons/gr";
+import { itemStore } from "../../inventory/itemStore";
 
 // Http Service Instance for Transactions
 const httpService = new HTTPService();
@@ -327,12 +328,11 @@ const SearchPanel = ({ type, setShowSpinner }: FilterProps) => {
   const [selectedItem, setSelectedItem] = useState<string>("");
   const [itemSuggestions, setItemSuggestions] = useState<any>([]);
 
+  // Item Store
+  const { fetchItemDetailsForTransactions } = itemStore();
+
   const loadOptionsForItem = (searchTerm: string) => {
-    httpService
-      .fetch<ItemDetailsForTransactions[]>(
-        { search_term: searchTerm, store_id: localStorage.getItem("storeId") },
-        "inv_item_details_for_transactions"
-      )
+    fetchItemDetailsForTransactions(searchTerm, localStorage.getItem("storeId"))
       .then((res: any) => {
         if (res.status === 200) {
           let response: APIResponse<ItemDetailsForTransactions[]> = res.data;
