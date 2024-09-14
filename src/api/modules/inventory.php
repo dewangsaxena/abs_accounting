@@ -987,7 +987,7 @@ class Inventory
             $is_new_db_connection = $db === null;
 
             // Establish New DB Connection
-            if ($is_new_db_connection === null) {
+            if ($is_new_db_connection === true) {
                 $db = get_db_instance();
                 $db->beginTransaction();
             }
