@@ -315,7 +315,7 @@ class StoreDetails {
                 'province' => 'SASKATCHEWAN',
                 'postal_code' => 'S4N 7A3',
                 'country' => 'CANADA',
-                'tel' => '',
+                'tel' => '+1 (306) 545-6600',
                 'fax' => ''
             ],
             'email' => [
