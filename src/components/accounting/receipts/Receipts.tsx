@@ -903,6 +903,9 @@ const Footer = memo(({ isViewOrUpdate, enableEditing }: ReceiptProps) => {
               COMMENT:
             </_Label>
             <Textarea
+              isDisabled={
+                opStatus || (isViewOrUpdate && enableEditing === false)
+              }
               key={getUUID()}
               defaultValue={comment}
               onBlur={(event: any) => {
