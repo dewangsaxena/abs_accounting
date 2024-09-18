@@ -68,7 +68,7 @@ class Inventory
     // This will be prepended to encode value as string
     // This UUID v4 will be appended 
     // DO NOT CHANGE THIS.
-    // IF CHANGED HERE, MAKE SURE TO CHANGE IN FRONT END AS WELL.
+    // IF CHANGED HERE, MAKE SURE TO CHANGE IN THE FRONT END AS WELL.
     public const ITEM_DETAILS_TAG = '85163d53-ace8-4140-b83c-1c89294f6464';
 
     /**
