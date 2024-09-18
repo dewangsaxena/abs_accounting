@@ -75,7 +75,7 @@ class Inventory
 
     /**
      * This method will check whether item is eligible for discount when creating a transaction.
-     * @param item_id
+     * @param item_id 
      * @param store_id
      * @return bool
      */
