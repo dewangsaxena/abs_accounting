@@ -54,9 +54,7 @@ class Inventory
             23588,
             32130,
         ],
-        StoreDetails::CALGARY => [
-
-        ],
+        StoreDetails::CALGARY => [8080],
     ];
 
     // Item Details Tag
