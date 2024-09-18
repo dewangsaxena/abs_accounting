@@ -91,8 +91,7 @@ class Inventory
      * @param buying_cost
      * @return array
      */
-    private static function add(PDO &$db, array $values, int $initial_quantity, float $buying_cost): array
-    {
+    private static function add(PDO &$db, array $values, int $initial_quantity, float $buying_cost): array {
         $query = <<<'EOS'
         INSERT INTO
             items
@@ -176,9 +175,7 @@ class Inventory
      * @param values 
      * @return array
      */
-    private static function update(PDO &$db, array $values): array
-    {
-
+    private static function update(PDO &$db, array $values): array {
         // Item Id 
         $item_id = $values[':id'];
 
@@ -277,8 +274,7 @@ class Inventory
      * @param prices
      * @return bool|string
      */
-    private static function validate_prices(array &$prices): bool|string
-    {
+    private static function validate_prices(array &$prices): bool|string {
         // Fetch Stores 
         $stores = array_keys($prices);
 
@@ -303,8 +299,7 @@ class Inventory
      * This method will add/update item.
      * @return string
      */
-    public static function process_item(array $data): array
-    {
+    public static function process_item(array $data): array {
         try {
             // Current store
             $store_id = $_SESSION['store_id'];
@@ -410,8 +405,7 @@ class Inventory
      * @param db
      * @return array 
      */
-    public static function fetch(array|null $params, int $store_id, bool $set_id_as_index = false, PDO &$db = null): array
-    {
+    public static function fetch(array|null $params, int $store_id, bool $set_id_as_index = false, PDO &$db = null): array {
         try {
             // Get DB Instance
             if (is_null($db)) $db = get_db_instance();
@@ -579,8 +573,7 @@ class Inventory
      * @param db
      * @return array
      */
-    public static function fetch_profit_margins(int $store_id, PDO &$db = null): array
-    {
+    public static function fetch_profit_margins(int $store_id, PDO &$db = null): array {
         try {
             if (is_null($db)) $db = get_db_instance();
             $statement = $db->prepare('SELECT profit_margins, modified FROM store_details WHERE id = :store_id;');
@@ -606,8 +599,7 @@ class Inventory
      * @param data
      * @return array 
      */
-    public static function update_profit_margins(array $data): array
-    {
+    public static function update_profit_margins(array $data): array {
         $db = get_db_instance();
         try {
             // Profit Margins
@@ -674,8 +666,7 @@ class Inventory
      * @param store_id
      * @return array 
      */
-    public static function fetch_item_inventory_details_by_id(array $ids, ?int $store_id = null, PDO &$db = null): array
-    {
+    public static function fetch_item_inventory_details_by_id(array $ids, ?int $store_id = null, PDO &$db = null): array {
         try {
             $query = <<<EOS
             SELECT 
@@ -730,8 +721,7 @@ class Inventory
      * @param store_id
      * @return array 
      */
-    public static function fetch_item_details_for_adjust_inventory(string $search_term, int $store_id): array
-    {
+    public static function fetch_item_details_for_adjust_inventory(string $search_term, int $store_id): array {
         try {
             $db = get_db_instance();
 
@@ -843,8 +833,7 @@ class Inventory
      * @param profit_margin
      * @return float
      */
-    private static function get_profit_margin_by_item_identifier(string $item_identifier, array $profit_margins): float
-    {
+    private static function get_profit_margin_by_item_identifier(string $item_identifier, array $profit_margins): float {
         $item_identifier = strtoupper(trim($item_identifier));
         $prefixes = array_keys($profit_margins);
         $no_of_prefixes = count($prefixes);
@@ -891,8 +880,7 @@ class Inventory
      * @param item_identifier
      * @return array
      */
-    private static function calculate_selling_price(int $store_id, array $existing_prices, array $profit_margins, float $buying_cost, string $item_identifier): array
-    {
+    private static function calculate_selling_price(int $store_id, array $existing_prices, array $profit_margins, float $buying_cost, string $item_identifier): array {
 
         // Set Base Price
         $selling_price = $buying_cost;
@@ -921,8 +909,7 @@ class Inventory
      * @param db
      * @throws Exception
      */
-    private static function insert_inventory_history(array $details, int $store_id, PDO &$db): void
-    {
+    private static function insert_inventory_history(array $details, int $store_id, PDO &$db): void {
         $query = <<<'EOS'
         INSERT INTO inventory_history
         (
@@ -1302,8 +1289,7 @@ class Inventory
      * @param item_id
      * @param quantity
      */
-    private static function validate_quantity_added(int $item_id, float $quantity): void
-    {
+    private static function validate_quantity_added(int $item_id, float $quantity): void {
         if ($_SESSION['store_id'] == StoreDetails::EDMONTON && $_SESSION['access_level'] != ADMIN && LOCK_INVENTORY_LIMIT) {
             if (in_array($item_id, self::EXEMPT_ITEMS_ID_CAT_2)) {
                 if ($quantity > 200) throw new Exception('Cannot add more than 200.');
@@ -1318,8 +1304,7 @@ class Inventory
      * @param search_term
      * @return array 
      */
-    public static function item_details_for_transactions(string $search_term): array
-    {
+    public static function item_details_for_transactions(string $search_term): array {
         $params = [
             'exclude_inactive' => 1,
             'term' => $search_term,
@@ -1331,8 +1316,7 @@ class Inventory
      * This method will fetch low stock items in the inventory for the store.
      * @param store_id
      */
-    public static function fetch_low_stock(int $store_id): void
-    {
+    public static function fetch_low_stock(int $store_id): void {
         $db = get_db_instance();
         $query = <<<'EOS'
         SELECT 
@@ -1383,9 +1367,7 @@ class Inventory
      * @param till_date
      * @return array 
      */
-    private static function fetch_item_details_from_transactions(int $transaction_type, ?int $item_id, ?string $from_date = null, ?string $till_date = null): array
-    {
-
+    private static function fetch_item_details_from_transactions(int $transaction_type, ?int $item_id, ?string $from_date = null, ?string $till_date = null): array {
         try {
             if ($transaction_type === SALES_INVOICE) $table_name = ' sales_invoice ';
             else if ($transaction_type === SALES_RETURN) $table_name = ' sales_return ';
@@ -1473,8 +1455,7 @@ class Inventory
      * @param items_from_sales_returns 
      * @return array
      */
-    private function adjust_quantity_for_all_items(array $items_from_sales_invoices, array $items_from_sales_returns): array
-    {
+    private function adjust_quantity_for_all_items(array $items_from_sales_invoices, array $items_from_sales_returns): array {
         $adjusted_items = $items_from_sales_invoices;
 
         // Process Sales Return
@@ -1505,8 +1486,7 @@ class Inventory
      * @param item_ids
      * @return array
      */
-    private static function fetch_item_details_by_id(array $item_ids = []): array
-    {
+    private static function fetch_item_details_by_id(array $item_ids = []): array {
         try {
             $db = get_db_instance();
             $query = <<<'EOS'
@@ -1541,8 +1521,7 @@ class Inventory
      * This method will fetch the item Sale Frequency.
      * @return array 
      */
-    public static function fetch_item_sale_frequency(?int $item_id = null, ?string $from_date = null, ?string $till_date = null): array
-    {
+    public static function fetch_item_sale_frequency(?int $item_id = null, ?string $from_date = null, ?string $till_date = null): array {
         try {
 
             // Adjusted Frequency
@@ -1577,8 +1556,7 @@ class Inventory
      * This method will generate inventory list.
      * @param details
      */
-    public static function generate_inventory_list(int $store_id): void
-    {
+    public static function generate_inventory_list(int $store_id): void {
         GeneratePDF::generate_inventory_list(
             PrepareDetails_Inventory::generate_inventory_list($store_id),
             $store_id,
@@ -1592,8 +1570,7 @@ class Inventory
      * @param end_date
      * @return array
      */
-    public static function frequency(int|null $part_id, string|null $start_date, string|null $end_date): array
-    {
+    public static function frequency(int|null $part_id, string|null $start_date, string|null $end_date): array {
         $db = get_db_instance();
         try {
             // Part Not Selected
