@@ -15,8 +15,7 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/utils.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/csrf.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/store_details.php";
 
-class Inventory
-{
+class Inventory {
 
     /* Operation Tags */
     public const ADD = 'inv_add';
