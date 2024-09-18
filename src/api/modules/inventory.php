@@ -86,8 +86,7 @@ class Inventory
      * @param store_id
      * @return bool
      */
-    private static function check_item_eligible_for_discount(int $item_id, int $store_id): bool
-    {
+    private static function check_item_eligible_for_discount(int $item_id, int $store_id): bool {
         return in_array($store_id, self::FLYER_APPLICABLE_STORES) && in_array($item_id, self::FLYER_ITEMS);
     }
 
