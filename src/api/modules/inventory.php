@@ -81,7 +81,7 @@ class Inventory
      * @param store_id
      * @return bool
      */
-    private static function check_item_eligible_for_discount(int $item_id, int $store_id): bool {
+    private static function check_item_discount_disabled(int $item_id, int $store_id): bool {
         return isset(self::DISCOUNT_DISABLED_ITEMS[$store_id]) && in_array($item_id, self::DISCOUNT_DISABLED_ITEMS[$store_id]);
     }
 
@@ -524,8 +524,8 @@ class Inventory
                         'disableDiscount' => false,
                     ];
 
-                    /* Check for Discount Disabled Items */
-                    if (self::check_item_eligible_for_discount($item_id, $store_id)) $items[$item_id]['disableDiscount'] = true;
+                    /* Check whether item discount is disabled. */
+                    if (self::check_item_discount_disabled($item_id, $store_id)) $items[$item_id]['disableDiscount'] = true;
 
                     // Add Is Inactive 
                     $items[$item_id]['isInactive'] = $is_inactive;
