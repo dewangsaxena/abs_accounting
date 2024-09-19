@@ -241,12 +241,7 @@ class Receipt {
         }
 
         // Update Balance Sheet Amounts.
-        if($undo) {
-            $bs[AccountsConfig::ACCOUNTS_RECEIVABLE] += $accounts_receivables_amount;
-        }
-        else {
-            $bs[AccountsConfig::ACCOUNTS_RECEIVABLE] -= $accounts_receivables_amount;
-        }
+        $bs[AccountsConfig::ACCOUNTS_RECEIVABLE] -= $accounts_receivables_amount;
     }
 
     /**
@@ -260,11 +255,6 @@ class Receipt {
         $statement -> execute([':id' => $sales_invoice_id]);
         return $statement -> fetchAll(PDO::FETCH_ASSOC)[0]['receipt_discount'];
     }
-
-    /**
-     * This method will handle forgiven receipt.
-     */
-    private static function handle_forgiven_receipt() : void {}
 
     /**
      * This method will create Receipt.
