@@ -1029,7 +1029,7 @@ class Receipt {
 
             // This is the output filename
             $receipt_filename = "receipt-$receipt_id-$random_token.pdf";
-            
+
             // Output 
             $merge_object -> output($for === 'email' && $dump_file ? TEMP_DIR. $receipt_filename : null);
 
@@ -1113,7 +1113,7 @@ class Receipt {
             $exception_message = $e -> getMessage();
         }
         finally {
-            if(file_exists($receipt_path_to_file)) unlink($receipt_path_to_file);
+            if(file_exists($receipt_path_to_file)) register_shutdown_function('unlink', $receipt_path_to_file);
             return ['status' => $is_email_sent, 'message' => $exception_message];
         }
     }

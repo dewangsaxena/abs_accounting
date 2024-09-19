@@ -1188,7 +1188,7 @@ class Shared {
         }
         finally {
             // Delete File from disk.
-            if(file_exists($path_to_file)) unlink($path_to_file);
+            if(file_exists($path_to_file)) register_shutdown_function('unlink', $path_to_file);
 
             // Status
             return ['status' => $is_email_sent, 'message' => $exception_message];
