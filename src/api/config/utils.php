@@ -390,7 +390,10 @@ class Utils {
     public static function delete_files(array $filenames): void {
         foreach($filenames as $filename) {
             $path_to_file = TEMP_DIR . $filename;
-            if(file_exists($path_to_file)) unlink($path_to_file);
+            if(file_exists($path_to_file)) {
+                // Delete File
+                register_shutdown_function('unlink', $path_to_file);
+            }
         }
     }
 
