@@ -215,12 +215,8 @@ class Receipt {
                 $is_successful = $sales_return -> execute($params);
                 if($is_successful !== true || $sales_return -> rowCount() < 1) throw new Exception('Unable to Update Sales Return: '. $txn['id']);
 
-                if($txn['salesInvoicePaymentMethod'] !== PaymentMethod::MODES_OF_PAYMENT['Pay Later']) {
-                    $accounts_receivables_amount -= abs($amount_received);
-                }
-
-                // Sales Invoice Payment method was PAY Later 
-                else $accounts_receivables_amount -= abs($amount_received);
+                // Adjust 
+                $accounts_receivables_amount -= abs($amount_received);
             }
             else if($type === DEBIT_NOTE) {
 
