@@ -872,22 +872,12 @@ class SalesReturn {
             $old_sum_total = $details['initial']['sumTotal'] ?? null;
             if(!is_numeric($old_sum_total) || $old_sum_total <= 0) throw new Exception('Invalid Old Sum Total.');
 
-            // Deduct from Accounts Payable
-            if($old_payment_method_account === AccountsConfig::ACCOUNTS_PAYABLE) $old_sum_total = -$old_sum_total;
-
             // Update Balance Sheet
             BalanceSheetActions::update_account_value(
                 $bs_affected_accounts,
                 $old_payment_method_account,
                 $old_sum_total
             );
-
-            // Update Income Statement
-            // IncomeStatementActions::update_account_values(
-            //     $is_affected_accounts,
-            //     $old_payment_method_account,
-            //     -$old_sum_total
-            // );
         }
     }
 
