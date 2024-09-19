@@ -285,16 +285,10 @@ class Correct_IS_BS_InventoryV2 {
 
         // Adjust Account associated with payment method
         if($payment_method === PaymentMethod::MODES_OF_PAYMENT['Pay Later']) {
-            if($sales_invoice_payment_method === PaymentMethod::MODES_OF_PAYMENT['Pay Later']) {
-                // Just deduct the amount from Account Receivables
-                $is[$unique_id][AccountsConfig::ACCOUNTS_RECEIVABLE] -= $sales_return['sum_total'];
-                $bs[$unique_id][AccountsConfig::ACCOUNTS_RECEIVABLE] -= $sales_return['sum_total'];
-            }
-            else {
-                // Add to Accounts Payable.
-                $is[$unique_id][AccountsConfig::ACCOUNTS_PAYABLE] += $sales_return['sum_total'];
-                $bs[$unique_id][AccountsConfig::ACCOUNTS_PAYABLE] += $sales_return['sum_total'];
-            }
+
+            // Just deduct the amount from Account Receivables
+            $is[$unique_id][AccountsConfig::ACCOUNTS_RECEIVABLE] -= $sales_return['sum_total'];
+            $bs[$unique_id][AccountsConfig::ACCOUNTS_RECEIVABLE] -= $sales_return['sum_total'];
         }
         // If this block gets executed, it means that the Sales Invoice was not made in Pay Later.
         else {
@@ -339,78 +333,7 @@ class Correct_IS_BS_InventoryV2 {
         );
         $bs[$unique_id][$receipt_payment_account] += $receipt['sum_total'];
     }
-    
-    /**
-     * This method will adjust for receipt.
-     * @param unique_id
-     * @param receipt
-     * @param is
-     * @param bs
-     */
-    private static function _v2_adjust_for_receipt(string &$unique_id, array &$receipt, array &$is, array &$bs) : void {
-        
-        // Decode JSON
-        $transactions = json_decode($receipt['receipts'], true);
 
-        // Accounts Receivables
-        $total_accounts_receivables = 0;
-
-        // Accounts Payables
-        $total_accounts_payables = 0;
-
-        // Check replates sales invoice 
-        $statement_check_payment_method_for_sales_invoice = self::$db -> prepare(<<<'EOS'
-        SELECT 
-            payment_method 
-        FROM 
-            sales_invoice 
-        WHERE 
-            id IN (SELECT invoice_id FROM sales_return WHERE id = :sales_return_id);
-        EOS);
-
-        foreach($transactions as $transaction) {
-            if ($transaction['type'] === 'IN' || $transaction['type'] == 'DN') {
-                $total_accounts_receivables += $transaction['amount_received'];
-            }
-            else if ($transaction['type'] === 'SR') {
-
-                // Check whether the payment method for this sales return's sales invoice is Non-Pay Later
-                $statement_check_payment_method_for_sales_invoice -> execute([
-                    ':sales_return_id' => $receipt['id']
-                ]);
-                $records = $statement_check_payment_method_for_sales_invoice -> fetchAll(PDO::FETCH_ASSOC);
-
-                if(isset($records[0])) {
-                    $invoice_payment_method = intval($records[0]['payment_method']);
-                    if ($invoice_payment_method !== PaymentMethod::MODES_OF_PAYMENT['Pay Later']) {
-
-                        // This means that the amount is in Accounts Payable
-                        $total_accounts_payables += $transaction['amount_received'];
-                    }
-                }
-            }
-            else if ($transaction['type'] === 'CN') {
-                $total_accounts_payables += $transaction['amount_received'];
-            }
-        }
-
-        // Update BS and IS
-        // Deduct from Pay Later (Accounts Receivables)
-        $is[$unique_id][AccountsConfig::ACCOUNTS_RECEIVABLE] -= $total_accounts_receivables;
-        $bs[$unique_id][AccountsConfig::ACCOUNTS_RECEIVABLE] -= $total_accounts_receivables;
-
-        // Add to Accounts Payables
-        $is[$unique_id][AccountsConfig::ACCOUNTS_PAYABLE] -= $total_accounts_payables;
-        $bs[$unique_id][AccountsConfig::ACCOUNTS_PAYABLE] -= $total_accounts_payables;
-    
-        // Add to discount
-        $is[$unique_id][AccountsConfig::TOTAL_DISCOUNT] += $receipt['total_discount'];
-        $bs[$unique_id][AccountsConfig::TOTAL_DISCOUNT] += $receipt['total_discount'];
-
-        // Payment Method Account
-        $payment_method =  AccountsConfig::get_account_code_by_payment_method($receipt['payment_method']);
-        $bs[$unique_id][$payment_method] += $receipt['total_amount'];
-    }
 
     /**
      * This method will adjust for credit note.
@@ -419,7 +342,7 @@ class Correct_IS_BS_InventoryV2 {
      * @param bs
      */
     private static function adjust_for_credit_note(string &$unique_id, array &$credit_note, array &$bs) : void {
-        $bs[$unique_id][AccountsConfig::ACCOUNTS_PAYABLE] += $credit_note['sum_total'];
+        $bs[$unique_id][AccountsConfig::ACCOUNTS_RECEIVABLE] -= $credit_note['sum_total'];
         $bs[$unique_id][AccountsConfig::GST_HST_CHARGED_ON_SALE] -= $credit_note['gst_hst_tax'];
         $bs[$unique_id][AccountsConfig::PST_CHARGED_ON_SALE] -= $credit_note['pst_tax'];
         $bs[$unique_id][AccountsConfig::TOTAL_DISCOUNT] -= $credit_note['txn_discount'];
@@ -437,42 +360,6 @@ class Correct_IS_BS_InventoryV2 {
         $bs[$unique_id][AccountsConfig::PST_CHARGED_ON_SALE] += $debit_note['pst_tax'];
         $bs[$unique_id][AccountsConfig::TOTAL_DISCOUNT] += $debit_note['txn_discount'];
     }     
-    
-    /**
-     * This method will adjust for vendor purchase invoice.
-     * @param unique_id
-     * @param receipts
-     * @param bs
-     */
-    private static function adjust_for_purchase_invoice(int &$unique_id, array &$invoice, array &$bs): void {
-        $subtotal = $invoice['total_payable'] - $invoice['total_tax'];
-        $bs[$unique_id][AccountsConfig::INVENTORY_A] += $subtotal;
-        $bs[$unique_id][AccountsConfig::GST_HST_PAID_ON_PURCHASES] += $invoice['total_tax'];
-        $bs[$unique_id][AccountsConfig::ACCOUNTS_PAYABLE] += $subtotal;
-    }
-
-    /**
-     * This method will adjust for vendor purchase receipt.
-     * @param unique_id
-     * @param receipt 
-     * @param bs
-     */
-    private static function adjust_for_payment_receipt(int &$unique_id, array &$receipt, array &$bs) : void {
-        $invoices = json_decode($receipt['receipts'], true);
-        foreach($invoices as $invoice) {
-
-            // Deduct from Account Payable.
-            $bs[$unique_id][AccountsConfig::ACCOUNTS_PAYABLE] -= $invoice['amount_received'];
-
-            // Adjust Tax, if the full amount is paid.
-            if ($invoice['amount_received'] === $invoice['amount_owing']) {
-                $bs[$unique_id][AccountsConfig::GST_HST_PAID_ON_PURCHASES] -= $invoice['tax'];
-            }
-
-            // Deduct from Checking Account
-            $bs[$unique_id][AccountsConfig::CHEQUING_BANK_ACCOUNT] -= $invoice['amount_received'];
-        }
-    }
 
     /**
      * This method will add the Base Price Key in the items JSON.
