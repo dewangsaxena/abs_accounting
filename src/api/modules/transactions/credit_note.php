@@ -123,8 +123,8 @@ class CreditNote {
             $bs_affected_accounts = AccountsConfig::ACCOUNTS;
             BalanceSheetActions::update_account_value(
                 $bs_affected_accounts,
-                AccountsConfig::ACCOUNTS_PAYABLE,
-                $sum_total,
+                AccountsConfig::ACCOUNTS_RECEIVABLE,
+                -$sum_total,
             );
 
             // Adjust PST Tax
@@ -182,8 +182,8 @@ class CreditNote {
     private static function revert_old_transaction(array $data, array &$bs_affected_accounts, PDO &$db): void {
         BalanceSheetActions::update_account_value(
             $bs_affected_accounts,
-            AccountsConfig::ACCOUNTS_PAYABLE,
-            -$data['sumTotal'],
+            AccountsConfig::ACCOUNTS_RECEIVABLE,
+            $data['sumTotal'],
         );
 
         // Adjust GST/HST Tax
@@ -286,8 +286,8 @@ class CreditNote {
 
             BalanceSheetActions::update_account_value(
                 $bs_affected_accounts,
-                AccountsConfig::ACCOUNTS_PAYABLE,
-                $sum_total,
+                AccountsConfig::ACCOUNTS_RECEIVABLE,
+                -$sum_total,
             );
 
             // Adjust PST Tax
