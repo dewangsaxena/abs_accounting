@@ -322,7 +322,7 @@ class DebitNote {
                 $versions[Utils::get_utc_unix_timestamp_from_utc_str_timestamp($data['lastModifiedTimestamp'])] = $data['initial']['details'];
             }
 
-            // Update Credit Note
+            // Update Debit Note
             $query = <<<'EOS'
             UPDATE 
                 debit_note 
