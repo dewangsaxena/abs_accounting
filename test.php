@@ -3,7 +3,7 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/utils.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/database.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_summary.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/inventory.php";
-require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/correct_is_bs_inventory.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/correct_is_bs_inventory_v2.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_aged_summary.php";
 
 // Inventory::generate_inventory_list(StoreDetails::EDMONTON);
@@ -188,7 +188,7 @@ if(SYSTEM_INIT_MODE === PARTS) {
     $store_id = StoreDetails::SLAVE_LAKE;
     // generate_list($store_id);
     // fetch_inventory($store_id);
-    die('SLAVE LAKE : '. (Correct_IS_BS_Inventory::correct(StoreDetails::SLAVE_LAKE) ? 'T' : 'F'));
+    die('SLAVE LAKE : '. (Correct_IS_BS_InventoryV2::correct(StoreDetails::SLAVE_LAKE) ? 'T' : 'F'));
 }
 
 $items = [14942,
