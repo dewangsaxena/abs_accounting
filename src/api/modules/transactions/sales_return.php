@@ -1028,8 +1028,7 @@ class SalesReturn {
 
             // ADD TO PAYMENT METHOD ACCOUNT
             $payment_method_account = self::get_account_number_from_payment_method($payment_method, $sales_invoice_payment_method);
-            if($payment_method_account === AccountsConfig::ACCOUNTS_PAYABLE) $temp = $sum_total;
-            else $temp = -$sum_total;
+            $temp = -$sum_total;
 
             // Adjust Payment Method Account
             BalanceSheetActions::update_account_value(
