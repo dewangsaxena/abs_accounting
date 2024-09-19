@@ -188,9 +188,8 @@ if(SYSTEM_INIT_MODE === PARTS) {
     $store_id = StoreDetails::SLAVE_LAKE;
     // generate_list($store_id);
     // fetch_inventory($store_id);
-    // echo 'CALGARY : '. (Correct_IS_BS_Inventory::correct(StoreDetails::CALGARY) ? 'T' : 'F');
+    die('SLAVE LAKE : '. (Correct_IS_BS_Inventory::correct(StoreDetails::SLAVE_LAKE) ? 'T' : 'F'));
 }
-
 
 $items = [14942,
 14512, 
