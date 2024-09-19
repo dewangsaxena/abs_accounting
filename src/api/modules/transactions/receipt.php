@@ -233,8 +233,8 @@ class Receipt {
                 $params[':credit_amount'] = $undo ? -$amount_received: $amount_received;
                 $is_successful = $credit_note -> execute($params);
                 if($is_successful !== true || $credit_note -> rowCount() < 1) throw new Exception('Unable to Update Credit Note: '. $txn['id']);
-                if($undo) $accounts_receivables_amount -= abs($amount_received);
-                else $accounts_receivables_amount += abs($amount_received);
+                if($undo) $accounts_receivables_amount += abs($amount_received);
+                else $accounts_receivables_amount -= abs($amount_received);
             }
         }
 
