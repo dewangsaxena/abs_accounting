@@ -1186,7 +1186,7 @@ class Inventory {
                         $value_to_be_adjusted = Utils::round($quantity_to_be_adjusted * $existing_buying_cost);
 
                         // Validate 
-                        if (abs($value_to_be_adjusted) > $existing_inv_value) {
+                        if (strval(abs($value_to_be_adjusted)) > strval($existing_inv_value)) {
                             throw new Exception('Cannot process negative value balance for ' . $identifier);
                         }
 
