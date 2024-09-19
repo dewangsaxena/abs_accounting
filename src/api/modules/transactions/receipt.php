@@ -216,7 +216,8 @@ class Receipt {
                 if($is_successful !== true || $sales_return -> rowCount() < 1) throw new Exception('Unable to Update Sales Return: '. $txn['id']);
 
                 // Adjust 
-                $accounts_receivables_amount -= abs($amount_received);
+                if($undo) $accounts_receivables_amount += abs($amount_received);
+                else $accounts_receivables_amount -= abs($amount_received);
             }
             else if($type === DEBIT_NOTE) {
 
