@@ -617,32 +617,6 @@ class Correct_IS_BS_InventoryV2 {
                         $bs
                     );
                 }
-                
-                // // ****** PURCHASE INVOICE *******
-                // $statement = self::$db -> prepare('SELECT * FROM purchase_invoice WHERE is_voided = 0 AND store_id=:store_id;');
-                // $statement -> execute([':store_id' => self::$store_id]);
-                // $purchase_invoices = $statement -> fetchAll(PDO::FETCH_ASSOC);
-                // foreach($purchase_invoices as $purchase_invoice) {
-                //     // Adjust for Purchase Invoice 
-                //     self::adjust_for_purchase_invoice(
-                //         $unique_id,
-                //         $purchase_invoice,
-                //         $bs
-                //     );
-                // }
-
-                // // ****** PAYMENT RECEIPTS ********
-                // $statement = self::$db -> prepare('SELECT * FROM payment_receipts WHERE void_status = 0 AND store_id=:store_id;');
-                // $statement -> execute([':store_id' => self::$store_id]);
-                // $purchase_receipts = $statement -> fetchAll(PDO::FETCH_ASSOC);
-                // foreach($purchase_receipts as $purchase_receipt) {
-                //     // Adjust for Payment Receipt
-                //     self::adjust_for_payment_receipt(
-                //         $unique_id,
-                //         $purchase_receipt,
-                //         $bs
-                //     );
-                // }
             }
         
             // Update Inventory
