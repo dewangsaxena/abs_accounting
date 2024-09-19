@@ -1003,9 +1003,6 @@ class Receipt {
             $err_message = '';
             $random_token = Utils::generate_token(4);
 
-            // This is the output filename
-            $receipt_filename = "receipt-$receipt_id-$random_token.pdf";
-
             // By Default, Receipt Filename will be included.
             $filenames = ["receipt_$receipt_id.pdf"];
             $attach_transactions = count($transactions) > 0;
@@ -1030,6 +1027,9 @@ class Receipt {
             // Delete Residual Files
             if($for === 'print' && $dump_file) Utils::delete_files($filenames);
 
+            // This is the output filename
+            $receipt_filename = "receipt-$receipt_id-$random_token.pdf";
+            
             // Output 
             $merge_object -> output($for === 'email' && $dump_file ? TEMP_DIR. $receipt_filename : null);
 
