@@ -43,7 +43,7 @@ class SalesReturn {
             $identifier = $item['identifier'];
 
             // Set Default Return Quantity
-            if(!isset($item['returnQuantity'])) $item['returnQuantity'] = 0;
+            if(isset($item['returnQuantity']) === false) $item['returnQuantity'] = 0;
 
             // Process Only Valid Items
             if(($item['returnQuantity'] ?? 0) < 0) return ['status' => false, 'message' => 'Invalid Return Quantity for: '. $identifier];
