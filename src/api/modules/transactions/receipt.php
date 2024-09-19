@@ -163,7 +163,6 @@ class Receipt {
 
         // Accounts Receivables/Payables Amount
         $accounts_receivables_amount = 0;
-        $accounts_payables_amount = 0;
         
         foreach($data as $txn) {
             // Transaction Type
@@ -237,18 +236,16 @@ class Receipt {
                 $params[':credit_amount'] = $undo ? -$amount_received: $amount_received;
                 $is_successful = $credit_note -> execute($params);
                 if($is_successful !== true || $credit_note -> rowCount() < 1) throw new Exception('Unable to Update Credit Note: '. $txn['id']);
-                $accounts_payables_amount += abs($amount_received);
+                $accounts_receivables_amount += abs($amount_received);
             }
         }
 
         // Update Balance Sheet Amounts.
         if($undo) {
             $bs[AccountsConfig::ACCOUNTS_RECEIVABLE] += $accounts_receivables_amount;
-            $bs[AccountsConfig::ACCOUNTS_PAYABLE] += $accounts_payables_amount;
         }
         else {
             $bs[AccountsConfig::ACCOUNTS_RECEIVABLE] -= $accounts_receivables_amount;
-            $bs[AccountsConfig::ACCOUNTS_PAYABLE] -= $accounts_payables_amount;
         }
     }
 
@@ -267,9 +264,7 @@ class Receipt {
     /**
      * This method will handle forgiven receipt.
      */
-    private static function handle_forgiven_receipt() : void {
-
-    }
+    private static function handle_forgiven_receipt() : void {}
 
     /**
      * This method will create Receipt.
