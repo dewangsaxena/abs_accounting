@@ -331,6 +331,7 @@ class CreditNote {
             SET 
                 client_id = :client_id,
                 date = :date,
+                credit_amount = :credit_amount,
                 sum_total = :sum_total,
                 sub_total = :sub_total,
                 pst_tax = :pst_tax,
@@ -347,6 +348,7 @@ class CreditNote {
             $params = [
                 ':client_id' => $client_id,
                 ':date' => $date,
+                ':credit_amount' => $sum_total,
                 ':sum_total' => $sum_total,
                 ':sub_total' => $sub_total,
                 ':pst_tax' => $pst_tax,
