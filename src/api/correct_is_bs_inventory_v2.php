@@ -507,54 +507,6 @@ class Correct_IS_BS_InventoryV2 {
     }
 
     /**
-     * This method will adjust inventory for all existing sales_return.
-     * @param items_information
-     * @param invoices
-     * @param total_inventory_value
-     * @return array
-     */
-    private static function _3_adjust_inventory_for_all_existing_sales_return(array &$items_information, array &$sales_return, float &$total_inventory_value) {
-        $query = <<<EOS
-        SELECT 
-            *
-        FROM 
-            sales_return
-        WHERE 
-            store_id = :store_id
-        ORDER BY 
-            `date` ASC;
-        EOS;
-
-        $statement = self::$db -> prepare($query);
-        $statement -> execute([':store_id' => self::$store_id]);
-        $invoices = $statement -> fetchAll(PDO::FETCH_ASSOC);
-        
-        foreach($invoices as $invoice) {
-            $items = json_decode($invoice['details'], true);
-            
-            foreach($items as $item) {
-                $item_id = $item['itemId'];
-                $quantity = $item['returnQuantity'] ?? 0;
-
-                if($quantity == 0) continue;
-                
-                // Check whether the item exists 
-                if(!isset($items_information[$item_id]['price_per_item'])) continue;
-
-                // Add to total inventory value
-                $temp = (
-                    $items_information[$item_id]['price_per_item']
-                    *
-                    $quantity
-                );
-                $total_inventory_value += $temp;
-                $items_information[$item_id]['quantity'] += $quantity;
-                $items_information[$item_id]['value'] += $temp;
-            }
-        }
-    }
-
-    /**
      * This will update income statements and Balance Sheet.
      * @param dates
      * @param items_information
