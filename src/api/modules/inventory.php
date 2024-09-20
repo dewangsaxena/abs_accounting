@@ -1123,9 +1123,6 @@ class Inventory {
                         throw new Exception('Trying to deduct more quantity than what is in inventory for ' . $identifier);
                     }
 
-                    // Adjust Quantity 
-                    $new_inv_quantity = $existing_inv_quantity + $quantity_to_be_adjusted;
-
                     // Only Update the Prices if quantity adjusted is positive.
                     // Web could be voiding all inventory without affecting the prices.
                     /* ADDING TO INVENTORY */
@@ -1147,6 +1144,9 @@ class Inventory {
 
                         // Adjust Inventory value
                         $new_inv_value = $existing_inv_value + $value_to_be_adjusted;
+
+                        // Adjust Quantity 
+                        $new_inv_quantity = $existing_inv_quantity + $quantity_to_be_adjusted;
 
                         // Validate Quantity
                         self::validate_quantity_added($item_id, $quantity_to_be_adjusted);
