@@ -1160,7 +1160,6 @@ class Inventory {
 
                         // New Total Inventory Value 
                         // Old Inventory Value + New Inventory Value
-                        // $new_total_inventory_value = ($existing_inv_quantity + $quantity_to_be_adjusted) * $new_prices[$store_id]['buyingCost'];
                         $new_total_inventory_value = $existing_inv_value + $value_to_be_adjusted;
 
                         // Update Account Value
