@@ -1159,8 +1159,9 @@ class Inventory {
                         $new_prices[$store_id]['buyingCost'] = self::calculate_buying_cost($new_inv_value, $new_inv_quantity);
 
                         // New Total Inventory Value 
-                        // (Old Quantity + New Quantity) * New Buying Cost
-                        $new_total_inventory_value = ($existing_inv_quantity + $quantity_to_be_adjusted) * $new_prices[$store_id]['buyingCost'];
+                        // Old Inventory Value + New Inventory Value
+                        // $new_total_inventory_value = ($existing_inv_quantity + $quantity_to_be_adjusted) * $new_prices[$store_id]['buyingCost'];
+                        $new_total_inventory_value = $existing_inv_value + $value_to_be_adjusted;
 
                         // Update Account Value
                         BalanceSheetActions::update_account_value(
