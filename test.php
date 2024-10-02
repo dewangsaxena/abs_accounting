@@ -188,7 +188,7 @@ if(SYSTEM_INIT_MODE === PARTS) {
     $store_id = StoreDetails::REGINA;
     // generate_list($store_id);
     // fetch_inventory($store_id);die;
-    die('REGINA : '. (Correct_IS_BS_InventoryV2::correct(StoreDetails::REGINA) ? 'T' : 'F'));
+    // die('REGINA : '. (Correct_IS_BS_InventoryV2::correct(StoreDetails::REGINA) ? 'T' : 'F'));
 }
 
 $items = [14942,
