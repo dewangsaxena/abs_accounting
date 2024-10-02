@@ -188,7 +188,7 @@ if(SYSTEM_INIT_MODE === PARTS) {
     $store_id = StoreDetails::SLAVE_LAKE;
     // generate_list($store_id);
     // fetch_inventory($store_id);
-    // die('EDMONTON : '. (Correct_IS_BS_InventoryV2::correct(StoreDetails::EDMONTON) ? 'T' : 'F'));
+    // die('NISKU : '. (Correct_IS_BS_InventoryV2::correct(StoreDetails::NISKU) ? 'T' : 'F'));
 }
 
 $items = [14942,
@@ -299,4 +299,33 @@ function generate_table(array $quantity_table, PDO &$db, int $store_id): void {
     </tbody></table>
     EOS;
 }
+
+function format_data(array $data) : array {
+    $new_data = [];
+    $count = count($data);
+    for($i = 1; $i < $count; ++$i) {
+        $r = $data[$i];
+        $t = [$r[0], $r[1], $r[2], $r[3], $r[4], $r[5]];
+        $new_data []= $t;
+    }
+    return $new_data;
+}
+
+function import_data(string $filename) : void {
+    $db = get_db_instance();
+    try {
+        $data = Utils::read_csv_file(TEMP_DIR. $filename);
+        $data = format_data($data);
+        print_r($data);
+        $db -> beginTransaction();
+        $db -> commit();
+        echo 'Successfully Imported';
+    }
+    catch(Exception $e) {
+        echo $e -> getMessage();
+        $db -> rollBack();
+    }
+}
+
+import_data('file_2.csv');
 ?>
