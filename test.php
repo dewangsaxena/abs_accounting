@@ -185,10 +185,10 @@ function fetch_inventory(int $store_id): void {
 }
 
 if(SYSTEM_INIT_MODE === PARTS) {
-    $store_id = StoreDetails::SLAVE_LAKE;
+    $store_id = StoreDetails::REGINA;
     // generate_list($store_id);
-    // fetch_inventory($store_id);
-    // die('NISKU : '. (Correct_IS_BS_InventoryV2::correct(StoreDetails::NISKU) ? 'T' : 'F'));
+    // fetch_inventory($store_id);die;
+    die('REGINA : '. (Correct_IS_BS_InventoryV2::correct(StoreDetails::REGINA) ? 'T' : 'F'));
 }
 
 $items = [14942,
@@ -311,13 +311,25 @@ function format_data(array $data) : array {
     return $new_data;
 }
 
+function check_for_item(string &$identifier, PDOStatement &$statement_check_item) : bool {
+    $statement_check_item -> execute([':identifier' => $identifier]);
+    $result = $statement_check_item -> fetchAll(PDO::FETCH_ASSOC);
+    return isset($result[0]);
+}
+
 function import_data(string $filename) : void {
     $db = get_db_instance();
     try {
-        $data = Utils::read_csv_file(TEMP_DIR. $filename);
-        $data = format_data($data);
-        print_r($data);
         $db -> beginTransaction();
+        $data = format_data(Utils::read_csv_file(TEMP_DIR. $filename));
+        $statement_check_item = $db -> prepare('SELECT `id` FROM items WHERE `identifier` = :identifier;');
+        $existing_item = [];
+        $new_items = [];
+        foreach($data as $d) {
+            if(check_for_item($d[0], $statement_check_item)) $existing_item[]= $d;
+            else $new_items []= $d;
+        }
+        
         $db -> commit();
         echo 'Successfully Imported';
     }
