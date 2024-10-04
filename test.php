@@ -311,11 +311,13 @@ function format_data(array $data) : array {
     return $new_data;
 }
 
-function check_for_item(string &$identifier, PDOStatement &$statement_check_item) : bool {
+function check_for_item(string &$identifier, PDOStatement &$statement_check_item) : int|null {
     $statement_check_item -> execute([':identifier' => $identifier]);
     $result = $statement_check_item -> fetchAll(PDO::FETCH_ASSOC);
-    return isset($result[0]);
+    return isset($result[0]) ? $result[0]['id'] : null;
 }
+
+// function update_inventory()
 
 function import_data(string $filename) : void {
     $db = get_db_instance();
@@ -326,9 +328,12 @@ function import_data(string $filename) : void {
         $existing_item = [];
         $new_items = [];
         foreach($data as $d) {
-            if(check_for_item($d[0], $statement_check_item)) $existing_item[]= $d;
+            $result = check_for_item($d[0], $statement_check_item);
+            if(is_numeric($result)) $existing_item[]= [$result,...$d];
             else $new_items []= $d;
         }
+
+        print_r($existing_item);
         
         $db -> commit();
         echo 'Successfully Imported';
