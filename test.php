@@ -317,7 +317,7 @@ function check_for_item(string &$identifier, PDOStatement &$statement_check_item
     return isset($result[0]) ? $result[0]['id'] : null;
 }
 
-function update_inventory(array &$existing_items, PDO &$db, array &$bs): void {
+function update_inventory(array &$items, PDO &$db, array &$bs): void {
     $statement = $db -> prepare(<<<'EOS'
     UPDATE 
         inventory 
@@ -334,7 +334,7 @@ function update_inventory(array &$existing_items, PDO &$db, array &$bs): void {
 
     $total_value = 0;
 
-    foreach($existing_items as $item) {
+    foreach($items as $item) {
         $quantity = is_numeric($item[2]) ? floatval($item[2]) : null;
         $cost = is_numeric($item[3]) ? floatval($item[3]) : null;
         $identifier = $item[1];
