@@ -332,8 +332,6 @@ function import_data(string $filename) : void {
             if(is_numeric($result)) $existing_item[]= [$result,...$d];
             else $new_items []= $d;
         }
-
-        print_r($existing_item);
         
         $db -> commit();
         echo 'Successfully Imported';
