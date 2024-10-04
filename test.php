@@ -338,10 +338,12 @@ function update_inventory(array &$existing_items, PDO &$db): void {
         $identifier = $item[1];
 
         if(is_numeric($quantity) === false) throw new Exception('Invalid Quantity for Item: '. $identifier);
+        if($quantity <= 0) throw new Exception('Quantity cannot be 0 or Negative for: '. $identifier);
         if(is_numeric($cost) === false) throw new Exception('Invalid Cost for Item: '. $identifier);
-        
+        if($cost <= 0) throw new Exception('Cost cannot be nagative for: '. $identifier);
+
         $is_successful = $statement -> execute([
-            ':quantity' => $item[2],
+            ':quantity' => $quantity,
             ':aisle' => $item[4],
             ':shelf' => $item[5],
             ':column' => $item[6],
@@ -351,6 +353,7 @@ function update_inventory(array &$existing_items, PDO &$db): void {
         if($is_successful !== true || $statement -> rowCount() < 1) throw new Exception('Unable to Update Item: '. $item[1]);
 
         // Update Balance Sheet value
+        $value = $quantity * $cost;
         
     }
 }
