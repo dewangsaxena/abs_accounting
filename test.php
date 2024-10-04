@@ -363,6 +363,59 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
     BalanceSheetActions::update_account_value($bs, AccountsConfig::INVENTORY_A, $total_value);
 }
 
+function add_item(array &$items, PDO &$db): void {
+    $statement = $db -> prepare(<<<'EOS'
+    INSERT INTO items
+    (
+        `code`,
+        `identifier`,
+        `description`,
+        `oem`,
+        `category`,
+        `unit`,
+        `prices`,
+        `account_assets`,
+        `account_revenue`,
+        `account_cogs`,
+        `account_variance`,
+        `account_expense`,
+        `is_inactive`,
+        `is_core`,
+        `memo`,
+        `additional_informatation`,
+        `reorder_quantity`,
+        `images`
+    )
+    VALUES
+    (
+        :code,
+        :identifier,
+        :description,
+        :oem,
+        :category,
+        :unit,
+        :prices,
+        :account_assets,
+        :account_revenue,
+        :account_cogs,
+        :account_variance,
+        :account_expense,
+        :is_inactive,
+        :is_core,
+        :memo,
+        :additional_information,
+        :reorder_quantity,
+        :images
+    );
+    EOS);
+
+    foreach($items as $item) {
+        $params = [
+            ':code' => $item[]
+        ]
+    }
+}
+
 function import_data(string $filename) : void {
     $db = get_db_instance();
     try {
