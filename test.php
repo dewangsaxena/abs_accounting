@@ -332,6 +332,8 @@ function update_inventory(array &$existing_items, PDO &$db, array &$bs): void {
         `item_id` = :item_id;
     EOS);
 
+    $total_value = 0;
+
     foreach($existing_items as $item) {
         $quantity = is_numeric($item[2]) ? floatval($item[2]) : null;
         $cost = is_numeric($item[3]) ? floatval($item[3]) : null;
@@ -353,11 +355,11 @@ function update_inventory(array &$existing_items, PDO &$db, array &$bs): void {
         if($is_successful !== true || $statement -> rowCount() < 1) throw new Exception('Unable to Update Item: '. $item[1]);
 
         // Update Balance Sheet value
-        $value = $quantity * $cost;
-
-        // Update Account Value
-        BalanceSheetActions::update_account_value($bs, AccountsConfig::INVENTORY_A, $value);
+        $total_value += ($quantity * $cost);
     }
+
+    // Update Account Value
+    BalanceSheetActions::update_account_value($bs, AccountsConfig::INVENTORY_A, $total_value);
 }
 
 function import_data(string $filename) : void {
