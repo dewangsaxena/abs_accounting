@@ -355,8 +355,8 @@ function update_inventory(array &$existing_items, PDO &$db, array &$bs): void {
         // Update Balance Sheet value
         $value = $quantity * $cost;
 
-        BalanceSheetActions::update_account_value()
-        
+        // Update Account Value
+        BalanceSheetActions::update_account_value($bs, AccountsConfig::INVENTORY_A, $value);
     }
 }
 
