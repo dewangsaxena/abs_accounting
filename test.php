@@ -354,7 +354,7 @@ function update_inventory(array &$existing_items, PDO &$db, array &$bs): void {
 
         if($is_successful !== true || $statement -> rowCount() < 1) throw new Exception('Unable to Update Item: '. $item[1]);
 
-        // Update Balance Sheet value
+        // Add to Total Value
         $total_value += ($quantity * $cost);
     }
 
