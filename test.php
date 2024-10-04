@@ -305,7 +305,7 @@ function format_data(array $data) : array {
     $count = count($data);
     for($i = 1; $i < $count; ++$i) {
         $r = $data[$i];
-        $t = [$r[0], $r[1], $r[2], $r[3], $r[4], $r[5]];
+        $t = [trim($r[0]), trim($r[1]), trim($r[2]), trim($r[3]), trim($r[4]), trim($r[5])];
         $new_data []= $t;
     }
     return $new_data;
