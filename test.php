@@ -349,6 +349,7 @@ function update_inventory(array &$existing_items, PDO &$db, array &$bs): void {
             ':aisle' => $item[4],
             ':shelf' => $item[5],
             ':column' => $item[6],
+            ':store_id' => StoreDetails::REGINA,
             ':item_id' => $item[0],
         ]);
 
