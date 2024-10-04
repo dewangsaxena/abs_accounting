@@ -317,7 +317,7 @@ function check_for_item(string &$identifier, PDOStatement &$statement_check_item
     return isset($result[0]) ? $result[0]['id'] : null;
 }
 
-function update_inventory(array &$existing_items, PDO &$db): void {
+function update_inventory(array &$existing_items, PDO &$db, array &$bs): void {
     $statement = $db -> prepare(<<<'EOS'
     UPDATE 
         inventory 
@@ -354,6 +354,8 @@ function update_inventory(array &$existing_items, PDO &$db): void {
 
         // Update Balance Sheet value
         $value = $quantity * $cost;
+
+        BalanceSheetActions::update_account_value()
         
     }
 }
@@ -371,6 +373,12 @@ function import_data(string $filename) : void {
             if(is_numeric($result)) $existing_item[]= [$result,...$d];
             else $new_items []= $d;
         }
+
+        // Balance Sheet
+        $bs = AccountsConfig::ACCOUNTS;
+
+        // Update Inventory
+        update_inventory($existing_item, $db, $bs);
         
         $db -> commit();
         echo 'Successfully Imported';

@@ -194,7 +194,7 @@ class BalanceSheetActions {
         }
     }
 
-    public static function calculate_total_capital_assets(array &$record): void {
+    private static function calculate_total_capital_assets(array &$record): void {
         $record[1830] = 0;
         $acc_furniture_accounts = [1820, 1825];
         foreach($acc_furniture_accounts as $account) {
