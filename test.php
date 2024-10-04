@@ -317,7 +317,43 @@ function check_for_item(string &$identifier, PDOStatement &$statement_check_item
     return isset($result[0]) ? $result[0]['id'] : null;
 }
 
-// function update_inventory()
+function update_inventory(array &$existing_items, PDO &$db): void {
+    $statement = $db -> prepare(<<<'EOS'
+    UPDATE 
+        inventory 
+    SET 
+        `quantity` = :quantity,
+        `aisle` = :aisle,
+        `shelf` = :shelf,
+        `column` = :column
+    WHERE 
+        store_id = :store_id
+    AND 
+        `item_id` = :item_id;
+    EOS);
+
+    foreach($existing_items as $item) {
+        $quantity = is_numeric($item[2]) ? floatval($item[2]) : null;
+        $cost = is_numeric($item[3]) ? floatval($item[3]) : null;
+        $identifier = $item[1];
+
+        if(is_numeric($quantity) === false) throw new Exception('Invalid Quantity for Item: '. $identifier);
+        if(is_numeric($cost) === false) throw new Exception('Invalid Cost for Item: '. $identifier);
+        
+        $is_successful = $statement -> execute([
+            ':quantity' => $item[2],
+            ':aisle' => $item[4],
+            ':shelf' => $item[5],
+            ':column' => $item[6],
+            ':item_id' => $item[0],
+        ]);
+
+        if($is_successful !== true || $statement -> rowCount() < 1) throw new Exception('Unable to Update Item: '. $item[1]);
+
+        // Update Balance Sheet value
+        
+    }
+}
 
 function import_data(string $filename) : void {
     $db = get_db_instance();
