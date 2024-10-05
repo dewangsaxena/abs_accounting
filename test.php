@@ -393,7 +393,6 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
             if(is_numeric($lid) === false) throw new Exception('Unable to Add Item: '. $identifier);
         } 
         else {
-
             if(is_numeric($quantity) === false) throw new Exception('Invalid Quantity for Item: '. $identifier);
             if($quantity <= 0) throw new Exception('Quantity cannot be 0 or Negative for: '. $identifier);
             if(is_numeric($cost) === false) throw new Exception('Invalid Cost for Item: '. $identifier);
