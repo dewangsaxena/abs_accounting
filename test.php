@@ -318,6 +318,17 @@ function check_for_item(string &$identifier, PDOStatement &$statement_check_item
 }
 
 function update_inventory(array &$items, PDO &$db, array &$bs): void {
+    $statement_check = $db -> prepare(<<<'EOS'
+    SELECT 
+        id
+    FROM
+        inventory 
+    WHERE 
+        id = :id
+    AND
+        store_id = :store_id;
+    EOS);
+
     $statement = $db -> prepare(<<<'EOS'
     UPDATE 
         inventory 
@@ -335,26 +346,37 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
     $total_value = 0;
 
     foreach($items as $item) {
+        $id = $item[0];
         $quantity = is_numeric($item[2]) ? floatval($item[2]) : null;
         $cost = is_numeric($item[3]) ? floatval($item[3]) : null;
-        $identifier = $item[1];
+        
+        // Check ID 
+        $statement_check -> execute([':id' => $id, ':store_id' => StoreDetails::REGINA]);
+        $result = $statement_check -> fetchAll(PDO::FETCH_ASSOC);
+        if(isset($result[0]['id']) === false) {
+            // Insert
+        } 
+        else {
+            $identifier = $item[1];
 
-        if(is_numeric($quantity) === false) throw new Exception('Invalid Quantity for Item: '. $identifier);
-        if($quantity <= 0) throw new Exception('Quantity cannot be 0 or Negative for: '. $identifier);
-        if(is_numeric($cost) === false) throw new Exception('Invalid Cost for Item: '. $identifier);
-        if($cost <= 0) throw new Exception('Cost cannot be nagative for: '. $identifier);
+            if(is_numeric($quantity) === false) throw new Exception('Invalid Quantity for Item: '. $identifier);
+            if($quantity <= 0) throw new Exception('Quantity cannot be 0 or Negative for: '. $identifier);
+            if(is_numeric($cost) === false) throw new Exception('Invalid Cost for Item: '. $identifier);
+            if($cost <= 0) throw new Exception('Cost cannot be nagative for: '. $identifier);
 
-        $is_successful = $statement -> execute([
-            ':quantity' => $quantity,
-            ':aisle' => $item[4],
-            ':shelf' => $item[5],
-            ':column' => $item[6],
-            ':store_id' => StoreDetails::REGINA,
-            ':item_id' => $item[0],
-        ]);
+            $is_successful = $statement -> execute([
+                ':quantity' => $quantity,
+                ':aisle' => $item[4],
+                ':shelf' => $item[5],
+                ':column' => $item[6],
+                ':store_id' => StoreDetails::REGINA,
+                ':item_id' => $id,
+            ]);
 
-        if($is_successful !== true || $statement -> rowCount() < 1) throw new Exception('Unable to Update Item: '. $item[1]);
-
+            if($is_successful !== true || $statement -> rowCount() < 1) throw new Exception('Unable to Update Item: '. $item[1]);
+        }
+        
+    
         // Add to Total Value
         $total_value += ($quantity * $cost);
     }
