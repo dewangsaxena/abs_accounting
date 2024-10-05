@@ -571,7 +571,7 @@ function import_data(string $filename) : void {
         $bs = AccountsConfig::ACCOUNTS;
 
         // Add Item
-        // add_item($new_items, $db);
+        add_item($new_items, $db);
 
         // Update Inventory
         update_inventory($existing_item, $db, $bs);
