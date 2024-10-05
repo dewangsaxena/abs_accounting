@@ -407,7 +407,7 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
                 ':item_id' => $id,
             ]);
 
-            if($is_successful !== true || $statement_update -> rowCount() < 1) throw new Exception('Unable to Update Item: '. $item[1]);
+            if($is_successful !== true) throw new Exception('Unable to Update Item: '. $item[1]);
         }
         
         // Add to Total Value
