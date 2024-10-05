@@ -375,6 +375,11 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
         $shelf =  $item[5];
         $column =  $item[6];
         
+        if(is_numeric($quantity) === false) throw new Exception('Invalid Quantity for Item: '. $identifier);
+        if($quantity <= 0) throw new Exception('Quantity cannot be 0 or Negative for: '. $identifier);
+        if(is_numeric($cost) === false) throw new Exception('Invalid Cost for Item: '. $identifier);
+        if($cost <= 0) throw new Exception('Cost cannot be nagative for: '. $identifier);
+
         // Check ID 
         $statement_check -> execute([':id' => $id, ':store_id' => StoreDetails::REGINA]);
         $result = $statement_check -> fetchAll(PDO::FETCH_ASSOC);
@@ -393,11 +398,6 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
             if(is_numeric($lid) === false) throw new Exception('Unable to Add Item: '. $identifier);
         } 
         else {
-            if(is_numeric($quantity) === false) throw new Exception('Invalid Quantity for Item: '. $identifier);
-            if($quantity <= 0) throw new Exception('Quantity cannot be 0 or Negative for: '. $identifier);
-            if(is_numeric($cost) === false) throw new Exception('Invalid Cost for Item: '. $identifier);
-            if($cost <= 0) throw new Exception('Cost cannot be nagative for: '. $identifier);
-
             $is_successful = $statement -> execute([
                 ':quantity' => $quantity,
                 ':aisle' => $aisle,
