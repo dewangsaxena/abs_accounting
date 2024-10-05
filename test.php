@@ -447,7 +447,7 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
         $combined_value = $existing_value + $new_value;
         $combined_quantity = $existing_quantity + $quantity;
 
-        $new_cost = $combined_value / $combined_quantity;
+        $new_cost = Utils::round($combined_value / $combined_quantity);
 
         // Update Prices
         $prices[StoreDetails::REGINA]['buyingCost'] = $new_cost;
