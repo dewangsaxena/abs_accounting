@@ -573,8 +573,15 @@ function import_data(string $filename) : void {
         // Add Item
         add_item($new_items, $db);
 
+        // Combine Items 
+        $combined_items = [];
+        foreach($data as $d) {
+            $result = check_for_item($d[0], $statement_check_item);
+            $existing_item[]= [$result,...$d];
+        }
+
         // Update Inventory
-        update_inventory($existing_item, $db, $bs);
+        update_inventory($combined_items, $db, $bs);
 
         // Update Balance Sheet
         BalanceSheetActions::update_from($bs, Utils::get_business_date(StoreDetails::REGINA), StoreDetails::REGINA, $db);
