@@ -519,6 +519,7 @@ function add_item(array &$items, PDO &$db): void {
     }
 
     if(count($duplicate_items) > 0) {
+        echo 'Duplicate Items Found:<br><br>';
         foreach($duplicate_items as $item) {
             echo $item.'<br>';
         }
