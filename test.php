@@ -512,6 +512,7 @@ function import_data(string $filename) : void {
         // Update Inventory
         update_inventory($existing_item, $db, $bs);
 
+        // Update Balance Sheet
         BalanceSheetActions::update_from($bs, Utils::get_business_date(StoreDetails::REGINA), StoreDetails::REGINA, $db);
 
         assert_success();
