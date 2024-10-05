@@ -464,6 +464,21 @@ function add_item(array &$items, PDO &$db): void {
     );
     EOS);
 
+    $unique_items = [];
+    $duplicate_items = [];
+
+    foreach($items as $item) {
+        if(in_array($item[0], $unique_items) === false) $unique_items[]= $item[0];
+        else $duplicate_items[]= $item[0];
+    }
+
+    if(count($duplicate_items) > 0) {
+        foreach($duplicate_items as $item) {
+            echo $item.'<br>';
+        }
+        throw new Exception('');
+    }
+
     foreach($items as $item) {
         $params = [
             ':code' => $item[0]. ' ~',
