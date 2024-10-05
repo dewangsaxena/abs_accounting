@@ -430,7 +430,14 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
         if(isset($prices[0])) {
             $prices = json_decode($prices[0], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
         }
-        else $prices = [StoreDetails::REGINA => ['buyingCost' => 0, 'sellingPrice' => 0, 'preferredPrice' => 0]];
+        else $prices = [
+            StoreDetails::REGINA => [
+                'storeId' => StoreDetails::REGINA, 
+                'buyingCost' => 0, 
+                'sellingPrice' => 0, 
+                'preferredPrice' => 0
+            ]
+        ];
 
         // Existing Quantity
         $existing_cost = $prices[StoreDetails::REGINA]['buyingCost'];
