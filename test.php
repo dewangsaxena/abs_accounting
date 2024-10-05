@@ -369,16 +369,16 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
     foreach($items as $item) {
         $id = $item[0];
         $identifier = $item[1];
-        $quantity = is_numeric($item[2]) ? floatval($item[2]) : null;
-        $cost = is_numeric($item[3]) ? floatval($item[3]) : null;
+        $quantity = is_numeric($item[2]) ? floatval($item[2]) : 0;
+        $cost = is_numeric($item[3]) ? floatval($item[3]) : 0;
         $aisle = $item[4];
         $shelf =  $item[5];
         $column =  $item[6];
         
         if(is_numeric($quantity) === false) throw new Exception('Invalid Quantity for Item: '. $identifier);
-        if($quantity <= 0) throw new Exception('Quantity cannot be 0 or Negative for: '. $identifier);
+        if($quantity < 0) throw new Exception('Quantity cannot be Negative for: '. $identifier);
         if(is_numeric($cost) === false) throw new Exception('Invalid Cost for Item: '. $identifier);
-        if($cost <= 0) throw new Exception('Cost cannot be nagative for: '. $identifier);
+        if($cost < 0) throw new Exception('Cost cannot be zero for: '. $identifier);
 
         // Check ID 
         $statement_check -> execute([':id' => $id, ':store_id' => StoreDetails::REGINA]);
