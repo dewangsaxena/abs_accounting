@@ -577,7 +577,7 @@ function import_data(string $filename) : void {
         $combined_items = [];
         foreach($data as $d) {
             $result = check_for_item($d[0], $statement_check_item);
-            $existing_item[]= [$result,...$d];
+            $combined_items[]= [$result,...$d];
         }
 
         // Update Inventory
