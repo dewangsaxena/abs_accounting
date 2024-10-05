@@ -350,11 +350,11 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
     );
     EOS);
 
-    $statement = $db -> prepare(<<<'EOS'
+    $statement_update = $db -> prepare(<<<'EOS'
     UPDATE 
         inventory 
     SET 
-        `quantity` = :quantity,
+        `quantity` = `quantity` + :quantity,
         `aisle` = :aisle,
         `shelf` = :shelf,
         `column` = :column
@@ -398,7 +398,7 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
             if(is_numeric($lid) === false) throw new Exception('Unable to Add Item: '. $identifier);
         } 
         else {
-            $is_successful = $statement -> execute([
+            $is_successful = $statement_update -> execute([
                 ':quantity' => $quantity,
                 ':aisle' => $aisle,
                 ':shelf' => $shelf,
@@ -407,7 +407,7 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
                 ':item_id' => $id,
             ]);
 
-            if($is_successful !== true || $statement -> rowCount() < 1) throw new Exception('Unable to Update Item: '. $item[1]);
+            if($is_successful !== true || $statement_update -> rowCount() < 1) throw new Exception('Unable to Update Item: '. $item[1]);
         }
         
         // Add to Total Value
