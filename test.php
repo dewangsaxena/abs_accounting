@@ -418,8 +418,11 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
             $existing_quantity = $result[0]['quantity']; 
         }
         
+        // Value of Items 
+        $new_value = $cost * $quantity;
+
         // Add to Total Value
-        $total_value += ($quantity * $cost);
+        $total_value += $new_value;
 
         // Fetch Existing Prices
         $statement_fetch_prices -> execute([':id' => $id]);
@@ -430,6 +433,24 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
         else $prices = [StoreDetails::REGINA => 0];
 
         // Existing Quantity
+        $existing_cost = $prices[StoreDetails::REGINA];
+        $existing_value = $existing_quantity * $existing_cost;
+        
+        // Total Value of combined items
+        $combined_value = $existing_value + $new_value;
+        $combined_quantity = $existing_quantity + $quantity;
+
+        $new_cost = $combined_value / $combined_quantity;
+
+        // Update Prices
+        $prices[StoreDetails::REGINA] = $new_cost;
+
+        // Prices
+        $prices = json_encode($prices, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+
+        // Update Prices
+        $is_successful = $statement_update_prices -> execute([':prices' => $prices, ':id' => $id]);
+        if($is_successful !== true) throw new Exception('Unable to Update Prices for item: '. $identifier);
     }
 
     // Update Account Value
