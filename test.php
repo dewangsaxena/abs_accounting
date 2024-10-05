@@ -481,7 +481,7 @@ function add_item(array &$items, PDO &$db): void {
             ':is_inactive' => '{"8":0}',
             ':is_core' => 0,
             ':memo' => '',
-            ':aditional_information' => '',
+            ':additional_information' => '',
             ':reorder_quantity' => '{"8":0}',
             ':images' => '{}',
         ];
