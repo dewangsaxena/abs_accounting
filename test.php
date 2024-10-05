@@ -533,7 +533,7 @@ function add_item(array &$items, PDO &$db): void {
             ':oem' => '',
             ':category' => CATEGORY_INVENTORY,
             ':unit' => 'Each',
-            ':prices' => '{"8":{"storeId":8, "buyingCost":0,"sellingPrice":0,"preferredPrice":0}}',
+            ':prices' => '{"8":{"storeId":8,"sellingPrice":0,"buyingCost":0,"preferredPrice":0}}',
             ':account_assets' => 1520,
             ':account_revenue' => 4020,
             ':account_cogs' => 5020,
