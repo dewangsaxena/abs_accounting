@@ -433,7 +433,7 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
         else $prices = [StoreDetails::REGINA => 0];
 
         // Existing Quantity
-        $existing_cost = $prices[StoreDetails::REGINA];
+        $existing_cost = $prices[StoreDetails::REGINA]['buyingCost'];
         $existing_value = $existing_quantity * $existing_cost;
         
         // Total Value of combined items
@@ -443,7 +443,7 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
         $new_cost = $combined_value / $combined_quantity;
 
         // Update Prices
-        $prices[StoreDetails::REGINA] = $new_cost;
+        $prices[StoreDetails::REGINA]['buyingCost'] = $new_cost;
 
         // Prices
         $prices = json_encode($prices, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
