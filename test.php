@@ -365,7 +365,7 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
     EOS);
 
     $statement_fetch_prices = $db -> prepare('SELECT prices FROM items WHERE id = :id;');
-    $statement_update_prices = $db -> prepare('UPDATE items SET prices = :prices, modified = LAST_MODIFIED_TIMESTAMP WHERE id = :id');
+    $statement_update_prices = $db -> prepare('UPDATE items SET prices = :prices, modified = CURRENT_TIMESTAMP WHERE id = :id');
 
     $total_value = 0;
 
