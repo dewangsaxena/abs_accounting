@@ -527,7 +527,7 @@ function add_item(array &$items, PDO &$db): void {
 
     foreach($items as $item) {
         $params = [
-            ':code' => $item[0]. ' ~',
+            ':code' => "{$item[0]} ~",
             ':identifier' => $item[0],
             ':description' => '~',
             ':oem' => '',
