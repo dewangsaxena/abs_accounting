@@ -318,9 +318,9 @@ function check_for_item(string &$identifier, PDOStatement &$statement_check_item
 }
 
 function update_inventory(array &$items, PDO &$db, array &$bs): void {
-    $statement_check = $db -> prepare(<<<'EOS'
+    $statement_check_quantity = $db -> prepare(<<<'EOS'
     SELECT 
-        id
+        `quantity`
     FROM
         inventory 
     WHERE 
@@ -364,7 +364,7 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
         `item_id` = :item_id;
     EOS);
 
-    $statement_fetch_prices = $db -> prepare('SELECT prices FROM items WHERE id = :id');
+    $statement_fetch_prices = $db -> prepare('SELECT prices FROM items WHERE id = :id;');
     $statement_update_prices = $db -> prepare('UPDATE items SET prices = :prices, modified = LAST_MODIFIED_TIMESTAMP WHERE id = :id');
 
     $total_value = 0;
@@ -377,16 +377,17 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
         $aisle = $item[4];
         $shelf =  $item[5];
         $column =  $item[6];
-        
+        $existing_quantity = 0 ;
+
         if(is_numeric($quantity) === false) throw new Exception('Invalid Quantity for Item: '. $identifier);
         if($quantity < 0) throw new Exception('Quantity cannot be Negative for: '. $identifier);
         if(is_numeric($cost) === false) throw new Exception('Invalid Cost for Item: '. $identifier);
         if($cost < 0) throw new Exception('Cost cannot be zero for: '. $identifier);
 
-        // Check ID 
-        $statement_check -> execute([':item_id' => $id, ':store_id' => StoreDetails::REGINA]);
-        $result = $statement_check -> fetchAll(PDO::FETCH_ASSOC);
-        if(isset($result[0]['id']) === false) {
+        // Check whether inventory entry exists
+        $statement_check_quantity -> execute([':item_id' => $id, ':store_id' => StoreDetails::REGINA]);
+        $result = $statement_check_quantity -> fetchAll(PDO::FETCH_ASSOC);
+        if(isset($result[0]['quantity']) === false) {
             // Insert
             $statement_insert -> execute([
                 ':item_id' => $id,
@@ -415,6 +416,17 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
         
         // Add to Total Value
         $total_value += ($quantity * $cost);
+
+        // Fetch Existing Prices
+        $statement_fetch_prices -> execute([':id' => $id]);
+        $prices = $statement_fetch_prices -> fetchAll(PDO::FETCH_ASSOC);
+        if(isset($prices[0])) {
+            $prices = json_decode($prices[0], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+        }
+        else $prices = [StoreDetails::REGINA => 0];
+
+        // Existing Quantity
+        $existing_quantity = $result[0]['quantity']; 
     }
 
     // Update Account Value
