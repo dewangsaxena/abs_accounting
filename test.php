@@ -439,8 +439,6 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
             ]
         ];
 
-        print_r($prices);throw new Exception('');
-
         // Existing Quantity
         $existing_cost = $prices[StoreDetails::REGINA]['buyingCost'];
         $existing_value = $existing_quantity * $existing_cost;
