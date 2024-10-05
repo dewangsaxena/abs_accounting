@@ -324,7 +324,7 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
     FROM
         inventory 
     WHERE 
-        id = :id
+        item_id = :item_id
     AND
         store_id = :store_id;
     EOS);
@@ -381,7 +381,7 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
         if($cost < 0) throw new Exception('Cost cannot be zero for: '. $identifier);
 
         // Check ID 
-        $statement_check -> execute([':id' => $id, ':store_id' => StoreDetails::REGINA]);
+        $statement_check -> execute([':item_id' => $id, ':store_id' => StoreDetails::REGINA]);
         $result = $statement_check -> fetchAll(PDO::FETCH_ASSOC);
         if(isset($result[0]['id']) === false) {
             // Insert
