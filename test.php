@@ -411,8 +411,29 @@ function add_item(array &$items, PDO &$db): void {
 
     foreach($items as $item) {
         $params = [
-            ':code' => $item[]
-        ]
+            ':code' => $item[0]. '~',
+            ':identifier' => $item[0],
+            ':description' => '~',
+            ':oem' => '',
+            ':category' => CATEGORY_INVENTORY,
+            ':unit' => 'Each',
+            ':prices' => '{"8":0}',
+            ':account_assets' => 1520,
+            ':account_revenue' => 4020,
+            ':account_cogs' => 5020,
+            ':account_variance' => 5100,
+            ':account_expense' => 5020,
+            ':is_inactive' => '{"8":0}',
+            ':is_core' => 0,
+            ':memo' => '',
+            ':aditional_information' => '',
+            ':reorder_quantity' => '{"8":0}',
+            ':images' => '{}',
+        ];
+
+        $statement -> execute($params);
+        $p_key = $db -> lastInsertId();
+        if(is_numeric($p_key) === false) throw new Exception('Unable to Add item: '. $item[0]);
     }
 }
 
