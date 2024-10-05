@@ -329,6 +329,27 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
         store_id = :store_id;
     EOS);
 
+    $statement_insert = $db -> prepare(<<<'EOS'
+    INSERT INTO inventory
+    (
+        item_id,
+        quantity,
+        store_id,
+        `aisle`,
+        `shelf`,
+        `column`
+    )
+    VALUES
+    (
+        :item_id,
+        :quantity,
+        :store_id,
+        :aisle,
+        :shelf,
+        :column
+    );
+    EOS);
+
     $statement = $db -> prepare(<<<'EOS'
     UPDATE 
         inventory 
@@ -347,17 +368,31 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
 
     foreach($items as $item) {
         $id = $item[0];
+        $identifier = $item[1];
         $quantity = is_numeric($item[2]) ? floatval($item[2]) : null;
         $cost = is_numeric($item[3]) ? floatval($item[3]) : null;
+        $aisle = $item[4];
+        $shelf =  $item[5];
+        $column =  $item[6];
         
         // Check ID 
         $statement_check -> execute([':id' => $id, ':store_id' => StoreDetails::REGINA]);
         $result = $statement_check -> fetchAll(PDO::FETCH_ASSOC);
         if(isset($result[0]['id']) === false) {
             // Insert
+            $statement_insert -> execute([
+                ':item_id' => $id,
+                ':quantity' => $quantity,
+                ':store_id' => StoreDetails::REGINA,
+                ':aisle' => $aisle,
+                ':shelf' => $shelf,
+                ':column' => $column,
+            ]);
+
+            $lid = $db -> lastInsertId();
+            if(is_numeric($lid) === false) throw new Exception('Unable to Add Item: '. $identifier);
         } 
         else {
-            $identifier = $item[1];
 
             if(is_numeric($quantity) === false) throw new Exception('Invalid Quantity for Item: '. $identifier);
             if($quantity <= 0) throw new Exception('Quantity cannot be 0 or Negative for: '. $identifier);
@@ -366,9 +401,9 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
 
             $is_successful = $statement -> execute([
                 ':quantity' => $quantity,
-                ':aisle' => $item[4],
-                ':shelf' => $item[5],
-                ':column' => $item[6],
+                ':aisle' => $aisle,
+                ':shelf' => $shelf,
+                ':column' => $column,
                 ':store_id' => StoreDetails::REGINA,
                 ':item_id' => $id,
             ]);
