@@ -428,7 +428,7 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
         $statement_fetch_prices -> execute([':id' => $id]);
         $prices = $statement_fetch_prices -> fetchAll(PDO::FETCH_ASSOC);
         if(isset($prices[0])) {
-            $prices = json_decode($prices[0], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+            $prices = json_decode($prices[0]['prices'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
         }
         else $prices = [
             StoreDetails::REGINA => [
