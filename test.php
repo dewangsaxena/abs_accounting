@@ -509,8 +509,11 @@ function import_data(string $filename) : void {
         // Balance Sheet
         $bs = AccountsConfig::ACCOUNTS;
 
+        // Add Item
+        add_item($new_items, $db);
+
         // Update Inventory
-        update_inventory($existing_item, $db, $bs);
+        // update_inventory($existing_item, $db, $bs);
 
         // Update Balance Sheet
         BalanceSheetActions::update_from($bs, Utils::get_business_date(StoreDetails::REGINA), StoreDetails::REGINA, $db);
