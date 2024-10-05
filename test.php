@@ -412,6 +412,9 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
             ]);
 
             if($is_successful !== true) throw new Exception('Unable to Update Item: '. $item[1]);
+
+            // Existing Quantity
+            $existing_quantity = $result[0]['quantity']; 
         }
         
         // Add to Total Value
@@ -426,7 +429,6 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
         else $prices = [StoreDetails::REGINA => 0];
 
         // Existing Quantity
-        $existing_quantity = $result[0]['quantity']; 
     }
 
     // Update Account Value
