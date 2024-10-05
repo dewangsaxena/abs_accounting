@@ -518,8 +518,8 @@ function import_data(string $filename) : void {
         echo 'Successfully Imported';
     }
     catch(Exception $e) {
-        echo $e -> getMessage();
         $db -> rollBack();
+        echo $e -> getMessage();        
     }
 }
 
