@@ -364,6 +364,9 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
         `item_id` = :item_id;
     EOS);
 
+    $statement_fetch_prices = $db -> prepare('SELECT prices FROM items WHERE id = :id');
+    $statement_update_prices = $db -> prepare('UPDATE items SET prices = :prices, modified = LAST_MODIFIED_TIMESTAMP WHERE id = :id');
+
     $total_value = 0;
 
     foreach($items as $item) {
@@ -525,10 +528,10 @@ function import_data(string $filename) : void {
         $bs = AccountsConfig::ACCOUNTS;
 
         // Add Item
-        add_item($new_items, $db);
+        // add_item($new_items, $db);
 
         // Update Inventory
-        // update_inventory($existing_item, $db, $bs);
+        update_inventory($existing_item, $db, $bs);
 
         // Update Balance Sheet
         BalanceSheetActions::update_from($bs, Utils::get_business_date(StoreDetails::REGINA), StoreDetails::REGINA, $db);
