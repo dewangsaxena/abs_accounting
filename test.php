@@ -437,7 +437,7 @@ function add_item(array &$items, PDO &$db): void {
         `is_inactive`,
         `is_core`,
         `memo`,
-        `additional_informatation`,
+        `additional_information`,
         `reorder_quantity`,
         `images`
     )
