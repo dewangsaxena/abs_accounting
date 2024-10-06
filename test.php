@@ -429,6 +429,14 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
         $prices = $statement_fetch_prices -> fetchAll(PDO::FETCH_ASSOC);
         if(isset($prices[0])) {
             $prices = json_decode($prices[0]['prices'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+            if(isset($prices[StoreDetails::REGINA]) === false) {
+                $prices[StoreDetails::REGINA] = [
+                    'storeId' => StoreDetails::REGINA, 
+                    'buyingCost' => 0, 
+                    'sellingPrice' => 0, 
+                    'preferredPrice' => 0
+                ];
+            }
         }
         else $prices = [
             StoreDetails::REGINA => [
