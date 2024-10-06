@@ -455,6 +455,8 @@ function update_inventory(array &$items, PDO &$db, array &$bs): void {
         $combined_value = $existing_value + $new_value;
         $combined_quantity = $existing_quantity + $quantity;
 
+        if($combined_quantity <= 0) throw new Exception('Invalid Combined Quantity for: '. $identifier);
+
         $new_cost = Utils::round($combined_value / $combined_quantity);
 
         // Update Prices
