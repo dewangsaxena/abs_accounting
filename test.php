@@ -598,5 +598,5 @@ function import_data(string $filename) : void {
     }
 }
 
-import_data('file_test.csv');
+import_data('file_1.csv');
 ?>
