@@ -402,9 +402,10 @@ class CustomerAgedSummary {
      * @param store_id
      * @param for_date
      * @param is_csv
+     * @param exclude_self Exclude self clients
      * @return void
      */
-    public static function fetch_historical_summary(int $store_id, string $for_date, int $is_csv=0): void {
+    public static function fetch_historical_summary(int $store_id, string $for_date, int $is_csv=0, int $exclude_self=0): void {
 
         // Send Latest Record if Current Day is Requested
         if($for_date === Utils::get_business_date($store_id)) {
@@ -440,6 +441,9 @@ class CustomerAgedSummary {
                     $summary[$i]['phone_number'] = $client_details[$client_id]['phoneNumber1'];
                 }
             }
+
+            // Exclude self.
+            if($exclude_self) $summary = self::exclude_self_companies($summary);
 
             // Details
             $details = [

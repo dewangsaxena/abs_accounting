@@ -28,7 +28,8 @@ if (isset($_GET['op'])) {
             CustomerAgedSummary::fetch_historical_summary(
                 intval($_GET['storeId']),
                 $_GET['tillDate'],
-                intval($_GET['isCSV'])
+                intval($_GET['isCSV']),
+                intval($_GET['es'] ?? 0)
             );
         } else {
             CustomerAgedSummary::generate(
