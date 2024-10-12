@@ -608,5 +608,32 @@ function import_data(string $filename) : void {
     }
 }
 
-import_data('file_1.csv');
+function update_selling_price(int $store_id): void {
+    $db = get_db_instance();
+    try {
+        $db -> beginTransaction();
+        $non_stp = 33;
+        $stp = 45;
+
+        $statement = $db -> prepare('SELECT * FROM items;');
+        $statement -> execute();
+        $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
+
+        $statement = $db -> prepare('UPDATE `items` SET `prices` = :prices, modified = CURRENT_TIMESTAMP WHERE id = :id;');
+        foreach($result as $r) {
+            $identifier = strtoupper($r['identifier']);
+            $prices 
+            if(str_starts_with($identifier, 'STP')) {
+
+            }
+        }
+        assert_success();
+        $db -> commit();
+    }
+    catch(Exception $e) {
+        print_r($e -> getMessage());
+        $db -> rollBack();
+    }
+}
+
 ?>

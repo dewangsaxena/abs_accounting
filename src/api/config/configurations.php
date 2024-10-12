@@ -215,8 +215,7 @@ define('TRANSACTION_NAMES_ABBR', [
  * This method will check for errors. If any, it throw an Exception with an error message.
  * @throws Exception
  */
-function assert_success(): void
-{
+function assert_success(): void {
     $last_error = error_get_last();
     if (is_null($last_error) === false) throw new Exception($last_error['message'] . ' in file ' . $last_error['file'] . ' on line : ' . $last_error['line']);
 }
