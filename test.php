@@ -608,7 +608,7 @@ function import_data(string $filename) : void {
     }
 }
 
-function update_selling_price(int $store_id): void {
+function update_selling_prices(int $store_id): void {
     $db = get_db_instance();
     try {
         $db -> beginTransaction();
@@ -619,21 +619,45 @@ function update_selling_price(int $store_id): void {
         $statement -> execute();
         $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
 
-        $statement = $db -> prepare('UPDATE `items` SET `prices` = :prices, modified = CURRENT_TIMESTAMP WHERE id = :id;');
+        $statement_update = $db -> prepare('UPDATE `items` SET `prices` = :prices, modified = CURRENT_TIMESTAMP WHERE id = :id;');
         foreach($result as $r) {
+            $id = $r['id'];
             $identifier = strtoupper($r['identifier']);
-            $prices 
-            if(str_starts_with($identifier, 'STP')) {
+            $prices = json_decode($r['prices'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
 
+            if(is_numeric($prices[$store_id]['buyingCost'] ?? null)) {
+                $buying_cost = $prices[$store_id]['buyingCost'];
+                $selling_price = $prices[$store_id]['sellingPrice'];
+                if($buying_cost > 0 && $selling_price == 0) {
+                    
+                    if(str_starts_with($identifier, 'STP')) $margin = $stp;
+                    else $margin = $non_stp;
+                    
+                    $new_selling_price = $buying_cost + (($buying_cost * $margin) / 100);
+
+                    // Update Selling Price
+                    $prices[$store_id]['buyingCost'] = $new_selling_price;
+
+                    $is_successful = $statement_update -> execute([
+                        ':id' => $id,
+                        ':prices' => json_encode($prices, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
+                    ]);
+
+                    if($is_successful !== true || $statement_update -> rowCount() < 1) {
+                        throw new Exception('Unable to Update prices for: '. $identifier);
+                    }
+                }
             }
         }
         assert_success();
         $db -> commit();
     }
     catch(Exception $e) {
-        print_r($e -> getMessage());
         $db -> rollBack();
+        print_r($e -> getMessage());
     }
 }
+
+update_selling_prices(StoreDetails::REGINA);
 
 ?>
