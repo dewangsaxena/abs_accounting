@@ -222,7 +222,7 @@ function assert_success(): void
 }
 
 /* CHANGE THIS TO INVALIDATE ALL EXISTING SESSIONS. */
-define('SESSION_TOKEN', '2mp!&.%RZge~hgX+(~m2s#&eVf"\y49q{iHD<muW2t|*[iP)C\/;"S*5M/5*kh+Y');
+define('SESSION_TOKEN', 'A(eySY")+Ym`EU4cD%V+.uT!Dt.a@!&LLW?]j[[,f:Hu<"n^RSUK5:ZAPADPsYve');
 
 /* CHECK USER ACCESS ON REQUEST */
 define('CHECK_USER_ACCESS_ON_REQUEST', false);
