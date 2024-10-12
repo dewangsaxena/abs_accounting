@@ -634,7 +634,7 @@ function update_selling_prices(int $store_id): void {
                     $new_selling_price = $buying_cost + (($buying_cost * $margin) / 100);
 
                     // Update Selling Price
-                    $prices[$store_id]['buyingCost'] = $new_selling_price;
+                    $prices[$store_id]['sellingPrice'] = $new_selling_price;
 
                     $is_successful = $statement_update -> execute([
                         ':id' => $id,
