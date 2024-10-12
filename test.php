@@ -631,7 +631,7 @@ function update_selling_prices(int $store_id): void {
                     if(str_starts_with($identifier, 'STP')) $margin = 45;
                     else $margin = 33;
                     
-                    $new_selling_price = $buying_cost + (($buying_cost * $margin) / 100);
+                    $new_selling_price = Utils::round($buying_cost + (($buying_cost * $margin) / 100));
 
                     // Update Selling Price
                     $prices[$store_id]['sellingPrice'] = $new_selling_price;
