@@ -649,6 +649,7 @@ function update_selling_prices(int $store_id): void {
         }
         assert_success();
         $db -> commit();
+        echo 'Updated Selling Prices';
     }
     catch(Exception $e) {
         $db -> rollBack();
