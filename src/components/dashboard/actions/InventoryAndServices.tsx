@@ -210,7 +210,7 @@ const ProfitMarginsHandler = () => {
                                         setNewItemIdentifierPrefix(
                                             event.target.value
                                                 .trim()
-                                                .toUppercase()
+                                                .toUpperCase()
                                         );
                                     else setNewItemIdentifierPrefix(null);
                                 }}
