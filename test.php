@@ -612,8 +612,6 @@ function update_selling_prices(int $store_id): void {
     $db = get_db_instance();
     try {
         $db -> beginTransaction();
-        $non_stp = 33;
-        $stp = 45;
 
         $statement = $db -> prepare('SELECT * FROM items;');
         $statement -> execute();
@@ -630,8 +628,8 @@ function update_selling_prices(int $store_id): void {
                 $selling_price = $prices[$store_id]['sellingPrice'];
                 if($buying_cost > 0 && $selling_price == 0) {
                     
-                    if(str_starts_with($identifier, 'STP')) $margin = $stp;
-                    else $margin = $non_stp;
+                    if(str_starts_with($identifier, 'STP')) $margin = 45;
+                    else $margin = 33;
                     
                     $new_selling_price = $buying_cost + (($buying_cost * $margin) / 100);
 
