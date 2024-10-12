@@ -629,7 +629,7 @@ function update_selling_prices(int $store_id): void {
                 if($buying_cost > 0 && $selling_price == 0) {
                     
                     if(str_starts_with($identifier, 'STP')) $margin = 45;
-                    else if(str_starts_with($identifier, 'PAP')) $margin = 36;
+                    else if(str_starts_with($identifier, 'PAP')) $margin = 40;
                     else if(str_starts_with($identifier, 'DON')) $margin = 35;
                     else $margin = 33;
                     
