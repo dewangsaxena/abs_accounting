@@ -627,6 +627,7 @@ function extract_report(int $store_id) : void {
         // Substring
         $keys = array_keys($parts);
 
+        // Sales Invoice
         $statement = $db -> prepare('SELECT `details` FROM sales_invoice WHERE store_id = :store_id AND `date` >= "2024-01-01;"');
         $statement -> execute([':store_id' => $store_id]);
         $results = $statement -> fetchAll(PDO::FETCH_ASSOC);
@@ -643,6 +644,23 @@ function extract_report(int $store_id) : void {
             }
         }
 
+        // Adjust for Sales Return
+        $statement = $db -> prepare('SELECT `details` FROM sales_return WHERE store_id = :store_id AND `date` >= "2024-01-01;"');
+        $statement -> execute([':store_id' => $store_id]);
+        $results = $statement -> fetchAll(PDO::FETCH_ASSOC);
+        foreach($results as $result) {
+            $items = json_decode($result['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+            foreach($items as $item) {
+                $identifier = strtoupper($item['identifier']);
+                $quantity = $item['quantity'];
+                foreach($keys as $key) {
+                    if(str_starts_with($identifier, $key)) {
+                        $parts[$key]['sold'] -= $quantity;
+                    }
+                }
+            }
+        }
+
         $item_ids = [];
         $statement_fetch_items = $db -> prepare('SELECT id, `identifier` FROM items WHERE `identifier` LIKE :substring;');
         foreach($keys as $key) {
@@ -654,7 +672,7 @@ function extract_report(int $store_id) : void {
         }
 
         // Fetch Quantities of items
-        $query = <<<'EOS'
+        $query = <<<EOS
         SELECT 
             i.`identifier`,
             inv.`quantity`
@@ -665,7 +683,9 @@ function extract_report(int $store_id) : void {
         ON 
             i.id = inv.id
         WHERE 
-            i.id IN (:placeholder);
+            i.id IN (:placeholder)
+        AND 
+            inv.store_id = $store_id;
         EOS;
         $result = Utils::mysql_in_placeholder_pdo_substitute($item_ids, $query);
         $query = $result['query'];
@@ -679,7 +699,9 @@ function extract_report(int $store_id) : void {
             $parts[$substr]['qty'] += $quantity;
         }
 
-        print_r($parts);
+        foreach($keys as $key) {
+            echo $key. ' => Sold: '. $parts[$key]['sold']. '&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;Inventory : '. $parts[$key]['qty'].'<br>';
+        }
     }
     catch(Exception $e) {
         echo $e -> getMessage();
