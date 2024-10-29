@@ -708,6 +708,6 @@ function extract_report(int $store_id) : void {
         $db -> rollBack();
     }
 }
-extract_report(StoreDetails::CALGARY);
+extract_report(StoreDetails::DELTA);
 
 ?>
