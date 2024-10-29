@@ -627,15 +627,33 @@ function extract_report(int $store_id) : void {
         // Substring
         $keys = array_keys($parts);
 
+        $all_identifiers_by_id = [];
+
+        // Fetch all items with SUBSTRINGS
+        $item_ids = [];
+        $statement_fetch_items = $db -> prepare('SELECT id, `identifier` FROM items WHERE `identifier` LIKE :substring;');
+        foreach($keys as $key) {
+            $statement_fetch_items -> execute([':substring' => "$key%"]);
+            $items = $statement_fetch_items -> fetchAll(PDO::FETCH_ASSOC);
+            foreach($items as $item) {
+                $item_ids []= $item['id'];
+                $all_identifiers_by_id[$item['id']] = $item['identifier'];
+            }
+        }
+
         // Sales Invoice
-        $statement = $db -> prepare('SELECT `details` FROM sales_invoice WHERE store_id = :store_id AND `date` >= "2024-01-01;"');
+        $statement = $db -> prepare('SELECT id, `details` FROM sales_invoice WHERE store_id = :store_id AND `date` >= "2024-01-01;"');
         $statement -> execute([':store_id' => $store_id]);
         $results = $statement -> fetchAll(PDO::FETCH_ASSOC);
         foreach($results as $result) {
             $items = json_decode($result['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
             foreach($items as $item) {
-                $identifier = strtoupper($item['identifier']);
+                $item_id = $item['itemId'];
+                if(in_array($item_id, $item_ids) === false) continue;
                 $quantity = $item['quantity'];
+
+                // Latest identifier
+                $identifier = $all_identifiers_by_id[$item_id];
                 foreach($keys as $key) {
                     if(str_starts_with($identifier, $key)) {
                         if(isset($parts[$key][$identifier]) === false) {
@@ -654,24 +672,22 @@ function extract_report(int $store_id) : void {
         foreach($results as $result) {
             $items = json_decode($result['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
             foreach($items as $item) {
-                $identifier = strtoupper($item['identifier']);
+                $item_id = $item['itemId'];
+                if(in_array($item_id, $item_ids) === false) continue;
+
                 if(isset($item['returnQuantity']) === false) continue;
                 $quantity = $item['returnQuantity'];
+
+                // Latest identifier
+                $identifier = $all_identifiers_by_id[$item_id];
                 foreach($keys as $key) {
                     if(str_starts_with($identifier, $key)) {
+                        if(isset($parts[$key][$identifier]) === false) {
+                            $parts[$key][$identifier] = ['sold' => 0, 'inventory' => 0];
+                        }
                         $parts[$key][$identifier]['sold'] -= $quantity;
                     }
                 }
-            }
-        }
-
-        $item_ids = [];
-        $statement_fetch_items = $db -> prepare('SELECT id, `identifier` FROM items WHERE `identifier` LIKE :substring;');
-        foreach($keys as $key) {
-            $statement_fetch_items -> execute([':substring' => "$key%"]);
-            $items = $statement_fetch_items -> fetchAll(PDO::FETCH_ASSOC);
-            foreach($items as $item) {
-                $item_ids []= $item['id'];
             }
         }
 
