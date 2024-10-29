@@ -723,7 +723,7 @@ function extract_report(int $store_id) : void {
             $parts[$substr][$identifier]['inventory'] += $quantity;
         }
 
-        $handle = fopen('calgary.csv', 'w');
+        $handle = fopen('delta.csv', 'w');
         fputcsv($handle, ['Identifier', 'Sold', 'Inventory Stock']);
         foreach($keys as $key) {
             $identifiers = array_keys($parts[$key]);
@@ -739,6 +739,6 @@ function extract_report(int $store_id) : void {
         $db -> rollBack();
     }
 }
-extract_report(StoreDetails::CALGARY);
+extract_report(StoreDetails::DELTA);
 
 ?>
