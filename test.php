@@ -608,57 +608,84 @@ function import_data(string $filename) : void {
     }
 }
 
-function update_selling_prices(int $store_id): void {
+function extract_report(int $store_id) : void {
     $db = get_db_instance();
     try {
         $db -> beginTransaction();
+        $parts = [
+            'DON' => ['sold' => 0, 'qty' => 0],
+            'GRO' => ['sold' => 0, 'qty' => 0],
+            'SHE' => ['sold' => 0, 'qty' => 0],
+            'GAT' => ['sold' => 0, 'qty' => 0],
+            'HOL' => ['sold' => 0, 'qty' => 0],
+            'SKF' => ['sold' => 0, 'qty' => 0],
+            'TSE' => ['sold' => 0, 'qty' => 0],
+            'STM' => ['sold' => 0, 'qty' => 0],
+            'MID' => ['sold' => 0, 'qty' => 0],
+        ];
 
-        $statement = $db -> prepare('SELECT * FROM items;');
-        $statement -> execute();
-        $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
+        // Substring
+        $keys = array_keys($parts);
 
-        $statement_update = $db -> prepare('UPDATE `items` SET `prices` = :prices, modified = CURRENT_TIMESTAMP WHERE id = :id;');
-        foreach($result as $r) {
-            $id = $r['id'];
-            $identifier = strtoupper($r['identifier']);
-            $prices = json_decode($r['prices'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
-
-            if(is_numeric($prices[$store_id]['buyingCost'] ?? null)) {
-                $buying_cost = $prices[$store_id]['buyingCost'];
-                $selling_price = $prices[$store_id]['sellingPrice'];
-                if($buying_cost > 0 && $selling_price == 0) {
-                    
-                    if(str_starts_with($identifier, 'STP')) $margin = 45;
-                    else if(str_starts_with($identifier, 'PAP')) $margin = 40;
-                    else if(str_starts_with($identifier, 'DON')) $margin = 35;
-                    else $margin = 33;
-                    
-                    $new_selling_price = Utils::round($buying_cost + (($buying_cost * $margin) / 100));
-
-                    // Update Selling Price
-                    $prices[$store_id]['sellingPrice'] = $new_selling_price;
-
-                    $is_successful = $statement_update -> execute([
-                        ':id' => $id,
-                        ':prices' => json_encode($prices, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
-                    ]);
-
-                    if($is_successful !== true || $statement_update -> rowCount() < 1) {
-                        throw new Exception('Unable to Update prices for: '. $identifier);
+        $statement = $db -> prepare('SELECT `details` FROM sales_invoice WHERE store_id = :store_id AND `date` >= "2024-01-01;"');
+        $statement -> execute([':store_id' => $store_id]);
+        $results = $statement -> fetchAll(PDO::FETCH_ASSOC);
+        foreach($results as $result) {
+            $items = json_decode($result['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+            foreach($items as $item) {
+                $identifier = strtoupper($item['identifier']);
+                $quantity = $item['quantity'];
+                foreach($keys as $key) {
+                    if(str_starts_with($identifier, $key)) {
+                        $parts[$key]['sold'] += $quantity;
                     }
                 }
             }
         }
-        assert_success();
-        $db -> commit();
-        echo 'Updated Selling Prices';
+
+        $item_ids = [];
+        $statement_fetch_items = $db -> prepare('SELECT id, `identifier` FROM items WHERE `identifier` LIKE :substring;');
+        foreach($keys as $key) {
+            $statement_fetch_items -> execute([':substring' => "$key%"]);
+            $items = $statement_fetch_items -> fetchAll(PDO::FETCH_ASSOC);
+            foreach($items as $item) {
+                $item_ids []= $item['id'];
+            }
+        }
+
+        // Fetch Quantities of items
+        $query = <<<'EOS'
+        SELECT 
+            i.`identifier`,
+            inv.`quantity`
+        FROM 
+            items AS i
+        LEFT JOIN 
+            inventory AS inv
+        ON 
+            i.id = inv.id
+        WHERE 
+            i.id IN (:placeholder);
+        EOS;
+        $result = Utils::mysql_in_placeholder_pdo_substitute($item_ids, $query);
+        $query = $result['query'];
+        $values = $result['values'];
+        $statement_fetch_quantity = $db -> prepare($query);
+        $statement_fetch_quantity -> execute($values);
+        $results = $statement_fetch_quantity -> fetchAll(PDO::FETCH_ASSOC);
+        foreach($results as $result) {
+            $substr = substr(strtoupper($result['identifier']), 0, 3);
+            $quantity = $result['quantity'];
+            $parts[$substr]['qty'] += $quantity;
+        }
+
+        print_r($parts);
     }
     catch(Exception $e) {
+        echo $e -> getMessage();
         $db -> rollBack();
-        print_r($e -> getMessage());
     }
 }
-
-update_selling_prices(StoreDetails::REGINA);
+extract_report(StoreDetails::CALGARY);
 
 ?>
