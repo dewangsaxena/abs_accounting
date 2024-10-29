@@ -613,15 +613,15 @@ function extract_report(int $store_id) : void {
     try {
         $db -> beginTransaction();
         $parts = [
-            'DON' => ['sold' => 0, 'qty' => 0],
-            'GRO' => ['sold' => 0, 'qty' => 0],
-            'SHE' => ['sold' => 0, 'qty' => 0],
-            'GAT' => ['sold' => 0, 'qty' => 0],
-            'HOL' => ['sold' => 0, 'qty' => 0],
-            'SKF' => ['sold' => 0, 'qty' => 0],
-            'TSE' => ['sold' => 0, 'qty' => 0],
-            'STM' => ['sold' => 0, 'qty' => 0],
-            'MID' => ['sold' => 0, 'qty' => 0],
+            'DON' => [],
+            'GRO' => [],
+            'SHE' => [],
+            'GAT' => [],
+            'HOL' => [],
+            'SKF' => [],
+            'TSE' => [],
+            'STM' => [],
+            'MID' => [],
         ];
 
         // Substring
@@ -638,7 +638,10 @@ function extract_report(int $store_id) : void {
                 $quantity = $item['quantity'];
                 foreach($keys as $key) {
                     if(str_starts_with($identifier, $key)) {
-                        $parts[$key]['sold'] += $quantity;
+                        if(isset($parts[$key][$identifier]) === false) {
+                            $parts[$key][$identifier] = ['sold' => 0, 'inventory' => 0];
+                        }
+                        $parts[$key][$identifier]['sold'] += $quantity;
                     }
                 }
             }
@@ -655,7 +658,7 @@ function extract_report(int $store_id) : void {
                 $quantity = $item['quantity'];
                 foreach($keys as $key) {
                     if(str_starts_with($identifier, $key)) {
-                        $parts[$key]['sold'] -= $quantity;
+                        $parts[$key][$identifier]['sold'] -= $quantity;
                     }
                 }
             }
@@ -694,14 +697,16 @@ function extract_report(int $store_id) : void {
         $statement_fetch_quantity -> execute($values);
         $results = $statement_fetch_quantity -> fetchAll(PDO::FETCH_ASSOC);
         foreach($results as $result) {
-            $substr = substr(strtoupper($result['identifier']), 0, 3);
+            $identifier = strtoupper($result['identifier']);
+            $substr = substr($identifier, 0, 3);
             $quantity = $result['quantity'];
-            $parts[$substr]['qty'] += $quantity;
+            if(isset($parts[$substr][$identifier]) === false) {
+                $parts[$substr][$identifier] = ['sold' => 0, 'inventory' => 0];
+            }
+            $parts[$substr][$identifier]['inventory'] += $quantity;
         }
 
-        foreach($keys as $key) {
-            echo $key. ' => Sold: '. $parts[$key]['sold']. '&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;Inventory : '. $parts[$key]['qty'].'<br>';
-        }
+        print_r($parts);
     }
     catch(Exception $e) {
         echo $e -> getMessage();
