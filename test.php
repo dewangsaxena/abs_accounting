@@ -637,7 +637,7 @@ function extract_report(int $store_id) : void {
             $items = $statement_fetch_items -> fetchAll(PDO::FETCH_ASSOC);
             foreach($items as $item) {
                 $item_ids []= $item['id'];
-                $all_identifiers_by_id[$item['id']] = $item['identifier'];
+                $all_identifiers_by_id[$item['id']] = strtoupper($item['identifier']);
             }
         }
 
@@ -701,7 +701,7 @@ function extract_report(int $store_id) : void {
         LEFT JOIN 
             inventory AS inv
         ON 
-            i.id = inv.id
+            i.id = inv.item_id
         WHERE 
             i.id IN (:placeholder)
         AND 
