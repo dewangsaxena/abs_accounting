@@ -655,7 +655,8 @@ function extract_report(int $store_id) : void {
             $items = json_decode($result['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
             foreach($items as $item) {
                 $identifier = strtoupper($item['identifier']);
-                $quantity = $item['quantity'];
+                if(isset($item['returnQuantity']) === false) continue;
+                $quantity = $item['returnQuantity'];
                 foreach($keys as $key) {
                     if(str_starts_with($identifier, $key)) {
                         $parts[$key][$identifier]['sold'] -= $quantity;
@@ -706,13 +707,22 @@ function extract_report(int $store_id) : void {
             $parts[$substr][$identifier]['inventory'] += $quantity;
         }
 
-        print_r($parts);
+        $handle = fopen('calgary.csv', 'w');
+        fputcsv($handle, ['Identifier', 'Sold', 'Inventory Stock']);
+        foreach($keys as $key) {
+            $identifiers = array_keys($parts[$key]);
+            foreach($identifiers as $identifier) {
+                fputcsv($handle, [$identifier, $parts[$key][$identifier]['sold'], $parts[$key][$identifier]['inventory']]);
+            };
+        }
+
+        fclose($handle);
     }
     catch(Exception $e) {
         echo $e -> getMessage();
         $db -> rollBack();
     }
 }
-extract_report(StoreDetails::DELTA);
+extract_report(StoreDetails::CALGARY);
 
 ?>
