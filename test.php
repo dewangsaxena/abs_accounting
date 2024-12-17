@@ -741,4 +741,389 @@ function extract_report(int $store_id) : void {
 }
 extract_report(StoreDetails::DELTA);
 
+function wash_report(string $start_date, string $end_date): void {
+    $db = get_db_instance();
+
+    // Fetch Transactions
+    $statement = $db -> prepare(<<<'EOS'
+    SELECT * FROM (
+        SELECT 
+            1 AS `type`,
+            id,
+            `date`, 
+            client_id, 
+            sum_total 
+        FROM 
+            sales_invoice
+        WHERE 
+            `date` >= :start_date 
+        AND 
+            `date` <= :end_date
+        AND 
+            payment_method = 0
+        AND 
+            store_id = :store_id
+        UNION ALL
+        SELECT 
+            2 AS `type`,
+            id,
+            `date`, 
+            client_id, 
+            sum_total 
+        FROM 
+            sales_return
+        WHERE 
+            `date` >= :start_date 
+        AND 
+            `date` <= :end_date
+        AND 
+            payment_method = 0
+        AND 
+            store_id = :store_id
+        UNION ALL
+        SELECT 
+            3 AS `type`,
+            id,
+            `date`, 
+            client_id, 
+            sum_total 
+        FROM 
+            credit_note
+        WHERE 
+            `date` >= :start_date 
+        AND 
+            `date` <= :end_date
+        AND 
+            store_id = :store_id
+        UNION ALL
+        SELECT 
+            4 AS `type`,
+            id,
+            `date`, 
+            client_id, 
+            sum_total 
+        FROM 
+            debit_note
+        WHERE 
+            `date` >= :start_date 
+        AND 
+            `date` <= :end_date
+        AND 
+            store_id = :store_id
+        UNION ALL 
+        SELECT 
+            6 AS `type`,
+            id,
+            `date`,
+            client_id,
+            sum_total
+        FROM 
+            receipt
+        WHERE 
+            `date` >= :start_date 
+        AND 
+            `date` <= :end_date
+        AND 
+            store_id = :store_id
+        AND 
+            do_conceal = 0
+    ) AS _tmp 
+    ORDER BY 
+        `date` ASC,
+        `type` ASC;
+    EOS);
+    $statement -> execute([':start_date' => $start_date, ':end_date' => $end_date, ':store_id' => StoreDetails::NISKU]);
+    $records = $statement -> fetchAll(PDO::FETCH_ASSOC);
+
+    // Clients 
+    $clients = [];
+
+    $transactions = [];
+    foreach($records as $r) {
+        $txn_date = $r['date'];
+        $client_id = $r['client_id'];
+        $type = $r['type'];
+        $sum_total = $r['sum_total'];
+        $debits = 0;
+        $credits = 0;
+        $type_abbr = TRANSACTION_NAMES_ABBR[$type];
+
+        // Check for Presence of client 
+        if(isset($clients[$client_id]) === false) $clients[$client_id] = null;
+
+        if($type === SALES_INVOICE || $type === DEBIT_NOTE) $debits = $sum_total;
+        else if($type === SALES_RETURN || $type === CREDIT_NOTE || $type === RECEIPT) $credits = $sum_total;
+
+        // Transaction Date
+        $transactions[] = [
+            'date' => $txn_date,
+            'client_id' => $client_id,
+            'source' => "$type_abbr-{$r['id']}",
+            'trans_no' => '',
+            'debits' => $debits,
+            'credits' => $credits,
+        ];
+    }
+
+    // Fetch Client Name
+    $query = <<<'EOS'
+    SELECT 
+        id,
+        `name`
+    FROM 
+        clients
+    WHERE 
+        id IN (:placeholder);
+    EOS;
+    $temp = Utils::mysql_in_placeholder_pdo_substitute(array_keys($clients), $query);
+    $query = $temp['query'];
+    $client_ids = $temp['values'];
+    $statement = $db -> prepare($query);
+    $statement -> execute($client_ids);
+    $client_details = $statement -> fetchAll(PDO::FETCH_ASSOC);
+    foreach($client_details as $client_detail) {
+        $clients[$client_detail['id']] = $client_detail['name'];
+    }
+
+    // Initial Balance
+    $accounts_receivables = 0;
+
+    // Write to CSV
+    $report_handle = fopen('report.csv', 'w+');
+
+    // Put Header
+    fputcsv($report_handle, ['Date', 'Client Name', 'Source', 'Debits', 'Credits', 'Balance']);
+    fputcsv($report_handle, ['~', 'Accounts Receivables', '~', '~', '~', $accounts_receivables]);
+
+    foreach($transactions as $transaction) {
+
+        // Adjust Balance
+        if($transaction['debits'] > 0) $accounts_receivables += $transaction['debits'];
+        else if($transaction['credits'] > 0) $accounts_receivables -= $transaction['credits'];
+
+        // Round off
+        $accounts_receivables = Utils::round($accounts_receivables);
+
+        // Prepare Data
+        $data = [
+            date_format(date_create($transaction['date']), 'd M, Y'), 
+            $clients[$transaction['client_id']],
+            $transaction['source'],
+            $transaction['debits'],
+            $transaction['credits'],
+            $accounts_receivables,
+        ];
+
+        // Write to Disk
+        fputcsv($report_handle, $data);
+    }
+
+    // Close handle
+    fclose($report_handle);
+
+    echo 'Created Report.';
+}
+
+// wash_report('2022-01-01', '2024-10-31');
+
+function wash_report_2(string $start_date, string $end_date, array $payment_method): void {
+    $db = get_db_instance();
+
+    // Fetch Transactions
+    $query = <<<'EOS'
+    SELECT * FROM (
+        SELECT 
+            1 AS `type`,
+            id,
+            `date`, 
+            client_id, 
+            sum_total 
+        FROM 
+            sales_invoice
+        WHERE 
+            `date` >= :start_date 
+        AND 
+            `date` <= :end_date
+        AND 
+            payment_method IN (:placeholder)
+        AND 
+            store_id = :store_id
+        UNION ALL
+        SELECT 
+            2 AS `type`,
+            id,
+            `date`, 
+            client_id, 
+            sum_total 
+        FROM 
+            sales_return
+        WHERE 
+            `date` >= :start_date 
+        AND 
+            `date` <= :end_date
+        AND 
+            payment_method IN (:placeholder)
+        AND 
+            store_id = :store_id
+        UNION ALL
+        SELECT 
+            6 AS `type`,
+            id,
+            `date`,
+            client_id,
+            sum_total
+        FROM 
+            receipt
+        WHERE 
+            `date` >= :start_date 
+        AND 
+            `date` <= :end_date
+        AND 
+            store_id = :store_id
+        AND 
+            do_conceal = 0
+        AND 
+            payment_method IN (:placeholder)
+    ) AS _tmp 
+    ORDER BY 
+        `date` ASC,
+        `type` ASC;
+    EOS;
+    $result = Utils::mysql_in_placeholder_pdo_substitute($payment_method, $query);
+    $query = $result['query'];
+    $values = $result['values'];
+    $statement = $db -> prepare($query);
+    $statement -> execute([
+        ':start_date' => $start_date, 
+        ':end_date' => $end_date, 
+        ':store_id' => StoreDetails::NISKU,
+        ...$values
+    ]);
+    $records = $statement -> fetchAll(PDO::FETCH_ASSOC);
+
+    // Clients 
+    $clients = [];
+
+    $transactions = [];
+    foreach($records as $r) {
+        $txn_date = $r['date'];
+        $client_id = $r['client_id'];
+        $type = $r['type'];
+        $sum_total = $r['sum_total'];
+        $debits = 0;
+        $credits = 0;
+        $type_abbr = TRANSACTION_NAMES_ABBR[$type];
+
+        // Check for Presence of client 
+        if(isset($clients[$client_id]) === false) $clients[$client_id] = null;
+
+        if($type === SALES_INVOICE) {
+            $debits = $sum_total;
+            $credits = 0;
+        }
+        else if($type === SALES_RETURN) {
+            $debits = 0;
+            $credits = -$sum_total;
+        }
+        else if($type === RECEIPT) {
+            $debits = $sum_total;
+            $credits = 0;
+        }
+
+        // Transaction
+        $transactions[] = [
+            'date' => $txn_date,
+            'client_id' => $client_id,
+            'source' => "$type_abbr-{$r['id']}",
+            'trans_no' => '',
+            'debits' => $debits,
+            'credits' => $credits,
+        ];
+
+        if($type === SALES_INVOICE) {
+            $debits = 0;
+            $credits = $sum_total;
+        }
+        else if($type === SALES_RETURN) {
+            $debits = -$sum_total;
+            $credits = 0;
+        }
+        else if($type === RECEIPT) {
+            $debits = 0;
+            $credits = $sum_total;
+        }
+
+        $transactions[] = [
+            'date' => $txn_date,
+            'client_id' => $client_id,
+            'source' => "$type_abbr-{$r['id']}",
+            'trans_no' => '',
+            'debits' => $debits,
+            'credits' => $credits,
+        ];
+    }
+
+    // Fetch Client Name
+    $query = <<<'EOS'
+    SELECT 
+        id,
+        `name`
+    FROM 
+        clients
+    WHERE 
+        id IN (:placeholder);
+    EOS;
+    $temp = Utils::mysql_in_placeholder_pdo_substitute(array_keys($clients), $query);
+    $query = $temp['query'];
+    $client_ids = $temp['values'];
+    $statement = $db -> prepare($query);
+    $statement -> execute($client_ids);
+    $client_details = $statement -> fetchAll(PDO::FETCH_ASSOC);
+    foreach($client_details as $client_detail) {
+        $clients[$client_detail['id']] = $client_detail['name'];
+    }
+
+    // Balance
+    $balance = 0;
+
+    // Write to CSV
+    $report_handle = fopen('debit.csv', 'w+');
+
+    // Put Header
+    fputcsv($report_handle, ['Date', 'Client Name', 'Source', 'Debits', 'Credits', 'Balance']);
+    fputcsv($report_handle, ['~', 'Payments', '~', '~', '~', $balance]);
+
+    foreach($transactions as $transaction) {
+
+        // Adjust Balance
+        if($transaction['debits'] > 0) $balance += $transaction['debits'];
+        else if($transaction['credits'] > 0) $balance -= $transaction['credits'];
+        else if($transaction['debits'] < 0) $balance -= $transaction['debits'];
+        else if($transaction['credits'] < 0) $balance += $transaction['credits'];
+
+        // Round off
+        $accounts_receivables = Utils::round($balance);
+
+        // Prepare Data
+        $data = [
+            date_format(date_create($transaction['date']), 'd M, Y'), 
+            $clients[$transaction['client_id']],
+            $transaction['source'],
+            $transaction['debits'],
+            $transaction['credits'],
+            $accounts_receivables,
+        ];
+
+        // Write to Disk
+        fputcsv($report_handle, $data);
+    }
+
+    // Close handle
+    fclose($report_handle);
+
+    echo 'Created Report.';
+}
+
+// wash_report_2('2022-01-01', '2024-10-31', [PaymentMethod::DEBIT, PaymentMethod::CASH]);
+
 ?>
