@@ -2449,15 +2449,15 @@ class __GenerateCustomerAgedSummary {
 
         self::$pdf -> Cell(w: 130, h: self::CELL_HEIGHT, txt: $client_name, border: '', ln:0, fill: $do_fill);
         self::$pdf -> Cell(w: 2, h: self::CELL_HEIGHT, txt: '', border: '', ln:0);
-        self::$pdf -> Cell(w: self::AMOUNT_WIDTHS, h: self::CELL_HEIGHT, txt: Utils::number_format($data['total']), border: '', ln:0, fill: $do_fill);
+        self::$pdf -> Cell(w: self::AMOUNT_WIDTHS, h: self::CELL_HEIGHT, txt: Utils::number_format(Utils::round($data['total'], 4)), border: '', ln:0, fill: $do_fill);
         self::$pdf -> Cell(w: 2, h: self::CELL_HEIGHT, txt: '', border: '', ln:0);
-        self::$pdf -> Cell(w: self::AMOUNT_WIDTHS, h: self::CELL_HEIGHT, txt: $data['current'] != 0 ? Utils::number_format($data['current']) : '-', border: '', ln:0, fill: $do_fill);
+        self::$pdf -> Cell(w: self::AMOUNT_WIDTHS, h: self::CELL_HEIGHT, txt: $data['current'] != 0 ? Utils::number_format(Utils::round($data['current'], 4)) : '-', border: '', ln:0, fill: $do_fill);
         self::$pdf -> Cell(w: 2, h: self::CELL_HEIGHT, txt: '', border: '', ln:0);
-        self::$pdf -> Cell(w: self::AMOUNT_WIDTHS, h: self::CELL_HEIGHT, txt: $data['31-60'] != 0 ? Utils::number_format($data['31-60']) : '-', border: '', ln:0, fill: $do_fill);
+        self::$pdf -> Cell(w: self::AMOUNT_WIDTHS, h: self::CELL_HEIGHT, txt: $data['31-60'] != 0 ? Utils::number_format(Utils::round($data['31-60'], 4)) : '-', border: '', ln:0, fill: $do_fill);
         self::$pdf -> Cell(w: 2, h: self::CELL_HEIGHT, txt: '', border: '', ln:0);
-        self::$pdf -> Cell(w: self::AMOUNT_WIDTHS, h: self::CELL_HEIGHT, txt: $data['61-90'] != 0 ? Utils::number_format($data['61-90']): '-', border: '', ln:0, fill: $do_fill);
+        self::$pdf -> Cell(w: self::AMOUNT_WIDTHS, h: self::CELL_HEIGHT, txt: $data['61-90'] != 0 ? Utils::number_format(Utils::round($data['61-90'], 4)): '-', border: '', ln:0, fill: $do_fill);
         self::$pdf -> Cell(w: 2, h: self::CELL_HEIGHT, txt: '', border: '', ln:0);
-        self::$pdf -> Cell(w: self::AMOUNT_WIDTHS, h: self::CELL_HEIGHT, txt: $data['91+'] != 0 ? Utils::number_format($data['91+']) : '-', border: '', ln:1, fill: $do_fill);
+        self::$pdf -> Cell(w: self::AMOUNT_WIDTHS, h: self::CELL_HEIGHT, txt: $data['91+'] != 0 ? Utils::number_format(Utils::round($data['91+'], 4)) : '-', border: '', ln:1, fill: $do_fill);
     }
 
     private static function footer(float $total_receivables, float $current, float $_31_60, float $_61_90, float $_91): void {
@@ -2466,19 +2466,19 @@ class __GenerateCustomerAgedSummary {
         self::$pdf -> Cell(w: 130, h: 5, txt: 'TOTAL RECEIVABLES', border: 'T', ln:0);
         self::$pdf -> Cell(w: 2, h: self::CELL_HEIGHT, txt: '', border: '', ln:0);
 
-        self::$pdf -> Cell(w: self::AMOUNT_WIDTHS, h: self::CELL_HEIGHT, txt: Utils::number_format($total_receivables), border: 'T', ln:0);
+        self::$pdf -> Cell(w: self::AMOUNT_WIDTHS, h: self::CELL_HEIGHT, txt: Utils::number_format(Utils::round($total_receivables, 4)), border: 'T', ln:0);
         self::$pdf -> Cell(w: 2, h: self::CELL_HEIGHT, txt: '', border: '', ln:0);
 
-        self::$pdf -> Cell(w: self::AMOUNT_WIDTHS, h: self::CELL_HEIGHT, txt: Utils::number_format($current), border: 'T', ln:0);
+        self::$pdf -> Cell(w: self::AMOUNT_WIDTHS, h: self::CELL_HEIGHT, txt: Utils::number_format(Utils::round($current, 4)), border: 'T', ln:0);
         self::$pdf -> Cell(w: 2, h: self::CELL_HEIGHT, txt: '', border: '', ln:0);
 
-        self::$pdf -> Cell(w: self::AMOUNT_WIDTHS, h: self::CELL_HEIGHT, txt: Utils::number_format($_31_60), border: 'T', ln:0);
+        self::$pdf -> Cell(w: self::AMOUNT_WIDTHS, h: self::CELL_HEIGHT, txt: Utils::number_format(Utils::round($_31_60, 4)), border: 'T', ln:0);
         self::$pdf -> Cell(w: 2, h: self::CELL_HEIGHT, txt: '', border: '', ln:0);
 
-        self::$pdf -> Cell(w: self::AMOUNT_WIDTHS, h: self::CELL_HEIGHT, txt: Utils::number_format($_61_90), border: 'T', ln:0);
+        self::$pdf -> Cell(w: self::AMOUNT_WIDTHS, h: self::CELL_HEIGHT, txt: Utils::number_format(Utils::round($_61_90, 4)), border: 'T', ln:0);
         self::$pdf -> Cell(w: 2, h: self::CELL_HEIGHT, txt: '', border: '', ln:0);
 
-        self::$pdf -> Cell(w: self::AMOUNT_WIDTHS, h: self::CELL_HEIGHT, txt: Utils::number_format($_91), border: 'T', ln:0);
+        self::$pdf -> Cell(w: self::AMOUNT_WIDTHS, h: self::CELL_HEIGHT, txt: Utils::number_format(Utils::round($_91, 4)), border: 'T', ln:0);
         self::$pdf -> Cell(w: 2, h: self::CELL_HEIGHT, txt: '', border: '', ln:0);
     }
 
