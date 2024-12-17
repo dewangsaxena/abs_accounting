@@ -1125,5 +1125,5 @@ function wash_report_2(string $start_date, string $end_date, array $payment_meth
 }
 
 // wash_report_2('2022-01-01', '2024-10-31', [PaymentMethod::DEBIT, PaymentMethod::CASH]);
-
+// hello
 ?>
