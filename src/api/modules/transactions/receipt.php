@@ -1078,8 +1078,8 @@ class Receipt {
             $store_id = $details['store_id'];
 
             // Sum Total
-            // Round off to 2 decimal places
-            $sum_total = Utils::round($details['sum_total'], 2);
+            // Format Number to 2 decimal places
+            $sum_total = Utils::number_format(Utils::round($details['sum_total'], 4));
 
             // Signature 
             $signature = Shared::get_store_signature($store_id);

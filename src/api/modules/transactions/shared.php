@@ -1132,8 +1132,8 @@ class Shared {
                 // Transaction Name
                 $transaction_name = TRANSACTION_NAMES[$transaction_type];
 
-                // Round of Amount to 2 decimal Places
-                $amount = Utils::round($amount, 2);
+                // Format Number to 2 decimal Places
+                $amount = Utils::number_format(Utils::round($amount, 4));
                 
                 // Content Details
                 $content_details = <<<EOS
