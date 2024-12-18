@@ -51,7 +51,7 @@ class Stats
                 $discount -= $r['txn_discount'];
             }
 
-            $statement = $db->prepare('SELECT sum_total, total_discount FROM receipt WHERE `date` = :date AND store_id = :store_id;');
+            $statement = $db->prepare('SELECT sum_total, total_discount FROM receipt WHERE `date` = :date AND store_id = :store_id AND do_conceal = 0;');
             $statement->execute($params);
             $result = $statement->fetchAll(PDO::FETCH_ASSOC);
             foreach ($result as $r) {
