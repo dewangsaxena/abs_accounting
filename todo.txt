@@ -61,10 +61,8 @@ TEST SYSTEM FOR WASH SYSTEM.  [COMPLETED]
 [INCOMPLETE]
 Partially Unpaid Status wrong in Customer Summary [INVESTIGATE MORE]
 Fix inventory value in BS
-Inventory Report IN PDF
 Add Images Support for Items.
-add vendor details.  [BIG CHANGE]
-Inventory Parts Report 
+Inventory Parts Report IN PDF
 Add Automatic Script to Send Customer Statement
 
 [BALANCE SHEET MAJOR ISSUE FIX]
