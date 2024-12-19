@@ -167,16 +167,6 @@ class PaymentMethod
     ];
 }
 
-/**
- * ISO 3166-1 Country codes.
- * 
- * This array is bi-directionally available for indexing.
- */
-const COUNTRY_CODES_ISO_3166_1 = [
-    'Canada' => 124,
-    124 => 'Canada',
-];
-
 /* Access Levels */
 define('ACCESS_LEVELS', [ADMIN, SALES_REPRESENTATIVE, READ_ONLY]);
 
