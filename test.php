@@ -739,7 +739,7 @@ function extract_report(int $store_id) : void {
         $db -> rollBack();
     }
 }
-extract_report(StoreDetails::DELTA);
+// extract_report(StoreDetails::DELTA);
 
 function wash_report(string $start_date, string $end_date): void {
     $db = get_db_instance();
