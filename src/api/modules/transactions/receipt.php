@@ -224,8 +224,8 @@ class Receipt {
                 if($is_successful !== true || $sales_return -> rowCount() < 1) throw new Exception('Unable to Update Sales Return: '. $txn['id']);
 
                 // Adjust 
-                if($undo) $accounts_receivables_amount -= ($amount_received_abs);
-                else $accounts_receivables_amount += ($amount_received_abs);
+                if($undo) $accounts_receivables_amount -= $amount_received_abs;
+                else $accounts_receivables_amount += $amount_received_abs;
 
                 // Adjust
                 $bs[AccountsConfig::ACCOUNTS_RECEIVABLE] -= $accounts_receivables_amount;
