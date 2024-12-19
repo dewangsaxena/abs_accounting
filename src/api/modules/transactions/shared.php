@@ -1129,7 +1129,7 @@ class Shared {
                 // Transaction Name
                 $transaction_name = TRANSACTION_NAMES[$transaction_type];
 
-                // Format Number to 2 decimal Places
+                // Format Number
                 $amount = Utils::number_format($amount);
                 
                 // Content Details
