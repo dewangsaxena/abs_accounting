@@ -491,10 +491,9 @@ class SalesReturn {
     /**
      * This method will return the account number from payment method.
      * @param sales_return_payment_method
-     * @param sales_invoice_payment_method
      * @return int 
      */
-    private static function get_account_number_from_payment_method(int $sales_return_payment_method, int $sales_invoice_payment_method): int {
+    private static function get_account_number_from_payment_method(int $sales_return_payment_method): int {
         if($sales_return_payment_method === PaymentMethod::MODES_OF_PAYMENT['Pay Later']) return AccountsConfig::ACCOUNTS_RECEIVABLE;
         else {
             $payment_method_account = AccountsConfig::get_account_code_by_payment_method($sales_return_payment_method);
@@ -603,7 +602,7 @@ class SalesReturn {
             }
 
             /* ADD TO PAYMENT METHOD ACCOUNT */
-            $payment_method_account = self::get_account_number_from_payment_method($payment_method, $sales_invoice_payment_method);
+            $payment_method_account = self::get_account_number_from_payment_method($payment_method);
             $temp = -$sum_total;
 
             // Adjust Payment Method Account
@@ -861,8 +860,7 @@ class SalesReturn {
         /* !! Payment Method */
         if(!array_key_exists($details['initial']['paymentMethod'] ?? null, PaymentMethod::MODES_OF_PAYMENT)) throw new Exception('Invalid Old Payment Method.');
         $old_payment_method_account = self::get_account_number_from_payment_method(
-            $details['initial']['paymentMethod'],
-            $sales_invoice_payment_method
+            $details['initial']['paymentMethod']
         );
 
         // Verify Payment Method
@@ -1026,7 +1024,7 @@ class SalesReturn {
             }
 
             // ADD TO PAYMENT METHOD ACCOUNT
-            $payment_method_account = self::get_account_number_from_payment_method($payment_method, $sales_invoice_payment_method);
+            $payment_method_account = self::get_account_number_from_payment_method($payment_method);
             $temp = -$sum_total;
 
             // Adjust Payment Method Account
