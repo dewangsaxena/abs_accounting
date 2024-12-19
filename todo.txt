@@ -65,6 +65,7 @@ Inventory Report IN PDF
 Add Images Support for Items.
 add vendor details.  [BIG CHANGE]
 Inventory Parts Report 
+Add Automatic Script to Send Customer Statement
 
 [BALANCE SHEET MAJOR ISSUE FIX]
 BS SHould be year wise
