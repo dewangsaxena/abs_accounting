@@ -432,8 +432,7 @@ class Receipt {
             $initial_payment_method = intval($data['initial']['paymentMethod']);
             $store_id = intval($_SESSION['store_id']);
             $date = Utils::get_YYYY_mm_dd(
-                Utils::convert_utc_str_timestamp_to_localtime($data['date'], $store_id),
-                $store_id
+                Utils::convert_utc_str_timestamp_to_localtime($data['date'], $store_id)
             );
             
             // Change Payment Method

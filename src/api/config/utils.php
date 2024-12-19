@@ -203,7 +203,7 @@ class Utils {
      * @param precision
      * @return float rounded amount
      */
-    public static function round(float $amount, int $precision=4): float {
+    public static function round(float $amount, int $precision = 4): float {
         return round($amount, $precision);
     }
 
@@ -247,10 +247,9 @@ class Utils {
     /**
      * This method will return the timestamp in YYYY-mm-dd Format.
      * @param timestamp The timestamp to convert
-     * @param store_id
      * @return string
      */
-    public static function get_YYYY_mm_dd(string $timestamp, int $store_id): string {
+    public static function get_YYYY_mm_dd(string $timestamp): string {
         return substr($timestamp, 0, 10);
     }
 
@@ -264,8 +263,7 @@ class Utils {
                     self::convert_to_local_timestamp_from_utc_unix_timestamp(
                     self::get_current_utc_unix_timestamp(),
                     $store_id
-                ),
-                $store_id,
+                )
         );
     }
 

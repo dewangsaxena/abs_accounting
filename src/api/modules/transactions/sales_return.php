@@ -338,7 +338,6 @@ class SalesReturn {
         // Transaction Date
         $transaction_date = Utils::get_YYYY_mm_dd(
             Utils::convert_utc_str_timestamp_to_localtime($data['txnDate'], $store_id),
-            $store_id
         );
         if($transaction_date === null) throw new Exception('Invalid Date.');
 

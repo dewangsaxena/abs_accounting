@@ -24,8 +24,8 @@ class IncomeStatementActions {
         $locations_selected = trim($locations_selected, ',');
 
         // Convert Date
-        $begin_time = Utils::get_YYYY_mm_dd(Utils::convert_utc_str_timestamp_to_localtime($begin_time, StoreDetails::EDMONTON), StoreDetails::EDMONTON);
-        $end_time = Utils::get_YYYY_mm_dd(Utils::convert_utc_str_timestamp_to_localtime($end_time, StoreDetails::EDMONTON), StoreDetails::EDMONTON);
+        $begin_time = Utils::get_YYYY_mm_dd(Utils::convert_utc_str_timestamp_to_localtime($begin_time, StoreDetails::EDMONTON));
+        $end_time = Utils::get_YYYY_mm_dd(Utils::convert_utc_str_timestamp_to_localtime($end_time, StoreDetails::EDMONTON));
 
         // Fetch Income Statement
         $data = self::find_by_location($begin_time, $end_time, $locations_selected);
@@ -247,7 +247,7 @@ class IncomeStatementActions {
         if($date === null) $date = Utils::get_business_date($store_id);
 
         // Convert to specific format
-        $date = Utils::get_YYYY_mm_dd($date, $store_id);
+        $date = Utils::get_YYYY_mm_dd($date);
 
         // Fetch the income statement for that date
         $statement = $db -> prepare(self::FETCH_INCOME_STATEMENT_BY_DATE);
@@ -368,8 +368,8 @@ class IncomeStatementActions {
         $details = [
             'statement' => $statement,
             'store_name' => StoreDetails::STORE_DETAILS[$selected_store]['name'],
-            'start_date' => Utils::get_YYYY_mm_dd($dates['startDate'], StoreDetails::EDMONTON),
-            'end_date' => Utils::get_YYYY_mm_dd($dates['endDate'], StoreDetails::EDMONTON),
+            'start_date' => Utils::get_YYYY_mm_dd($dates['startDate']),
+            'end_date' => Utils::get_YYYY_mm_dd($dates['endDate']),
         ];
 
         // Generate Income Statement
