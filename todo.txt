@@ -73,9 +73,6 @@ Inventory
 Tax Payable 
 SHOULD ALL BE FORWARDED, ELSE ALL DETAILS 
 
-[BUGS]
-COGS margin wrong for PAP
-
 [CONVERSION]
 Clients   [DONE]
 Items    [DONE]
