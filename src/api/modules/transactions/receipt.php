@@ -1078,7 +1078,7 @@ class Receipt {
 
             // Sum Total
             // Format Number to 2 decimal places
-            $sum_total = Utils::number_format(Utils::round($details['sum_total'], 4));
+            $sum_total = Utils::number_format($details['sum_total']);
 
             // Signature 
             $signature = Shared::get_store_signature($store_id);

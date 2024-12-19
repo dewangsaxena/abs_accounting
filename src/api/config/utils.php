@@ -297,7 +297,12 @@ class Utils {
      * @return string
      */
     public static function number_format(float $number, int $precision = 2): string {
-        return number_format($number, $precision, '.', ',');
+        return number_format(
+            self::round($number, 4),
+            $precision, 
+            '.', 
+            ','
+        );
     }
 
     /**
