@@ -66,12 +66,6 @@ Fix inventory value in BS
 Inventory Report IN PDF
 Add Images Support for Items.
 add vendor details.  [BIG CHANGE]
-Dashboard today summary 
-    pie chart
-    highest invoice 
-    COGS 
-    COGR 
-    Collections
 Inventory Parts Report 
 
 [BALANCE SHEET MAJOR ISSUE FIX]
