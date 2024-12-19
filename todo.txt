@@ -60,8 +60,7 @@ TEST SYSTEM FOR WASH SYSTEM.  [COMPLETED]
 
 [INCOMPLETE]
 DISABLE PAYLATER FOR CLIENTS WHERE NO PHONE NUMBER OR EMAIL ID IS PRESENT
-Partially Unpaid Status wrong in Customer Summary
-Item Frequency 
+Partially Unpaid Status wrong in Customer Summary 
 Fix inventory value in BS
 Inventory Report IN PDF
 Add Images Support for Items.
