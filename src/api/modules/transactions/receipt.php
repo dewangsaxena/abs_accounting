@@ -163,7 +163,6 @@ class Receipt {
 
         // Accounts Receivables/Payables Amount
         $accounts_receivables_amount = 0;
-        $accounts_payables_amount = 0;
         
         foreach($data as $txn) {
             // Transaction Type
@@ -182,6 +181,9 @@ class Receipt {
                 ':modified' => $txn['modified'],
             ];
 
+            // Amount Received Abs
+            $amount_received_abs = abs($amount_received);
+
             if($type === SALES_INVOICE) {
 
                 // Add Details
@@ -189,7 +191,9 @@ class Receipt {
                 $params[':receipt_discount'] = $undo ? -$discount_given : $discount_given;
                 $is_successful = $sales_invoice -> execute($params);
                 if($is_successful !== true || $sales_invoice -> rowCount() < 1) throw new Exception('Unable to Update Sales Invoice: '. $txn['id']);
-                $accounts_receivables_amount += $amount_received;
+
+                if($undo) $accounts_receivables_amount += $amount_received_abs;
+                else $accounts_receivables_amount += (-$amount_received_abs);
             }
             else if($type === SALES_RETURN) {
                 $discount_given = abs($discount_given);
@@ -216,12 +220,9 @@ class Receipt {
                 $is_successful = $sales_return -> execute($params);
                 if($is_successful !== true || $sales_return -> rowCount() < 1) throw new Exception('Unable to Update Sales Return: '. $txn['id']);
 
-                if($txn['salesInvoicePaymentMethod'] !== PaymentMethod::MODES_OF_PAYMENT['Pay Later']) {
-                    $accounts_payables_amount += abs($amount_received);
-                }
-
-                // Sales Invoice Payment method was PAY Later 
-                else $accounts_receivables_amount -= abs($amount_received);
+                // Adjust 
+                if($undo) $accounts_receivables_amount += (-$amount_received_abs);
+                else $accounts_receivables_amount -= (-$amount_received_abs);
             }
             else if($type === DEBIT_NOTE) {
 
@@ -229,7 +230,8 @@ class Receipt {
                 $params[':credit_amount'] = $undo ? $amount_received : -$amount_received;
                 $is_successful = $debit_note -> execute($params);
                 if($is_successful !== true || $debit_note -> rowCount() < 1) throw new Exception('Unable to Update Debit Note: '. $txn['id']);
-                $accounts_receivables_amount += $amount_received;
+                if($undo) $accounts_receivables_amount -= (-$amount_received_abs);
+                else $accounts_receivables_amount += (-$amount_received_abs);
             }
             else if($type === CREDIT_NOTE) {
                 
@@ -237,19 +239,13 @@ class Receipt {
                 $params[':credit_amount'] = $undo ? -$amount_received: $amount_received;
                 $is_successful = $credit_note -> execute($params);
                 if($is_successful !== true || $credit_note -> rowCount() < 1) throw new Exception('Unable to Update Credit Note: '. $txn['id']);
-                $accounts_payables_amount += abs($amount_received);
+                if($undo) $accounts_receivables_amount += (-$amount_received_abs);
+                else $accounts_receivables_amount -= (-$amount_received_abs);
             }
         }
 
-        // Update Balance Sheet Amounts.
-        if($undo) {
-            $bs[AccountsConfig::ACCOUNTS_RECEIVABLE] += $accounts_receivables_amount;
-            $bs[AccountsConfig::ACCOUNTS_PAYABLE] += $accounts_payables_amount;
-        }
-        else {
-            $bs[AccountsConfig::ACCOUNTS_RECEIVABLE] -= $accounts_receivables_amount;
-            $bs[AccountsConfig::ACCOUNTS_PAYABLE] -= $accounts_payables_amount;
-        }
+        // Adjust
+        $bs[AccountsConfig::ACCOUNTS_RECEIVABLE] += $accounts_receivables_amount;
     }
 
     /**
@@ -262,13 +258,6 @@ class Receipt {
         $statement = $db -> prepare('SELECT receipt_discount FROM sales_invoice WHERE id = :id;');
         $statement -> execute([':id' => $sales_invoice_id]);
         return $statement -> fetchAll(PDO::FETCH_ASSOC)[0]['receipt_discount'];
-    }
-
-    /**
-     * This method will handle forgiven receipt.
-     */
-    private static function handle_forgiven_receipt() : void {
-
     }
 
     /**
@@ -445,8 +434,7 @@ class Receipt {
             $initial_payment_method = intval($data['initial']['paymentMethod']);
             $store_id = intval($_SESSION['store_id']);
             $date = Utils::get_YYYY_mm_dd(
-                Utils::convert_utc_str_timestamp_to_localtime($data['date'], $store_id),
-                $store_id
+                Utils::convert_utc_str_timestamp_to_localtime($data['date'], $store_id)
             );
             
             // Change Payment Method
@@ -1018,9 +1006,6 @@ class Receipt {
             $err_message = '';
             $random_token = Utils::generate_token(4);
 
-            // This is the output filename
-            $receipt_filename = "receipt-$receipt_id-$random_token.pdf";
-
             // By Default, Receipt Filename will be included.
             $filenames = ["receipt_$receipt_id.pdf"];
             $attach_transactions = count($transactions) > 0;
@@ -1044,6 +1029,9 @@ class Receipt {
 
             // Delete Residual Files
             if($for === 'print' && $dump_file) Utils::delete_files($filenames);
+
+            // This is the output filename
+            $receipt_filename = "receipt-$receipt_id-$random_token.pdf";
 
             // Output 
             $merge_object -> output($for === 'email' && $dump_file ? TEMP_DIR. $receipt_filename : null);
@@ -1091,8 +1079,7 @@ class Receipt {
             $store_id = $details['store_id'];
 
             // Sum Total
-            // Round off to 2 decimal places
-            $sum_total = Utils::round($details['sum_total'], 2);
+            $sum_total = Utils::number_format($details['sum_total']);
 
             // Signature 
             $signature = Shared::get_store_signature($store_id);
@@ -1128,7 +1115,7 @@ class Receipt {
             $exception_message = $e -> getMessage();
         }
         finally {
-            if(file_exists($receipt_path_to_file)) unlink($receipt_path_to_file);
+            if(file_exists($receipt_path_to_file)) register_shutdown_function('unlink', $receipt_path_to_file);
             return ['status' => $is_email_sent, 'message' => $exception_message];
         }
     }

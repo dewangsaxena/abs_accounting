@@ -8,7 +8,7 @@ This file contains configurations used by the application.
 /**
  * Client App Version
  */
-define('CLIENT_APP_VERSION', '2.2.21');
+define('CLIENT_APP_VERSION', '2.2.23');
 
 /* Hosts */
 define('__LOCALHOST__', 0);
@@ -167,16 +167,6 @@ class PaymentMethod
     ];
 }
 
-/**
- * ISO 3166-1 Country codes.
- * 
- * This array is bi-directionally available for indexing.
- */
-const COUNTRY_CODES_ISO_3166_1 = [
-    'Canada' => 124,
-    124 => 'Canada',
-];
-
 /* Access Levels */
 define('ACCESS_LEVELS', [ADMIN, SALES_REPRESENTATIVE, READ_ONLY]);
 
@@ -215,8 +205,7 @@ define('TRANSACTION_NAMES_ABBR', [
  * This method will check for errors. If any, it throw an Exception with an error message.
  * @throws Exception
  */
-function assert_success(): void
-{
+function assert_success(): void {
     $last_error = error_get_last();
     if (is_null($last_error) === false) throw new Exception($last_error['message'] . ' in file ' . $last_error['file'] . ' on line : ' . $last_error['line']);
 }
