@@ -191,9 +191,6 @@ class Receipt {
                 $params[':receipt_discount'] = $undo ? -$discount_given : $discount_given;
                 $is_successful = $sales_invoice -> execute($params);
                 if($is_successful !== true || $sales_invoice -> rowCount() < 1) throw new Exception('Unable to Update Sales Invoice: '. $txn['id']);
-
-                if($undo) $accounts_receivables_amount += $amount_received_abs;
-                else $accounts_receivables_amount += (-$amount_received_abs);
             }
             else if($type === SALES_RETURN) {
                 $discount_given = abs($discount_given);
@@ -219,10 +216,6 @@ class Receipt {
 
                 $is_successful = $sales_return -> execute($params);
                 if($is_successful !== true || $sales_return -> rowCount() < 1) throw new Exception('Unable to Update Sales Return: '. $txn['id']);
-
-                // Adjust 
-                if($undo) $accounts_receivables_amount += (-$amount_received_abs);
-                else $accounts_receivables_amount -= (-$amount_received_abs);
             }
             else if($type === DEBIT_NOTE) {
 
@@ -230,8 +223,6 @@ class Receipt {
                 $params[':credit_amount'] = $undo ? $amount_received : -$amount_received;
                 $is_successful = $debit_note -> execute($params);
                 if($is_successful !== true || $debit_note -> rowCount() < 1) throw new Exception('Unable to Update Debit Note: '. $txn['id']);
-                if($undo) $accounts_receivables_amount -= (-$amount_received_abs);
-                else $accounts_receivables_amount += (-$amount_received_abs);
             }
             else if($type === CREDIT_NOTE) {
                 
@@ -239,6 +230,14 @@ class Receipt {
                 $params[':credit_amount'] = $undo ? -$amount_received: $amount_received;
                 $is_successful = $credit_note -> execute($params);
                 if($is_successful !== true || $credit_note -> rowCount() < 1) throw new Exception('Unable to Update Credit Note: '. $txn['id']);
+            }
+
+            // Adjust 
+            if($type === SALES_INVOICE || $type === DEBIT_NOTE) {
+                if($undo) $accounts_receivables_amount += ($amount_received_abs);
+                else $accounts_receivables_amount += (-$amount_received_abs);
+            }
+            else if($type === SALES_RETURN || $type === CREDIT_NOTE) {
                 if($undo) $accounts_receivables_amount += (-$amount_received_abs);
                 else $accounts_receivables_amount -= (-$amount_received_abs);
             }
