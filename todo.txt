@@ -59,20 +59,11 @@ VERIFY BALANCE SHEET CALCULATIONS  [COMPLETED]
 TEST SYSTEM FOR WASH SYSTEM.  [COMPLETED]
 
 [INCOMPLETE]
-DISABLE PAYLATER FOR CLIENTS WHERE NO PHONE NUMBER OR EMAIL ID IS PRESENT
-Partially Unpaid Status wrong in Customer Summary
-Item Frequency 
-Fix inventory value in BS
-Inventory Report IN PDF
+Partially Unpaid Status wrong in Customer Summary [INVESTIGATE MORE]
+Fix inventory value in BS [INVESTIGATE WHY INVENTORY VALUE GET CORRUPTED]
 Add Images Support for Items.
-add vendor details.  [BIG CHANGE]
-Dashboard today summary 
-    pie chart
-    highest invoice 
-    COGS 
-    COGR 
-    Collections
-Inventory Parts Report 
+Inventory Parts Report IN PDF
+Add Automatic Script to Send Customer Statement
 
 [BALANCE SHEET MAJOR ISSUE FIX]
 BS SHould be year wise

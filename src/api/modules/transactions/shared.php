@@ -424,7 +424,6 @@ class Shared {
         // Transaction Date
         $transaction_date = Utils::get_YYYY_mm_dd(
             Utils::convert_utc_str_timestamp_to_localtime($data['txnDate'], $store_id),
-            $store_id
         );
         if($transaction_date === null) throw new Exception('Invalid Date.');
 
@@ -696,7 +695,6 @@ class Shared {
                 $query .= ' AND txn_tb.`date` >= :txnStartDate ';
                 $values[':txnStartDate'] = Utils::get_YYYY_mm_dd(
                     Utils::convert_utc_str_timestamp_to_localtime($data['txnStartDate'], $store_id), 
-                    $store_id
                 );
                 $is_any_filter_selected = true;
             }
@@ -706,7 +704,6 @@ class Shared {
                 $query .= ' AND txn_tb.`date` <= :txnEndDate ';
                 $values[':txnEndDate'] = Utils::get_YYYY_mm_dd(
                     Utils::convert_utc_str_timestamp_to_localtime($data['txnEndDate'], $store_id), 
-                    $store_id
                 );
                 $is_any_filter_selected = true;
             }
@@ -1132,8 +1129,8 @@ class Shared {
                 // Transaction Name
                 $transaction_name = TRANSACTION_NAMES[$transaction_type];
 
-                // Round of Amount to 2 decimal Places
-                $amount = Utils::round($amount, 2);
+                // Format Number
+                $amount = Utils::number_format($amount);
                 
                 // Content Details
                 $content_details = <<<EOS
@@ -1188,7 +1185,7 @@ class Shared {
         }
         finally {
             // Delete File from disk.
-            if(file_exists($path_to_file)) unlink($path_to_file);
+            if(file_exists($path_to_file)) register_shutdown_function('unlink', $path_to_file);
 
             // Status
             return ['status' => $is_email_sent, 'message' => $exception_message];

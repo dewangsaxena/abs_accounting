@@ -2018,7 +2018,7 @@ const TransactionHeaderDetails = ({
   const [clientSuggestions, setClientSuggestions] = useState<any>([]);
   const [selectedClient, setSelectedClient] = useState<string>(
     isViewOrUpdate && clientDetails && clientDetails.primaryDetails.name
-      ? defaultClient.defaultValue.label
+      ? defaultClient.defaultValue.label.toString()
       : ""
   );
 

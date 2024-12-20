@@ -29,30 +29,4 @@ function get_db_instance(): PDO {
     }
 }
 
-/**
- * This method will establish connection to the Old Database.
- * @return PDO 
- */
-function get_old_db_instance(): PDO {
-    try {
-        $host = DB_HOST;
-        $db_name = SYSTEM_INIT_MODE === PARTS ? 'u356746783_parts_extract': 'u356746783_wash_extract';
-
-        // Try to establish connection to the database.
-        $instance = new PDO(
-            "mysql:host=$host;dbname=$db_name;charset=UTF8;", 
-            $db_name, 
-            '7b$B$wkhK*R'
-        );
-
-        // Set PDO error mode to exception 
-        $instance -> setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-        return $instance;
-    }
-    catch (Exception|Throwable|PDOException $e) {
-        die('Cannot establish connection to the OLD Database.');
-    }
-}
-
 ?>

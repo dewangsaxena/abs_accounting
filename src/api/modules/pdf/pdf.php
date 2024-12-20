@@ -1724,11 +1724,11 @@ class __GenerateCustomerStatement {
         // Value
         self::$pdf -> SetFont(self::COURIER, 'B', 8);
         self::$pdf -> Cell(w: 35, h: 4, txt: 'Amount', border:1 , ln: 0);
-        self::$pdf -> Cell(w: 26, h: 4, txt: self::$details['current'], border: 1, ln: 0);
-        self::$pdf -> Cell(w: 32, h: 4, txt: self::$details['31-60'], border: 1, ln: 0);
-        self::$pdf -> Cell(w: 35, h: 4, txt: self::$details['60+'], border: 1, ln: 0,);
+        self::$pdf -> Cell(w: 26, h: 4, txt: Utils::number_format(self::$details['current']), border: 1, ln: 0);
+        self::$pdf -> Cell(w: 32, h: 4, txt: Utils::number_format(self::$details['31-60']), border: 1, ln: 0);
+        self::$pdf -> Cell(w: 35, h: 4, txt: Utils::number_format(self::$details['60+']), border: 1, ln: 0,);
         self::$pdf -> Cell(w: 22, h: 4, txt: '', border: 1, ln: 0);
-        self::$pdf -> Cell(w: 35, h: 4, txt: self::$details['total_amount'], border: 1, ln: 0);
+        self::$pdf -> Cell(w: 35, h: 4, txt: Utils::number_format(self::$details['total_amount']), border: 1, ln: 0);
         self::$pdf -> Cell(w: 10, h: 4, txt: '', border: 1, ln: 1);
     }
 
@@ -1767,9 +1767,9 @@ class __GenerateCustomerStatement {
             self::$pdf -> Cell(w: 35, h: 4, txt: $txn_record['transaction_date'], border: $border, ln: 0, fill:$do_fill,);
             self::$pdf -> Cell(w: 26, h: 4, txt: $txn_record['transaction_id'], border: $border, ln: 0, fill:$do_fill,);
             self::$pdf -> Cell(w: 32, h: 4, txt: $txn_record['transaction_type'], border: $border, ln: 0, fill:$do_fill,);
-            self::$pdf -> Cell(w: 35, h: 4, txt: $txn_record['balance'], border: $border, ln: 0, fill:$do_fill,);
+            self::$pdf -> Cell(w: 35, h: 4, txt: Utils::number_format($txn_record['balance']), border: $border, ln: 0, fill:$do_fill,);
             self::$pdf -> Cell(w: 22, h: 4, txt: "  {$txn_record['sales_invoice_id']}", border: $border, ln: 0, fill:$do_fill,);
-            self::$pdf -> Cell(w: 35, h: 4, txt: $txn_record['amount_total'], border: $border, ln: 0, fill:$do_fill,);
+            self::$pdf -> Cell(w: 35, h: 4, txt: Utils::number_format($txn_record['amount_total']), border: $border, ln: 0, fill:$do_fill,);
             self::$pdf -> Cell(w: 10, h: 4, txt: '', border: $border, ln: 1, fill:$do_fill,);
         }
     }

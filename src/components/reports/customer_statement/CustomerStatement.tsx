@@ -159,7 +159,6 @@ const CustomerStatement = () => {
             setDisableButton(false);
           } else {
             showToast(toast, true);
-            // window.location.reload();
           }
         })
         .catch((err: any) => {

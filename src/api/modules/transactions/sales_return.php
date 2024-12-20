@@ -43,7 +43,7 @@ class SalesReturn {
             $identifier = $item['identifier'];
 
             // Set Default Return Quantity
-            if(!isset($item['returnQuantity'])) $item['returnQuantity'] = 0;
+            if(isset($item['returnQuantity']) === false) $item['returnQuantity'] = 0;
 
             // Process Only Valid Items
             if(($item['returnQuantity'] ?? 0) < 0) return ['status' => false, 'message' => 'Invalid Return Quantity for: '. $identifier];
@@ -338,7 +338,6 @@ class SalesReturn {
         // Transaction Date
         $transaction_date = Utils::get_YYYY_mm_dd(
             Utils::convert_utc_str_timestamp_to_localtime($data['txnDate'], $store_id),
-            $store_id
         );
         if($transaction_date === null) throw new Exception('Invalid Date.');
 
@@ -492,15 +491,10 @@ class SalesReturn {
     /**
      * This method will return the account number from payment method.
      * @param sales_return_payment_method
-     * @param sales_invoice_payment_method
      * @return int 
      */
-    private static function get_account_number_from_payment_method(int $sales_return_payment_method, int $sales_invoice_payment_method): int {
-        /* ADD TO PAYMENT METHOD ACCOUNT */
-        if($sales_return_payment_method === PaymentMethod::MODES_OF_PAYMENT['Pay Later']) {
-            if($sales_invoice_payment_method === PaymentMethod::MODES_OF_PAYMENT['Pay Later']) return AccountsConfig::ACCOUNTS_RECEIVABLE;
-            else return AccountsConfig::ACCOUNTS_PAYABLE;
-        }
+    private static function get_account_number_from_payment_method(int $sales_return_payment_method): int {
+        if($sales_return_payment_method === PaymentMethod::MODES_OF_PAYMENT['Pay Later']) return AccountsConfig::ACCOUNTS_RECEIVABLE;
         else {
             $payment_method_account = AccountsConfig::get_account_code_by_payment_method($sales_return_payment_method);
             if($payment_method_account !== null) return $payment_method_account;
@@ -608,9 +602,8 @@ class SalesReturn {
             }
 
             /* ADD TO PAYMENT METHOD ACCOUNT */
-            $payment_method_account = self::get_account_number_from_payment_method($payment_method, $sales_invoice_payment_method);
-            if($payment_method_account === AccountsConfig::ACCOUNTS_PAYABLE) $temp = $sum_total;
-            else $temp = -$sum_total;
+            $payment_method_account = self::get_account_number_from_payment_method($payment_method);
+            $temp = -$sum_total;
 
             // Adjust Payment Method Account
             BalanceSheetActions::update_account_value(
@@ -786,7 +779,7 @@ class SalesReturn {
     /**
      * This method will revert old transaction.
      * @param bs_affected_accounts
-     * @param is_affected_account 
+     * @param is_affected_accounts 
      * @param details
      * @param statement_adjust_inventory
      * @param store_id
@@ -867,8 +860,7 @@ class SalesReturn {
         /* !! Payment Method */
         if(!array_key_exists($details['initial']['paymentMethod'] ?? null, PaymentMethod::MODES_OF_PAYMENT)) throw new Exception('Invalid Old Payment Method.');
         $old_payment_method_account = self::get_account_number_from_payment_method(
-            $details['initial']['paymentMethod'],
-            $sales_invoice_payment_method
+            $details['initial']['paymentMethod']
         );
 
         // Verify Payment Method
@@ -877,22 +869,12 @@ class SalesReturn {
             $old_sum_total = $details['initial']['sumTotal'] ?? null;
             if(!is_numeric($old_sum_total) || $old_sum_total <= 0) throw new Exception('Invalid Old Sum Total.');
 
-            // Deduct from Accounts Payable
-            if($old_payment_method_account === AccountsConfig::ACCOUNTS_PAYABLE) $old_sum_total = -$old_sum_total;
-
             // Update Balance Sheet
             BalanceSheetActions::update_account_value(
                 $bs_affected_accounts,
                 $old_payment_method_account,
                 $old_sum_total
             );
-
-            // Update Income Statement
-            // IncomeStatementActions::update_account_values(
-            //     $is_affected_accounts,
-            //     $old_payment_method_account,
-            //     -$old_sum_total
-            // );
         }
     }
 
@@ -1042,9 +1024,8 @@ class SalesReturn {
             }
 
             // ADD TO PAYMENT METHOD ACCOUNT
-            $payment_method_account = self::get_account_number_from_payment_method($payment_method, $sales_invoice_payment_method);
-            if($payment_method_account === AccountsConfig::ACCOUNTS_PAYABLE) $temp = $sum_total;
-            else $temp = -$sum_total;
+            $payment_method_account = self::get_account_number_from_payment_method($payment_method);
+            $temp = -$sum_total;
 
             // Adjust Payment Method Account
             BalanceSheetActions::update_account_value(
