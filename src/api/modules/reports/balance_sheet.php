@@ -413,18 +413,23 @@ class BalanceSheetActions {
      * @param store_id The store ID 
      * @param month The month is in XX format. 
      * @param year The year is in XXXX format.
+     * @param date The Date is in YYYY-MM-DD Format.
      * @return array 
      */
-    public static function fetch_accounts_information(int $store_id, string $month, int $year): array {
+    private static function _fetch_accounts_information(int $store_id, string|null $month=null, int|null $year=null, string|null $date=null): array {
         try {
             // Get DB instance
             $db = get_db_instance();
+
+            // Date
+            if(isset($date)) $date_value = $date;
+            else $date_value = "$year-$month-%";
 
             // Fetch All Accounts Equity 
             $statement = $db -> prepare(self::FETCH_BALANCE_SHEET_AS_PER_STORE_AND_DATE);
             $statement -> execute([
                 ':store_id' => $store_id,
-                ':date' => "$year-$month-%"
+                ':date' => $date_value,
             ]);
             $results = $statement -> fetchAll(PDO::FETCH_ASSOC);
 
@@ -472,64 +477,23 @@ class BalanceSheetActions {
     }
 
     /**
+     * This method will fetch the accounts information to prepare balance sheet.
+     * @param store_id The store ID 
+     * @param month The month is in XX format. 
+     * @param year The year is in XXXX format.
+     * @return array 
+     */
+    public static function fetch_accounts_information(int $store_id, string $month, int $year): array {
+        return self::_fetch_accounts_information($store_id, $month, $year);
+    }
+
+    /**
      * This method will fetch accounts information till exact date. This is useful for Debugging.
      * @param store_id
      * @param date
      */
     public static function fetch_accounts_information_till_exact_date(int $store_id, string $date): array {
-        try {
-            // Get DB instance
-            $db = get_db_instance();
-
-            // Fetch All Accounts Equity 
-            $statement = $db -> prepare(self::FETCH_BALANCE_SHEET_AS_PER_STORE_AND_DATE);
-            $statement -> execute([
-                ':store_id' => $store_id,
-                ':date' => $date
-            ]);
-            $results = $statement -> fetchAll(PDO::FETCH_ASSOC);
-
-            // Account keys 
-            $account_keys = array_keys(AccountsConfig::ACCOUNT_NAMES);
-            
-            // No. of accounts
-            $no_of_accounts = count($account_keys);
-
-            // Accounts details.
-            $account_details = [];
-
-            // Build Template
-            for($i = 0; $i < $no_of_accounts; ++$i) {
-                $account_details[$account_keys[$i]] = [
-                    'equity' => 0,
-                    'name' => AccountsConfig::ACCOUNT_NAMES[$account_keys[$i]],
-                    'value' => '',
-                ];
-            }
-
-            foreach($results as $result) {
-                $accounts = json_decode($result['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
-                for($i = 0; $i < $no_of_accounts; ++$i) {
-                    // Skip Wash Specific Accounts.
-                    if(!isset($accounts[$account_keys[$i]])) continue;
-                    $account_details[$account_keys[$i]]['equity'] += $accounts[$account_keys[$i]];
-                }
-            }
-
-            // Generate Value 
-            for($i = 0; $i < $no_of_accounts; ++$i) {
-                $account_details[$account_keys[$i]]['value'] = number_format(
-                    $account_details[$account_keys[$i]]['equity'],
-                    2
-                );
-            }
-
-            assert_success();
-            return ['status' => true, 'data' => $account_details];
-        }
-        catch(Throwable $th) {
-            return ['status' => false, 'message' => $th -> getMessage()];
-        }
+        return self::_fetch_accounts_information($store_id, date: $date);
     }
 
     /**
