@@ -194,9 +194,6 @@ class Receipt {
 
                 if($undo) $accounts_receivables_amount += $amount_received_abs;
                 else $accounts_receivables_amount += (-$amount_received_abs);
-
-                // Adjust
-                $bs[AccountsConfig::ACCOUNTS_RECEIVABLE] += $accounts_receivables_amount;
             }
             else if($type === SALES_RETURN) {
                 $discount_given = abs($discount_given);
@@ -224,11 +221,8 @@ class Receipt {
                 if($is_successful !== true || $sales_return -> rowCount() < 1) throw new Exception('Unable to Update Sales Return: '. $txn['id']);
 
                 // Adjust 
-                if($undo) $accounts_receivables_amount -= $amount_received_abs;
-                else $accounts_receivables_amount += $amount_received_abs;
-
-                // Adjust
-                $bs[AccountsConfig::ACCOUNTS_RECEIVABLE] -= $accounts_receivables_amount;
+                if($undo) $accounts_receivables_amount += (-$amount_received_abs);
+                else $accounts_receivables_amount -= (-$amount_received_abs);
             }
             else if($type === DEBIT_NOTE) {
 
@@ -238,9 +232,6 @@ class Receipt {
                 if($is_successful !== true || $debit_note -> rowCount() < 1) throw new Exception('Unable to Update Debit Note: '. $txn['id']);
                 if($undo) $accounts_receivables_amount -= (-$amount_received_abs);
                 else $accounts_receivables_amount += (-$amount_received_abs);
-
-                // Adjust
-                $bs[AccountsConfig::ACCOUNTS_RECEIVABLE] += $accounts_receivables_amount;
             }
             else if($type === CREDIT_NOTE) {
                 
@@ -250,11 +241,11 @@ class Receipt {
                 if($is_successful !== true || $credit_note -> rowCount() < 1) throw new Exception('Unable to Update Credit Note: '. $txn['id']);
                 if($undo) $accounts_receivables_amount += (-$amount_received_abs);
                 else $accounts_receivables_amount -= (-$amount_received_abs);
-
-                // Adjust
-                $bs[AccountsConfig::ACCOUNTS_RECEIVABLE] += $accounts_receivables_amount;
             }
         }
+
+        // Adjust
+        $bs[AccountsConfig::ACCOUNTS_RECEIVABLE] += $accounts_receivables_amount;
     }
 
     /**
