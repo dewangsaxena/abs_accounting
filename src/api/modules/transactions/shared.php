@@ -427,8 +427,8 @@ class Shared {
         );
         if($transaction_date === null) throw new Exception('Invalid Date.');
 
-        // Check whether current year transaction is being posted in the same year.
-        Shared::validate_year_of_transaction($data);
+        // Check whether date,current year transaction is being posted in the same year.
+        Shared::validate_new_date_of_transaction($data, $transaction_date);
 
         // Disable Federal Taxes
         $disable_federal_taxes = $data['disableFederalTaxes'] ?? null;
@@ -1410,15 +1410,25 @@ class Shared {
      * This method will validate year of transaction. This will check whether the transaction when updated
      * is being posted in the same year of the initial transaction.
      * @param data
+     * @param transaction_date
      */
-    public static function validate_year_of_transaction(array $data): void {
+    public static function validate_new_date_of_transaction(array $data, string $transaction_date): void {
+
         // Check whether current year transaction is being posted into previous year.
         if(isset($data['initial']['txnDate'])) {
-            $initial_txn_year = intval(date_parse_from_format('Y', $data['initial']['txnDate'])['year']);
-            if($initial_txn_year === 0) throw new Exception('Invalid initial transaction Year.');
 
-            $transaction_year = intval(date_parse_from_format('Y', $data['txnDate'])['year']);
+            // Check for Month
+            $new_date = date_parse_from_format('Y-m-d', $transaction_date);
+            $old_date = date_parse_from_format('Y-m-d', $data['initial']['txnDate']);
+            if($new_date['month'] !== $old_date['month']) throw new Exception('Cannot Post Transaction in Previous Month.');
+            
+            // Check for Year
+            $transaction_year = intval($new_date['year']);
             if($transaction_year === 0) throw new Exception('Invalid transaction Year.');
+
+            // Validate Year
+            $initial_txn_year = intval($old_date['year']);
+            if($initial_txn_year === 0) throw new Exception('Invalid initial transaction Year.');
 
             // Validate for Same Year
             if($transaction_year !== $initial_txn_year) throw new Exception('Cannot change year of transaction.');
