@@ -190,6 +190,9 @@ class SalesInvoice {
         );
         if($transaction_date === null) throw new Exception('Invalid Date.');
 
+        // Validate Year
+        Shared::validate_year_of_transaction($data);
+
         // Disable Federal Taxes
         $disable_federal_taxes = $data['disableFederalTaxes'] ?? null;
         $disable_provincial_taxes = $data['disableProvincialTaxes'] ?? null;

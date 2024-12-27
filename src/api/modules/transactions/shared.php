@@ -427,6 +427,9 @@ class Shared {
         );
         if($transaction_date === null) throw new Exception('Invalid Date.');
 
+        // Check whether current year transaction is being posted in the same year.
+        Shared::validate_year_of_transaction($data);
+
         // Disable Federal Taxes
         $disable_federal_taxes = $data['disableFederalTaxes'] ?? null;
         $disable_provincial_taxes = $data['disableProvincialTaxes'] ?? null;
@@ -1401,6 +1404,25 @@ class Shared {
         $details['sumTotal'] = $initial_details['txn']['sum_total'];
         $details['txnDate'] = $initial_details['txn']['date'];
         $details['txnDiscount'] = $initial_details['txn']['txn_discount'];
+    }
+
+    /**
+     * This method will validate year of transaction. This will check whether the transaction when updated
+     * is being posted in the same year of the initial transaction.
+     * @param data
+     */
+    public static function validate_year_of_transaction(array $data): void {
+        // Check whether current year transaction is being posted into previous year.
+        if(isset($data['initial']['txnDate'])) {
+            $initial_txn_year = intval(date_parse_from_format('Y', $data['initial']['txnDate'])['year']);
+            if($initial_txn_year === 0) throw new Exception('Invalid initial transaction Year.');
+
+            $transaction_year = intval(date_parse_from_format('Y', $data['txnDate'])['year']);
+            if($transaction_year === 0) throw new Exception('Invalid transaction Year.');
+
+            // Validate for Same Year
+            if($transaction_year !== $initial_txn_year) throw new Exception('Cannot change year of transaction.');
+        }
     }
 
 }

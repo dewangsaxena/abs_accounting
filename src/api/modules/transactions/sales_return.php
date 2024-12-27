@@ -341,6 +341,9 @@ class SalesReturn {
         );
         if($transaction_date === null) throw new Exception('Invalid Date.');
 
+        // Check whether current year transaction is being posted in the same year.
+        Shared::validate_year_of_transaction($data);
+
         // Disable Federal Taxes
         $disable_federal_taxes = $data['disableFederalTaxes'] ?? null;
         $disable_provincial_taxes = $data['disableProvincialTaxes'] ?? null;
