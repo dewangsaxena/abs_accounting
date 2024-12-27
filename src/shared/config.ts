@@ -1,7 +1,7 @@
 /**
  * Configurations used the application.
  */
-export const APP_VERSION = "2.2.21";
+export const APP_VERSION = "2.2.24";
 
 // Stores
 export class Stores {
