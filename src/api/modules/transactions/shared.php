@@ -1420,7 +1420,7 @@ class Shared {
             // Check for Month
             $new_date = date_parse_from_format('Y-m-d', $transaction_date);
             $old_date = date_parse_from_format('Y-m-d', $data['initial']['txnDate']);
-            if($new_date['month'] !== $old_date['month']) throw new Exception('Cannot Post Transaction in Previous Month.');
+            if($new_date['month'] !== $old_date['month']) throw new Exception('Cannot Post Transaction in Other Month.');
             
             // Check for Year
             $transaction_year = intval($new_date['year']);
