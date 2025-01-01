@@ -143,6 +143,13 @@ SELECT sum(sum_total), sum(total_discount) FROM receipt WHERE store_id = 7 and d
 SELECT SUM(sum_total) FROM debit_note WHERE store_id = 7;
 SELECT SUM(sum_total) FROM credit_note WHERE store_id = 7;
 
+SELECT payment_method, SUM(sum_total) FROM sales_invoice WHERE store_id = 8 GROUP BY payment_method;
+SELECT payment_method, SUM(sum_total) FROM sales_return WHERE store_id = 8  GROUP BY payment_method;
+SELECT payment_method, SUM(sum_total), sum(total_discount) FROM receipt WHERE store_id = 8 and do_conceal = 0 GROUP BY payment_method;
+SELECT sum(sum_total), sum(total_discount) FROM receipt WHERE store_id = 8 and do_conceal = 0;
+SELECT SUM(sum_total) FROM debit_note WHERE store_id = 8;
+SELECT SUM(sum_total) FROM credit_note WHERE store_id = 8;
+
 ////////////////////////////
 
 select * FROM (SELECT c.`name`, c.`contact_name`, c.id, count(c.id) as _count FROM `sales_invoice` as si left join clients as c on si.client_id = c.id where si.date >= '2024-07-01' and si.date <= '2024-08-29' and si.store_id = 3 group by client_id) as _tmp where _count = 1;
