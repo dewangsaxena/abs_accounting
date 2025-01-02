@@ -184,9 +184,9 @@ class CustomerStatement {
                     'transaction_date' => Utils::convert_date_to_human_readable($record['txn_date']),
                     'transaction_id' => TRANSACTION_NAMES_ABBR[$record['txn_type']]. '-'. $record['txn_id'],
                     'transaction_type' => TRANSACTION_NAMES[$record['txn_type']],
-                    'balance' => Utils::number_format($txn_amount),
+                    'balance' => $txn_amount,
                     'sales_invoice_id' => is_numeric($record['sales_invoice_id']) ? TRANSACTION_NAMES_ABBR[SALES_INVOICE]. '-'. $record['sales_invoice_id']: '-',
-                    'amount_total' => Utils::number_format($total_amount),
+                    'amount_total' => $total_amount,
                     'txn_id' => $record['txn_id'],
                     'txn_type' => $record['txn_type'],
                 ];  
@@ -272,10 +272,10 @@ class CustomerStatement {
                 'client_name' => $client_details['name'],
                 'contact_name' => $client_details['contact'],
                 'transaction_records' => $transaction_records,
-                'current' => Utils::number_format($aged_summary['current']),
-                '31-60' => Utils::number_format($aged_summary['31-60']),
-                '60+' => Utils::number_format($aged_summary['61-90'] + $aged_summary['91+']),
-                'total_amount' => Utils::number_format($aged_summary['total']),
+                'current' => $aged_summary['current'],
+                '31-60' => $aged_summary['31-60'],
+                '60+' => $aged_summary['61-90'] + $aged_summary['91+'],
+                'total_amount' => $aged_summary['total'],
             ];
             $customer_statement_filename = 'customer_statement_'. Utils::generate_token(8). '_'.strtolower(Utils::convert_date_to_human_readable($till_date, '_'));
             GeneratePDF::customer_statement(
