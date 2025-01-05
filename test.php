@@ -1126,4 +1126,50 @@ function wash_report_2(string $start_date, string $end_date, array $payment_meth
 
 // wash_report_2('2022-01-01', '2024-10-31', [PaymentMethod::DEBIT, PaymentMethod::CASH]);
 // hello
+
+function generate_line_code_file(int $store_id): void {
+    $db = get_db_instance();
+
+    $query = <<<'EOS'
+    SELECT
+        i.`identifier`,
+        i.`description`,
+        inv.`aisle`,
+        inv.`shelf`,
+        inv.`column`
+    FROM items AS i
+    LEFT JOIN 
+        inventory AS inv
+    ON 
+        i.id = inv.item_id 
+    WHERE 
+        inv.`store_id` = :store_id
+    AND
+        inv.`quantity` > 0; 
+    EOS;
+
+    $statement = $db -> prepare($query);
+    $statement -> execute([':store_id' => $store_id]);
+    $results = $statement -> fetchAll(PDO::FETCH_ASSOC);
+
+    $store_name = str_replace(' ', '_', strtolower(StoreDetails::STORE_DETAILS[$store_id]['name'].'.csv'));
+    $file_handle = fopen($store_name, 'w+');
+
+    fputcsv($file_handle, ['Item', 'Description', 'Line Code', 'Aisle', 'Shelf', 'Column']);
+
+    foreach($results as $r) {
+        fputcsv($file_handle, [
+            $r['identifier'], 
+            $r['description'],
+            '',
+            $r['aisle'],
+            $r['shelf'],
+            $r['column'],
+        ]);    
+    }
+
+    fclose($file_handle);
+}
+
+generate_line_code_file(StoreDetails::CALGARY);
 ?>
