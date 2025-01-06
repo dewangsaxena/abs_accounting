@@ -299,7 +299,7 @@ const CustomerAgedSummaryList = memo(() => {
  * Customer Statement
  * @returns
  */
-const CustomerStatement = memo(() => {
+const CustomerStatementV2 = memo(() => {
   redirectIfInvalidSession();
 
   // Customer Statement Report
@@ -557,4 +557,4 @@ const CustomerStatement = memo(() => {
   );
 });
 
-export default CustomerStatement;
+export default CustomerStatementV2;
