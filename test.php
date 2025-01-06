@@ -1174,7 +1174,7 @@ function generate_line_code_file(int $store_id): void {
 // generate_line_code_file(StoreDetails::CALGARY);
 
 function merge_csv_file(): array {
-    $filenames = ['a.csv', 'b.csv'];
+    $filenames = ['a.csv', 'b.csv', 'c.csv'];
 
     $combined_data = [];
 
@@ -1191,17 +1191,42 @@ function format_data1 (array $data): array {
     $items = [];
     foreach($data as $item) {
         $identifier = $item[0];
-        if(isset($items[$identifier])) $items[$identifier] = [];
-        $items[$identifier] []= $item[2];
+
+        // Check for Presence 
+        if(isset($items[$identifier]) === false) $items[$identifier] = [];
+
+        // Line Code
+        $line_code = $item[2];
+
+        if(count($items[$identifier]) > 0 && $items[$identifier][0] === $line_code) continue;
+
+        /* First time adding or descripancy in line code detected */
+        else $items[$identifier] []= $line_code;
     }
 
     return $items;
 }
 
-function process_line_codes(): void {
-    $combined_data = merge_csv_file();
-    $data = format_data1($combined_data);
-    print_r($data);
+function validate_data(array $data): void {
+    $multiple_codes_for_items = [];
+    foreach($data as $d) {
+        if(count($d) > 1) $multiple_codes_for_items[]= $d;
+    }
+
+    if(count($multiple_codes_for_items) > 0) throw new Exception('Validation Failed.');
 }
+
+function process_line_codes(): void {
+    try {
+        $combined_data = merge_csv_file();
+        $data = format_data1($combined_data);
+        print_r($data);
+        validate_data($data);
+    }
+    catch(Exception $e) {
+        print_r($e -> getMessage());
+    }
+}
+
 process_line_codes();
 ?>
