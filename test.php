@@ -1171,5 +1171,20 @@ function generate_line_code_file(int $store_id): void {
     fclose($file_handle);
 }
 
-generate_line_code_file(StoreDetails::CALGARY);
+// generate_line_code_file(StoreDetails::CALGARY);
+
+function merge_csv_file(): array {
+    $filenames = ['a.csv', 'b.csv'];
+
+    $combined_data = [];
+
+    // Read 
+    foreach($filenames as $file) {
+        $data = Utils::read_csv_file($file);
+        $combined_data = array_merge($combined_data, $data);
+    }
+
+    return $combined_data;
+}
+
 ?>
