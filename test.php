@@ -70,7 +70,7 @@ function generate_list(int $store_id) {
         EOS;
     }
 
-    $total_value = Utils::number_format($total_value, 200);
+    $total_value = Utils::number_format($total_value, 2);
     $code .= "</table><br><br>Total Inventory Value: &nbsp;&nbsp;&nbsp;&nbsp;<label style='letter-spacing: 2px;font-weight:bold;'>\$ $total_value</label>";
 
     echo $code;
