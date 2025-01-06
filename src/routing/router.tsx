@@ -14,6 +14,7 @@ import CustomerAgedSummary from "../components/reports/customer_aged_summary/Cus
 import CustomerStatement from "../components/reports/customer_statement/CustomerStatement";
 import CustomerSummary from "../components/reports/customer_summary/CustomerSummary";
 import ItemFrequency from "../components/inventory/ItemFrequency";
+import CustomerStatementV2 from "../components/reports/customer_statement/CustomerStatementV2";
 
 const router = createBrowserRouter([
   {
@@ -195,6 +196,10 @@ const router = createBrowserRouter([
   {
     path: "/customer_statement",
     element: <CustomerStatement />,
+  },
+  {
+    path: "/customer_statement2",
+    element: <CustomerStatementV2 />,
   },
   {
     path: "/customer_summary",
