@@ -1187,4 +1187,21 @@ function merge_csv_file(): array {
     return $combined_data;
 }
 
+function format_data1 (array $data): array {
+    $items = [];
+    foreach($data as $item) {
+        $identifier = $item[0];
+        if(isset($items[$identifier])) $items[$identifier] = [];
+        $items[$identifier] []= $item[2];
+    }
+
+    return $items;
+}
+
+function process_line_codes(): void {
+    $combined_data = merge_csv_file();
+    $data = format_data1($combined_data);
+    print_r($data);
+}
+process_line_codes();
 ?>
