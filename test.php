@@ -1198,6 +1198,7 @@ function format_data1 (array $data): array {
         // Line Code
         $line_code = $item[2];
 
+        // Check for presence of same line code 
         if(count($items[$identifier]) > 0 && $items[$identifier][0] === $line_code) continue;
 
         /* First time adding or descripancy in line code detected */
