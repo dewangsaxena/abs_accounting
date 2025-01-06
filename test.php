@@ -1221,7 +1221,6 @@ function process_line_codes(): void {
     try {
         $combined_data = merge_csv_file();
         $data = format_data1($combined_data);
-        print_r($data);
         validate_data($data);
     }
     catch(Exception $e) {
