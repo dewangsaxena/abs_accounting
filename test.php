@@ -1174,7 +1174,7 @@ function generate_line_code_file(int $store_id): void {
 // generate_line_code_file(StoreDetails::CALGARY);
 
 function merge_csv_file(): array {
-    $filenames = ['a.csv', 'b.csv', 'c.csv'];
+    $filenames = ['a.csv'];//, 'b.csv', 'c.csv'];
 
     $combined_data = [];
 
@@ -1208,10 +1208,9 @@ function format_data1 (array $data): array {
     return $items;
 }
 
-function validate_data(array $data): void {
+function validate_data(array $data, array &$identifiers): void {
     $multiple_codes_for_items = [];
-    $keys = array_keys($data);
-    foreach($keys as $k) {
+    foreach($identifiers as $k) {
         $d = $data[$k];
         if(count($d) > 1) {
             if(isset($multiple_codes_for_items[$k]) === false) $multiple_codes_for_items[$k] = [];
@@ -1230,16 +1229,61 @@ function validate_data(array $data): void {
     }
 }
 
+function update_item_identifier(string $identifier, string $line_code, PDOStatement &$statement_update, PDOStatement &$statement_fetch): void {
+
+    // Find Description
+    $result = $statement_fetch -> execute([':identifier' => $identifier]);
+    if(isset($result[0]['description']) === false) throw new Exception('Unable to Find Identifier: '. $identifier);
+
+    // Description
+    $description = $result[0]['description'];
+
+    $new_identifier = trim("$line_code$identifier");
+    $is_successful = $statement_update -> execute([
+        ':new_code' => "$new_identifier $description",
+        ':new_identifier' => $new_identifier,
+        ':old_identifier' => trim($identifier),
+    ]);
+
+    if($is_successful !== true || $statement_update -> rowCount() < 1) throw new Exception('Unable to Update Identifier: '. $identifier);
+}
+
 function process_line_codes(): void {
+    $db = get_db_instance();
     try {
-        $combined_data = merge_csv_file();
-        $data = format_data1($combined_data);
-        validate_data($data);
+        $data = format_data1(merge_csv_file());
+        $identifiers = array_keys($data);
+
+        // Validate 
+        validate_data($data, $identifiers);
+
+        // Update DB
+        $db -> beginTransaction();
+
+        // Statement Fetch
+        $statement_fetch = $db -> prepare('SELECT `description` FROM items WHERE `identifier` = :identifier LIMIT 1;');
+
+        // Prepare Statement
+        $statement_update = $db -> prepare(<<<'EOS'
+        UPDATE 
+            `items`
+        SET 
+            `code` = :new_code,
+            `identifier` = :new_identifier
+        WHERE
+            `identifier` = :old_identifier;
+        EOS);
+
+        foreach($identifiers as $identifier) {
+            update_item_identifier($identifier, $data[$identifier][0], $statement_update, $statement_fetch);
+        }
+        $db -> commit();
+        echo 'Done';
     }
     catch(Exception $e) {
+        $db -> rollBack();
         print_r($e -> getMessage());
     }
 }
-
 process_line_codes();
 ?>
