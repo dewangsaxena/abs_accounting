@@ -1210,11 +1210,24 @@ function format_data1 (array $data): array {
 
 function validate_data(array $data): void {
     $multiple_codes_for_items = [];
-    foreach($data as $d) {
-        if(count($d) > 1) $multiple_codes_for_items[]= $d;
+    $keys = array_keys($data);
+    foreach($keys as $k) {
+        $d = $data[$k];
+        if(count($d) > 1) {
+            if(isset($multiple_codes_for_items[$k]) === false) $multiple_codes_for_items[$k] = [];
+            $multiple_codes_for_items[$k]= $d;
+        }
     }
 
-    if(count($multiple_codes_for_items) > 0) throw new Exception('Validation Failed.');
+    if(count($multiple_codes_for_items) > 0) {
+        $keys = array_keys($multiple_codes_for_items);
+        foreach($keys as $k) {
+            echo "$k: ~~> ";
+            foreach($multiple_codes_for_items[$k] as $i) echo "$i, ";
+            echo "<br>";
+        }
+        throw new Exception('Validation Failed.');
+    }
 }
 
 function process_line_codes(): void {
