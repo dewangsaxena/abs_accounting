@@ -1231,8 +1231,12 @@ function validate_data(array $data, array &$identifiers): void {
 
 function update_item_identifier(string $identifier, string $line_code, PDOStatement &$statement_update, PDOStatement &$statement_fetch): void {
 
+    // Trim
+    $identifier = trim($identifier);
+
     // Find Description
-    $result = $statement_fetch -> execute([':identifier' => $identifier]);
+    $statement_fetch -> execute([':identifier' => $identifier]);
+    $result = $statement_fetch -> fetchAll(PDO::FETCH_ASSOC);
     if(isset($result[0]['description']) === false) throw new Exception('Unable to Find Identifier: '. $identifier);
 
     // Description
@@ -1242,7 +1246,7 @@ function update_item_identifier(string $identifier, string $line_code, PDOStatem
     $is_successful = $statement_update -> execute([
         ':new_code' => "$new_identifier $description",
         ':new_identifier' => $new_identifier,
-        ':old_identifier' => trim($identifier),
+        ':old_identifier' => $identifier,
     ]);
 
     if($is_successful !== true || $statement_update -> rowCount() < 1) throw new Exception('Unable to Update Identifier: '. $identifier);
