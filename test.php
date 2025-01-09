@@ -1227,7 +1227,6 @@ function validate_data(array $data, array &$identifiers): void {
         foreach($keys as $k) {
             $error_items = implode(', ', $multiple_codes_for_items[$k]);
             echo "$k: ~~> $error_items<br>";
-
             fputcsv($error_file_handle, [$k, ...$multiple_codes_for_items[$k]]);
         }
         fclose($error_file_handle);
