@@ -1225,14 +1225,13 @@ function validate_data(array $data, array &$identifiers): void {
         $error_file_handle = fopen('error_identifiers.csv', 'w+');
         $keys = array_keys($multiple_codes_for_items);
         foreach($keys as $k) {
-            echo "$k: ~~> ";
             $error_items = implode(', ', $multiple_codes_for_items[$k]);
-            echo "$error_items<br>";
+            echo "$k: ~~> $error_items<br>";
 
             fputcsv($error_file_handle, [$k, ...$multiple_codes_for_items[$k]]);
         }
         fclose($error_file_handle);
-        throw new Exception('Validation Failed.');
+        throw new Exception('<br><br>Validation Failed.');
     }
 }
 
