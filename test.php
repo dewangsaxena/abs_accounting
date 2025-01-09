@@ -1192,11 +1192,14 @@ function format_data1 (array $data): array {
     foreach($data as $item) {
         $identifier = $item[0];
 
+        // Line Code
+        $line_code = trim($item[2]);
+        
+        // Check for Valid Line Code
+        if(strlen($line_code) === 0) continue;
+
         // Check for Presence 
         if(isset($items[$identifier]) === false) $items[$identifier] = [];
-
-        // Line Code
-        $line_code = $item[2];
 
         // Check for presence of same line code 
         if(count($items[$identifier]) > 0 && $items[$identifier][0] === $line_code) continue;
