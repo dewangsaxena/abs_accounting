@@ -1174,7 +1174,7 @@ function generate_line_code_file(int $store_id): void {
 // generate_line_code_file(StoreDetails::CALGARY);
 
 function merge_csv_file(): array {
-    $filenames = ['a.csv'];//, 'b.csv', 'c.csv'];
+    $filenames = ['a.csv', 'b.csv', 'c.csv'];
 
     $combined_data = [];
 
@@ -1219,12 +1219,16 @@ function validate_data(array $data, array &$identifiers): void {
     }
 
     if(count($multiple_codes_for_items) > 0) {
+        $error_file_handle = fopen('error_identifiers.csv', 'w+');
         $keys = array_keys($multiple_codes_for_items);
         foreach($keys as $k) {
             echo "$k: ~~> ";
             foreach($multiple_codes_for_items[$k] as $i) echo "$i, ";
             echo "<br>";
+
+            fputcsv($error_file_handle, [$k, ...$multiple_codes_for_items[$k]]);
         }
+        fclose($error_file_handle);
         throw new Exception('Validation Failed.');
     }
 }
@@ -1281,11 +1285,11 @@ function process_line_codes(): void {
         foreach($identifiers as $identifier) {
             update_item_identifier($identifier, $data[$identifier][0], $statement_update, $statement_fetch);
         }
-        $db -> commit();
+        if($db -> inTransaction()) $db -> commit();
         echo 'Done';
     }
     catch(Exception $e) {
-        $db -> rollBack();
+        if($db -> inTransaction()) $db -> rollBack();
         print_r($e -> getMessage());
     }
 }
