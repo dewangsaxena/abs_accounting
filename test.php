@@ -1225,7 +1225,6 @@ function validate_data(array $data, array &$identifiers): void {
         $error_file_handle = fopen('error_identifiers.csv', 'w+');
         $keys = array_keys($multiple_codes_for_items);
         foreach($keys as $k) {
-            $temp = [];
             echo "$k: ~~> ";
             $error_items = implode(', ', $multiple_codes_for_items[$k]);
             echo "$error_items<br>";
