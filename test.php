@@ -1231,7 +1231,7 @@ function validate_data(array $data, array &$identifiers): void {
             fputcsv($error_file_handle, [$k, ...$multiple_codes_for_items[$k]]);
         }
         fclose($error_file_handle);
-        throw new Exception('<br><br>Validation Failed.');
+        throw new Exception('<br><br>VALIDATION FAILED.');
     }
 }
 
