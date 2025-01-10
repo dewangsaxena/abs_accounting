@@ -27,6 +27,7 @@ import {
   VStack,
   useDisclosure,
   useToast,
+  Text,
 } from "@chakra-ui/react";
 import {
   CurrencyIcon,
@@ -310,30 +311,30 @@ const Header = ({
         <HStack width="100%">
           {(type == TRANSACTION_TYPES["SI"] ||
             type == TRANSACTION_TYPES["SR"]) && (
-            <Box width="20%">
-              {/* Payment Method */}
-              <HStack>
-                <Box>
-                  <_Label fontSize="0.7em" letterSpacing={1}>
-                    PAYMENT METHOD:
-                  </_Label>
-                </Box>
-                <Box>
-                  <_Select
-                    isDisabled={enableEditing === false || isProcessed}
-                    value={paymentMethod}
-                    variant={"filled"}
-                    borderRadius={2.5}
-                    fontSize="0.7em"
-                    options={__paymentMethods}
-                    onChange={(event: any) => {
-                      setProperty("paymentMethod", event.target.value);
-                    }}
-                  ></_Select>
-                </Box>
-              </HStack>
-            </Box>
-          )}
+              <Box width="20%">
+                {/* Payment Method */}
+                <HStack>
+                  <Box>
+                    <_Label fontSize="0.7em" letterSpacing={1}>
+                      PAYMENT METHOD:
+                    </_Label>
+                  </Box>
+                  <Box>
+                    <_Select
+                      isDisabled={enableEditing === false || isProcessed}
+                      value={paymentMethod}
+                      variant={"filled"}
+                      borderRadius={2.5}
+                      fontSize="0.7em"
+                      options={__paymentMethods}
+                      onChange={(event: any) => {
+                        setProperty("paymentMethod", event.target.value);
+                      }}
+                    ></_Select>
+                  </Box>
+                </HStack>
+              </Box>
+            )}
           {isViewOrUpdate && (
             <HStack spacing={6} width="70%">
               {/* Transaction ID  */}
@@ -356,24 +357,24 @@ const Header = ({
                       isPaid
                         ? "#00FF7F"
                         : creditAmount < subTotal
-                        ? "red"
-                        : "#FBCEB1"
+                          ? "red"
+                          : "#FBCEB1"
                     }
                     letterSpacing={2}
                     bgColor={
                       isPaid
                         ? "#40826D"
                         : creditAmount < subTotal
-                        ? "black"
-                        : "#97233F"
+                          ? "black"
+                          : "#97233F"
                     }
                     fontSize="0.7em"
                   >
                     {isPaid
                       ? "PAID ✔"
                       : creditAmount < subTotal
-                      ? "PARTIALLY PAID 🞜"
-                      : "UNPAID ✖"}
+                        ? "PARTIALLY PAID 🞜"
+                        : "UNPAID ✖"}
                   </Badge>
                 </Box>
               )}
@@ -520,15 +521,15 @@ const buildAddress = (address: Address) => {
 const ItemHeaderRow = ({ type }: { type: number }) => {
   return (
     <HStack spacing={2}>
-      <Box width="1%">{}</Box>
+      <Box width="1%">{ }</Box>
       {(type === TRANSACTION_TYPES["SI"] ||
         type === TRANSACTION_TYPES["SR"]) && (
-        <Box width="2%" fontSize={"0.7em"} letterSpacing={2}>
-          <Tooltip label="Back Order" fontSize={"0.8em"} letterSpacing={2}>
-            B.O?
-          </Tooltip>
-        </Box>
-      )}
+          <Box width="2%" fontSize={"0.7em"} letterSpacing={2}>
+            <Tooltip label="Back Order" fontSize={"0.8em"} letterSpacing={2}>
+              B.O?
+            </Tooltip>
+          </Box>
+        )}
       <Box
         width={type == TRANSACTION_TYPES["SR"] ? "15%" : "18%"}
         textAlign={"center"}
@@ -1021,7 +1022,7 @@ const ItemFieldRow = memo(
               );
           }
         })
-        .catch((_: any) => {});
+        .catch((_: any) => { });
     };
 
     // Select Load options for Credit Note
@@ -1152,9 +1153,9 @@ const ItemFieldRow = memo(
                       >
                         {itemDetails !== null
                           ? formatNumberWithDecimalPlaces(
-                              itemDetails.prices[storeId].buyingCost,
-                              2
-                            )
+                            itemDetails.prices[storeId].buyingCost,
+                            2
+                          )
                           : "0"}
                       </_Label>
                     </HStack>
@@ -1170,9 +1171,9 @@ const ItemFieldRow = memo(
                       >
                         {itemDetails !== null
                           ? formatNumberWithDecimalPlaces(
-                              itemDetails.prices[storeId].sellingPrice,
-                              2
-                            )
+                            itemDetails.prices[storeId].sellingPrice,
+                            2
+                          )
                           : "0"}
                       </_Label>
                     </HStack>
@@ -1257,21 +1258,21 @@ const ItemFieldRow = memo(
         {/* Back Order */}
         {(type === TRANSACTION_TYPES["SI"] ||
           type === TRANSACTION_TYPES["SR"]) && (
-          <Box width="2%" marginLeft={1} paddingBottom={0} paddingTop={1}>
-            <Checkbox
-              isReadOnly={type === TRANSACTION_TYPES["SR"]}
-              isChecked={isBackOrderItem ? true : false}
-              isDisabled={enableEditing === false || isItemSet === false}
-              colorScheme="purple"
-              onChange={() => {
-                let newStatus: number = isBackOrderItem ^ 1;
-                setIsBackOrderItem(newStatus);
-                details[rowIndex].isBackOrder = newStatus;
-                updateAmounts();
-              }}
-            ></Checkbox>
-          </Box>
-        )}
+            <Box width="2%" marginLeft={1} paddingBottom={0} paddingTop={1}>
+              <Checkbox
+                isReadOnly={type === TRANSACTION_TYPES["SR"]}
+                isChecked={isBackOrderItem ? true : false}
+                isDisabled={enableEditing === false || isItemSet === false}
+                colorScheme="purple"
+                onChange={() => {
+                  let newStatus: number = isBackOrderItem ^ 1;
+                  setIsBackOrderItem(newStatus);
+                  details[rowIndex].isBackOrder = newStatus;
+                  updateAmounts();
+                }}
+              ></Checkbox>
+            </Box>
+          )}
         {/* Item Identifier */}
         <Box width={type == TRANSACTION_TYPES["SR"] ? "15%" : "18%"}>
           {/* <AsyncSelect
@@ -1389,8 +1390,8 @@ const ItemFieldRow = memo(
                   type == TRANSACTION_TYPES["SR"]
                     ? "15vw"
                     : type === TRANSACTION_TYPES["QT"]
-                    ? "17vw"
-                    : "18vw",
+                      ? "17vw"
+                      : "18vw",
                 borderBottomColor: profitSignalColor,
                 ...AutoSuggestStyle,
               },
@@ -1560,20 +1561,20 @@ const ItemFieldRow = memo(
         </Box>
         {(type == TRANSACTION_TYPES["SI"] ||
           type == TRANSACTION_TYPES["QT"]) && (
-          <Box width="5%" textAlign={"center"}>
-            {/* Buying Cost */}
-            <_Label
-              _key={getUUID()}
-              fontSize="0.75em"
-              fontFamily={numberFont}
-              hide={hidePrivateDetails}
-              toggleVisibility={true}
-              letterSpacing={2}
-            >
-              {formatNumberWithDecimalPlaces(details[rowIndex].buyingCost, 2)}
-            </_Label>
-          </Box>
-        )}
+            <Box width="5%" textAlign={"center"}>
+              {/* Buying Cost */}
+              <_Label
+                _key={getUUID()}
+                fontSize="0.75em"
+                fontFamily={numberFont}
+                hide={hidePrivateDetails}
+                toggleVisibility={true}
+                letterSpacing={2}
+              >
+                {formatNumberWithDecimalPlaces(details[rowIndex].buyingCost, 2)}
+              </_Label>
+            </Box>
+          )}
         {/* Base Price */}
         <Box width="6%">
           <_Input
@@ -1673,9 +1674,9 @@ const ItemFieldRow = memo(
             defaultValue={
               isItemSet
                 ? formatNumberWithDecimalPlaces(
-                    details[rowIndex].discountRate,
-                    2
-                  )
+                  details[rowIndex].discountRate,
+                  2
+                )
                 : 0
             }
             onBlur={(event: any) => {
@@ -1755,13 +1756,13 @@ const ItemFieldRow = memo(
             fontFamily={numberFont}
             defaultValue={
               type === TRANSACTION_TYPES["CN"] ||
-              type === TRANSACTION_TYPES["DN"]
+                type === TRANSACTION_TYPES["DN"]
                 ? formatNumberWithDecimalPlaces(totalTaxRate, 2)
                 : itemDetails !== null
-                ? formatNumberWithDecimalPlaces(totalTaxRate, 2)
-                : isItemSet
-                ? formatNumberWithDecimalPlaces(totalTaxRate, 2)
-                : 0
+                  ? formatNumberWithDecimalPlaces(totalTaxRate, 2)
+                  : isItemSet
+                    ? formatNumberWithDecimalPlaces(totalTaxRate, 2)
+                    : 0
             }
           ></_Input>
         </Box>
@@ -2299,8 +2300,8 @@ const TransactionHeaderDetails = ({
                                   defaultValue={
                                     clientDetails?.primaryDetails !== undefined
                                       ? buildAddress(
-                                          clientDetails.primaryDetails
-                                        )
+                                        clientDetails.primaryDetails
+                                      )
                                       : ""
                                   }
                                   fontFamily={"JetBrains Mono"}
@@ -2353,10 +2354,10 @@ const TransactionHeaderDetails = ({
                                   <Textarea
                                     defaultValue={
                                       clientDetails?.shippingAddresses !==
-                                      undefined
+                                        undefined
                                         ? buildAddress(
-                                            clientDetails.shippingAddresses
-                                          )
+                                          clientDetails.shippingAddresses
+                                        )
                                         : ""
                                     }
                                     bgColor="white"
@@ -2406,62 +2407,69 @@ const TransactionHeaderDetails = ({
                     </HStack>
                   </Box>
                   {type === TRANSACTION_TYPES["SR"] && (
-                    <Box width="100%" marginLeft={10}>
-                      <AsyncSelect
-                        // key={getUUID()}
-                        tabSelectsValue={true}
-                        isDisabled={
-                          clientDetails === null ||
-                          __lockCounter !== 0 ||
-                          isViewOrUpdate
-                        }
-                        isClearable={true}
-                        placeholder="Search Invoice by ID."
-                        styles={AsyncSelectStyle}
-                        loadOptions={loadInvoicesByClientForSalesReturns}
-                        defaultOptions={allInvoicesForSelectedClient}
-                        {...defaultSelectedSalesInvoice}
-                        // {...(type !== TRANSACTION_TYPES["SR"] && enableEditing === true ? {inputValue: selectedSalesInvoice?.toString()}: {})}
-                        onChange={(event: any) => {
-                          if (event && event.value) {
-                            setProperty(
-                              "selectedSalesInvoice",
-                              parseInt(event.label)
-                            );
-                            setProperty(
-                              "selectedSalesInvoiceLastModifiedTimestamp",
-                              event.value.lastModifiedTimestamp
-                            );
-
-                            setProperty("po", event.value.po);
-                            setProperty("unitNo", event.value.unitNo);
-                            setProperty("vin", event.value.vin);
-                            setProperty("details", event.value.details);
-
-                            setProperty(
-                              "earlyPaymentDiscount",
-                              event.value.earlyPaymentDiscount
-                            );
-                            setProperty(
-                              "earlyPaymentPaidWithinDays",
-                              event.value.earlyPaymentPaidWithinDays
-                            );
-                            setProperty(
-                              "netAmountDueWithinDays",
-                              event.value.netAmountDueWithinDays
-                            );
-                            setProperty(
-                              "disableFederalTaxes",
-                              event.value.disableFederalTaxes
-                            );
-                            setProperty(
-                              "disableProvincialTaxes",
-                              event.value.disableProvincialTaxes
-                            );
+                    <>
+                      <Box width="100%" marginLeft={10}>
+                        <AsyncSelect
+                          tabSelectsValue={true}
+                          isDisabled={
+                            clientDetails === null ||
+                            __lockCounter !== 0 ||
+                            isViewOrUpdate
                           }
-                        }}
-                      />
-                    </Box>
+                          isClearable={true}
+                          placeholder="Search Invoice by ID."
+                          styles={AsyncSelectStyle}
+                          loadOptions={loadInvoicesByClientForSalesReturns}
+                          defaultOptions={allInvoicesForSelectedClient}
+                          {...defaultSelectedSalesInvoice}
+                          onChange={(event: any) => {
+                            if (event && event.value) {
+                              setProperty(
+                                "selectedSalesInvoice",
+                                parseInt(event.label)
+                              );
+                              setProperty(
+                                "selectedSalesInvoiceLastModifiedTimestamp",
+                                event.value.lastModifiedTimestamp
+                              );
+
+                              setProperty("po", event.value.po);
+                              setProperty("unitNo", event.value.unitNo);
+                              setProperty("vin", event.value.vin);
+                              setProperty("details", event.value.details);
+
+                              setProperty(
+                                "earlyPaymentDiscount",
+                                event.value.earlyPaymentDiscount
+                              );
+                              setProperty(
+                                "earlyPaymentPaidWithinDays",
+                                event.value.earlyPaymentPaidWithinDays
+                              );
+                              setProperty(
+                                "netAmountDueWithinDays",
+                                event.value.netAmountDueWithinDays
+                              );
+                              setProperty(
+                                "disableFederalTaxes",
+                                event.value.disableFederalTaxes
+                              );
+                              setProperty(
+                                "disableProvincialTaxes",
+                                event.value.disableProvincialTaxes
+                              );
+                            }
+                          }}
+                        />
+                      </Box>
+                      <HStack>
+                        <Box width="25%">
+                          <Tooltip label="Restocking fees" fontSize="0.7em">
+                            RSTK FEES
+                          </Tooltip>
+                        </Box>
+                      </HStack>
+                    </>
                   )}
                   {type === TRANSACTION_TYPES["SI"] && (
                     <Box width="100%">
@@ -3026,56 +3034,56 @@ const FooterDetails = ({ enableEditing, hidePrivateDetails }: FooterProps) => {
             </HStack>
             {(transactionType === TRANSACTION_TYPES["SI"] ||
               transactionType === TRANSACTION_TYPES["QT"]) && (
-              <VStack align={"start"}>
-                <_Divider margin={0}></_Divider>
-                <HStack width={"100%"}>
-                  <Badge
-                    bg={getProfitMarginColorScheme(profitMarginThisTransaction)}
-                    letterSpacing={2}
-                  >
-                    PROFIT MARGIN
-                  </Badge>
-                  <Box width="100%" textAlign={"right"}>
-                    <_Label
-                      fontFamily={numberFont}
-                      fontSize={"0.7em"}
-                      fontWeight="bold"
-                      hide={hidePrivateDetails}
-                      toggleVisibility={true}
+                <VStack align={"start"}>
+                  <_Divider margin={0}></_Divider>
+                  <HStack width={"100%"}>
+                    <Badge
+                      bg={getProfitMarginColorScheme(profitMarginThisTransaction)}
                       letterSpacing={2}
                     >
-                      {formatNumberWithDecimalPlaces(
-                        profitMarginThisTransaction,
-                        2
-                      )}{" "}
-                      %
-                    </_Label>
-                  </Box>
-                </HStack>
-                <HStack width={"100%"}>
-                  <Badge bg={"#EADDCA"} letterSpacing={2}>
-                    C.O.G.S
-                  </Badge>
-                  <Box width="100%" textAlign={"right"}>
-                    <_Label
-                      fontFamily={numberFont}
-                      fontSize={"0.7em"}
-                      fontWeight="bold"
-                      hide={hidePrivateDetails}
-                      toggleVisibility={true}
-                      letterSpacing={2}
-                    >
-                      {formatNumberWithDecimalPlaces(cogs, 2)} (
-                      {formatNumberWithDecimalPlaces(
-                        cogsMarginThisTransaction,
-                        2
-                      )}
-                      %)
-                    </_Label>
-                  </Box>
-                </HStack>
-              </VStack>
-            )}
+                      PROFIT MARGIN
+                    </Badge>
+                    <Box width="100%" textAlign={"right"}>
+                      <_Label
+                        fontFamily={numberFont}
+                        fontSize={"0.7em"}
+                        fontWeight="bold"
+                        hide={hidePrivateDetails}
+                        toggleVisibility={true}
+                        letterSpacing={2}
+                      >
+                        {formatNumberWithDecimalPlaces(
+                          profitMarginThisTransaction,
+                          2
+                        )}{" "}
+                        %
+                      </_Label>
+                    </Box>
+                  </HStack>
+                  <HStack width={"100%"}>
+                    <Badge bg={"#EADDCA"} letterSpacing={2}>
+                      C.O.G.S
+                    </Badge>
+                    <Box width="100%" textAlign={"right"}>
+                      <_Label
+                        fontFamily={numberFont}
+                        fontSize={"0.7em"}
+                        fontWeight="bold"
+                        hide={hidePrivateDetails}
+                        toggleVisibility={true}
+                        letterSpacing={2}
+                      >
+                        {formatNumberWithDecimalPlaces(cogs, 2)} (
+                        {formatNumberWithDecimalPlaces(
+                          cogsMarginThisTransaction,
+                          2
+                        )}
+                        %)
+                      </_Label>
+                    </Box>
+                  </HStack>
+                </VStack>
+              )}
           </Box>
 
           {/* Button */}
