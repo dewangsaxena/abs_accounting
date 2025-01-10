@@ -1883,8 +1883,7 @@ const TransactionHeaderDetails = ({
     txnDate,
     selectedSalesInvoice,
     restockingRate,
-    restockingFees, 
-    subTotal,
+    updateAmounts,
     setProperty,
     fetchInvoicesByClientForSalesReturns,
   } = transactionStore(
@@ -1905,11 +1904,11 @@ const TransactionHeaderDetails = ({
       txnDate: state.txnDate,
       selectedSalesInvoice: state.selectedSalesInvoice,
       restockingRate: state.restockingRate,
-      restockingFees: state.restockingFees,
       subTotal: state.subTotal,
       setProperty: state.setProperty,
       fetchInvoicesByClientForSalesReturns:
         state.fetchInvoicesByClientForSalesReturns,
+        updateAmounts: state.updateAmounts,
     }),
     shallow
   );
@@ -2487,12 +2486,14 @@ const TransactionHeaderDetails = ({
                             fontFamily={numberFont}
                             letterSpacing={inputConfig.letterSpacing}
                             width="100%"
+                            onClick={(event:any) => {
+                              event.target.select();
+                            }}
                             onBlur={(e: any) => {
                               if (e && e.target && e.target.value) {
                                 let rate: number = parseFloat(e.target.value);
                                 setProperty("restockingRate", rate);
-                                let fees: number = (subTotal * rate) / 100;
-                                setProperty("restockingFees", fees);
+                                updateAmounts();
                               }
                             }}
                           ></_Input>
