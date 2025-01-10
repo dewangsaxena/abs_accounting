@@ -254,7 +254,8 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
       txnDiscount: number = 0,
       gstHSTTax: number = 0,
       pstTax: number = 0,
-      cogs: number = 0;
+      cogs: number = 0,
+      restockingFees: number = 0;
 
     let base_price: number = 0,
       price_per_item: number = 0,
@@ -297,12 +298,16 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
     txnDiscount = toFixed(txnDiscount);
     cogs = toFixed(cogs);
 
+    // Restocking Rate
+    let restockingRate: number = get().restockingRate || 0;
+
     set({ subTotal: subTotal });
     set({ gstHSTTax: gstHSTTax });
     set({ pstTax: pstTax });
     set({ txnDiscount: txnDiscount });
     set({ sumTotal: toFixed(subTotal + gstHSTTax + pstTax) });
     set({ cogs: cogs });
+    set({restockingFees: (restockingRate * subTotal) / 100})
   },
   process: async (): Promise<any> => {
     // Remove Invalid Rows

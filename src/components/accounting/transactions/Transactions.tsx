@@ -1884,7 +1884,7 @@ const TransactionHeaderDetails = ({
     selectedSalesInvoice,
     restockingRate,
     restockingFees, 
-    
+    subTotal,
     setProperty,
     fetchInvoicesByClientForSalesReturns,
   } = transactionStore(
@@ -1906,6 +1906,7 @@ const TransactionHeaderDetails = ({
       selectedSalesInvoice: state.selectedSalesInvoice,
       restockingRate: state.restockingRate,
       restockingFees: state.restockingFees,
+      subTotal: state.subTotal,
       setProperty: state.setProperty,
       fetchInvoicesByClientForSalesReturns:
         state.fetchInvoicesByClientForSalesReturns,
@@ -2488,7 +2489,10 @@ const TransactionHeaderDetails = ({
                             width="100%"
                             onBlur={(e: any) => {
                               if (e && e.target && e.target.value) {
-                                setProperty("restockingRate", parseFloat(e.target.value));
+                                let rate: number = parseFloat(e.target.value);
+                                setProperty("restockingRate", rate);
+                                let fees: number = (subTotal * rate) / 100;
+                                setProperty("restockingFees", fees);
                               }
                             }}
                           ></_Input>
