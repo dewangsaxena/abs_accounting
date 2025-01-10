@@ -2410,7 +2410,7 @@ class __GenerateCustomerAgedSummary {
     private static function header(): void {
         // Store Name
         self::$pdf -> SetFont(self::COURIER, 'B', 16,);
-        self::$pdf -> Cell(w: 35, h: 4, txt: StoreDetails::STORE_DETAILS[self::$details['store_id']]['name'], border: self::SHOW_BORDER_FOR_DEBUG, ln:1);
+        self::$pdf -> Cell(w: 0, h: 4, txt: StoreDetails::STORE_DETAILS[self::$details['store_id']]['address']['name']. '('. StoreDetails::STORE_DETAILS[self::$details['store_id']]['name'].')', border: self::SHOW_BORDER_FOR_DEBUG, ln:1);
         self::$pdf -> SetFont(self::COURIER, '', 10,);
         self::$pdf -> Ln(1);
         self::$pdf -> Cell(w: 35, h: 4, txt: 'Customer Aged Summary As at '. self::$details['date'], border: self::SHOW_BORDER_FOR_DEBUG, ln:1);
