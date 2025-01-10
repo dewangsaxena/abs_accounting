@@ -3005,7 +3005,7 @@ const FooterDetails = ({ enableEditing, hidePrivateDetails }: FooterProps) => {
                 </HStack>
               </Box>
               <Box width="10%">
-                <VscRedo color="#0096FF"></VscRedo>
+                <VscRedo color="#507687"></VscRedo>
               </Box>
               <Box width="50%" textAlign="right">
                 <_Label
