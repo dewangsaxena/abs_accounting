@@ -238,6 +238,9 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
     else if (detailName === "salesRepId") {
       set({ salesRepId: value });
     }
+    else if(detailName === "restockingRate") set({restockingRate: value});
+    else if(detailName === "restockingFees") set({restockingFees: value});
+
   },
   addRow: () => {
     let txnDetails = get().details;
