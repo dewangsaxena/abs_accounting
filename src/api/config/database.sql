@@ -26,7 +26,7 @@ CREATE TABLE store_details(
     id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `name` VARCHAR(32) NOT NULL UNIQUE,
     profit_margins JSON NOT NULL DEFAULT '{}',
-    restocking_rate NUMERIC(3, 2) DEFAULT 0,
+    restocking_rate NUMERIC(3, 2) UNSIGNED DEFAULT 0,
     modified TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX idx_store_location ON store_details(`name`);
@@ -316,8 +316,8 @@ CREATE TABLE IF NOT EXISTS sales_return(
     pst_tax NUMERIC(13, 4) NOT NULL,
     txn_discount NUMERIC(13, 4) NOT NULL,
     receipt_discount NUMERIC(13, 4) NOT NULL,
-    restocking_rate NUMERIC(3, 4) NOT NULL,
-    restocking_amount NUMERIC(13, 4) NOT NULL,
+    restocking_rate NUMERIC(3, 4) UNSIGNED NOT NULL,
+    restocking_amount NUMERIC(13, 4) UNSIGNED NOT NULL,
     payment_method TINYINT UNSIGNED NOT NULL,
     details JSON NOT NULL,
     store_id SMALLINT UNSIGNED NOT NULL,
