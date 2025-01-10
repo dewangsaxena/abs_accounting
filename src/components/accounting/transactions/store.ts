@@ -302,12 +302,15 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
     let restockingRate: number = get().restockingRate || 0;
     if(restockingRate > 0 && subTotal > 0) restockingFees = (restockingRate * subTotal) / 100;
 
+    // Deduct Restocking Fees from Subtotal
+    subTotal -= restockingFees;
+
     set({ subTotal: subTotal });
     set({ gstHSTTax: gstHSTTax });
     set({ pstTax: pstTax });
     set({ txnDiscount: txnDiscount });
     set({ restockingFees: restockingFees });
-    set({ sumTotal: toFixed(subTotal + gstHSTTax + pstTax - restockingFees) });
+    set({ sumTotal: toFixed(subTotal + gstHSTTax + pstTax) });
     set({ cogs: cogs });
   },
   process: async (): Promise<any> => {

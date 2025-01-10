@@ -2985,27 +2985,6 @@ const FooterDetails = ({ enableEditing, hidePrivateDetails }: FooterProps) => {
               <Box width="40%">
                 <HStack>
                   <_Label fontSize="0.7em" letterSpacing={2}>
-                    SUBTOTAL:
-                  </_Label>
-                </HStack>
-              </Box>
-              <Box width="10%">
-                <IoIosPricetags color="#0096FF"></IoIosPricetags>
-              </Box>
-              <Box width="50%" textAlign="right">
-                <_Label
-                  fontFamily={numberFont}
-                  fontSize="0.7em"
-                  letterSpacing={2}
-                >
-                  {formatNumberWithDecimalPlaces(subTotal, 2)}
-                </_Label>
-              </Box>
-            </HStack>
-            <HStack alignItems={"end"} marginTop={1}>
-              <Box width="40%">
-                <HStack>
-                  <_Label fontSize="0.7em" letterSpacing={2}>
                     RSTK FEES:
                   </_Label>
                 </HStack>
@@ -3020,6 +2999,27 @@ const FooterDetails = ({ enableEditing, hidePrivateDetails }: FooterProps) => {
                   letterSpacing={2}
                 >
                   {formatNumberWithDecimalPlaces(restockingFees || 0, 2)}
+                </_Label>
+              </Box>
+            </HStack>
+            <HStack alignItems={"end"} marginTop={1}>
+              <Box width="40%">
+                <HStack>
+                  <_Label fontSize="0.7em" letterSpacing={2}>
+                    SUBTOTAL:
+                  </_Label>
+                </HStack>
+              </Box>
+              <Box width="10%">
+                <IoIosPricetags color="#0096FF"></IoIosPricetags>
+              </Box>
+              <Box width="50%" textAlign="right">
+                <_Label
+                  fontFamily={numberFont}
+                  fontSize="0.7em"
+                  letterSpacing={2}
+                >
+                  {formatNumberWithDecimalPlaces(subTotal, 2)}
                 </_Label>
               </Box>
             </HStack>
