@@ -1882,6 +1882,9 @@ const TransactionHeaderDetails = ({
     __lockCounter,
     txnDate,
     selectedSalesInvoice,
+    restockingRate,
+    restockingFees, 
+    
     setProperty,
     fetchInvoicesByClientForSalesReturns,
   } = transactionStore(
@@ -1901,6 +1904,8 @@ const TransactionHeaderDetails = ({
       __lockCounter: state.__lockCounter,
       txnDate: state.txnDate,
       selectedSalesInvoice: state.selectedSalesInvoice,
+      restockingRate: state.restockingRate,
+      restockingFees: state.restockingFees,
       setProperty: state.setProperty,
       fetchInvoicesByClientForSalesReturns:
         state.fetchInvoicesByClientForSalesReturns,
@@ -2463,10 +2468,30 @@ const TransactionHeaderDetails = ({
                         />
                       </Box>
                       <HStack>
-                        <Box width="25%">
-                          <Tooltip label="Restocking fees" fontSize="0.7em">
-                            RSTK FEES
+                        <Box width="25%" fontSize="0.7em">
+                          <Tooltip label="Restocking fees" >
+                            RSTK FEES:
                           </Tooltip>
+                        </Box>
+                        <Box width="75%">
+                        <_Input
+                            defaultValue={restockingRate}
+                            type="number"
+                            isReadOnly={isReadOnly || isProcessed}
+                            borderBottomColor={inputConfig.borderColor}
+                            borderBottomWidth={inputConfig.borderWidth}
+                            borderRadius={inputConfig.borderRadius}
+                            size={inputConfig.size}
+                            fontSize={inputConfig.fontSize}
+                            fontFamily={numberFont}
+                            letterSpacing={inputConfig.letterSpacing}
+                            width="100%"
+                            onBlur={(e: any) => {
+                              if (e && e.target && e.target.value) {
+                                setProperty("restockingRate", parseFloat(e.target.value));
+                              }
+                            }}
+                          ></_Input>
                         </Box>
                       </HStack>
                     </>

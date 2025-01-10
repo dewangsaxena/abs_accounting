@@ -113,6 +113,8 @@ export interface TransactionStoreFields {
   salesRepId: number;
   storeId: number | null;
   notes: string;
+  restockingRate?: number;
+  restockingFees?: number;
   __lockCounter: number;
   disableItemEditing: number;
   disableFederalTaxes: number;
@@ -182,6 +184,8 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
   salesRepId: 0,
   storeId: parseInt(localStorage.getItem("storeId") || ""),
   notes: "",
+  restockingRate: 0,
+  restockingFees: 0,
   __lockCounter: 0,
   disableItemEditing: 0,
   disableFederalTaxes: 0,

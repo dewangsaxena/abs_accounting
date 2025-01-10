@@ -1191,7 +1191,7 @@ class SalesReturn {
         // Fetch Previous and Next Transaction ID
         $adjacent_records = Shared::fetch_previous_and_next_transaction_id($store_id, $record['client_id'], SALES_RETURN, $transaction_id, $db);
 
-        // Format Invoice Record
+        // Format Record
         $formatted_record = Shared::format_transaction_record($record, SALES_RETURN);
 
         // Add Adjacent Records
