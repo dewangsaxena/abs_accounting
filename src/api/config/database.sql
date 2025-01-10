@@ -204,6 +204,7 @@ CREATE TABLE IF NOT EXISTS items(
     modified TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX idx_items ON items(identifier);
+CREATE INDEX idx_items ON items(code);
 
 /* Inventory */
 CREATE TABLE IF NOT EXISTS inventory(
