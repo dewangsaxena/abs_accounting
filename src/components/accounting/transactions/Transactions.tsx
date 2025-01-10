@@ -27,7 +27,6 @@ import {
   VStack,
   useDisclosure,
   useToast,
-  Text,
 } from "@chakra-ui/react";
 import {
   CurrencyIcon,
@@ -117,6 +116,7 @@ import { AiOutlineEyeInvisible } from "react-icons/ai";
 import { BiSolidShow } from "react-icons/bi";
 import AutoSuggest from "react-autosuggest";
 import { itemStore } from "../../inventory/itemStore";
+import { VscRedo } from "react-icons/vsc";
 
 // Http Service Instance for Transactions
 const httpService = new HTTPService();
@@ -2985,6 +2985,27 @@ const FooterDetails = ({ enableEditing, hidePrivateDetails }: FooterProps) => {
               </Box>
               <Box width="10%">
                 <IoIosPricetags color="#0096FF"></IoIosPricetags>
+              </Box>
+              <Box width="50%" textAlign="right">
+                <_Label
+                  fontFamily={numberFont}
+                  fontSize="0.7em"
+                  letterSpacing={2}
+                >
+                  {formatNumberWithDecimalPlaces(subTotal, 2)}
+                </_Label>
+              </Box>
+            </HStack>
+            <HStack alignItems={"end"} marginTop={1}>
+              <Box width="40%">
+                <HStack>
+                  <_Label fontSize="0.7em" letterSpacing={2}>
+                    RSTK FEES:
+                  </_Label>
+                </HStack>
+              </Box>
+              <Box width="10%">
+                <VscRedo color="#0096FF"></VscRedo>
               </Box>
               <Box width="50%" textAlign="right">
                 <_Label
