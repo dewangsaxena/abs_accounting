@@ -2778,6 +2778,7 @@ const FooterDetails = ({ enableEditing, hidePrivateDetails }: FooterProps) => {
     netAmountDueWithinDays,
     __lockCounter,
     salesRepId,
+    restockingFees,
     setProperty,
     process,
     sendEmail,
@@ -2798,6 +2799,7 @@ const FooterDetails = ({ enableEditing, hidePrivateDetails }: FooterProps) => {
       netAmountDueWithinDays: state.netAmountDueWithinDays,
       __lockCounter: state.__lockCounter,
       salesRepId: state.salesRepId,
+      restockingFees: state.restockingFees,
       setProperty: state.setProperty,
       process: state.process,
       sendEmail: state.sendEmail,
@@ -3013,7 +3015,7 @@ const FooterDetails = ({ enableEditing, hidePrivateDetails }: FooterProps) => {
                   fontSize="0.7em"
                   letterSpacing={2}
                 >
-                  {formatNumberWithDecimalPlaces(subTotal, 2)}
+                  {formatNumberWithDecimalPlaces(restockingFees || 0, 2)}
                 </_Label>
               </Box>
             </HStack>
