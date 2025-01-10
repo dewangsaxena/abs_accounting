@@ -162,7 +162,7 @@ CREATE INDEX idx_client_phone2 ON clients(phone_number_2);
 /* ITEMS */
 CREATE TABLE IF NOT EXISTS items(
     id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    code VARCHAR(128) UNIQUE NOT NULL COMMENT 'code = item_identifier + description. Used for faster indexing.',
+    `code` VARCHAR(128) UNIQUE NOT NULL COMMENT 'code = item_identifier + description. Used for faster indexing.',
     identifier CHAR(64) UNIQUE NOT NULL,
     `description` VARCHAR(64),
     `oem` VARCHAR(64) DEFAULT NULL,
