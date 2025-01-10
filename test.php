@@ -1193,7 +1193,8 @@ function format_data1 (array $data): array {
         $identifier = $item[0];
 
         // Line Code
-        $line_code = trim($item[2]);
+        if(isset($item[2])) $line_code = trim($item[2]);
+        else $line_code = trim($item[1]);
         
         // Check for Valid Line Code
         if(strlen($line_code) === 0) continue;
@@ -1257,11 +1258,30 @@ function update_item_identifier(string $identifier, string $line_code, PDOStatem
     if($is_successful !== true || $statement_update -> rowCount() < 1) throw new Exception('Unable to Update Identifier: '. $identifier);
 }
 
+function update_with_fixed_items(array &$data): void {
+
+    // Filename
+    $filename = 'fixed.csv';
+
+    // Read file
+    if(file_exists($filename)) {
+        $fixed_data = Utils::read_csv_file($filename, 'r');
+        $formatted_data = format_data1($fixed_data);
+        $keys = array_keys($formatted_data);
+        foreach($keys as $f) {
+            $data[$f] = [$formatted_data[$f][0]];
+        }
+    }
+}
+
 function process_line_codes(): void {
     $db = get_db_instance();
     try {
         $data = format_data1(merge_csv_file());
         $identifiers = array_keys($data);
+
+        // Perform fix
+        update_with_fixed_items($data);
 
         // Validate 
         validate_data($data, $identifiers);
