@@ -26,6 +26,7 @@ CREATE TABLE store_details(
     id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `name` VARCHAR(32) NOT NULL UNIQUE,
     profit_margins JSON NOT NULL DEFAULT '{}',
+    restocking_rate NUMERIC(3, 2) DEFAULT 0,
     modified TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX idx_store_location ON store_details(`name`);
