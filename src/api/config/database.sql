@@ -551,10 +551,3 @@ CREATE TABLE receipt(
 ALTER TABLE receipt AUTO_INCREMENT=10000;
 CREATE INDEX idx_receipt_client_id ON receipt(client_id);
 CREATE INDEX idx_receipt_sales_rep_id ON receipt(sales_rep_id);
-
-/* Brand Line Code Association*/
-CREATE TABLE brand_line_codes(
-    id MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    line_code VARCHAR(16),
-    brand_name VARCHAR(64)
-);
