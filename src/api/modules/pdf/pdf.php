@@ -272,7 +272,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         self::$pdf -> SetFont(self::ARIAL, 'B', 7.5);
         self::$pdf -> Cell(w: 40, h:4, txt: 'Business Number:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> SetFont(self::COURIER, '', 7.5);
-        self::$pdf -> Cell(w: 40, h:4, txt: self::$details['business_number'], border: self::SHOW_BORDER_FOR_DEBUG, ln: self::$details['pst_tax'] > 0 ? 0 : 1);
+        self::$pdf -> Cell(w: 40, h:4, txt: self::$details['business_number'], border: self::SHOW_BORDER_FOR_DEBUG, ln: isset(self::$details['pst_number'][0]) ? 0 : 1);
 
         // Add PST Number where applicable
         if(isset(self::$details['pst_tax'][0])) {
