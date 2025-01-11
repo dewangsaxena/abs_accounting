@@ -272,10 +272,10 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         self::$pdf -> SetFont(self::ARIAL, 'B', 7.5);
         self::$pdf -> Cell(w: 40, h:4, txt: 'Business Number:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> SetFont(self::COURIER, '', 7.5);
-        self::$pdf -> Cell(w: 40, h:4, txt: self::$details['business_number'], border: self::SHOW_BORDER_FOR_DEBUG, ln: self::$details['pst_tax'] > 0 ? 0 : 1);
+        self::$pdf -> Cell(w: 40, h:4, txt: self::$details['business_number'], border: self::SHOW_BORDER_FOR_DEBUG, ln: isset(self::$details['pst_number'][0]) ? 0 : 1);
 
         // Add PST Number where applicable
-        if(self::$details['pst_tax'] > 0) {
+        if(isset(self::$details['pst_tax'][0])) {
             self::$pdf -> SetFont(self::ARIAL, 'B', 7.5);
             self::$pdf -> Cell(w: 40, h:4, txt: 'PST Number:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
             self::$pdf -> SetFont(self::COURIER, '', 7.5);
@@ -2410,7 +2410,7 @@ class __GenerateCustomerAgedSummary {
     private static function header(): void {
         // Store Name
         self::$pdf -> SetFont(self::COURIER, 'B', 16,);
-        self::$pdf -> Cell(w: 35, h: 4, txt: StoreDetails::STORE_DETAILS[self::$details['store_id']]['name'], border: self::SHOW_BORDER_FOR_DEBUG, ln:1);
+        self::$pdf -> Cell(w: 0, h: 4, txt: StoreDetails::STORE_DETAILS[self::$details['store_id']]['address']['name']. '('. StoreDetails::STORE_DETAILS[self::$details['store_id']]['name'].')', border: self::SHOW_BORDER_FOR_DEBUG, ln:1);
         self::$pdf -> SetFont(self::COURIER, '', 10,);
         self::$pdf -> Ln(1);
         self::$pdf -> Cell(w: 35, h: 4, txt: 'Customer Aged Summary As at '. self::$details['date'], border: self::SHOW_BORDER_FOR_DEBUG, ln:1);
