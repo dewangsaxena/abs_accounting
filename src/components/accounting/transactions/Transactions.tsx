@@ -2755,6 +2755,7 @@ const TransactionHeaderDetails = ({
  * Footer Props
  */
 interface FooterProps {
+  type:number;
   enableEditing: boolean;
   hidePrivateDetails: boolean;
 }
@@ -2763,7 +2764,7 @@ interface FooterProps {
  * Footer Details
  * @returns Footer
  */
-const FooterDetails = ({ enableEditing, hidePrivateDetails }: FooterProps) => {
+const FooterDetails = ({ type, enableEditing, hidePrivateDetails }: FooterProps) => {
   // Toast Instance
   const toast = useToast();
 
@@ -2982,7 +2983,7 @@ const FooterDetails = ({ enableEditing, hidePrivateDetails }: FooterProps) => {
                 </_Label>
               </Box>
             </HStack>
-            <HStack alignItems={"end"} marginTop={1}>
+            {type === TRANSACTION_TYPES["SR"] && <><HStack alignItems={"end"} marginTop={1}>
               <Box width="40%">
                 <HStack>
                   <_Label fontSize="0.7em" letterSpacing={2}>
@@ -3002,7 +3003,7 @@ const FooterDetails = ({ enableEditing, hidePrivateDetails }: FooterProps) => {
                   {formatNumberWithDecimalPlaces(restockingFees || 0, 2)}
                 </_Label>
               </Box>
-            </HStack>
+            </HStack></>}
             <HStack alignItems={"end"} marginTop={1}>
               <Box width="40%">
                 <HStack>
@@ -3455,6 +3456,7 @@ const Transactions = ({
                 </Box>
                 <Box>
                   <FooterDetails
+                    type={type}
                     enableEditing={enableEditing}
                     hidePrivateDetails={hidePrivateDetails}
                   ></FooterDetails>
