@@ -1174,7 +1174,7 @@ function generate_line_code_file(int $store_id): void {
 // generate_line_code_file(StoreDetails::CALGARY);
 
 function merge_csv_file(): array {
-    $filenames = ['a.csv', 'b.csv', 'c.csv'];
+    $filenames = ['calgary.csv', 'delta.csv', 'nisku.csv', 'regina.csv'];
 
     $combined_data = [];
 
