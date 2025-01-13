@@ -175,9 +175,8 @@ class SalesReturn {
      * @param sales_invoice_details
      * @param details
      * @param txn_date
-     * @param db
      */
-    private static function check_sales_invoice_details(array $sales_invoice_details, array $details, string $txn_date, PDO &$db): void {
+    private static function check_sales_invoice_details(array $sales_invoice_details, array $details, string $txn_date): void {
         // Check for Valid Client
         if($sales_invoice_details['client_id'] !== $details['clientDetails']['id']) throw new Exception('Invoice Does not Belong to this client.');
 
@@ -238,7 +237,7 @@ class SalesReturn {
         if(intval($details['clientDetails']['id']) !== $sales_invoice_details['client_id']) throw new Exception('Sales Invoice Does not belong to the client.');
 
         // Check Sales Invoice Details
-        self::check_sales_invoice_details($sales_invoice_details, $details, $txn_date, $db);
+        self::check_sales_invoice_details($sales_invoice_details, $details, $txn_date);
 
         // Fetch Sales Invoice Frequency
         $ret = self::get_sales_invoice_items_frequency($sales_invoice_details['details']);
