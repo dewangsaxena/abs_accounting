@@ -391,7 +391,7 @@ class SalesReturn {
         $restocking_fees = $calculated_amount['restockingFees'];
 
         // Restocking Fees
-        if(!is_numeric($restocking_fees)) throw new Exception('Invalid Restocking Fees.');
+        if(is_numeric($restocking_fees) === false) throw new Exception('Invalid Restocking Fees.');
         if($restocking_fees < 0) throw new Exception('Restocking Fees cannot be negative.');
 
         // Sum Total
