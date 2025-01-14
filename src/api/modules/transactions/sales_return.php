@@ -85,9 +85,10 @@ class SalesReturn {
      * @param items
      * @param disable_federal_taxes
      * @param disable_provincial_tax
+     * @param restocking_rate
      * @return array
      */
-    public static function calculate_amount(array $items, int $disable_federal_taxes, int $disable_provincial_taxes) : array {
+    public static function calculate_amount(array $items, int $disable_federal_taxes, int $disable_provincial_taxes, float $restocking_rate=0.0) : array {
 
         // Calculate Amounts 
         $total = 0;
@@ -117,6 +118,13 @@ class SalesReturn {
         // Set Sub total
         $sub_total = $total;
 
+        // Restocking Fees
+        if($restocking_rate > 0) $restocking_fees = ($sub_total * $restocking_rate) / 100;
+        else $restocking_fees = 0;
+
+        // Deduct Restocking Fees from Subtotal
+        $sub_total -= $restocking_fees;
+
         // Add Taxes to Sub total 
         $sum_total = $sub_total + $gst_hst_tax + $pst_tax;
 
@@ -127,6 +135,7 @@ class SalesReturn {
             'gstHSTTax' => Utils::round($gst_hst_tax),
             'txnDiscount' => Utils::round($txn_discount),
             'cogr' => Utils::round($cogr),
+            'restockingFees' => Utils::round($restocking_fees),
         ];
     }
 
@@ -175,9 +184,8 @@ class SalesReturn {
      * @param sales_invoice_details
      * @param details
      * @param txn_date
-     * @param db
      */
-    private static function check_sales_invoice_details(array $sales_invoice_details, array $details, string $txn_date, PDO &$db): void {
+    private static function check_sales_invoice_details(array $sales_invoice_details, array $details, string $txn_date): void {
         // Check for Valid Client
         if($sales_invoice_details['client_id'] !== $details['clientDetails']['id']) throw new Exception('Invoice Does not Belong to this client.');
 
@@ -238,7 +246,7 @@ class SalesReturn {
         if(intval($details['clientDetails']['id']) !== $sales_invoice_details['client_id']) throw new Exception('Sales Invoice Does not belong to the client.');
 
         // Check Sales Invoice Details
-        self::check_sales_invoice_details($sales_invoice_details, $details, $txn_date, $db);
+        self::check_sales_invoice_details($sales_invoice_details, $details, $txn_date);
 
         // Fetch Sales Invoice Frequency
         $ret = self::get_sales_invoice_items_frequency($sales_invoice_details['details']);
@@ -365,11 +373,17 @@ class SalesReturn {
         );
         if($valid_ret_value['status'] === false) throw new Exception($valid_ret_value['message']);
 
+        // Restocking Rate
+        $restocking_rate = is_numeric($data['restockingRate'] ?? null) ? floatval($data['restockingRate']) : 0;
+        if($restocking_rate < 0) throw new Exception('Restocking Rate cannot be negative.');
+        else if($restocking_rate > 100) throw new Exception('Restocking Rate cannot be more than 100%.');
+
         // Calculate Amounts
         $calculated_amount = self::calculate_amount(
             $data['details'], 
             $disable_federal_taxes,
             $disable_provincial_taxes,
+            $restocking_rate
         );
         $sum_total = $calculated_amount['sumTotal'];
         $sub_total = $calculated_amount['subTotal'];
@@ -377,6 +391,11 @@ class SalesReturn {
         $gst_hst_tax = $calculated_amount['gstHSTTax'];
         $txn_discount = $calculated_amount['txnDiscount'];
         $cogr = $calculated_amount['cogr'];
+        $restocking_fees = $calculated_amount['restockingFees'];
+
+        // Restocking Fees
+        if(is_numeric($restocking_fees) === false) throw new Exception('Invalid Restocking Fees.');
+        if($restocking_fees < 0) throw new Exception('Restocking Fees cannot be negative.');
 
         // Sum Total
         if(!is_numeric($sum_total)) throw new Exception('Sum Total should be numeric.');
@@ -418,6 +437,8 @@ class SalesReturn {
             'unit_no' => trim($data['unitNo'] ?? ''),
             'vin' => trim($data['vin'] ?? ''),
             'notes' => $notes,
+            'restocking_fees' => $restocking_fees,
+            'restocking_rate' => $restocking_rate,
         ];
     }
 
@@ -692,7 +713,9 @@ class SalesReturn {
                 net_amount_due_within_days,
                 po,
                 unit_no,
-                vin
+                vin,
+                `restocking_fees`,
+                `restocking_rate`
             )
             VALUES
             (
@@ -721,7 +744,9 @@ class SalesReturn {
                 :net_amount_due_within_days,
                 :po,
                 :unit_no,
-                :vin
+                :vin,
+                :restocking_fees,
+                :restocking_rate
             );
             EOS;
 
@@ -756,6 +781,8 @@ class SalesReturn {
                 ':po' => $validated_details['po'],
                 ':unit_no' => $validated_details['unit_no'],
                 ':vin' => $validated_details['vin'],
+                ':restocking_fees' => $validated_details['restocking_fees'],
+                ':restocking_rate' => $validated_details['restocking_rate'],
             ];
 
             /* CHECK FOR ANY ERROR */
@@ -1191,7 +1218,7 @@ class SalesReturn {
         // Fetch Previous and Next Transaction ID
         $adjacent_records = Shared::fetch_previous_and_next_transaction_id($store_id, $record['client_id'], SALES_RETURN, $transaction_id, $db);
 
-        // Format Invoice Record
+        // Format Record
         $formatted_record = Shared::format_transaction_record($record, SALES_RETURN);
 
         // Add Adjacent Records

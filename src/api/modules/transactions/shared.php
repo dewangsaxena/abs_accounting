@@ -180,6 +180,12 @@ class Shared {
                 'trailerNumber' => $record['trailer_number'] ?? '',
             ]);
         }
+        else if($transaction_type === SALES_RETURN) {
+            $response = array_merge($response, [
+                'restockingRate' => $record['restocking_rate'],
+                'restockingFees' => $record['restocking_fees'],
+            ]);
+        }
 
         return $response;
     }

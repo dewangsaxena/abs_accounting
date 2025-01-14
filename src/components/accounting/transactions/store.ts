@@ -113,6 +113,8 @@ export interface TransactionStoreFields {
   salesRepId: number;
   storeId: number | null;
   notes: string;
+  restockingRate?: number;
+  restockingFees?: number;
   __lockCounter: number;
   disableItemEditing: number;
   disableFederalTaxes: number;
@@ -182,6 +184,8 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
   salesRepId: 0,
   storeId: parseInt(localStorage.getItem("storeId") || ""),
   notes: "",
+  restockingRate: 0,
+  restockingFees: 0,
   __lockCounter: 0,
   disableItemEditing: 0,
   disableFederalTaxes: 0,
@@ -234,6 +238,9 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
     else if (detailName === "salesRepId") {
       set({ salesRepId: value });
     }
+    else if(detailName === "restockingRate") set({restockingRate: value});
+    else if(detailName === "restockingFees") set({restockingFees: value});
+
   },
   addRow: () => {
     let txnDetails = get().details;
@@ -247,7 +254,8 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
       txnDiscount: number = 0,
       gstHSTTax: number = 0,
       pstTax: number = 0,
-      cogs: number = 0;
+      cogs: number = 0,
+      restockingFees: number = 0;
 
     let base_price: number = 0,
       price_per_item: number = 0,
@@ -290,10 +298,18 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
     txnDiscount = toFixed(txnDiscount);
     cogs = toFixed(cogs);
 
+    // Restocking Rate
+    let restockingRate: number = get().restockingRate || 0;
+    if(restockingRate > 0 && subTotal > 0) restockingFees = (restockingRate * subTotal) / 100;
+
+    // Deduct Restocking Fees from Subtotal
+    subTotal -= restockingFees;
+
     set({ subTotal: subTotal });
     set({ gstHSTTax: gstHSTTax });
     set({ pstTax: pstTax });
     set({ txnDiscount: txnDiscount });
+    set({ restockingFees: restockingFees });
     set({ sumTotal: toFixed(subTotal + gstHSTTax + pstTax) });
     set({ cogs: cogs });
   },
