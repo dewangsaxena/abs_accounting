@@ -2468,9 +2468,9 @@ const TransactionHeaderDetails = ({
                         />
                       </Box>
                       <HStack>
-                        <Box width="25%" fontSize="0.7em">
+                        <Box width="60%" fontSize="0.7em">
                           <Tooltip label="Restocking fees">
-                            RSTK FEES:
+                            RESTOCKING FEES %:
                           </Tooltip>
                         </Box>
                         <Box width="75%">
