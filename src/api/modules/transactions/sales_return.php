@@ -400,6 +400,14 @@ class SalesReturn {
         // Notes 
         $notes = isset($data['notes']) ? trim(ucfirst($data['notes'])) : '';
 
+        // Restocking Fees
+        $restocking_fees = is_numeric($data['restockingFees'] ?? null) ? floatval($data['restockingFees']) : null;
+        if(is_numeric($restocking_fees) === false) throw new Exception('Invalid Restocking Fees.');
+
+        // Restocking Rate
+        $restocking_rate = is_numeric($data['restockingRate'] ?? null) ? floatval($data['restockingRate']) : null;
+        if(is_numeric($restocking_fees) === false) throw new Exception('Invalid Restocking Rate.');
+
         // Return data
         return [
             'client_id' => $client_id,
@@ -417,6 +425,8 @@ class SalesReturn {
             'unit_no' => trim($data['unitNo'] ?? ''),
             'vin' => trim($data['vin'] ?? ''),
             'notes' => $notes,
+            'restocking_fees' => $restocking_fees,
+            'restocking_rate' => $restocking_rate,
         ];
     }
 
@@ -691,7 +701,9 @@ class SalesReturn {
                 net_amount_due_within_days,
                 po,
                 unit_no,
-                vin
+                vin,
+                `restocking_fees`,
+                `restocking_rate`
             )
             VALUES
             (
@@ -720,7 +732,9 @@ class SalesReturn {
                 :net_amount_due_within_days,
                 :po,
                 :unit_no,
-                :vin
+                :vin,
+                :restocking_fees,
+                :restocking_rate
             );
             EOS;
 
@@ -755,6 +769,8 @@ class SalesReturn {
                 ':po' => $validated_details['po'],
                 ':unit_no' => $validated_details['unit_no'],
                 ':vin' => $validated_details['vin'],
+                ':restocking_fees' => $validated_details['restocking_fees'],
+                ':restocking_rate' => $validated_details['restocking_rate'],
             ];
 
             /* CHECK FOR ANY ERROR */

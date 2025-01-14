@@ -317,7 +317,7 @@ CREATE TABLE IF NOT EXISTS sales_return(
     txn_discount NUMERIC(13, 4) NOT NULL,
     receipt_discount NUMERIC(13, 4) NOT NULL,
     restocking_rate NUMERIC(4, 4) UNSIGNED NOT NULL,
-    restocking_amount NUMERIC(13, 4) UNSIGNED NOT NULL,
+    restocking_fees NUMERIC(13, 4) UNSIGNED NOT NULL,
     payment_method TINYINT UNSIGNED NOT NULL,
     details JSON NOT NULL,
     store_id SMALLINT UNSIGNED NOT NULL,
