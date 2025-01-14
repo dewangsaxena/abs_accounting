@@ -118,12 +118,15 @@ class SalesReturn {
         // Set Sub total
         $sub_total = $total;
 
-        // Add Taxes to Sub total 
-        $sum_total = $sub_total + $gst_hst_tax + $pst_tax;
-
         // Restocking Fees
         if($restocking_rate > 0) $restocking_fees = ($sub_total * $restocking_rate) / 100;
         else $restocking_fees = 0;
+
+        // Deduct Restocking Fees from Subtotal
+        $sub_total -= $restocking_fees;
+
+        // Add Taxes to Sub total 
+        $sum_total = $sub_total + $gst_hst_tax + $pst_tax;
 
         return [
             'sumTotal' => Utils::round($sum_total),
@@ -132,7 +135,7 @@ class SalesReturn {
             'gstHSTTax' => Utils::round($gst_hst_tax),
             'txnDiscount' => Utils::round($txn_discount),
             'cogr' => Utils::round($cogr),
-            'restockingFees' => $restocking_fees,
+            'restockingFees' => Utils::round($restocking_fees),
         ];
     }
 
