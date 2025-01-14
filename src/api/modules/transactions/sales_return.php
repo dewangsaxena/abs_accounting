@@ -85,9 +85,10 @@ class SalesReturn {
      * @param items
      * @param disable_federal_taxes
      * @param disable_provincial_tax
+     * @param restocking_rate
      * @return array
      */
-    public static function calculate_amount(array $items, int $disable_federal_taxes, int $disable_provincial_taxes) : array {
+    public static function calculate_amount(array $items, int $disable_federal_taxes, int $disable_provincial_taxes, float $restocking_rate=0.0) : array {
 
         // Calculate Amounts 
         $total = 0;
@@ -120,6 +121,10 @@ class SalesReturn {
         // Add Taxes to Sub total 
         $sum_total = $sub_total + $gst_hst_tax + $pst_tax;
 
+        // Restocking Fees
+        if($restocking_rate > 0) $restocking_fees = ($sub_total * $restocking_rate) / 100;
+        else $restocking_fees = 0;
+
         return [
             'sumTotal' => Utils::round($sum_total),
             'subTotal' => Utils::round($sub_total),
@@ -127,6 +132,7 @@ class SalesReturn {
             'gstHSTTax' => Utils::round($gst_hst_tax),
             'txnDiscount' => Utils::round($txn_discount),
             'cogr' => Utils::round($cogr),
+            'restockingFees' => $restocking_fees,
         ];
     }
 
@@ -364,11 +370,17 @@ class SalesReturn {
         );
         if($valid_ret_value['status'] === false) throw new Exception($valid_ret_value['message']);
 
+        // Restocking Rate
+        $restocking_rate = is_numeric($data['restockingRate'] ?? null) ? floatval($data['restockingRate']) : 0;
+        if($restocking_rate < 0) throw new Exception('Restocking Rate cannot be negative.');
+        else if($restocking_rate > 100) throw new Exception('Restocking Rate cannot be more than 100%.');
+
         // Calculate Amounts
         $calculated_amount = self::calculate_amount(
             $data['details'], 
             $disable_federal_taxes,
             $disable_provincial_taxes,
+            $restocking_rate
         );
         $sum_total = $calculated_amount['sumTotal'];
         $sub_total = $calculated_amount['subTotal'];
@@ -376,6 +388,11 @@ class SalesReturn {
         $gst_hst_tax = $calculated_amount['gstHSTTax'];
         $txn_discount = $calculated_amount['txnDiscount'];
         $cogr = $calculated_amount['cogr'];
+        $restocking_fees = $calculated_amount['restockingFees'];
+
+        // Restocking Fees
+        if(!is_numeric($restocking_fees)) throw new Exception('Invalid Restocking Fees.');
+        if($restocking_fees < 0) throw new Exception('Restocking Fees cannot be negative.');
 
         // Sum Total
         if(!is_numeric($sum_total)) throw new Exception('Sum Total should be numeric.');
@@ -399,14 +416,6 @@ class SalesReturn {
 
         // Notes 
         $notes = isset($data['notes']) ? trim(ucfirst($data['notes'])) : '';
-
-        // Restocking Fees
-        $restocking_fees = is_numeric($data['restockingFees'] ?? null) ? floatval($data['restockingFees']) : null;
-        if(is_numeric($restocking_fees) === false) throw new Exception('Invalid Restocking Fees.');
-
-        // Restocking Rate
-        $restocking_rate = is_numeric($data['restockingRate'] ?? null) ? floatval($data['restockingRate']) : null;
-        if(is_numeric($restocking_fees) === false) throw new Exception('Invalid Restocking Rate.');
 
         // Return data
         return [
