@@ -17,6 +17,7 @@ class SpecialExceptions {
         StoreDetails::EDMONTON => [
             10007, /* LUCKY */
             10010, /* PRITPAL */
+            10015 /* JAIDEEP */
         ],
     ];
 
