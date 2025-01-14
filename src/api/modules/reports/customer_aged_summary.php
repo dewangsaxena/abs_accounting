@@ -382,9 +382,17 @@ class CustomerAgedSummary {
      * @param sort
      * @param is_csv
      * @param exclude_self
+     * @param exclude_clients
      */
-    public static function generate(int $store_id, ?string $from_date, string $till_date, int $sort, int $is_csv = 0, int $exclude_self=0): void {
-        $customer_aged_summary = self::fetch_customer_aged_summary($store_id, $from_date, $till_date, $sort, exclude_self: $exclude_self);
+    public static function generate(int $store_id, ?string $from_date, string $till_date, int $sort, int $is_csv = 0, int $exclude_self=0, int $exclude_clients=0): void {
+        $customer_aged_summary = self::fetch_customer_aged_summary(
+            $store_id, 
+            $from_date, 
+            $till_date, 
+            $sort, 
+            exclude_self: $exclude_self, 
+            exclude_clients: $exclude_clients
+        );
         $details = [
             'summary' => $customer_aged_summary,
             'date' => date_format(date_create($till_date), 'd M, Y'),

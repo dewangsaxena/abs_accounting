@@ -29,7 +29,7 @@ if (isset($_GET['op'])) {
                 intval($_GET['storeId']),
                 $_GET['tillDate'],
                 intval($_GET['isCSV']),
-                intval($_GET['es'] ?? '0'),
+                intval($_GET['es'] ?? '1'),
                 intval($_GET['ec'] ?? '1'),
             );
         } else {
@@ -39,7 +39,7 @@ if (isset($_GET['op'])) {
                 $_GET['tillDate'],
                 intval($_GET['sortAscending'] ?? 0),
                 intval($_GET['isCSV']),
-                intval($_GET['es'] ?? '0'), /* Exclude Self */
+                intval($_GET['es'] ?? '1'), /* Exclude Self */
                 intval($_GET['ec'] ?? '1') /* Exclude Client */
             );
         }
