@@ -2477,7 +2477,7 @@ const TransactionHeaderDetails = ({
                         <_Input
                             defaultValue={restockingRate}
                             type="number"
-                            isReadOnly={isReadOnly || isProcessed}
+                            isReadOnly={isReadOnly || isProcessed || clientDetails === null}
                             borderBottomColor={inputConfig.borderColor}
                             borderBottomWidth={inputConfig.borderWidth}
                             borderRadius={inputConfig.borderRadius}
