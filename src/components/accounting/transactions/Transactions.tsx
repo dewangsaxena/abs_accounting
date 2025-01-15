@@ -450,7 +450,7 @@ const Header = ({
               }}
             ></_Select>
           </Box>
-          <Box flex={1}>
+          {type === TRANSACTION_TYPES["SI"] && <Box flex={1}>
             <HStack justifyContent={"right"}>
               <Box>
                 <HStack>
@@ -472,7 +472,7 @@ const Header = ({
                 </HStack>
               </Box>
             </HStack>
-          </Box>
+          </Box>}
         </HStack>
       </Box>
     </>
@@ -2388,6 +2388,7 @@ const TransactionHeaderDetails = ({
               {/* Transaction Specific Details  */}
               <Box>
                 <SimpleGrid columns={2} spacing={2}>
+                  {/* Date  */}
                   <Box width="100%">
                     <HStack width="100%">
                       <Box width="25%">
@@ -2412,8 +2413,7 @@ const TransactionHeaderDetails = ({
                     </HStack>
                   </Box>
                   {type === TRANSACTION_TYPES["SR"] && (
-                    <>
-                      <Box width="100%" marginLeft={10}>
+                      <Box width="80%" marginLeft={8}>
                         <AsyncSelect
                           tabSelectsValue={true}
                           isDisabled={
@@ -2467,17 +2467,20 @@ const TransactionHeaderDetails = ({
                           }}
                         />
                       </Box>
-                      <HStack>
-                        <Box width="25%" fontSize="0.7em">
-                          <Tooltip label="Restocking fees">
-                            RSTK FEES:
-                          </Tooltip>
+                  )}
+                  {/* RESTOCKING FEES */}
+                  {type === TRANSACTION_TYPES["SR"] && 
+                    <HStack>
+                      <Box width="60%" fontSize="0.7em">
+                        <Tooltip label="Restocking fees">
+                          RESTOCKING FEES %:
+                        </Tooltip>
                         </Box>
                         <Box width="75%">
                         <_Input
                             defaultValue={restockingRate}
                             type="number"
-                            isReadOnly={isReadOnly || isProcessed}
+                            isReadOnly={isReadOnly || isProcessed || clientDetails === null}
                             borderBottomColor={inputConfig.borderColor}
                             borderBottomWidth={inputConfig.borderWidth}
                             borderRadius={inputConfig.borderRadius}
@@ -2498,9 +2501,8 @@ const TransactionHeaderDetails = ({
                             }}
                           ></_Input>
                         </Box>
-                      </HStack>
-                    </>
-                  )}
+                    </HStack>
+                  }
                   {type === TRANSACTION_TYPES["SI"] && (
                     <Box width="100%">
                       <HStack width="100%">

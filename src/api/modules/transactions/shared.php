@@ -185,6 +185,10 @@ class Shared {
                 'restockingRate' => $record['restocking_rate'],
                 'restockingFees' => $record['restocking_fees'],
             ]);
+
+            // Restocking Rate
+            $response['initial']['restockingRate'] = $record['restocking_rate'];
+            $response['initial']['restockingFees'] = $record['restocking_fees'];
         }
 
         return $response;
@@ -222,10 +226,10 @@ class Shared {
         ) AS next_txn_id
         EOS;
 
-        // Default IDS
-        $ids = ['previousTxnId' => null, 'nextTxnId' => null];
-
         try {
+            // Default IDS
+            $ids = ['previousTxnId' => null, 'nextTxnId' => null];
+
             $statement = $db -> prepare($query);
             $statement -> execute([':transaction_id' => $transaction_id, ':store_id' => $store_id, ':client_id' => $client_id]);
             $results = $statement -> fetchAll(PDO::FETCH_ASSOC);
@@ -236,12 +240,11 @@ class Shared {
                     if($result['key'] === 'previous_txn_id') $ids['previousTxnId'] = $result['id'];
                     else if($result['key'] === 'next_txn_id') $ids['nextTxnId'] = $result['id'];
                 }
-                return $ids;
             }
-            else return $ids;
+            return $ids;
         }
         catch(Exception $e) {
-            return $ids;
+            throw new Exception($e -> getMessage());
         }
     }
 

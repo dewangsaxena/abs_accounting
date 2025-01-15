@@ -3,6 +3,7 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/database.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/utils.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/pdf/pdf.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/client.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/special_exceptions.php";
 
 /**
  * This module will implement class to handle customer summary.
@@ -242,6 +243,19 @@ class CustomerAgedSummary {
     }
 
     /**
+     * This method will exclude clients in exclusion list.
+     * @param summary
+     * @return array
+     */
+    private static function exclude_clients(array &$summary): array {
+        $new_summary = [];
+        foreach($summary as $s) {
+            if(isset(SpecialExceptions::CUSTOMER_AGED_SUMMARY_CLIENT_EXCLUSIONS[$s['client_id']]) === false) $new_summary[]= $s;
+        }
+        return $new_summary;
+    }
+
+    /**
      * This method will fetch the customer aged summary.
      * @param store_id
      * @param from_date
@@ -249,9 +263,10 @@ class CustomerAgedSummary {
      * @param sort_ascending
      * @param client_id
      * @param exclude_self
+     * @param exclude_clients
      * @return array
      */
-    public static function fetch_customer_aged_summary(int $store_id, ?string $from_date, string $till_date, int $sort_ascending, int $client_id=null, int $exclude_self=0): array {
+    public static function fetch_customer_aged_summary(int $store_id, ?string $from_date, string $till_date, int $sort_ascending, int $client_id=null, int $exclude_self=0, int $exclude_clients=0): array {
 
         // Till Date
         self::$till_date = $till_date;
@@ -296,9 +311,10 @@ class CustomerAgedSummary {
         $summary = self::remove_records_with_even_balance($summary);
 
         // Exclude Self
-        if($exclude_self) {
-            $summary = self::exclude_self_companies($summary);
-        }
+        if($exclude_self) $summary = self::exclude_self_companies($summary);
+
+        // Exclude Clients
+        if($exclude_clients) $summary = self::exclude_clients($summary);
             
         if($sort_ascending === 1) {
             // Sort the list ASCENDING
@@ -367,9 +383,17 @@ class CustomerAgedSummary {
      * @param sort
      * @param is_csv
      * @param exclude_self
+     * @param exclude_clients
      */
-    public static function generate(int $store_id, ?string $from_date, string $till_date, int $sort, int $is_csv = 0, int $exclude_self=0): void {
-        $customer_aged_summary = self::fetch_customer_aged_summary($store_id, $from_date, $till_date, $sort, exclude_self: $exclude_self);
+    public static function generate(int $store_id, ?string $from_date, string $till_date, int $sort, int $is_csv = 0, int $exclude_self=0, int $exclude_clients=0): void {
+        $customer_aged_summary = self::fetch_customer_aged_summary(
+            $store_id, 
+            $from_date, 
+            $till_date, 
+            $sort, 
+            exclude_self: $exclude_self, 
+            exclude_clients: $exclude_clients
+        );
         $details = [
             'summary' => $customer_aged_summary,
             'date' => date_format(date_create($till_date), 'd M, Y'),

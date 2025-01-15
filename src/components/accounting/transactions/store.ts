@@ -255,23 +255,44 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
       gstHSTTax: number = 0,
       pstTax: number = 0,
       cogs: number = 0,
-      restockingFees: number = 0;
+      totalRestockingFees: number = 0;
 
     let base_price: number = 0,
       price_per_item: number = 0,
+      amount_per_item: number = 0,
       quantity: number = 0,
       discount_per_item: number = 0,
+      restocking_fees: number = 0,
       temp: number = 0;
+
+    const RESTOCKING_RATE: number = get().restockingRate || 0;
+    const IS_SALES_RETURN = get().transactionType === TRANSACTION_TYPES["SR"] ? true : false;
 
     for (let i = 0; i < totalRows; ++i) {
       if (rowDetails[i].isBackOrder === 0 && rowDetails[i].quantity > 0) {
-        subTotal += rowDetails[i].amountPerItem;
 
-        /* Calculate Total Discount */
+        // Check for Return Quantity if sales return
+        if(IS_SALES_RETURN && (rowDetails[i].returnQuantity || 0) === 0) continue;
+
+        amount_per_item = rowDetails[i].amountPerItem;
+
+        // Calculate Restocking fees per item
+        if(RESTOCKING_RATE > 0) restocking_fees = (amount_per_item * RESTOCKING_RATE) / 100;
+        else restocking_fees = 0;
+
+        // Add to total
+        totalRestockingFees += restocking_fees;
+
+        // Adjust amount per item
+        amount_per_item -= restocking_fees;
+
+        subTotal += amount_per_item;
+
+        // Calculate Total Discount
         base_price = rowDetails[i].basePrice;
         price_per_item = rowDetails[i].pricePerItem;
         quantity =
-          get().transactionType === TRANSACTION_TYPES["SR"]
+          IS_SALES_RETURN
             ? rowDetails[i].returnQuantity || 0
             : rowDetails[i].quantity;
         discount_per_item = base_price * quantity - price_per_item * quantity;
@@ -280,13 +301,13 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
         // COGS
         cogs += rowDetails[i].buyingCost * quantity;
 
-        /* Calculate GST/HST Tax Amount */
+        // Calculate GST/HST Tax Amount
         temp =
-          (rowDetails[i].gstHSTTaxRate * rowDetails[i].amountPerItem) / 100;
+          (rowDetails[i].gstHSTTaxRate * amount_per_item) / 100;
         gstHSTTax += temp;
 
-        /* Calculate PST Tax Amount */
-        temp = (rowDetails[i].pstTaxRate * rowDetails[i].amountPerItem) / 100;
+        // Calculate PST Tax Amount
+        temp = (rowDetails[i].pstTaxRate * amount_per_item) / 100;
         pstTax += temp;
       }
     }
@@ -298,18 +319,11 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
     txnDiscount = toFixed(txnDiscount);
     cogs = toFixed(cogs);
 
-    // Restocking Rate
-    let restockingRate: number = get().restockingRate || 0;
-    if(restockingRate > 0 && subTotal > 0) restockingFees = (restockingRate * subTotal) / 100;
-
-    // Deduct Restocking Fees from Subtotal
-    subTotal -= restockingFees;
-
     set({ subTotal: subTotal });
     set({ gstHSTTax: gstHSTTax });
     set({ pstTax: pstTax });
     set({ txnDiscount: txnDiscount });
-    set({ restockingFees: restockingFees });
+    set({ restockingFees: totalRestockingFees });
     set({ sumTotal: toFixed(subTotal + gstHSTTax + pstTax) });
     set({ cogs: cogs });
   },
@@ -418,6 +432,10 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
       selectedSalesInvoiceLastModifiedTimestamp:
         details.selectedSalesInvoiceLastModifiedTimestamp,
     });
+    set({restockingRate: details.restockingRate});
+    set({restockingFees: details.restockingFees});
+
+    /* Versions */
     if (details.versionKeys) {
       let versionKeys = Object.keys(details.versionKeys);
       if (versionKeys.length > 0) {

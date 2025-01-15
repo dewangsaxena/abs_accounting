@@ -131,6 +131,9 @@ class PrepareDetails_SI_SR_CN_DN_QT {
             'is_old_version' => $txn['is_old_version'] ?? false,
         ];
 
+        // Add Restocking Fees
+        if(isset($txn['restocking_fees'])) $details['restocking_fees'] = $txn['restocking_fees'];
+
         // Combine Store details.
         return array_merge($details, Utils::build_store_address($store_id));
     }

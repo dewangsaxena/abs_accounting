@@ -21,6 +21,21 @@ class SpecialExceptions {
         ],
     ];
 
+    // Customer aged summary client exlusion
+    const CUSTOMER_AGED_SUMMARY_CLIENT_EXCLUSIONS = [
+
+        /* Dead */
+        13371 => 'DB CUSTOMS',
+        16396 => 'DAVE\'S DIESEL REPAIR',
+        15867 => 'VELOCITY TRUCK CENTRES',
+        16745 => 'UNITED DIESEL',
+
+
+        /* Other */
+        18021 => '1573670 AB LTD',
+        18695 => 'VR ENTERPRISES',
+    ];
+
     /* Check Over 60+ Balance For Client For Credit Transaction */ 
     private const CHECK_OVER_60_PLUS_BALANCE_DUE_OF_CLIENT_FOR_CREDIT_TRANSACTION_PER_STORE = [
         PARTS => [
