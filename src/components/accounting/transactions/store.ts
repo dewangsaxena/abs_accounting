@@ -418,6 +418,10 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
       selectedSalesInvoiceLastModifiedTimestamp:
         details.selectedSalesInvoiceLastModifiedTimestamp,
     });
+    set({restockingRate: details.restockingRate});
+    set({restockingFees: details.restockingFees});
+
+    /* Versions */
     if (details.versionKeys) {
       let versionKeys = Object.keys(details.versionKeys);
       if (versionKeys.length > 0) {
