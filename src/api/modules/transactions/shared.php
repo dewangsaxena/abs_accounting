@@ -222,10 +222,10 @@ class Shared {
         ) AS next_txn_id
         EOS;
 
-        // Default IDS
-        $ids = ['previousTxnId' => null, 'nextTxnId' => null];
-
         try {
+            // Default IDS
+            $ids = ['previousTxnId' => null, 'nextTxnId' => null];
+
             $statement = $db -> prepare($query);
             $statement -> execute([':transaction_id' => $transaction_id, ':store_id' => $store_id, ':client_id' => $client_id]);
             $results = $statement -> fetchAll(PDO::FETCH_ASSOC);
@@ -237,12 +237,10 @@ class Shared {
                     else if($result['key'] === 'next_txn_id') $ids['nextTxnId'] = $result['id'];
                 }
             }
+            return $ids;
         }
         catch(Exception $e) {
             throw new Exception($e -> getMessage());
-        }
-        finally {
-            return $ids;
         }
     }
 
