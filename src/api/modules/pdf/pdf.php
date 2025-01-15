@@ -41,7 +41,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
     private const COURIER = 'Courier';
 
     // For Debugging.
-    private const SHOW_BORDER_FOR_DEBUG = 1;
+    private const SHOW_BORDER_FOR_DEBUG = 0;
 
     // Width for table elements 
     private const TABLE_ELEMENTS_WIDTH = [28, 15, 10, 55, 12, 22, 12, 22, 22];
@@ -305,7 +305,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
      */
     private static function footer(int $last_page=2, int $last_page_rows=0, bool $add_padding=true): void {
         if($last_page_rows > 50) self::add_page($last_page);
-        if($add_padding) self::$pdf -> SetY(self::$details['pst_tax'] > 0 ? -85 : -79);
+        if($add_padding) self::$pdf -> SetY(self::$details['pst_tax'] > 0 ? -89 : -83);
         
         // Flag
         $is_sales_return = self::$details['txn_type_id'] === 2; 
