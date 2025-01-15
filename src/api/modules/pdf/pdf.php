@@ -323,8 +323,8 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         self::$pdf -> SetFont(self::COURIER, '', 8);
         self::$pdf -> Cell(w: 0, h: 4, txt: '$ '.number_format(self::$details['sub_total'], 2), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'R');
         self::$pdf -> SetFont(self::COURIER, 'I', 6);
-        self::$pdf -> Cell(w: 22, h: 4, txt: Utils::get_local_timestamp(self::$details['modified'], self::$details['store_id']), border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
-        self::$pdf -> Cell(w: 124, h: 4, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
+        self::$pdf -> Cell(w: 35, h: 4, txt: Utils::get_local_timestamp(self::$details['modified'], self::$details['store_id']), border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
+        self::$pdf -> Cell(w: 111, h: 4, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> SetFont(self::ARIAL, 'B', 8);
         self::$pdf -> Cell(w: 22, h: 4, txt: 'Total Discount:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> SetFont(self::COURIER, '', 8);
