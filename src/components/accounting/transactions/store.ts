@@ -266,9 +266,14 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
       temp: number = 0;
 
     const RESTOCKING_RATE: number = get().restockingRate || 0;
+    const IS_SALES_RETURN = get().transactionType === TRANSACTION_TYPES["SR"] ? true : false;
 
     for (let i = 0; i < totalRows; ++i) {
       if (rowDetails[i].isBackOrder === 0 && rowDetails[i].quantity > 0) {
+
+        // Check for Return Quantity if sales return
+        if(IS_SALES_RETURN && (rowDetails[i].returnQuantity || 0) === 0) continue;
+
         amount_per_item = rowDetails[i].amountPerItem;
 
         // Calculate Restocking fees per item
@@ -287,7 +292,7 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
         base_price = rowDetails[i].basePrice;
         price_per_item = rowDetails[i].pricePerItem;
         quantity =
-          get().transactionType === TRANSACTION_TYPES["SR"]
+          IS_SALES_RETURN
             ? rowDetails[i].returnQuantity || 0
             : rowDetails[i].quantity;
         discount_per_item = base_price * quantity - price_per_item * quantity;
