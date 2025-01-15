@@ -236,12 +236,12 @@ class Shared {
                     if($result['key'] === 'previous_txn_id') $ids['previousTxnId'] = $result['id'];
                     else if($result['key'] === 'next_txn_id') $ids['nextTxnId'] = $result['id'];
                 }
-                return $ids;
             }
-            else return $ids;
         }
         catch(Exception $e) {
             throw new Exception($e -> getMessage());
+        }
+        finally {
             return $ids;
         }
     }
