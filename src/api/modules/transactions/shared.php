@@ -241,6 +241,7 @@ class Shared {
             else return $ids;
         }
         catch(Exception $e) {
+            throw new Exception($e -> getMessage());
             return $ids;
         }
     }
