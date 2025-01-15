@@ -957,7 +957,7 @@ class SalesReturn {
             $txn_discount = $validated_details['txn_discount'];
             $cogr = $validated_details['cogr'];
             $restocking_rate = $validated_details['restocking_rate'];
-            $resocking_fees = $validated_details['restocking_fees'];
+            $restocking_fees = $validated_details['restocking_fees'];
 
             // Payment details
             $is_pay_later = $validated_details['is_pay_later'];
@@ -1144,6 +1144,8 @@ class SalesReturn {
                 early_payment_discount = :early_payment_discount,
                 early_payment_paid_within_days = :early_payment_paid_within_days,
                 net_amount_due_within_days = :net_amount_due_within_days,
+                restocking_rate = :restocking_rate,
+                restocking_fees = :restocking_fees,
                 versions = :versions,
                 modified = CURRENT_TIMESTAMP 
             WHERE
@@ -1167,6 +1169,8 @@ class SalesReturn {
                 ':early_payment_discount' => $data['earlyPaymentDiscount'],
                 ':early_payment_paid_within_days' => $data['earlyPaymentPaidWithinDays'],
                 ':net_amount_due_within_days' => $data['netAmountDueWithinDays'],
+                ':restocking_rate' => $restocking_rate,
+                ':restocking_fees' => $restocking_fees,
                 ':versions' => is_array($versions) ? json_encode($versions, JSON_THROW_ON_ERROR) : null,
                 ':id' => $sales_return_id,
             ];
