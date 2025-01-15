@@ -3,6 +3,7 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/database.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/utils.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/pdf/pdf.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/client.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/special_exceptions.php";
 
 /**
  * This module will implement class to handle customer summary.
