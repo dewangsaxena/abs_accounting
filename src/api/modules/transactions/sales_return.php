@@ -813,7 +813,6 @@ class SalesReturn {
      * @param details
      * @param statement_adjust_inventory
      * @param store_id
-     * @param sales_invoice_payment_method
      */
     private static function revert_old_transaction(
         array &$bs_affected_accounts, 
@@ -821,7 +820,6 @@ class SalesReturn {
         array $details, 
         PDOStatement &$statement_adjust_inventory, 
         int $store_id,
-        int $sales_invoice_payment_method
     ) : void {
 
         // Offsets
@@ -999,7 +997,6 @@ class SalesReturn {
                 $data,
                 $statement_adjust_inventory,
                 $store_id,
-                $sales_invoice_payment_method
             );
 
             // Update Balance Sheet
