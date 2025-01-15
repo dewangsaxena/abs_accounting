@@ -450,7 +450,7 @@ const Header = ({
               }}
             ></_Select>
           </Box>
-          <Box flex={1}>
+          {type === TRANSACTION_TYPES["SI"] && <Box flex={1}>
             <HStack justifyContent={"right"}>
               <Box>
                 <HStack>
@@ -472,7 +472,7 @@ const Header = ({
                 </HStack>
               </Box>
             </HStack>
-          </Box>
+          </Box>}
         </HStack>
       </Box>
     </>
