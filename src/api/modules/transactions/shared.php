@@ -185,6 +185,10 @@ class Shared {
                 'restockingRate' => $record['restocking_rate'],
                 'restockingFees' => $record['restocking_fees'],
             ]);
+
+            // Restocking Rate
+            $response['initial']['restockingRate'] = $record['restocking_rate'];
+            $response['initial']['restockingFees'] = $record['restocking_fees'];
         }
 
         return $response;
