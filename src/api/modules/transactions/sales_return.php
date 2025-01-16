@@ -696,6 +696,10 @@ class SalesReturn {
                 $db,
             );
 
+            /* Update Subtotal and Total by deducting restocking fees */
+            $sub_total -= $restocking_fees;
+            $sum_total -= $restocking_fees;
+
             // Update Client's amount owing if payment method is Pay Later
             if($is_pay_later) Client::update_amount_owing_of_client($client_id, -$sum_total, $db);
 
@@ -765,10 +769,6 @@ class SalesReturn {
 
             // Remove Item Tag
             Shared::remove_item_tag_from_txn_details($details);
-
-            /* Update Subtotal and Total by deducting restocking fees */
-            $sub_total -= $restocking_fees;
-            $sum_total -= $restocking_fees;
 
             // Values to be inserted into DB
             $values = [
