@@ -948,6 +948,12 @@ class Shared {
                     $transaction['disable_provincial_taxes'],
                 );
 
+                // Deduct Restocking Fees from Sales Return
+                if($transaction_type === SALES_RETURN) {
+                    $amounts['subTotal'] -= $amounts['restockingFees'];
+                    $amounts['sumTotal'] -= $amounts['restockingFees'];
+                }
+
                 // Update Amounts.
                 $transaction['sum_total'] = $amounts['sumTotal'];
                 $transaction['sub_total'] = $amounts['subTotal'];
