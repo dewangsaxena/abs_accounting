@@ -766,7 +766,7 @@ class SalesReturn {
             // Remove Item Tag
             Shared::remove_item_tag_from_txn_details($details);
 
-            /* Update Subtotal and Total after deducting restocking fees */
+            /* Update Subtotal and Total by deducting restocking fees */
             $sub_total -= $restocking_fees;
             $sum_total -= $restocking_fees;
 
@@ -874,7 +874,7 @@ class SalesReturn {
         IncomeStatementActions::update_account_values(
             $is_affected_accounts, 
             AccountsConfig::SALES_RETURN,
-            -$details['initial']['subTotal'],
+            -($details['initial']['subTotal'] + $details['initial']['restockingFees']),
         );
 
         /* !! Discount */
@@ -917,7 +917,14 @@ class SalesReturn {
             BalanceSheetActions::update_account_value(
                 $bs_affected_accounts,
                 $old_payment_method_account,
-                $old_sum_total
+                ($old_sum_total + $details['initial']['restockingFees'])
+            );
+
+            // Deduct Restocking Fees
+            BalanceSheetActions::update_account_value(
+                $bs_affected_accounts,
+                $old_payment_method_account,
+                -$details['initial']['restockingFees']
             );
         }
     }
@@ -932,9 +939,6 @@ class SalesReturn {
         try {
             // Begin Transaction
             $db -> beginTransaction();
-
-            /* DISABLE RESTOCKING FEES FOR NOW */
-            $data['restockingRate'] = 0;
 
             // Sales Return ID
             $sales_return_id = $data['id'] ?? null;
@@ -972,7 +976,6 @@ class SalesReturn {
             $gst_hst_tax = $validated_details['gst_hst_tax'];
             $txn_discount = $validated_details['txn_discount'];
             $cogr = $validated_details['cogr'];
-            $restocking_rate = $validated_details['restocking_rate'];
             $restocking_fees = $validated_details['restocking_fees'];
 
             // Payment details
@@ -1089,6 +1092,13 @@ class SalesReturn {
                 $sub_total,
             );
 
+            // Add Restocking Fees
+            BalanceSheetActions::update_account_value(
+                $bs_affected_accounts,
+                $payment_method_account,
+                $restocking_fees,
+            );
+
             // UPDATE GST/HST TAX ACCOUNT 
             BalanceSheetActions::update_account_value(
                 $bs_affected_accounts,
@@ -1160,13 +1170,16 @@ class SalesReturn {
                 early_payment_discount = :early_payment_discount,
                 early_payment_paid_within_days = :early_payment_paid_within_days,
                 net_amount_due_within_days = :net_amount_due_within_days,
-                restocking_rate = :restocking_rate,
                 restocking_fees = :restocking_fees,
                 versions = :versions,
                 modified = CURRENT_TIMESTAMP 
             WHERE
                 id = :id;
             EOS;
+
+            // Deduct Restocking Fees from Sub and Sum total
+            $sub_total -= $restocking_fees;
+            $sum_total -= $restocking_fees;
 
             $params = [
                 ':date' => $date,
@@ -1185,7 +1198,6 @@ class SalesReturn {
                 ':early_payment_discount' => $data['earlyPaymentDiscount'],
                 ':early_payment_paid_within_days' => $data['earlyPaymentPaidWithinDays'],
                 ':net_amount_due_within_days' => $data['netAmountDueWithinDays'],
-                ':restocking_rate' => $restocking_rate,
                 ':restocking_fees' => $restocking_fees,
                 ':versions' => is_array($versions) ? json_encode($versions, JSON_THROW_ON_ERROR) : null,
                 ':id' => $sales_return_id,
