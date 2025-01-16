@@ -305,7 +305,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
      */
     private static function footer(int $last_page=2, int $last_page_rows=0, bool $add_padding=true): void {
         if($last_page_rows > 50) self::add_page($last_page);
-        if($add_padding) self::$pdf -> SetY(self::$details['pst_tax'] > 0 ? -85 : -79);
+        if($add_padding) self::$pdf -> SetY(self::$details['pst_tax'] > 0 ? -89 : -83);
         
         // Flag
         $is_sales_return = self::$details['txn_type_id'] === 2; 
@@ -323,15 +323,20 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         self::$pdf -> SetFont(self::COURIER, '', 8);
         self::$pdf -> Cell(w: 0, h: 4, txt: '$ '.number_format(self::$details['sub_total'], 2), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'R');
         self::$pdf -> SetFont(self::COURIER, 'I', 6);
-        self::$pdf -> Cell(w: 22, h: 4, txt: Utils::get_local_timestamp(self::$details['modified'], self::$details['store_id']), border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
-        self::$pdf -> Cell(w: 124, h: 4, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
+        self::$pdf -> Cell(w: 35, h: 4, txt: Utils::get_local_timestamp(self::$details['modified'], self::$details['store_id']), border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
+        self::$pdf -> Cell(w: 111, h: 4, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> SetFont(self::ARIAL, 'B', 8);
         self::$pdf -> Cell(w: 22, h: 4, txt: 'Total Discount:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> SetFont(self::COURIER, '', 8);
         self::$pdf -> Cell(w: 0, h: 4, txt: '$ '.number_format(self::$details['txn_discount'], 2), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'R');
+        self::$pdf -> SetFont(self::ARIAL, 'B', 8);
+        self::$pdf -> Cell(w: 146, h: 4, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, align: 'R');
+        self::$pdf -> Cell(w: 22, h: 4, txt: 'Restocking Fees:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
+        self::$pdf -> SetFont(self::COURIER, '', 8);
+        self::$pdf -> Cell(w: 0, h: 4, txt: '$ '.number_format(self::$details['restocking_fees'], 2), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'R');
         self::$pdf -> Cell(w: 28, h: 4, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> SetFont(self::ARIAL, 'B', 8);
-        self::$pdf -> Cell(w: 118, h: 4, txt: 'Please note all Returns will be subjected to 20% re-stocking fee.', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, align: 'C');
+        self::$pdf -> Cell(w: 118, h: 4, txt: 'Please note all Returns may be subjected to 20% re-stocking fee.', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, align: 'C');
 
         self::$pdf -> Cell(w: 22, h: 4, txt: 'Total GST/HST Tax:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> SetFont(self::COURIER, '', 8);
@@ -361,9 +366,9 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
 
             self::$pdf -> SetFont(self::ARIAL, 'B', 8);
             self::$pdf -> Cell(w: 146, h: 4, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, align: 'C');
-            self::$pdf -> Cell(w: 22, h: 4, txt: $is_sales_return ? 'Amt. O/S:' : 'Amount Owing:', border: 'T', ln: 0);
+            self::$pdf -> Cell(w: 22, h: 4, txt: $is_sales_return ? 'Amt. O/S:' : 'Amount Owing:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
             self::$pdf -> SetFont(self::COURIER, '', 8);
-            self::$pdf -> Cell(w: 0, h: 4, txt: '$ '.number_format(self::$details['amount_owing'], 2), border: 'T', ln: 1, align: 'R');
+            self::$pdf -> Cell(w: 0, h: 4, txt: '$ '.number_format(self::$details['amount_owing'], 2), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'R');
         }   
     
         self::$pdf -> SetFont(self::ARIAL, 'BUI', 13);
