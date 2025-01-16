@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { ClientDetails } from "../../client/store";
-import { toFixed } from "../../../shared/functions";
+import { calculateTaxByRate, toFixed } from "../../../shared/functions";
 import { HTTPService } from "../../../service/api-client";
 import { Account, Prices } from "../../inventory/itemStore";
 import { ITEM_DETAILS_TAG, TRANSACTION_TYPES } from "../../../shared/config";
@@ -277,7 +277,13 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
         amount_per_item = rowDetails[i].amountPerItem;
 
         // Calculate Restocking fees per item
-        if(RESTOCKING_RATE > 0) restocking_fees = (amount_per_item * RESTOCKING_RATE) / 100;
+        if(RESTOCKING_RATE > 0) {
+          restocking_fees = (amount_per_item * RESTOCKING_RATE) / 100;
+
+          // Calculate Tax on Restocking Fees
+          restocking_fees += calculateTaxByRate(restocking_fees, rowDetails[i].gstHSTTaxRate);
+          restocking_fees += calculateTaxByRate(restocking_fees, rowDetails[i].pstTaxRate);
+        }
         else restocking_fees = 0;
 
         // Add to total
@@ -302,13 +308,10 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
         cogs += rowDetails[i].buyingCost * quantity;
 
         // Calculate GST/HST Tax Amount
-        temp =
-          (rowDetails[i].gstHSTTaxRate * amount_per_item) / 100;
-        gstHSTTax += temp;
+        gstHSTTax += calculateTaxByRate(amount_per_item, rowDetails[i].gstHSTTaxRate);
 
         // Calculate PST Tax Amount
-        temp = (rowDetails[i].pstTaxRate * amount_per_item) / 100;
-        pstTax += temp;
+        pstTax += calculateTaxByRate(amount_per_item, rowDetails[i].pstTaxRate);
       }
     }
 

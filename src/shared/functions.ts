@@ -356,3 +356,14 @@ export const buildSearchListForClient = (
   }
   return newOptions;
 };
+
+/**
+ * This method will calculate tax by rate.
+ * @param amount 
+ * @param taxRate 
+ * @returns 
+ */
+export const calculateTaxByRate = (amount: number, taxRate:number) : number => {
+  let temp: number = amount * taxRate;
+  return temp / 100;
+}
