@@ -729,8 +729,7 @@ class SalesReturn {
                 po,
                 unit_no,
                 vin,
-                `restocking_fees`,
-                `restocking_rate`
+                `restocking_fees`
             )
             VALUES
             (
@@ -760,8 +759,7 @@ class SalesReturn {
                 :po,
                 :unit_no,
                 :vin,
-                :restocking_fees,
-                :restocking_rate
+                :restocking_fees
             );
             EOS;
 
@@ -797,7 +795,6 @@ class SalesReturn {
                 ':unit_no' => $validated_details['unit_no'],
                 ':vin' => $validated_details['vin'],
                 ':restocking_fees' => $validated_details['restocking_fees'],
-                ':restocking_rate' => $validated_details['restocking_rate'],
             ];
 
             /* CHECK FOR ANY ERROR */
