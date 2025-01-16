@@ -97,6 +97,24 @@ class PrepareDetails_SI_SR_CN_DN_QT {
         // Process for Sales Return
         if($transaction_type === SALES_RETURN) $item_details = self::process_details_for_sales_return($item_details);
 
+        // Is Credit Transaction
+        $is_credit_transaction = $transaction_type === SALES_RETURN || $transaction_type === CREDIT_NOTE;
+
+        // GST/HST Tax
+        $gst_hst_tax = $txn['gst_hst_tax'] ?? 0;
+
+        // PST Tax
+        $pst_tax = $txn['pst_tax'] ?? 0;
+
+        // Amount Owing
+        $amount_owing = $txn['credit_amount'] ?? 0;
+
+        // Amount Paid
+        $amount_paid = $txn['sum_total'] - ($txn['credit_amount'] ?? 0);
+
+        // Transaction Discount
+        $txn_discount = $txn['txn_discount'] ?? 0;
+
         $details = [
             'txn_type_id' => $transaction_type,
             'document_id' => $txn['id'],
@@ -118,13 +136,13 @@ class PrepareDetails_SI_SR_CN_DN_QT {
             'details' => $item_details,
             'timestamp' => $txn['created'],
             'modified' => $txn['modified'],
-            'txn_discount' => $txn['txn_discount'] ?? 0,
-            'gst_hst_tax'=> $txn['gst_hst_tax'] ?? 0,
-            'pst_tax'=> $txn['pst_tax'] ?? 0,
-            'sum_total' => $txn['sum_total'],
-            'sub_total' => $txn['sub_total'],
-            'amount_paid' => $txn['sum_total'] - ($txn['credit_amount'] ?? 0),
-            'amount_owing' => $txn['credit_amount'] ?? 0,
+            'txn_discount' => $is_credit_transaction ? -$txn_discount : $txn_discount,
+            'gst_hst_tax'=> $is_credit_transaction ? -$gst_hst_tax: $gst_hst_tax,
+            'pst_tax'=> $is_credit_transaction ? -$pst_tax: $pst_tax,
+            'sum_total' => $is_credit_transaction ? -$txn['sum_total']: $txn['sum_total'],
+            'sub_total' => $is_credit_transaction ? -$txn['sub_total'] : $txn['sub_total'],
+            'amount_paid' => $is_credit_transaction ? -$amount_paid : $amount_paid,
+            'amount_owing' => $is_credit_transaction ? -$amount_owing : $amount_owing,
             'pst_number' => StoreDetails::STORE_DETAILS[$store_id]['pst_number'][SYSTEM_INIT_MODE],
             'account_number' => $txn['account_number'] ?? '',
             'store_id' => $store_id,
