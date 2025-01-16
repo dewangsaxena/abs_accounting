@@ -1477,9 +1477,9 @@ const ItemFieldRow = memo(
         {/* Restocking Fees */}
         {type === TRANSACTION_TYPES["SR"] && <Box width="5%">
         <_Input
-            defaultValue={0}
+            defaultValue={details[rowIndex].restockingRate || 0}
             type="number"
-            isReadOnly={isReadOnly || isProcessed || clientDetails === null}
+            isReadOnly={enableEditing === false ||isReadOnly || isProcessed || clientDetails === null}
             borderBottomWidth={inputConfig.borderWidth}
             borderRadius={inputConfig.borderRadius}
             size={inputConfig.size}
