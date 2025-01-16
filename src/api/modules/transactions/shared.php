@@ -127,8 +127,6 @@ class Shared {
             }
         }
 
-        // $details_count = count($details);
-        // for($i = 0; $i < $details_count; ++$i) $details[$i]['isExisting'] = 1;
         $response = [
             'id' => $record['id'],
             'transactionType' => $transaction_type,
@@ -181,13 +179,7 @@ class Shared {
             ]);
         }
         else if($transaction_type === SALES_RETURN) {
-            $response = array_merge($response, [
-                'restockingRate' => $record['restocking_rate'],
-                'restockingFees' => $record['restocking_fees'],
-            ]);
-
-            // Restocking Rate
-            $response['initial']['restockingRate'] = $record['restocking_rate'];
+            $response['restockingFees'] = $record['restocking_fees'];
             $response['initial']['restockingFees'] = $record['restocking_fees'];
         }
 

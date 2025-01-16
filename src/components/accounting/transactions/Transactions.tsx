@@ -563,13 +563,23 @@ const ItemHeaderRow = ({ type }: { type: number }) => {
         </_Label>
       </Box>
       <Box
-        width={type === TRANSACTION_TYPES["SI"] ? "25%" : "35%"}
+        width={type === TRANSACTION_TYPES["SI"] ? "25%" : "30%"}
         textAlign={"center"}
       >
         <_Label fontSize={"0.7em"} letterSpacing={2}>
           DESCRIPTION
         </_Label>
       </Box>
+      {type === TRANSACTION_TYPES["SR"] && <Box
+        width="5%"
+        textAlign={"center"}
+      >
+        <_Label fontSize={"0.7em"} letterSpacing={2}>
+          <Tooltip label="Restocking fees">
+              RSTK. FEES %
+          </Tooltip>
+        </_Label>
+      </Box>}
       {(type == TRANSACTION_TYPES["SI"] || type == TRANSACTION_TYPES["QT"]) && (
         <Box width="5%" textAlign={"center"}>
           <_Label fontSize={"0.7em"} letterSpacing={2} color="#DC143C">
@@ -758,19 +768,6 @@ const ItemFieldRow = memo(
     useEffect(() => {
       if (clientDetails !== null) {
         setIsClientChangedSuccessfully(false);
-
-        // Check for Existing Record
-        // And Check for Client Change
-        // Set Discount
-        // [POSSIBLE DEAD CODE. REMOVE LATER]
-        // if (
-        //   (details[rowIndex].isExisting !== 1 ||
-        //     (oldClient !== null && oldClient.id != clientDetails.id)) &&
-        //   type === TRANSACTION_TYPES["SR"] &&
-        //   id
-        // ) {
-        //   details[rowIndex].discountRate = clientDetails.standardDiscount;
-        // }
 
         if (oldClient !== null && oldClient.id != clientDetails.id) {
           setProperty("selectedSalesInvoice", undefined);
@@ -1275,88 +1272,6 @@ const ItemFieldRow = memo(
           )}
         {/* Item Identifier */}
         <Box width={type == TRANSACTION_TYPES["SR"] ? "15%" : "18%"}>
-          {/* <AsyncSelect
-            tabSelectsValue={true}
-            key={getUUID()}
-            isDisabled={
-              type == TRANSACTION_TYPES["SR"] ||
-              enableEditing === false ||
-              __lockCounter !== 0 ||
-              isProcessed ||
-              disableEditingItem
-            }
-            placeholder="Identifier"
-            styles={AsyncSelectStyle}
-            isClearable={type == TRANSACTION_TYPES["SR"] ? false : true}
-            {...defaultItemValue}
-            // {...(type !== TRANSACTION_TYPES["SR"] && enableEditing === true ? {inputValue: details[rowIndex].identifier}: {})}
-            onChange={(
-              event: {
-                label: string;
-                value: ItemDetailsForTransactions | null;
-              } | null
-            ) => {
-              if (event !== null && event.value !== null) {
-                if (
-                  type === TRANSACTION_TYPES["SI"] ||
-                  type === TRANSACTION_TYPES["QT"]
-                ) {
-                  let value = event.value;
-                  if (clientDetails) {
-                    if (
-                      clientDetails.customSellingPriceForItems[storeId][
-                        value.id
-                      ]
-                    ) {
-                      value.prices[storeId].sellingPrice =
-                        clientDetails.customSellingPriceForItems[storeId][
-                          value.id
-                        ].sellingPrice;
-                      event.value = value;
-                    }
-                  }
-
-                  inventoryItemSelected(event);
-                }
-
-                if (
-                  type === TRANSACTION_TYPES["CN"] ||
-                  type === TRANSACTION_TYPES["DN"]
-                ) {
-                  creditOrDebitNoteSelected(event);
-                }
-              } else {
-                // Enable Editing on Discount
-                setDisableDiscountOnItem(false);
-                setIsBackOrderItem(0);
-
-                // Removing An Item 
-                setItemDetails(null);
-
-                // Set Item Set Flag
-                setItemSetFlag(false);
-
-                // Reset Details
-                details[rowIndex] = { ...defaultRowItemDetails };
-
-                setPricePerItem(0);
-                setAmountPerItem(0);
-
-                // Clear Amount of the removed item
-                updateAmounts();
-              }
-            }}
-            loadOptions={
-              type === TRANSACTION_TYPES["SI"] ||
-              type === TRANSACTION_TYPES["QT"]
-                ? loadOptionsForItem
-                : type === TRANSACTION_TYPES["CN"]
-                ? loadOptionsForCreditNote
-                : type === TRANSACTION_TYPES["DN"]
-                ? loadOptionsForDebitNote
-                : () => {}
-            }
-          ></AsyncSelect> */}
           <AutoSuggest
             suggestions={itemSuggestions}
             onSuggestionsClearRequested={() => setItemSuggestions([])}
@@ -1534,7 +1449,7 @@ const ItemFieldRow = memo(
           </_Label>
         </Box>
         {/* Description */}
-        <Box width={type === TRANSACTION_TYPES["SI"] ? "25%" : "35%"}>
+        <Box width={type === TRANSACTION_TYPES["SI"] ? "25%" : "30%"}>
           <_Input
             _key={getUUID()}
             onClick={(event: any) => {
@@ -1559,6 +1474,30 @@ const ItemFieldRow = memo(
             }}
           ></_Input>
         </Box>
+        {/* Restocking Fees */}
+        {type === TRANSACTION_TYPES["SR"] && <Box width="5%">
+        <_Input
+            defaultValue={details[rowIndex].restockingRate || 0}
+            type="number"
+            isReadOnly={enableEditing === false ||isReadOnly || isProcessed || clientDetails === null}
+            borderBottomWidth={inputConfig.borderWidth}
+            borderRadius={inputConfig.borderRadius}
+            size={inputConfig.size}
+            fontSize={inputConfig.fontSize}
+            fontFamily={numberFont}
+            letterSpacing={inputConfig.letterSpacing}
+            width="100%"
+            onClick={(event:any) => {
+              event.target.select();
+            }}
+            onBlur={(e: any) => {
+              if (e && e.target && e.target.value) {
+                details[rowIndex].restockingRate = parseFloat(e.target.value);
+                updateAmounts();
+              }
+            }}
+          ></_Input>
+        </Box>}
         {(type == TRANSACTION_TYPES["SI"] ||
           type == TRANSACTION_TYPES["QT"]) && (
             <Box width="5%" textAlign={"center"}>
@@ -1882,8 +1821,6 @@ const TransactionHeaderDetails = ({
     __lockCounter,
     txnDate,
     selectedSalesInvoice,
-    restockingRate,
-    updateAmounts,
     setProperty,
     fetchInvoicesByClientForSalesReturns,
   } = transactionStore(
@@ -1903,12 +1840,9 @@ const TransactionHeaderDetails = ({
       __lockCounter: state.__lockCounter,
       txnDate: state.txnDate,
       selectedSalesInvoice: state.selectedSalesInvoice,
-      restockingRate: state.restockingRate,
       subTotal: state.subTotal,
       setProperty: state.setProperty,
-      fetchInvoicesByClientForSalesReturns:
-        state.fetchInvoicesByClientForSalesReturns,
-        updateAmounts: state.updateAmounts,
+      fetchInvoicesByClientForSalesReturns: state.fetchInvoicesByClientForSalesReturns,
     }),
     shallow
   );
@@ -2413,7 +2347,7 @@ const TransactionHeaderDetails = ({
                     </HStack>
                   </Box>
                   {type === TRANSACTION_TYPES["SR"] && (
-                      <Box width="80%" marginLeft={8}>
+                      <Box width="90%" marginLeft={8}>
                         <AsyncSelect
                           tabSelectsValue={true}
                           isDisabled={
@@ -2469,7 +2403,7 @@ const TransactionHeaderDetails = ({
                       </Box>
                   )}
                   {/* RESTOCKING FEES */}
-                  {type === TRANSACTION_TYPES["SR"] && 
+                  {/* {type === TRANSACTION_TYPES["SR"] && 
                     <HStack>
                       <Box width="60%" fontSize="0.7em">
                         <Tooltip label="Restocking fees">
@@ -2481,7 +2415,6 @@ const TransactionHeaderDetails = ({
                             defaultValue={restockingRate}
                             type="number"
                             isReadOnly={isReadOnly || isProcessed || clientDetails === null}
-                            isDisabled={true}
                             borderBottomColor={inputConfig.borderColor}
                             borderBottomWidth={inputConfig.borderWidth}
                             borderRadius={inputConfig.borderRadius}
@@ -2503,7 +2436,7 @@ const TransactionHeaderDetails = ({
                           ></_Input>
                         </Box>
                     </HStack>
-                  }
+                  } */}
                   {type === TRANSACTION_TYPES["SI"] && (
                     <Box width="100%">
                       <HStack width="100%">

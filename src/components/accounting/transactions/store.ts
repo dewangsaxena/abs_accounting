@@ -27,13 +27,13 @@ export interface RowDetails {
   buyingCost: number;
   originalSellingPrice: number;
   isBackOrder: number;
+  restockingRate?: number;
 
   /* Account Details */
   account: Account;
 
   /* Sales Return Specific Values */
   returnQuantity?: number;
-  /*invoiceAmount?: number;*/
 
   /* Meta Data */
   isExisting?: number;
@@ -50,7 +50,6 @@ export const defaultRowItemDetails: RowDetails = {
   identifier: "",
   description: "",
   discountRate: 0,
-  /*invoiceAmount: 0,*/
   returnQuantity: 0,
   pricePerItem: 0,
   quantity: 0,
@@ -61,6 +60,7 @@ export const defaultRowItemDetails: RowDetails = {
   unit: "",
   account: {} as Account,
   isBackOrder: 0,
+  restockingRate: 0,
 };
 
 /**
@@ -113,7 +113,6 @@ export interface TransactionStoreFields {
   salesRepId: number;
   storeId: number | null;
   notes: string;
-  restockingRate?: number;
   restockingFees?: number;
   __lockCounter: number;
   disableItemEditing: number;
@@ -184,7 +183,6 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
   salesRepId: 0,
   storeId: parseInt(localStorage.getItem("storeId") || ""),
   notes: "",
-  restockingRate: 0,
   restockingFees: 0,
   __lockCounter: 0,
   disableItemEditing: 0,
@@ -238,9 +236,7 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
     else if (detailName === "salesRepId") {
       set({ salesRepId: value });
     }
-    else if(detailName === "restockingRate") set({restockingRate: value});
     else if(detailName === "restockingFees") set({restockingFees: value});
-
   },
   addRow: () => {
     let txnDetails = get().details;
@@ -262,9 +258,9 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
       amount_per_item: number = 0,
       quantity: number = 0,
       discount_per_item: number = 0,
+      restocking_rate: number = 0,
       restocking_fees: number = 0;
 
-    const RESTOCKING_RATE: number = get().restockingRate || 0;
     const IS_SALES_RETURN = get().transactionType === TRANSACTION_TYPES["SR"] ? true : false;
 
     for (let i = 0; i < totalRows; ++i) {
@@ -273,24 +269,19 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
         // Check for Return Quantity if sales return
         if(IS_SALES_RETURN && (rowDetails[i].returnQuantity || 0) === 0) continue;
 
+        // Amount per item
         amount_per_item = rowDetails[i].amountPerItem;
 
+        // Restocking Rate
+        restocking_rate = rowDetails[i].restockingRate || 0;
+
         // Calculate Restocking fees per item
-        if(RESTOCKING_RATE > 0) {
-          restocking_fees = (amount_per_item * RESTOCKING_RATE) / 100;
+        if(restocking_rate > 0) {
+          restocking_fees = (amount_per_item * restocking_rate) / 100;
+          totalRestockingFees += restocking_fees;
+        } 
 
-          // Calculate Tax on Restocking Fees
-          restocking_fees += calculateTaxByRate(restocking_fees, rowDetails[i].gstHSTTaxRate);
-          restocking_fees += calculateTaxByRate(restocking_fees, rowDetails[i].pstTaxRate);
-        }
-        else restocking_fees = 0;
-
-        // Add to total
-        totalRestockingFees += restocking_fees;
-
-        // Adjust amount per item
-        amount_per_item -= restocking_fees;
-
+        // Add to subtotal
         subTotal += amount_per_item;
 
         // Calculate Total Discount
@@ -314,12 +305,16 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
       }
     }
 
+    // Deduct Restocking fees from subtotal
+    subTotal -= totalRestockingFees;
+
     // Round off
     subTotal = toFixed(subTotal);
     gstHSTTax = toFixed(gstHSTTax);
     pstTax = toFixed(pstTax);
     txnDiscount = toFixed(txnDiscount);
     cogs = toFixed(cogs);
+    totalRestockingFees = toFixed(totalRestockingFees);
 
     set({ subTotal: subTotal });
     set({ gstHSTTax: gstHSTTax });
@@ -434,7 +429,6 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
       selectedSalesInvoiceLastModifiedTimestamp:
         details.selectedSalesInvoiceLastModifiedTimestamp,
     });
-    set({restockingRate: details.restockingRate});
     set({restockingFees: details.restockingFees});
 
     /* Versions */

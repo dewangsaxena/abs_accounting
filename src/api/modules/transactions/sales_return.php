@@ -22,7 +22,11 @@ class SalesReturn {
         'pstTaxRate',
         'category',
         'returnQuantity',
+        'restockingRate',
     ];
+
+    /* Max Restrocking Rate */
+    private const MAX_RESTOCKING_RATE = 20;
 
     /**
      * This method will validate the items details for validity.
@@ -35,6 +39,9 @@ class SalesReturn {
 
         // Validate Item Count
         if(count($items) < 1) return ['status' => false, 'message' => 'Invalid Items Count.'];
+
+        // Store Id
+        $store_id = $_SESSION['store_id'];
 
         // Validate Item fields
         foreach($items as $item) {
@@ -51,6 +58,9 @@ class SalesReturn {
             // Check for Return Quantity when Item is Back Order.
             if($item['returnQuantity'] > 0 && $item['isBackOrder'] === 1) return ['status' => false, 'message' => 'Cannot Return Back Order Item.'];
 
+            // Restocking Rate
+            if(is_numeric($item['restockingRate'] ?? null) === false) $item['restockingRate'] = 0;
+
             // Uninitialized Item Found
             if(isset($item['itemId']) === false || is_null($item['itemId'])) return ['status' => false, 'message' => 'Uninitialized Item.'];
             foreach(self::ITEM_KEYS as $key) {
@@ -64,10 +74,10 @@ class SalesReturn {
             foreach($keys as $key) if(floatval($item[$key]) < 0) return ['status' => false, 'message' => "$key less than or equal to 0 for $identifier."];
 
             // Check for GST/HST Tax Rate
-            if($disable_federal_taxes === 0 && $item['gstHSTTaxRate'] <= 0) return ['status' => false, 'message' => "GSTHSTTaxRate less than or equal to 0 for $identifier."];
+            if($disable_federal_taxes === 0 && floatval($item['gstHSTTaxRate']) !== FEDERAL_TAX_RATE) return ['status' => false, 'message' => "GSTHSTTaxRate less than or equal to 0 for $identifier."];
 
             // Check for PST if applicable
-            if($disable_provincial_taxes === 0 && (StoreDetails::STORE_DETAILS[$_SESSION['store_id']]['pst_tax_rate'] > 0) && floatval($item['pstTaxRate']) < 0) {
+            if($disable_provincial_taxes === 0 && (StoreDetails::STORE_DETAILS[$store_id]['pst_tax_rate'] > 0) && floatval($item['pstTaxRate']) !== StoreDetails::STORE_DETAILS[$store_id]['pst_tax_rate']) {
                 return ['status' => false, 'message' => 'PST Tax Invalid.'];
             }
 
@@ -85,10 +95,9 @@ class SalesReturn {
      * @param items
      * @param disable_federal_taxes
      * @param disable_provincial_tax
-     * @param restocking_rate
      * @return array
      */
-    public static function calculate_amount(array $items, int $disable_federal_taxes, int $disable_provincial_taxes, float $restocking_rate=0.0) : array {
+    public static function calculate_amount(array $items, int $disable_federal_taxes, int $disable_provincial_taxes) : array {
 
         // Calculate Amounts 
         $sub_total = 0;
@@ -110,18 +119,13 @@ class SalesReturn {
             // Amount Per item
             $amount_per_item = $item['amountPerItem'];
 
+            // Restocking Rate
+            $restocking_rate = is_numeric($item['restockingRate']) ? floatval($item['restockingRate']) : 0;
+            if($restocking_rate < 0) throw new Exception('Restocking Rate cannot be negative.');
+            else if($restocking_rate > self::MAX_RESTOCKING_RATE) throw new Exception('Restocking Rate cannot be more than '. self::MAX_RESTOCKING_RATE.'%');
+
             // Adjust for Restocking fees
-            if($restocking_rate > 0) {
-                $restocking_fees = ($amount_per_item * $restocking_rate) / 100;
-
-                // Calculate Tax 
-                $restocking_fees += (($restocking_fees * $federal_tax_rate) / 100);
-                $restocking_fees += (($restocking_fees * $provincial_tax_rate) / 100);
-            }
-            else $restocking_fees = 0;
-
-            // Deduct
-            $amount_per_item -= $restocking_fees;
+            $restocking_fees = $restocking_rate > 0 ? ($amount_per_item * $restocking_rate) / 100: 0;
 
             // Add to total restocking fees
             $total_restocking_fees += $restocking_fees;
@@ -382,18 +386,12 @@ class SalesReturn {
             $disable_provincial_taxes,
         );
         if($valid_ret_value['status'] === false) throw new Exception($valid_ret_value['message']);
-
-        // Restocking Rate
-        $restocking_rate = is_numeric($data['restockingRate'] ?? null) ? floatval($data['restockingRate']) : 0;
-        if($restocking_rate < 0) throw new Exception('Restocking Rate cannot be negative.');
-        else if($restocking_rate > 100) throw new Exception('Restocking Rate cannot be more than 100%.');
-
+        
         // Calculate Amounts
         $calculated_amount = self::calculate_amount(
             $data['details'], 
             $disable_federal_taxes,
-            $disable_provincial_taxes,
-            $restocking_rate
+            $disable_provincial_taxes
         );
         $sum_total = $calculated_amount['sumTotal'];
         $sub_total = $calculated_amount['subTotal'];
@@ -448,7 +446,6 @@ class SalesReturn {
             'vin' => trim($data['vin'] ?? ''),
             'notes' => $notes,
             'restocking_fees' => $restocking_fees,
-            'restocking_rate' => $restocking_rate,
         ];
     }
 
@@ -546,9 +543,6 @@ class SalesReturn {
         try {
             // Begin Transaction
             $db -> beginTransaction();
-
-            /* DISABLE RESTOCKING FEES FOR NOW */
-            $data['restockingRate'] = 0;
             
             // Validate Details.
             $validated_details = self::validate_details($data);
@@ -575,6 +569,7 @@ class SalesReturn {
             $gst_hst_tax = $validated_details['gst_hst_tax'];
             $txn_discount = $validated_details['txn_discount'];
             $cogr = $validated_details['cogr'];
+            $restocking_fees = $validated_details['restocking_fees'];
 
             // Payment details
             $is_pay_later = $validated_details['is_pay_later'];
@@ -649,6 +644,13 @@ class SalesReturn {
                 $temp,
             );
             $offset_amounts[$payment_method_account] = $temp;
+
+            /* Add Restocking Fees */
+            BalanceSheetActions::update_account_value(
+                $bs_affected_accounts,
+                $payment_method_account,
+                $restocking_fees,
+            );
             
             /* UPDATE PST TAX ACCOUNT */ 
             BalanceSheetActions::update_account_value(
@@ -727,8 +729,7 @@ class SalesReturn {
                 po,
                 unit_no,
                 vin,
-                `restocking_fees`,
-                `restocking_rate`
+                `restocking_fees`
             )
             VALUES
             (
@@ -758,13 +759,16 @@ class SalesReturn {
                 :po,
                 :unit_no,
                 :vin,
-                :restocking_fees,
-                :restocking_rate
+                :restocking_fees
             );
             EOS;
 
             // Remove Item Tag
             Shared::remove_item_tag_from_txn_details($details);
+
+            /* Update Subtotal and Total by deducting restocking fees */
+            $sub_total -= $restocking_fees;
+            $sum_total -= $restocking_fees;
 
             // Values to be inserted into DB
             $values = [
@@ -795,7 +799,6 @@ class SalesReturn {
                 ':unit_no' => $validated_details['unit_no'],
                 ':vin' => $validated_details['vin'],
                 ':restocking_fees' => $validated_details['restocking_fees'],
-                ':restocking_rate' => $validated_details['restocking_rate'],
             ];
 
             /* CHECK FOR ANY ERROR */
@@ -871,7 +874,7 @@ class SalesReturn {
         IncomeStatementActions::update_account_values(
             $is_affected_accounts, 
             AccountsConfig::SALES_RETURN,
-            -$details['initial']['subTotal'],
+            -($details['initial']['subTotal'] + $details['initial']['restockingFees']),
         );
 
         /* !! Discount */
@@ -914,7 +917,14 @@ class SalesReturn {
             BalanceSheetActions::update_account_value(
                 $bs_affected_accounts,
                 $old_payment_method_account,
-                $old_sum_total
+                ($old_sum_total + $details['initial']['restockingFees'])
+            );
+
+            // Deduct Restocking Fees
+            BalanceSheetActions::update_account_value(
+                $bs_affected_accounts,
+                $old_payment_method_account,
+                -$details['initial']['restockingFees']
             );
         }
     }
@@ -929,9 +939,6 @@ class SalesReturn {
         try {
             // Begin Transaction
             $db -> beginTransaction();
-
-            /* DISABLE RESTOCKING FEES FOR NOW */
-            $data['restockingRate'] = 0;
 
             // Sales Return ID
             $sales_return_id = $data['id'] ?? null;
@@ -969,7 +976,6 @@ class SalesReturn {
             $gst_hst_tax = $validated_details['gst_hst_tax'];
             $txn_discount = $validated_details['txn_discount'];
             $cogr = $validated_details['cogr'];
-            $restocking_rate = $validated_details['restocking_rate'];
             $restocking_fees = $validated_details['restocking_fees'];
 
             // Payment details
@@ -1086,6 +1092,13 @@ class SalesReturn {
                 $sub_total,
             );
 
+            // Add Restocking Fees
+            BalanceSheetActions::update_account_value(
+                $bs_affected_accounts,
+                $payment_method_account,
+                $restocking_fees,
+            );
+
             // UPDATE GST/HST TAX ACCOUNT 
             BalanceSheetActions::update_account_value(
                 $bs_affected_accounts,
@@ -1157,13 +1170,16 @@ class SalesReturn {
                 early_payment_discount = :early_payment_discount,
                 early_payment_paid_within_days = :early_payment_paid_within_days,
                 net_amount_due_within_days = :net_amount_due_within_days,
-                restocking_rate = :restocking_rate,
                 restocking_fees = :restocking_fees,
                 versions = :versions,
                 modified = CURRENT_TIMESTAMP 
             WHERE
                 id = :id;
             EOS;
+
+            // Deduct Restocking Fees from Sub and Sum total
+            $sub_total -= $restocking_fees;
+            $sum_total -= $restocking_fees;
 
             $params = [
                 ':date' => $date,
@@ -1182,7 +1198,6 @@ class SalesReturn {
                 ':early_payment_discount' => $data['earlyPaymentDiscount'],
                 ':early_payment_paid_within_days' => $data['earlyPaymentPaidWithinDays'],
                 ':net_amount_due_within_days' => $data['netAmountDueWithinDays'],
-                ':restocking_rate' => $restocking_rate,
                 ':restocking_fees' => $restocking_fees,
                 ':versions' => is_array($versions) ? json_encode($versions, JSON_THROW_ON_ERROR) : null,
                 ':id' => $sales_return_id,
