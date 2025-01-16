@@ -273,18 +273,16 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
         // Check for Return Quantity if sales return
         if(IS_SALES_RETURN && (rowDetails[i].returnQuantity || 0) === 0) continue;
 
+        // Amount per item
         amount_per_item = rowDetails[i].amountPerItem;
 
         // Calculate Restocking fees per item
-        if(RESTOCKING_RATE > 0) restocking_fees = (amount_per_item * RESTOCKING_RATE) / 100;
-        else restocking_fees = 0;
+        if(RESTOCKING_RATE > 0) {
+          restocking_fees = (amount_per_item * RESTOCKING_RATE) / 100;
+          totalRestockingFees += restocking_fees;
+        } 
 
-        // Add to total
-        totalRestockingFees += restocking_fees;
-
-        // Adjust amount per item
-        amount_per_item -= restocking_fees;
-
+        // Add to subtotal
         subTotal += amount_per_item;
 
         // Calculate Total Discount
@@ -307,6 +305,9 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
         pstTax += calculateTaxByRate(amount_per_item, rowDetails[i].pstTaxRate);
       }
     }
+
+    // Deduct Restocking fees from subtotal
+    subTotal -= totalRestockingFees;
 
     // Round off
     subTotal = toFixed(subTotal);
