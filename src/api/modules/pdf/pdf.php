@@ -330,10 +330,15 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         self::$pdf -> SetFont(self::COURIER, '', 8);
         self::$pdf -> Cell(w: 0, h: 4, txt: '$ '.number_format(self::$details['txn_discount'], 2), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'R');
         self::$pdf -> SetFont(self::ARIAL, 'B', 8);
-        self::$pdf -> Cell(w: 146, h: 4, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, align: 'R');
-        self::$pdf -> Cell(w: 22, h: 4, txt: 'Restocking Fees:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
-        self::$pdf -> SetFont(self::COURIER, '', 8);
-        self::$pdf -> Cell(w: 0, h: 4, txt: '$ '.number_format(self::$details['restocking_fees'], 2), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'R');
+        
+        // Restocking fees for sales return
+        if($is_sales_return) {
+            self::$pdf -> Cell(w: 146, h: 4, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, align: 'R');
+            self::$pdf -> Cell(w: 22, h: 4, txt: 'Restocking Fees:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
+            self::$pdf -> SetFont(self::COURIER, '', 8);
+            self::$pdf -> Cell(w: 0, h: 4, txt: '$ '.number_format(self::$details['restocking_fees'], 2), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'R');
+        }
+        
         self::$pdf -> Cell(w: 28, h: 4, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> SetFont(self::ARIAL, 'B', 8);
         self::$pdf -> Cell(w: 118, h: 4, txt: 'Please note all Returns may be subjected to 20% re-stocking fee.', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, align: 'C');
