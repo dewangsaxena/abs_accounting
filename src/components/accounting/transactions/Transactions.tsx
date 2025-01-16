@@ -2413,7 +2413,7 @@ const TransactionHeaderDetails = ({
                     </HStack>
                   </Box>
                   {type === TRANSACTION_TYPES["SR"] && (
-                      <Box width="80%" marginLeft={8}>
+                      <Box width="90%" marginLeft={8}>
                         <AsyncSelect
                           tabSelectsValue={true}
                           isDisabled={
@@ -2469,7 +2469,7 @@ const TransactionHeaderDetails = ({
                       </Box>
                   )}
                   {/* RESTOCKING FEES */}
-                  {type === TRANSACTION_TYPES["SR"] && 
+                  {/* {type === TRANSACTION_TYPES["SR"] && 
                     <HStack>
                       <Box width="60%" fontSize="0.7em">
                         <Tooltip label="Restocking fees">
@@ -2502,7 +2502,7 @@ const TransactionHeaderDetails = ({
                           ></_Input>
                         </Box>
                     </HStack>
-                  }
+                  } */}
                   {type === TRANSACTION_TYPES["SI"] && (
                     <Box width="100%">
                       <HStack width="100%">
