@@ -276,13 +276,7 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
         amount_per_item = rowDetails[i].amountPerItem;
 
         // Calculate Restocking fees per item
-        if(RESTOCKING_RATE > 0) {
-          restocking_fees = (amount_per_item * RESTOCKING_RATE) / 100;
-
-          // Calculate Tax on Restocking Fees
-          restocking_fees += calculateTaxByRate(restocking_fees, rowDetails[i].gstHSTTaxRate);
-          restocking_fees += calculateTaxByRate(restocking_fees, rowDetails[i].pstTaxRate);
-        }
+        if(RESTOCKING_RATE > 0) restocking_fees = (amount_per_item * RESTOCKING_RATE) / 100;
         else restocking_fees = 0;
 
         // Add to total
