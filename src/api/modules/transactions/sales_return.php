@@ -543,9 +543,6 @@ class SalesReturn {
         try {
             // Begin Transaction
             $db -> beginTransaction();
-
-            /* DISABLE RESTOCKING FEES FOR NOW */
-            $data['restockingRate'] = 0;
             
             // Validate Details.
             $validated_details = self::validate_details($data);
@@ -572,6 +569,7 @@ class SalesReturn {
             $gst_hst_tax = $validated_details['gst_hst_tax'];
             $txn_discount = $validated_details['txn_discount'];
             $cogr = $validated_details['cogr'];
+            $restocking_fees = $validated_details['restocking_fees'];
 
             // Payment details
             $is_pay_later = $validated_details['is_pay_later'];
@@ -646,6 +644,13 @@ class SalesReturn {
                 $temp,
             );
             $offset_amounts[$payment_method_account] = $temp;
+
+            /* Add Restocking Fees */
+            BalanceSheetActions::update_account_value(
+                $bs_affected_accounts,
+                $payment_method_account,
+                $restocking_fees,
+            );
             
             /* UPDATE PST TAX ACCOUNT */ 
             BalanceSheetActions::update_account_value(

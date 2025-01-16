@@ -314,6 +314,7 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
     pstTax = toFixed(pstTax);
     txnDiscount = toFixed(txnDiscount);
     cogs = toFixed(cogs);
+    totalRestockingFees = toFixed(totalRestockingFees);
 
     set({ subTotal: subTotal });
     set({ gstHSTTax: gstHSTTax });
