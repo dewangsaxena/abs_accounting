@@ -115,8 +115,8 @@ class SalesReturn {
                 $restocking_fees = ($amount_per_item * $restocking_rate) / 100;
 
                 // Calculate Tax 
-                //$restocking_fees += (($restocking_fees * $federal_tax_rate) / 100);
-                //$restocking_fees += (($restocking_fees * $provincial_tax_rate) / 100);
+                $restocking_fees += (($restocking_fees * $federal_tax_rate) / 100);
+                $restocking_fees += (($restocking_fees * $provincial_tax_rate) / 100);
             }
             else $restocking_fees = 0;
 
