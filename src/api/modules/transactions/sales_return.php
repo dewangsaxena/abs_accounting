@@ -111,7 +111,14 @@ class SalesReturn {
             $amount_per_item = $item['amountPerItem'];
 
             // Adjust for Restocking fees
-            $restocking_fees = $restocking_rate > 0.0 ? ($amount_per_item * $restocking_rate) / 100 : 0.0;
+            if($restocking_rate > 0) {
+                $restocking_fees = ($amount_per_item * $restocking_rate) / 100;
+
+                // Calculate Tax 
+                $restocking_fees += (($restocking_fees * $federal_tax_rate) / 100);
+                $restocking_fees += (($restocking_fees * $provincial_tax_rate) / 100);
+            }
+            else $restocking_fees = 0;
 
             // Deduct
             $amount_per_item -= $restocking_fees;
