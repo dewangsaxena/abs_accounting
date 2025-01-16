@@ -766,6 +766,10 @@ class SalesReturn {
             // Remove Item Tag
             Shared::remove_item_tag_from_txn_details($details);
 
+            /* Update Subtotal and Total after deducting restocking fees */
+            $sub_total -= $restocking_fees;
+            $sum_total -= $restocking_fees;
+
             // Values to be inserted into DB
             $values = [
                 ':sales_invoice_id' => $sales_invoice_id,
