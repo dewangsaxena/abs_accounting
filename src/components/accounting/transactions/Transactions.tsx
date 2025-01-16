@@ -759,19 +759,6 @@ const ItemFieldRow = memo(
       if (clientDetails !== null) {
         setIsClientChangedSuccessfully(false);
 
-        // Check for Existing Record
-        // And Check for Client Change
-        // Set Discount
-        // [POSSIBLE DEAD CODE. REMOVE LATER]
-        // if (
-        //   (details[rowIndex].isExisting !== 1 ||
-        //     (oldClient !== null && oldClient.id != clientDetails.id)) &&
-        //   type === TRANSACTION_TYPES["SR"] &&
-        //   id
-        // ) {
-        //   details[rowIndex].discountRate = clientDetails.standardDiscount;
-        // }
-
         if (oldClient !== null && oldClient.id != clientDetails.id) {
           setProperty("selectedSalesInvoice", undefined);
           setProperty("selectedSalesInvoiceLastModifiedTimestamp", undefined);
@@ -1275,88 +1262,6 @@ const ItemFieldRow = memo(
           )}
         {/* Item Identifier */}
         <Box width={type == TRANSACTION_TYPES["SR"] ? "15%" : "18%"}>
-          {/* <AsyncSelect
-            tabSelectsValue={true}
-            key={getUUID()}
-            isDisabled={
-              type == TRANSACTION_TYPES["SR"] ||
-              enableEditing === false ||
-              __lockCounter !== 0 ||
-              isProcessed ||
-              disableEditingItem
-            }
-            placeholder="Identifier"
-            styles={AsyncSelectStyle}
-            isClearable={type == TRANSACTION_TYPES["SR"] ? false : true}
-            {...defaultItemValue}
-            // {...(type !== TRANSACTION_TYPES["SR"] && enableEditing === true ? {inputValue: details[rowIndex].identifier}: {})}
-            onChange={(
-              event: {
-                label: string;
-                value: ItemDetailsForTransactions | null;
-              } | null
-            ) => {
-              if (event !== null && event.value !== null) {
-                if (
-                  type === TRANSACTION_TYPES["SI"] ||
-                  type === TRANSACTION_TYPES["QT"]
-                ) {
-                  let value = event.value;
-                  if (clientDetails) {
-                    if (
-                      clientDetails.customSellingPriceForItems[storeId][
-                        value.id
-                      ]
-                    ) {
-                      value.prices[storeId].sellingPrice =
-                        clientDetails.customSellingPriceForItems[storeId][
-                          value.id
-                        ].sellingPrice;
-                      event.value = value;
-                    }
-                  }
-
-                  inventoryItemSelected(event);
-                }
-
-                if (
-                  type === TRANSACTION_TYPES["CN"] ||
-                  type === TRANSACTION_TYPES["DN"]
-                ) {
-                  creditOrDebitNoteSelected(event);
-                }
-              } else {
-                // Enable Editing on Discount
-                setDisableDiscountOnItem(false);
-                setIsBackOrderItem(0);
-
-                // Removing An Item 
-                setItemDetails(null);
-
-                // Set Item Set Flag
-                setItemSetFlag(false);
-
-                // Reset Details
-                details[rowIndex] = { ...defaultRowItemDetails };
-
-                setPricePerItem(0);
-                setAmountPerItem(0);
-
-                // Clear Amount of the removed item
-                updateAmounts();
-              }
-            }}
-            loadOptions={
-              type === TRANSACTION_TYPES["SI"] ||
-              type === TRANSACTION_TYPES["QT"]
-                ? loadOptionsForItem
-                : type === TRANSACTION_TYPES["CN"]
-                ? loadOptionsForCreditNote
-                : type === TRANSACTION_TYPES["DN"]
-                ? loadOptionsForDebitNote
-                : () => {}
-            }
-          ></AsyncSelect> */}
           <AutoSuggest
             suggestions={itemSuggestions}
             onSuggestionsClearRequested={() => setItemSuggestions([])}
