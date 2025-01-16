@@ -262,8 +262,7 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
       amount_per_item: number = 0,
       quantity: number = 0,
       discount_per_item: number = 0,
-      restocking_fees: number = 0,
-      temp: number = 0;
+      restocking_fees: number = 0;
 
     const RESTOCKING_RATE: number = get().restockingRate || 0;
     const IS_SALES_RETURN = get().transactionType === TRANSACTION_TYPES["SR"] ? true : false;
