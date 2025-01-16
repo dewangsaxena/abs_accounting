@@ -546,6 +546,9 @@ class SalesReturn {
         try {
             // Begin Transaction
             $db -> beginTransaction();
+
+            /* DISABLE RESTOCKING FEES FOR NOW */
+            $data['restockingRate'] = 0;
             
             // Validate Details.
             $validated_details = self::validate_details($data);
@@ -926,6 +929,9 @@ class SalesReturn {
         try {
             // Begin Transaction
             $db -> beginTransaction();
+
+            /* DISABLE RESTOCKING FEES FOR NOW */
+            $data['restockingRate'] = 0;
 
             // Sales Return ID
             $sales_return_id = $data['id'] ?? null;
