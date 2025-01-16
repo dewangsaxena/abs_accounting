@@ -74,7 +74,7 @@ class SalesReturn {
             foreach($keys as $key) if(floatval($item[$key]) < 0) return ['status' => false, 'message' => "$key less than or equal to 0 for $identifier."];
 
             // Check for GST/HST Tax Rate
-            if($disable_federal_taxes === 0 && $item['gstHSTTaxRate'] !== FEDERAL_TAX_RATE) return ['status' => false, 'message' => "GSTHSTTaxRate less than or equal to 0 for $identifier."];
+            if($disable_federal_taxes === 0 && floatval($item['gstHSTTaxRate']) !== FEDERAL_TAX_RATE) return ['status' => false, 'message' => "GSTHSTTaxRate less than or equal to 0 for $identifier."];
 
             // Check for PST if applicable
             if($disable_provincial_taxes === 0 && (StoreDetails::STORE_DETAILS[$store_id]['pst_tax_rate'] > 0) && floatval($item['pstTaxRate']) !== StoreDetails::STORE_DETAILS[$store_id]['pst_tax_rate']) {
