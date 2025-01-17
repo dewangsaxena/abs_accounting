@@ -32,9 +32,6 @@ export type SelectedClientsType = {
   [id: number]: number;
 };
 
-// Max Client Limit
-export const MAX_SELECTED_CLIENT_LIMIT: number = 10;
-
 /**
  * Customer Statement
  */

@@ -45,10 +45,8 @@ import { FcMoneyTransfer } from "react-icons/fc";
 import {
   CustomerAgedSummary,
   customerStatementReport,
-  MAX_SELECTED_CLIENT_LIMIT,
 } from "./customerStatementStore";
 import { shallow } from "zustand/shallow";
-import { CiCircleInfo } from "react-icons/ci";
 import { ImCancelCircle } from "react-icons/im";
 
 // Content Font Style
@@ -326,13 +324,6 @@ const CustomerAgedSummaryList = memo(() => {
               onClick={sendBatchEmails}
               width="25%"
             ></_Button>
-          </HStack>
-          <HStack>
-            <CiCircleInfo color="green" />
-            <_Label fontSize="0.8em" color="red" letterSpacing={2}>
-              Only first {MAX_SELECTED_CLIENT_LIMIT} selected clients will be
-              processed.
-            </_Label>
           </HStack>
           <_Divider margin={0} />
           {isLoading === false && <CustomerList />}
