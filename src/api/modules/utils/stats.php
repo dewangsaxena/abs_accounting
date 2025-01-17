@@ -42,11 +42,11 @@ class Stats
                 $discount += $r['txn_discount'];
             }
 
-            $statement = $db->prepare('SELECT sub_total, sub_total, txn_discount, cogr FROM sales_return WHERE `date` = :date AND store_id = :store_id;');
+            $statement = $db->prepare('SELECT sub_total, sub_total, txn_discount, cogr, restocking_fees FROM sales_return WHERE `date` = :date AND store_id = :store_id;');
             $statement->execute($params);
             $result = $statement->fetchAll(PDO::FETCH_ASSOC);
             foreach ($result as $r) {
-                $sales_return += $r['sub_total'];
+                $sales_return += ($r['sub_total'] + $r['restocking_fees']);
                 $cogs -= $r['cogr'];
                 $discount -= $r['txn_discount'];
             }
