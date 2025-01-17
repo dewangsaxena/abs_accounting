@@ -52,7 +52,7 @@ interface CustomerStatement {
   print: (payload: AttributeType) => void;
   setDetail: (name: string, value: any) => void;
   fetchCustomerAgedSummary: () => any;
-  setSelectedClient: (clientId: number) => void;
+  setExcludedClients: (clientId: number) => void;
 }
 
 /**
@@ -116,7 +116,7 @@ export const customerStatementReport = create<CustomerStatement>(
         "customer_aged_summary"
       );
     },
-    setSelectedClient: (clientId: number) => {
+    setExcludedClients: (clientId: number) => {
       let excludedClients: SelectedClientsType = get().excludedClients;
       if (excludedClients[clientId] === undefined) {
         excludedClients[clientId] = clientId;
