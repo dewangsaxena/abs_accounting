@@ -95,7 +95,7 @@ const Filter = () => {
   // Print
   const print = () => {
     const urlWithParam = new URL(APP_HOST + "/api.php");
-    urlWithParam.searchParams.append("op", "income_statement");
+    urlWithParam.searchParams.append("action", "income_statement");
     let dates = JSON.stringify({
       startDate: startDate,
       endDate: endDate,

@@ -32,7 +32,7 @@ const CustomerAgedSummary = () => {
    */
   const clickHandler = (isCSV: boolean = false) => {
     const urlWithParam = new URL(APP_HOST + "/api.php");
-    urlWithParam.searchParams.append("op", "customer_aged_summary");
+    urlWithParam.searchParams.append("action", "customer_aged_summary");
     urlWithParam.searchParams.append("storeId", currentStore.toString());
     let year = date.getFullYear();
     let month: any = date.getMonth() + 1;

@@ -78,7 +78,7 @@ export const customerStatementReport = create<CustomerStatement>(
     },
     print: (payload: AttributeType) => {
       const myURL = new URL(APP_HOST + "/api.php");
-      myURL.searchParams.append("op", "customer_statement");
+      myURL.searchParams.append("action", "customer_statement");
       myURL.searchParams.append("clientId", payload.clientId);
       myURL.searchParams.append("startDate", payload.startDate);
       myURL.searchParams.append("endDate", payload.endDate);

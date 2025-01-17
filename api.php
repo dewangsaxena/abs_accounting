@@ -19,11 +19,15 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_summa
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/stats.php";
 
 // Perform External Operation.
-if (isset($_GET['op'])) {
+if (isset($_GET['action'])) {
+
+    // Action
+    $action = $_GET['action'];
+
     /* Balance Sheet */
-    if ($_GET['op'] === 'balance_sheet') {
+    if ($action === 'balance_sheet') {
         BalanceSheetActions::generate(intval($_GET['storeId']), intval($_GET['month']), intval($_GET['year']));
-    } else if ($_GET['op'] === 'customer_aged_summary') {
+    } else if ($action === 'customer_aged_summary') {
         if (isset($_GET['fetchHistoricalRecord']) && $_GET['fetchHistoricalRecord'] == 1) {
             CustomerAgedSummary::fetch_historical_summary(
                 intval($_GET['storeId']),
@@ -38,12 +42,12 @@ if (isset($_GET['op'])) {
                 null,
                 $_GET['tillDate'],
                 intval($_GET['sortAscending'] ?? 0),
-                intval($_GET['isCSV'] ?? 0),
+                intval($_GET['isCSV'] ?? '0'),
                 intval($_GET['es'] ?? '1'), /* Exclude Self */
                 intval($_GET['ec'] ?? '1') /* Exclude Client */
             );
         }
-    } else if ($_GET['op'] === 'customer_statement') {
+    } else if ($action === 'customer_statement') {
         $status = CustomerStatement::generate(
             $_GET['clientId'],
             $_GET['storeId'],
@@ -53,24 +57,24 @@ if (isset($_GET['op'])) {
             intval($_GET['generateRecordOfAllTransactions']) ? true : false,
         );
         if ($status === null) echo 'Unable to Generate Statement.';
-    } else if ($_GET['op'] === 'income_statement') {
+    } else if ($action === 'income_statement') {
         IncomeStatementActions::generate($_GET);
-    } else if ($_GET['op'] === 'packaging_slip' && is_numeric($_GET['i'] ?? null)) {
+    } else if ($action === 'packaging_slip' && is_numeric($_GET['i'] ?? null)) {
         SalesInvoice::generate_packaging_slip($_GET['i']);
-    } else if ($_GET['op'] === 'low_stock') {
+    } else if ($action === 'low_stock') {
         $store_id = intval($_GET['store_id']);
         $message = '';
         if (isset(StoreDetails::STORE_DETAILS[$store_id]) === true) {
             Inventory::fetch_low_stock($store_id);
         } else $message = 'Invalid Store.';
         die($message);
-    } else if ($_GET['op'] === 'last_purchase_before') {
+    } else if ($action === 'last_purchase_before') {
         Client::fetch_clients_by_last_purchase_date($_GET['lastPurchaseBefore'], intval($_GET['storeId']));
         die;
     } else {
         require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/pdf/pdf.php";
         $transaction_type = intval($_GET['t'] ?? 0);
-        $params = ['action' => $_GET['op'], 'transactionType' => $transaction_type];
+        $params = ['action' => $action, 'transactionType' => $transaction_type];
         if ($transaction_type === RECEIPT) {
             $params['id'] = $_GET['i'];
             if (isset($_GET['s'])) {

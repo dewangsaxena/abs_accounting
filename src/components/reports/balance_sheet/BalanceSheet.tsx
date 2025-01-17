@@ -91,7 +91,7 @@ const BalanceSheet = () => {
                   fontSize="1.2em"
                   onClick={() => {
                     const urlWithParam = new URL(APP_HOST + "/api.php");
-                    urlWithParam.searchParams.append("op", "balance_sheet");
+                    urlWithParam.searchParams.append("action", "balance_sheet");
                     urlWithParam.searchParams.append(
                       "storeId",
                       store.toString()

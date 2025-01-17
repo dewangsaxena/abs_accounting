@@ -778,7 +778,7 @@ const Filter = ({
                 let _date: string =
                   lastPurchaseDate.getFullYear() + "-" + month + "-" + date;
                 const urlWithParam = new URL(APP_HOST + "/api.php");
-                urlWithParam.searchParams.append("op", "last_purchase_before");
+                urlWithParam.searchParams.append("action", "last_purchase_before");
                 urlWithParam.searchParams.append(
                   "storeId",
                   localStorage.getItem("storeId") || "0"
