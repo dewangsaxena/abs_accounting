@@ -279,6 +279,9 @@ if (isset($_POST['action'])) {
                     null, 
                     $data['tillDate'], 
                     $data['sortAscending'],
+                    null,
+                    exclude_self: 1,
+                    exclude_clients: 1,
                 ),
             ];
             break;
