@@ -67,7 +67,7 @@ const contentFontStyle: AttributeType = {
 const CustomerDetailRow = memo(
   ({ customer }: { customer: CustomerAgedSummary }) => {
     // Customer Statement Report
-    const { noOfExcludedClients, excludedClients, setExcludedClients } =
+    const { setExcludedClients } =
       customerStatementReport(
         (state) => ({
           noOfExcludedClients: state.noOfExcludedClients,
