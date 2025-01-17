@@ -73,7 +73,6 @@ export const customerStatementReport = create<CustomerStatement>(
       if (Object.keys(get().excludedClients).length > 0) {
         delete payload["clientID"];
       }
-      console.log(payload);
       return await httpService.fetch(payload, "email_customer_statement");
     },
     print: (payload: AttributeType) => {
