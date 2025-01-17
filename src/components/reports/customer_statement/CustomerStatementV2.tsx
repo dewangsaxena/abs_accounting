@@ -239,6 +239,8 @@ const CustomerAgedSummaryList = memo(() => {
   // Is Loading
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  const [rendererCounter, setRendererCounter] = useState<number>(0); 
+
   // Fetch Customer Aged summary Handler
   const fetchCustomerAgedSummaryHandler = () => {
     setIsButtonDisabled(true);
@@ -288,7 +290,7 @@ const CustomerAgedSummaryList = memo(() => {
    * Send Batch Emails
    */
   const sendBatchEmails = () => {
-    
+    setRendererCounter(rendererCounter + 1);
     // email(payload)
     // .then((res: any) => {
     //   let result: APIResponse = res.data;
