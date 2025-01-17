@@ -38,7 +38,7 @@ if (isset($_GET['op'])) {
                 null,
                 $_GET['tillDate'],
                 intval($_GET['sortAscending'] ?? 0),
-                intval($_GET['isCSV']),
+                intval($_GET['isCSV'] ?? 0),
                 intval($_GET['es'] ?? '1'), /* Exclude Self */
                 intval($_GET['ec'] ?? '1') /* Exclude Client */
             );
