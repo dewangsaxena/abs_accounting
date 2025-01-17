@@ -65,14 +65,6 @@ Add Images Support for Items.
 Inventory Parts Report IN PDF
 Add Automatic Script to Send Customer Statement
 
-[BALANCE SHEET MAJOR ISSUE FIX]
-BS SHould be year wise
-Accounts receivables
-Accounts Payable
-Inventory 
-Tax Payable 
-SHOULD ALL BE FORWARDED, ELSE ALL DETAILS 
-
 [CONVERSION]
 Clients   [DONE]
 Items    [DONE]
