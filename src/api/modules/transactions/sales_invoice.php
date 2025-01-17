@@ -668,7 +668,7 @@ class SalesInvoice {
             return ['status' => true, 'data' => $sales_invoice_id];
         }
         catch(Exception $e) {
-            if($db -> inTransaction() && $is_new_connection) $db -> rollBack();
+            if($is_new_connection && $db -> inTransaction()) $db -> rollBack();
             return ['status' => false, 'message' => $e -> getMessage()];
         }
     }
