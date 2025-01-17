@@ -79,14 +79,11 @@ const CustomerDetailRow = memo(
     // Rerender
     const [rerender, setRerender] = useState<number>(0);
 
-    // Toast
-    // const toast = useToast();
-
     return (
       isSessionActive() && (
         <HStack width="100%">
           <Box width="30%">
-            <_Label {...contentFontStyle}>{customer.client_name}</_Label>
+            <Badge {...contentFontStyle} colorScheme={customer.is_email_sent === true ? "green": customer.is_email_sent === false ? "red": "gray"}>{customer.client_name}</Badge>
           </Box>
           <Box width="10%">
             <_Label {...contentFontStyle}>

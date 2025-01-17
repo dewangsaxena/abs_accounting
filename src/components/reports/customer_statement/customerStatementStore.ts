@@ -17,6 +17,7 @@ export interface CustomerAgedSummary {
   current: number;
   phone_number: string;
   total: number;
+  is_email_sent?: boolean;
 }
 
 /**
