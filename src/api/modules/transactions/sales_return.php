@@ -1181,7 +1181,7 @@ class SalesReturn {
             if($data['initial']['paymentMethod'] === PaymentMethod::PAY_LATER) {
                 Client::update_amount_owing_of_client(
                     $data['clientDetails']['id'], 
-                    ($data['initial']['sumTotal']), 
+                    $data['initial']['sumTotal'],
                     $db
                 );
             }
