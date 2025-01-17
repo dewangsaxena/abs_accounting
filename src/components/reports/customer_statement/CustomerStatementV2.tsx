@@ -201,10 +201,16 @@ const CustomerList = memo(() => {
  */
 const CustomerAgedSummaryList = memo(() => {
   const toast = useToast();
-  const { sortAscending, fetchCustomerAgedSummary, setDetail } =
+  const { attachTransactions, generateRecordOfAllTransactions, startDate, endDate, sortAscending, storeId, email, fetchCustomerAgedSummary, setDetail } =
     customerStatementReport(
       (state) => ({
+        startDate: state.startDate,
+        endDate: state.endDate,
+        attachTransactions: state.attachTransactions,
+        generateRecordOfAllTransactions: state.generateRecordOfAllTransactions,
         sortAscending: state.sortAscending,
+        storeId: state.storeId,
+        email: state.email,
         fetchCustomerAgedSummary: state.fetchCustomerAgedSummary,
         setDetail: state.setDetail,
       }),
@@ -215,7 +221,7 @@ const CustomerAgedSummaryList = memo(() => {
   // Is Loading
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // Fetch Customer Aged summary Handletr
+  // Fetch Customer Aged summary Handler
   const fetchCustomerAgedSummaryHandler = () => {
     setIsButtonDisabled(true);
     setIsLoading(true);
@@ -238,6 +244,37 @@ const CustomerAgedSummaryList = memo(() => {
         setIsLoading(false);
       });
   };
+
+  let payload: AttributeType = {
+    startDate: startDate ? startDate?.toISOString().substring(0, 10) : "",
+    endDate: endDate ? endDate?.toISOString().substring(0, 10) : "",
+    attachTransactions: (attachTransactions ? 1 : 0).toString(),
+    generateRecordOfAllTransactions: (generateRecordOfAllTransactions
+      ? 1
+      : 0
+    ).toString(),
+    storeId: storeId,
+  };
+
+  /**
+   * Send Batch Emails
+   */
+  const sendBatchEmails = () => {
+    email(payload)
+    .then((res: any) => {
+      let result: APIResponse = res.data;
+      if (result.status !== true) {
+        showToast(toast, false, result.message || UNKNOWN_SERVER_ERROR_MSG);
+        
+      } else {
+        showToast(toast, true);
+      }
+    })
+    .catch((err: any) => {
+      showToast(toast, err.status, err.message);
+    });
+  }
+
   return (
     isSessionActive() && (
       <>
@@ -264,6 +301,16 @@ const CustomerAgedSummaryList = memo(() => {
               fontSize="1.2em"
               label="Fetch Customer Aged Summary"
               onClick={fetchCustomerAgedSummaryHandler}
+              width="25%"
+            ></_Button>
+            <_Button
+              isDisabled={isButtonDisabled}
+              icon={<MdAlternateEmail color="#0096FF" />}
+              color="white"
+              bgColor="black"
+              fontSize="1.2em"
+              label="Send Batch Emails"
+              onClick={sendBatchEmails}
               width="25%"
             ></_Button>
           </HStack>

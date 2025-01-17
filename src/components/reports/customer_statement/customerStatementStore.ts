@@ -71,9 +71,6 @@ export const customerStatementReport = create<CustomerStatement>(
     noOfExcludedClients: 0,
     storeId: parseInt(localStorage.getItem("storeId") || "0"),
     email: async (payload: any) => {
-      if (Object.keys(get().excludedClients).length > 0) {
-        delete payload["clientID"];
-      }
       return await httpService.fetch(payload, "email_customer_statement");
     },
     print: (payload: AttributeType) => {
