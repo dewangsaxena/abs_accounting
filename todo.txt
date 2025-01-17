@@ -65,6 +65,9 @@ Add Images Support for Items.
 Inventory Parts Report IN PDF
 Add Automatic Script to Send Customer Statement
 
+[BUGS]
+RESTOCKING FEES INCORRECT IN OLD VERSION
+
 [CONVERSION]
 Clients   [DONE]
 Items    [DONE]
