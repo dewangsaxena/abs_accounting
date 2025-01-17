@@ -99,6 +99,7 @@ export const customerStatementReport = create<CustomerStatement>(
       else if (name === "generateRecordOfAllTransactions")
         set({ generateRecordOfAllTransactions: value });
       else if (name === "selectedClients") set({ selectedClients: value });
+      else if (name === "noOfSelectedClients") set({noOfSelectedClients: value});
       else if (name === "setAscendingSort") set({ sortAscending: value });
       else if (name === "customerAgedSummaryList")
         set({ customerAgedSummaryList: value });
