@@ -961,6 +961,7 @@ class Shared {
                 $transaction['pst_tax'] = $amounts['pstTax'];
                 $transaction['txn_discount'] = $amounts['txnDiscount'];
                 $transaction['credit_amount'] = $amounts['sumTotal'];
+                $transaction['restocking_fees'] = $amounts['restockingFees'];
 
                 // Update Modified Timestamp
                 $transaction['modified'] = Utils::get_utc_str_timestamp_from_utc_unix_timestamp($version);
