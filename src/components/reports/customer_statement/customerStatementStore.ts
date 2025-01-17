@@ -18,7 +18,6 @@ export interface CustomerAgedSummary {
   phone_number: string;
   total: number;
   is_email_sent?: boolean;
-  is_excluded?: boolean;
 }
 
 /**
@@ -122,6 +121,8 @@ export const customerStatementReport = create<CustomerStatement>(
         delete selectedClients[clientId];
         get().noOfSelectedClients -= 1;
       }
+
+      // selectedClients[clientId].
 
       // Set directly, but do not rerender
       get().selectedClients = selectedClients;
