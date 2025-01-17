@@ -70,8 +70,8 @@ const CustomerDetailRow = memo(
     const { setExcludedClients } =
       customerStatementReport(
         (state) => ({
-          noOfExcludedClients: state.noOfExcludedClients,
-          excludedClients: state.excludedClients,
+          noOfExcludedClients: state.noOfSelectedClients,
+          selectedClients: state.selectedClients,
           setExcludedClients: state.setExcludedClients,
         }),
         shallow
@@ -201,9 +201,10 @@ const CustomerList = memo(() => {
  */
 const CustomerAgedSummaryList = memo(() => {
   const toast = useToast();
-  const { attachTransactions, generateRecordOfAllTransactions, startDate, endDate, sortAscending, storeId, email, fetchCustomerAgedSummary, setDetail } =
+  const { selectedClients, attachTransactions, generateRecordOfAllTransactions, startDate, endDate, sortAscending, storeId, email, fetchCustomerAgedSummary, setDetail } =
     customerStatementReport(
       (state) => ({
+        selectedClients: state.selectedClients,
         startDate: state.startDate,
         endDate: state.endDate,
         attachTransactions: state.attachTransactions,
@@ -260,19 +261,20 @@ const CustomerAgedSummaryList = memo(() => {
    * Send Batch Emails
    */
   const sendBatchEmails = () => {
-    email(payload)
-    .then((res: any) => {
-      let result: APIResponse = res.data;
-      if (result.status !== true) {
-        showToast(toast, false, result.message || UNKNOWN_SERVER_ERROR_MSG);
+    console.log(selectedClients);
+    // email(payload)
+    // .then((res: any) => {
+    //   let result: APIResponse = res.data;
+    //   if (result.status !== true) {
+    //     showToast(toast, false, result.message || UNKNOWN_SERVER_ERROR_MSG);
         
-      } else {
-        showToast(toast, true);
-      }
-    })
-    .catch((err: any) => {
-      showToast(toast, err.status, err.message);
-    });
+    //   } else {
+    //     showToast(toast, true);
+    //   }
+    // })
+    // .catch((err: any) => {
+    //   showToast(toast, err.status, err.message);
+    // });
   }
 
   return (

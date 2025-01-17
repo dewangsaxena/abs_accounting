@@ -44,9 +44,9 @@ interface CustomerStatement {
   endDate?: Date;
   attachTransactions: boolean;
   generateRecordOfAllTransactions: boolean;
-  excludedClients: SelectedClientsType;
+  selectedClients: SelectedClientsType;
   customerAgedSummaryList: CustomerAgedSummaryList;
-  noOfExcludedClients: number;
+  noOfSelectedClients: number;
   storeId: number;
   sortAscending: number;
   email: (payload: any) => any;
@@ -65,10 +65,10 @@ export const customerStatementReport = create<CustomerStatement>(
     startDate: undefined,
     endDate: new Date(),
     generateRecordOfAllTransactions: false,
-    excludedClients: {} as SelectedClientsType,
+    selectedClients: {} as SelectedClientsType,
     customerAgedSummaryList: [],
     sortAscending: 0,
-    noOfExcludedClients: 0,
+    noOfSelectedClients: 0,
     storeId: parseInt(localStorage.getItem("storeId") || "0"),
     email: async (payload: any) => {
       return await httpService.fetch(payload, "email_customer_statement");
@@ -98,7 +98,7 @@ export const customerStatementReport = create<CustomerStatement>(
         set({ attachTransactions: value });
       else if (name === "generateRecordOfAllTransactions")
         set({ generateRecordOfAllTransactions: value });
-      else if (name === "excludedClients") set({ excludedClients: value });
+      else if (name === "selectedClients") set({ selectedClients: value });
       else if (name === "setAscendingSort") set({ sortAscending: value });
       else if (name === "customerAgedSummaryList")
         set({ customerAgedSummaryList: value });
@@ -114,13 +114,13 @@ export const customerStatementReport = create<CustomerStatement>(
       );
     },
     setExcludedClients: (clientId: number) => {
-      let excludedClients: SelectedClientsType = get().excludedClients;
+      let excludedClients: SelectedClientsType = get().selectedClients;
       if (excludedClients[clientId] === undefined) {
         excludedClients[clientId] = clientId;
-        get().noOfExcludedClients += 1;
+        get().noOfSelectedClients += 1;
       } else {
         delete excludedClients[clientId];
-        get().noOfExcludedClients -= 1;
+        get().noOfSelectedClients -= 1;
       }
     },
   })
