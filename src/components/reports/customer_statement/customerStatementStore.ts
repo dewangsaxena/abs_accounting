@@ -54,6 +54,7 @@ interface CustomerStatement {
   setDetail: (name: string, value: any) => void;
   fetchCustomerAgedSummary: () => any;
   setExcludedClients: (clientId: number) => void;
+  getNoOfSelectedClients: () => number;
 }
 
 /**
@@ -124,5 +125,8 @@ export const customerStatementReport = create<CustomerStatement>(
         get().noOfSelectedClients -= 1;
       }
     },
+    getNoOfSelectedClients: () => {
+      return get().noOfSelectedClients;
+    }
   })
 );

@@ -201,11 +201,10 @@ const CustomerList = memo(() => {
  */
 const CustomerAgedSummaryList = memo(() => {
   const toast = useToast();
-  const { selectedClients, noOfSelectedClients, attachTransactions, generateRecordOfAllTransactions, startDate, endDate, sortAscending, storeId, email, fetchCustomerAgedSummary, setDetail } =
+  const { selectedClients, attachTransactions, generateRecordOfAllTransactions, startDate, endDate, sortAscending, storeId, email, fetchCustomerAgedSummary, setDetail, getNoOfSelectedClients } =
     customerStatementReport(
       (state) => ({
         selectedClients: state.selectedClients,
-        noOfSelectedClients: state.noOfSelectedClients,
         startDate: state.startDate,
         endDate: state.endDate,
         attachTransactions: state.attachTransactions,
@@ -215,6 +214,7 @@ const CustomerAgedSummaryList = memo(() => {
         email: state.email,
         fetchCustomerAgedSummary: state.fetchCustomerAgedSummary,
         setDetail: state.setDetail,
+        getNoOfSelectedClients: state.getNoOfSelectedClients,
       }),
       shallow
     );
@@ -272,7 +272,7 @@ const CustomerAgedSummaryList = memo(() => {
    * Send Batch Emails
    */
   const sendBatchEmails = () => {
-    console.log(noOfSelectedClients);
+    
     // email(payload)
     // .then((res: any) => {
     //   let result: APIResponse = res.data;
