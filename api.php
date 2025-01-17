@@ -278,7 +278,7 @@ if (isset($_POST['action'])) {
                     $data['storeId'], 
                     null, 
                     $data['tillDate'], 
-                    $data['sort'],
+                    $data['sortAscending'],
                 ),
             ];
             break;
