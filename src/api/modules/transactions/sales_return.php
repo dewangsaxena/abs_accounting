@@ -1177,6 +1177,18 @@ class SalesReturn {
                 id = :id;
             EOS;
 
+            // Reverse Initial Amount Owing
+            if($data['initial']['paymentMethod'] === PaymentMethod::PAY_LATER) {
+                Client::update_amount_owing_of_client(
+                    $data['clientDetails']['id'], 
+                    ($data['initial']['sumTotal']), 
+                    $db
+                );
+            }
+
+            // Update Client's amount owing if payment method is Pay Later
+            if($is_pay_later) Client::update_amount_owing_of_client($data['clientDetails']['id'], -$sum_total, $db);
+
             // Deduct Restocking Fees from Sub and Sum total
             $sub_total -= $restocking_fees;
             $sum_total -= $restocking_fees;
@@ -1212,17 +1224,7 @@ class SalesReturn {
             // Check for Successful Update
             if($is_successful !== true || $statement -> rowCount () < 1) throw new Exception('Unable to Update Sales Return.');
             
-            // Reverse Initial Amount Owing
-            if($data['initial']['paymentMethod'] === PaymentMethod::PAY_LATER) {
-                Client::update_amount_owing_of_client(
-                    $data['clientDetails']['id'], 
-                    ($data['initial']['sumTotal'] + $data['initial']['restockingFees']), 
-                    $db
-                );
-            }
-
-            // Update Client's amount owing if payment method is Pay Later
-            if($is_pay_later) Client::update_amount_owing_of_client($data['clientDetails']['id'], -$sum_total, $db);
+            
 
             if($db -> inTransaction()) $db -> commit();
             return ['status' => true];
