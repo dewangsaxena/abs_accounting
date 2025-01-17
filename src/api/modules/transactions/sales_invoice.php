@@ -385,6 +385,9 @@ class SalesInvoice {
         }
         else $is_new_connection = false;
         try {
+            // Begin Transaction
+            if($is_new_connection) $db -> beginTransaction();
+
             // Affected Accounts 
             $is_affected_accounts = AccountsConfig::ACCOUNTS;
             $bs_affected_accounts = AccountsConfig::ACCOUNTS;
@@ -397,9 +400,6 @@ class SalesInvoice {
 
             // Save Last Statement
             CustomerAgedSummary::save_last_statement($store_id, $db);
-
-            // Begin Transaction
-            if($is_new_connection) $db -> beginTransaction();
 
             // Client Id 
             $client_id = $validated_details['client_id'];
