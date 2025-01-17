@@ -18,6 +18,7 @@ export interface CustomerAgedSummary {
   phone_number: string;
   total: number;
   is_email_sent?: boolean;
+  is_excluded?: boolean;
 }
 
 /**
@@ -113,14 +114,17 @@ export const customerStatementReport = create<CustomerStatement>(
       );
     },
     setExcludedClients: (clientId: number) => {
-      let excludedClients: SelectedClientsType = get().selectedClients;
-      if (excludedClients[clientId] === undefined) {
-        excludedClients[clientId] = clientId;
+      let selectedClients: SelectedClientsType = get().selectedClients;
+      if (selectedClients[clientId] === undefined) {
+        selectedClients[clientId] = clientId;
         get().noOfSelectedClients += 1;
       } else {
-        delete excludedClients[clientId];
+        delete selectedClients[clientId];
         get().noOfSelectedClients -= 1;
       }
+
+      // Set directly, but do not rerender
+      get().selectedClients = selectedClients;
     },
     getNoOfSelectedClients: () => {
       return get().noOfSelectedClients;
