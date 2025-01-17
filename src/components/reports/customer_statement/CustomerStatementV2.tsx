@@ -230,6 +230,15 @@ const CustomerAgedSummaryList = memo(() => {
       .then((res: any) => {
         let response: APIResponse<CustomerAgedSummary[]> = res.data;
         if (response.status && response.data) {
+          
+          // Selected clients
+          let temp: AttributeType = {};
+          let noOfClients: number = response.data.length || 0;
+          for(let i = 0; i < noOfClients; ++i) {
+            temp[response.data[i].client_id] = response.data[i].client_id;
+          }
+          
+          setDetail("customerAgedSummaryList", temp);
           setDetail("customerAgedSummaryList", response.data);
         } else {
           showToast(toast, false, response.message || UNKNOWN_SERVER_ERROR_MSG);
