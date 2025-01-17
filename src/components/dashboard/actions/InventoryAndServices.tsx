@@ -444,7 +444,7 @@ const InventoryAndServices = () => {
                                 onClick: () => {
                                     if (systemConfigMode !== MODE_PARTS) return;
                                     window.open(
-                                        `${APP_HOST}/api.php?op=low_stock&store_id=${localStorage.getItem(
+                                        `${APP_HOST}/api.php?action=low_stock&store_id=${localStorage.getItem(
                                             "storeId"
                                         )}`
                                     );

@@ -967,7 +967,7 @@ const Footer = memo(({ isViewOrUpdate, enableEditing }: ReceiptProps) => {
                           JSON.stringify(extractSelectedTransactions())
                         );
                         window.open(
-                          `${APP_HOST}/api.php?op=print&t=${TRANSACTION_TYPES["RC"]}&i=${id}&s=${selectedTxns}`
+                          `${APP_HOST}/api.php?action=print&t=${TRANSACTION_TYPES["RC"]}&i=${id}&s=${selectedTxns}`
                         );
                       }}
                     ></_Button>

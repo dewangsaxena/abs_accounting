@@ -428,7 +428,7 @@ const Header = ({
                         fontSize="1.2em"
                         onClick={() => {
                           window.open(
-                            `${APP_HOST}/api.php?op=print&t=${transactionType}&i=${id}&version=${versionSelected}`
+                            `${APP_HOST}/api.php?action=print&t=${transactionType}&i=${id}&version=${versionSelected}`
                           );
                         }}
                       ></_Button>
@@ -3194,7 +3194,7 @@ const FooterDetails = ({ type, enableEditing, hidePrivateDetails }: FooterProps)
                   color="white"
                   onClick={() => {
                     window.open(
-                      `${APP_HOST}/api.php?op=print&t=${transactionType}&i=${id}`
+                      `${APP_HOST}/api.php?action=print&t=${transactionType}&i=${id}`
                     );
                     window.location.reload();
                   }}
@@ -3215,7 +3215,7 @@ const FooterDetails = ({ type, enableEditing, hidePrivateDetails }: FooterProps)
                     color="white"
                     onClick={() => {
                       window.open(
-                        `${APP_HOST}/api.php?op=packaging_slip&i=${id}`
+                        `${APP_HOST}/api.php?action=packaging_slip&i=${id}`
                       );
                     }}
                     label="Packaging Slip"
