@@ -43,9 +43,9 @@ interface CustomerStatement {
   endDate?: Date;
   attachTransactions: boolean;
   generateRecordOfAllTransactions: boolean;
-  selectedClients: SelectedClientsType;
+  excludedClients: SelectedClientsType;
   customerAgedSummaryList: CustomerAgedSummaryList;
-  noOfSelectedClients: number;
+  noOfExcludedClients: number;
   storeId: number;
   sortAscending: number;
   email: (payload: any) => any;
@@ -64,13 +64,13 @@ export const customerStatementReport = create<CustomerStatement>(
     startDate: undefined,
     endDate: new Date(),
     generateRecordOfAllTransactions: false,
-    selectedClients: {} as SelectedClientsType,
+    excludedClients: {} as SelectedClientsType,
     customerAgedSummaryList: [],
     sortAscending: 0,
-    noOfSelectedClients: 0,
+    noOfExcludedClients: 0,
     storeId: parseInt(localStorage.getItem("storeId") || "0"),
     email: async (payload: any) => {
-      if (Object.keys(get().selectedClients).length > 0) {
+      if (Object.keys(get().excludedClients).length > 0) {
         delete payload["clientID"];
       }
       console.log(payload);
@@ -101,7 +101,7 @@ export const customerStatementReport = create<CustomerStatement>(
         set({ attachTransactions: value });
       else if (name === "generateRecordOfAllTransactions")
         set({ generateRecordOfAllTransactions: value });
-      else if (name === "selectedClients") set({ selectedClients: value });
+      else if (name === "excludedClients") set({ excludedClients: value });
       else if (name === "setAscendingSort") set({ sortAscending: value });
       else if (name === "customerAgedSummaryList")
         set({ customerAgedSummaryList: value });
@@ -117,13 +117,13 @@ export const customerStatementReport = create<CustomerStatement>(
       );
     },
     setSelectedClient: (clientId: number) => {
-      let selectedClients: SelectedClientsType = get().selectedClients;
-      if (selectedClients[clientId] === undefined) {
-        selectedClients[clientId] = clientId;
-        get().noOfSelectedClients += 1;
+      let excludedClients: SelectedClientsType = get().excludedClients;
+      if (excludedClients[clientId] === undefined) {
+        excludedClients[clientId] = clientId;
+        get().noOfExcludedClients += 1;
       } else {
-        delete selectedClients[clientId];
-        get().noOfSelectedClients -= 1;
+        delete excludedClients[clientId];
+        get().noOfExcludedClients -= 1;
       }
     },
   })

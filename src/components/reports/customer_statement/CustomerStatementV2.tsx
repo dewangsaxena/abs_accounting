@@ -66,15 +66,15 @@ const contentFontStyle: AttributeType = {
 const CustomerDetailRow = memo(
   ({ customer }: { customer: CustomerAgedSummary }) => {
     // Customer Statement Report
-    // const { noOfSelectedClients, selectedClients, setSelectedClient } =
-    //   customerStatementReport(
-    //     (state) => ({
-    //       noOfSelectedClients: state.noOfSelectedClients,
-    //       selectedClients: state.selectedClients,
-    //       setSelectedClient: state.setSelectedClient,
-    //     }),
-    //     shallow
-    //   );
+    const { noOfExcludedClients, excludedClients, setExcludedClients } =
+      customerStatementReport(
+        (state) => ({
+          noOfExcludedClients: state.noOfExcludedClients,
+          excludedClients: state.excludedClients,
+          setExcludedClients: state.setExcludedClients,
+        }),
+        shallow
+      );
 
     // Rerender
     const [rerender, setRerender] = useState<number>(0);
@@ -116,9 +116,10 @@ const CustomerDetailRow = memo(
           <Box width="10%">
             <Checkbox
               size="md"
+              colorScheme="red"
               onChange={(_: any) => {
                 setRerender(rerender + 1);
-                // setSelectedClient(customer.client_id);
+                setExcludedClients(customer.client_id);
               }}
             ></Checkbox>
           </Box>
@@ -145,7 +146,7 @@ const CustomerList = memo(() => {
   // Customer List
   const customerList = customerAgedSummaryList.map(
     (customer: CustomerAgedSummary) => {
-      return <CustomerDetailRow customer={customer} />;
+      return <CustomerDetailRow customer={customer} key={customer.client_id}/>;
     }
   );
 
@@ -185,6 +186,7 @@ const CustomerList = memo(() => {
                 91+
               </Badge>
             </Box>
+            <Box width="10%"><Badge {...contentFontStyle} variant="solid" colorScheme="red" >Excluded Client(s)</Badge></Box>
           </HStack>
           {customerList}
         </VStack>
