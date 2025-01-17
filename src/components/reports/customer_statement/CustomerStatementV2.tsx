@@ -203,7 +203,20 @@ const CustomerListHeader = memo(() => {
  */
 const CustomerAgedSummaryList = memo(() => {
   const toast = useToast();
-  const { selectedClients, attachTransactions, generateRecordOfAllTransactions, startDate, endDate, sortAscending, storeId, email, fetchCustomerAgedSummary, setDetail, getNoOfSelectedClients } =
+  const { 
+    selectedClients, 
+    attachTransactions, 
+    generateRecordOfAllTransactions, 
+    startDate,
+    endDate, 
+    sortAscending, 
+    storeId, 
+    customerAgedSummaryList,
+    email, 
+    fetchCustomerAgedSummary, 
+    setDetail, 
+    getNoOfSelectedClients 
+  } =
     customerStatementReport(
       (state) => ({
         selectedClients: state.selectedClients,
@@ -213,6 +226,7 @@ const CustomerAgedSummaryList = memo(() => {
         generateRecordOfAllTransactions: state.generateRecordOfAllTransactions,
         sortAscending: state.sortAscending,
         storeId: state.storeId,
+        customerAgedSummaryList: state.customerAgedSummaryList,
         email: state.email,
         fetchCustomerAgedSummary: state.fetchCustomerAgedSummary,
         setDetail: state.setDetail,
@@ -334,6 +348,9 @@ const CustomerAgedSummaryList = memo(() => {
             <Box height="60vh" overflowY={"scroll"} width="100%">
               <VStack align="start">
                 <CustomerListHeader/>
+                {customerAgedSummaryList.map((customer: CustomerAgedSummary) => {
+                  return <CustomerDetailRow customer={customer} key={customer.client_id}/> ;
+                })}
               </VStack>
             </Box>
           </>}
