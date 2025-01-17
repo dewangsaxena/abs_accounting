@@ -49,6 +49,7 @@ import {
 } from "./customerStatementStore";
 import { shallow } from "zustand/shallow";
 import { CiCircleInfo } from "react-icons/ci";
+import { ImCancelCircle } from "react-icons/im";
 
 // Content Font Style
 const contentFontStyle: AttributeType = {
@@ -114,6 +115,7 @@ const CustomerDetailRow = memo(
             <Checkbox
               size="md"
               colorScheme="red"
+              icon={<ImCancelCircle />}
               onChange={(_: any) => {
                 setRerender(rerender + 1);
                 setExcludedClients(customer.client_id);
