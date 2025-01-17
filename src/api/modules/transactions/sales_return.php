@@ -1186,12 +1186,12 @@ class SalesReturn {
                 );
             }
 
-            // Update Client's amount owing if payment method is Pay Later
-            if($is_pay_later) Client::update_amount_owing_of_client($data['clientDetails']['id'], -$sum_total, $db);
-
             // Deduct Restocking Fees from Sub and Sum total
             $sub_total -= $restocking_fees;
             $sum_total -= $restocking_fees;
+
+            // Update Client's amount owing if payment method is Pay Later
+            if($is_pay_later) Client::update_amount_owing_of_client($data['clientDetails']['id'], -$sum_total, $db);
 
             $params = [
                 ':date' => $date,
@@ -1223,8 +1223,6 @@ class SalesReturn {
 
             // Check for Successful Update
             if($is_successful !== true || $statement -> rowCount () < 1) throw new Exception('Unable to Update Sales Return.');
-            
-            
 
             if($db -> inTransaction()) $db -> commit();
             return ['status' => true];
