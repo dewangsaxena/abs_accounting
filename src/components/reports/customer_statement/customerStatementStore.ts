@@ -110,7 +110,7 @@ export const customerStatementReport = create<CustomerStatement>(
       return httpService.fetch(
         {
           storeId: get().storeId,
-          endDate: get().endDate,
+          tillDate: get().endDate?.toISOString().substring(0, 10),
           sortAscending: get().sortAscending,
         },
         "customer_aged_summary"
