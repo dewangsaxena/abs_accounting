@@ -237,8 +237,8 @@ const CustomerAgedSummaryList = memo(() => {
           for(let i = 0; i < noOfClients; ++i) {
             temp[response.data[i].client_id] = response.data[i].client_id;
           }
-          
-          setDetail("customerAgedSummaryList", temp);
+
+          setDetail("selectedClients", temp);
           setDetail("customerAgedSummaryList", response.data);
         } else {
           showToast(toast, false, response.message || UNKNOWN_SERVER_ERROR_MSG);
