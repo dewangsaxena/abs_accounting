@@ -127,32 +127,18 @@ const CustomerDetailRow = memo(
 );
 
 /**
- * Customer List
- * @param list
- * @returns
+ * Customer List Header
  */
-const CustomerList = memo(() => {
-  // Customer Statement Report
-  const { customerAgedSummaryList } = customerStatementReport(
+const CustomerListHeader = memo(() => {
+  const { noOfSelectedClients } = customerStatementReport(
     (state) => ({
-      customerAgedSummaryList: state.customerAgedSummaryList,
+      noOfSelectedClients: state.noOfSelectedClients,
     }),
     shallow
   );
-
-  // Customer List
-  const customerList = customerAgedSummaryList.map(
-    (customer: CustomerAgedSummary) => {
-      return <CustomerDetailRow customer={customer} key={customer.client_id}/>;
-    }
-  );
-
-  // Display Header
-  if (isSessionActive() && customerAgedSummaryList.length) {
+  if (isSessionActive() && noOfSelectedClients > 0) {
     return (
-      <Box height="60vh" overflowY={"scroll"} width="100%">
-        <VStack align="start">
-          <HStack width="100%">
+      <HStack width="100%">
             <Box width="30%">
               <Badge {...contentFontStyle} variant={"outline"}>
                 Customer Name
@@ -184,14 +170,32 @@ const CustomerList = memo(() => {
               </Badge>
             </Box>
             <Box width="10%"><Badge {...contentFontStyle} variant="solid" colorScheme="red" >Excluded Client(s)</Badge></Box>
-          </HStack>
-          {customerList}
-        </VStack>
-      </Box>
+      </HStack>
     );
   }
-  return <></>;
-});
+})
+
+/**
+ * Customer List
+ * @param list
+ * @returns
+ */
+// const CustomerList = memo(() => {
+//   // Customer Statement Report
+//   const { customerAgedSummaryList } = customerStatementReport(
+//     (state) => ({
+//       customerAgedSummaryList: state.customerAgedSummaryList,
+//     }),
+//     shallow
+//   );
+
+//   // Customer List
+//   const customerList: any = customerAgedSummaryList.map(
+//     (customer: CustomerAgedSummary) => {
+//       return <CustomerDetailRow customer={customer} key={customer.client_id}/> ;
+//     }
+//   );
+// });
 
 /**
  * Customer Aged Summary List.
@@ -326,7 +330,13 @@ const CustomerAgedSummaryList = memo(() => {
             ></_Button>
           </HStack>
           <_Divider margin={0} />
-          {isLoading === false && <CustomerList />}
+          {isLoading === false && <>
+            <Box height="60vh" overflowY={"scroll"} width="100%">
+              <VStack align="start">
+                <CustomerListHeader/>
+              </VStack>
+            </Box>
+          </>}
         </VStack>
         {isLoading && (
           <VStack paddingTop={10}>
