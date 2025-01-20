@@ -65,7 +65,6 @@ const contentFontStyle: AttributeType = {
  */
 const CustomerDetailRow = memo(
   ({ customer, isEmailSent }: { customer: CustomerAgedSummary, isEmailSent?: boolean}) => {
-    // Customer Statement Report
     const { setExcludedClients } =
       customerStatementReport(
         (state) => ({
