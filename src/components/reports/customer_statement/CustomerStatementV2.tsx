@@ -323,8 +323,6 @@ const CustomerAgedSummaryList = memo(() => {
       if(selectedClients[clientId].is_excluded !== true) {
         payload["clientId"] = clientId;
 
-        console.log(payload);
-
         email(payload).then((res: any) => {
           let result: APIResponse = res.data;
           if (result.status !== true) {
