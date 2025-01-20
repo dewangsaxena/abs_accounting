@@ -344,43 +344,43 @@ const CustomerAgedSummaryList = memo(() => {
   }
 
   const LAYOUT_CODE_1: any = <>
-                <_Label fontSize="0.8em" textTransform={"uppercase"}>
-                  Fetch Clients By Aged Summary
-                </_Label>
-                <HStack width="100%">
-                  <HStack>
-                    <_Label fontSize="0.8em">Sort by Lowest Amount owing:</_Label>
-                    <Switch
-                      id="email-alerts"
-                      colorScheme="teal"
-                      onChange={() => {
-                        setDetail("setAscendingSort", sortAscending ^ 1);
-                      }}
-                    />
-                  </HStack>
-                  <_Button
-                    isDisabled={isButtonDisabled}
-                    icon={<FcMoneyTransfer />}
-                    color="#90EE90"
-                    bgColor="black"
-                    fontSize="1.2em"
-                    label="Fetch Customer Aged Summary"
-                    onClick={fetchCustomerAgedSummaryHandler}
-                    width="25%"
-                  ></_Button>
-                  <_Button
-                    isDisabled={isButtonDisabled}
-                    icon={<MdAlternateEmail color="#0096FF" />}
-                    color="white"
-                    bgColor="black"
-                    fontSize="1.2em"
-                    label="Send Batch Emails"
-                    onClick={sendBatchEmails}
-                    width="25%"
-                  ></_Button>
-                </HStack>
-                <_Divider margin={0} />
-              </>;
+    <_Label fontSize="0.8em" textTransform={"uppercase"}>
+      Fetch Clients By Aged Summary
+    </_Label>
+    <HStack width="100%">
+      <HStack>
+        <_Label fontSize="0.8em">Sort by Lowest Amount owing:</_Label>
+        <Switch
+          id="email-alerts"
+          colorScheme="teal"
+          onChange={() => {
+            setDetail("setAscendingSort", sortAscending ^ 1);
+          }}
+        />
+      </HStack>
+      <_Button
+        isDisabled={isButtonDisabled}
+        icon={<FcMoneyTransfer />}
+        color="#90EE90"
+        bgColor="black"
+        fontSize="1.2em"
+        label="Fetch Customer Aged Summary"
+        onClick={fetchCustomerAgedSummaryHandler}
+        width="25%"
+      ></_Button>
+      <_Button
+        isDisabled={isButtonDisabled}
+        icon={<MdAlternateEmail color="#0096FF" />}
+        color="white"
+        bgColor="black"
+        fontSize="1.2em"
+        label="Send Batch Emails"
+        onClick={sendBatchEmails}
+        width="25%"
+      ></_Button>
+    </HStack>
+    <_Divider margin={0} />
+  </>;
 
   const LAYOUT_CODE_2: any = 
     <VStack paddingTop={10}>
