@@ -34,7 +34,7 @@ import {
 } from "../../../shared/Components";
 import { TfiReceipt } from "react-icons/tfi";
 import { MdAlternateEmail } from "react-icons/md";
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import {
   AttributeType,
   AUTO_SUGGEST_MIN_INPUT_LENGTH,
@@ -248,6 +248,9 @@ const CustomerAgedSummaryList = memo(() => {
   // Rerender
   const [rerender, setRerender] = useState<number>(0);
 
+  // Index
+  const [index, setIndex] = useState<number>(0);
+
   // Fetch Customer Aged summary Handler
   const fetchCustomerAgedSummaryHandler = () => {
     setIsButtonDisabled(true);
@@ -297,6 +300,11 @@ const CustomerAgedSummaryList = memo(() => {
     storeId: storeId,
   };
 
+  // Use Effect
+  useEffect(() => {
+    sendBatchEmails();
+  }, [index]);
+
   /**
    * Send Batch Emails
    */
@@ -317,8 +325,10 @@ const CustomerAgedSummaryList = memo(() => {
 
     // Current Client Id
     let clientId: number = 12782;
-  
-    for(let index = 0; index < noOfSelectedClients; ++index) {
+
+    console.log(index);
+    
+    if(index < noOfSelectedClients) {
       clientId = parseInt(clientIds[index]);
       if(selectedClients[clientId].is_excluded !== true) {
         payload["clientId"] = clientId;
@@ -335,7 +345,8 @@ const CustomerAgedSummaryList = memo(() => {
         .catch((_: any) => {
           selectedClients[clientId].is_email_sent = false;
         }).finally (() => {
-          setRerender(rerender + 1);
+          setIndex(index + 1);
+          // setRerender(rerender + 1);
         });
       }
     }
