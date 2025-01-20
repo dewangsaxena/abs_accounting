@@ -320,7 +320,6 @@ const CustomerAgedSummaryList = memo(() => {
           let result: APIResponse = res.data;
           if (result.status !== true) {
             selectedClients[clientId].is_email_sent = false;
-            showToast(toast, false, result.message || UNKNOWN_SERVER_ERROR_MSG);
           } else {
             selectedClients[clientId].is_email_sent = true;
           }
@@ -370,6 +369,9 @@ const CustomerAgedSummaryList = memo(() => {
 
           // Return if no client is loaded
           if(clientIdList.length === 0) return;
+
+          // Disable Button 
+          setIsButtonDisabled(true);
 
           // Set Flag
           setSendBatchEmailState(true);
