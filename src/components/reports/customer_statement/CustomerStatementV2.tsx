@@ -100,8 +100,6 @@ const CustomerDetailRow = memo(
       badgeStyle["variant"] = "none";
     }
 
-    console.log(isEmailSent);
-
     return (
       isSessionActive() && (
         <HStack width="100%">
@@ -245,8 +243,11 @@ const CustomerAgedSummaryList = memo(() => {
   // Selected Clients 
   const [selectedClients, setSelectedClients] = useState<SelectedClientsType>({});
 
-  // Rerender
-  const [rerender, setRerender] = useState<number>(0);
+  // No. of selected clients
+  const [noOfSelectedClients, setNoOfSelectedClients] = useState<number>(0);
+
+  // Send Batch Email Status
+  const [sendBatchEmailState, setSendBatchEmailState] = useState<boolean>(false);
 
   // Index
   const [index, setIndex] = useState<number>(0);
@@ -300,56 +301,67 @@ const CustomerAgedSummaryList = memo(() => {
     storeId: storeId,
   };
 
+  // Client Ids
+  let clientIds: string[] = [];
+
   // Use Effect
   useEffect(() => {
-    sendBatchEmails();
-  }, [index]);
+
+    if(sendBatchEmailState) {
+      console.log(index);
+      // Run Only Once
+      if(index === 0) {
+
+        // Disable Button
+        setIsButtonDisabled(true);
+
+        // Refresh Clients list
+        setSelectedClients(getSelectedClients());
+
+        // Fetch Client Ids
+        clientIds = Object.keys(selectedClients);
+
+        // Return if no client is loaded
+        if(clientIds.length === 0) return;
+
+        // Set No. of selected clients
+        setNoOfSelectedClients(clientIds.length);
+      }
+      else console.log("HERE");
+
+      // Proceed further
+      if(index < noOfSelectedClients) {
+        sendBatchEmails(parseInt(clientIds[index]));
+      }
+    }
+  }, [sendBatchEmailState, index]);
 
   /**
    * Send Batch Emails
+   * @param clientId
    */
-  const sendBatchEmails = () => {
+  const sendBatchEmails = (clientId: number ) => {
+    console.log(selectedClients[clientId]);
+    // if(index < noOfSelectedClients) {
+    //   if(selectedClients[clientId]?.is_excluded !== true) {
+    //     payload["clientId"] = clientId;
 
-    // Return if no client is loaded
-    let clientIds: string[] = Object.keys(selectedClients);
-    if(clientIds.length === 0) return;
-
-    // Disable Button
-    setIsButtonDisabled(true);
-
-    // Refresh Clients list
-    setSelectedClients(getSelectedClients());
-
-    // Fetch No. of selected clients
-    let noOfSelectedClients: number = 5;//getNoOfSelectedClients();
-
-    // Current Client Id
-    let clientId: number = 12782;
-
-    console.log(index);
-    
-    if(index < noOfSelectedClients) {
-      clientId = parseInt(clientIds[index]);
-      if(selectedClients[clientId].is_excluded !== true) {
-        payload["clientId"] = clientId;
-
-        email(payload).then((res: any) => {
-          let result: APIResponse = res.data;
-          if (result.status !== true) {
-            selectedClients[clientId].is_email_sent = false;
-            showToast(toast, false, result.message || UNKNOWN_SERVER_ERROR_MSG);
-          } else {
-            selectedClients[clientId].is_email_sent = true;
-          }
-        })
-        .catch((_: any) => {
-          selectedClients[clientId].is_email_sent = false;
-        }).finally (() => {
-          setIndex(index + 1);
-          // setRerender(rerender + 1);
-        });
-      }
-    }
+    //     email(payload).then((res: any) => {
+    //       let result: APIResponse = res.data;
+    //       if (result.status !== true) {
+    //         selectedClients[clientId].is_email_sent = false;
+    //         showToast(toast, false, result.message || UNKNOWN_SERVER_ERROR_MSG);
+    //       } else {
+    //         selectedClients[clientId].is_email_sent = true;
+    //       }
+    //     })
+    //     .catch((_: any) => {
+    //       selectedClients[clientId].is_email_sent = false;
+    //     }).finally (() => {
+    //       setIndex(index + 1);
+    //     });
+    //   }
+    // }
   }
 
   const LAYOUT_CODE_1: any = <>
@@ -368,7 +380,7 @@ const CustomerAgedSummaryList = memo(() => {
         />
       </HStack>
       <_Button
-        isDisabled={isButtonDisabled}
+        // isDisabled={isButtonDisabled}
         icon={<FcMoneyTransfer />}
         color="#90EE90"
         bgColor="black"
@@ -378,13 +390,15 @@ const CustomerAgedSummaryList = memo(() => {
         width="25%"
       ></_Button>
       <_Button
-        isDisabled={isButtonDisabled}
+        // isDisabled={isButtonDisabled}
         icon={<MdAlternateEmail color="#0096FF" />}
         color="white"
         bgColor="black"
         fontSize="1.2em"
         label="Send Batch Emails"
-        onClick={sendBatchEmails}
+        onClick={() => {
+          setSendBatchEmailState(true);
+        }}
         width="25%"
       ></_Button>
     </HStack>
