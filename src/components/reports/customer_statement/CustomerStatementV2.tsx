@@ -211,10 +211,8 @@ const CustomerAgedSummaryList = memo(() => {
     sortAscending, 
     storeId, 
     email,
-    getSelectedClients,
     fetchCustomerAgedSummary, 
     setDetail, 
-    getNoOfSelectedClients 
   } =
     customerStatementReport(
       (state) => ({
@@ -225,10 +223,8 @@ const CustomerAgedSummaryList = memo(() => {
         sortAscending: state.sortAscending,
         storeId: state.storeId,
         email: state.email,
-        getSelectedClients: state.getSelectedClients,
         fetchCustomerAgedSummary: state.fetchCustomerAgedSummary,
         setDetail: state.setDetail,
-        getNoOfSelectedClients: state.getNoOfSelectedClients,
       }),
       shallow
     );
