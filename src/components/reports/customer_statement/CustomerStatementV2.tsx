@@ -302,7 +302,7 @@ const CustomerAgedSummaryList = memo(() => {
     storeId: storeId,
   };
 
-  // Use Effect
+  // Execute Batch Emails
   useEffect(() => {
     if(sendBatchEmailState && index < noOfSelectedClients) sendBatchEmails(clientIdList[index]);
   }, [sendBatchEmailState, index]);
