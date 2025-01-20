@@ -45,6 +45,7 @@ import { FcMoneyTransfer } from "react-icons/fc";
 import {
   CustomerAgedSummary,
   customerStatementReport,
+  SelectedClientsType,
 } from "./customerStatementStore";
 import { shallow } from "zustand/shallow";
 import { ImCancelCircle } from "react-icons/im";
@@ -63,26 +64,46 @@ const contentFontStyle: AttributeType = {
  * @returns
  */
 const CustomerDetailRow = memo(
-  ({ customer }: { customer: CustomerAgedSummary }) => {
+  ({ customer, }: { customer: CustomerAgedSummary}) => {
     // Customer Statement Report
-    const { setExcludedClients } =
+    const { getSelectedClients, setExcludedClients } =
       customerStatementReport(
         (state) => ({
-          noOfExcludedClients: state.noOfSelectedClients,
-          selectedClients: state.selectedClients,
+          getSelectedClients: state.getSelectedClients,
           setExcludedClients: state.setExcludedClients,
         }),
         shallow
       );
 
-    // Rerender
+    // Rerender flag
     const [rerender, setRerender] = useState<number>(0);
+    
+    // Customer Aged Summary Detail
+    let customerAgedSummaryDetail: CustomerAgedSummary = getSelectedClients()[customer.client_id];
+
+    // Exclusion Status
+    let isExcluded: boolean = customerAgedSummaryDetail.is_excluded ? true : false;
+      
+    // Select Badge Style based on exclusion status
+    let badgeStyle: AttributeType = {};
+    if(isExcluded === true) {
+      badgeStyle["colorScheme"] = "red";
+      badgeStyle["variant"] = "outline";
+    }
+
+    else if(customerAgedSummaryDetail.is_email_sent === true) {
+      badgeStyle["colorScheme"] = "green";
+    }
+
+    else {
+      badgeStyle["variant"] = "none";
+    }
 
     return (
       isSessionActive() && (
         <HStack width="100%">
           <Box width="30%">
-            <Badge {...contentFontStyle} colorScheme={customer.is_email_sent === true ? "green": customer.is_email_sent === false ? "red": "gray"}>{customer.client_name}</Badge>
+            <Badge {...contentFontStyle} {...badgeStyle}>{customer.client_name}</Badge>
           </Box>
           <Box width="10%">
             <_Label {...contentFontStyle}>
@@ -115,8 +136,8 @@ const CustomerDetailRow = memo(
               colorScheme="red"
               icon={<ImCancelCircle />}
               onChange={(_: any) => {
-                setRerender(rerender + 1);
                 setExcludedClients(customer.client_id);
+                setRerender(rerender + 1);
               }}
             ></Checkbox>
           </Box>
@@ -204,30 +225,24 @@ const CustomerListHeader = memo(() => {
 const CustomerAgedSummaryList = memo(() => {
   const toast = useToast();
   const { 
-    selectedClients, 
     attachTransactions, 
     generateRecordOfAllTransactions, 
     startDate,
     endDate, 
     sortAscending, 
     storeId, 
-    customerAgedSummaryList,
-    email, 
     fetchCustomerAgedSummary, 
     setDetail, 
     getNoOfSelectedClients 
   } =
     customerStatementReport(
       (state) => ({
-        selectedClients: state.selectedClients,
         startDate: state.startDate,
         endDate: state.endDate,
         attachTransactions: state.attachTransactions,
         generateRecordOfAllTransactions: state.generateRecordOfAllTransactions,
         sortAscending: state.sortAscending,
         storeId: state.storeId,
-        customerAgedSummaryList: state.customerAgedSummaryList,
-        email: state.email,
         fetchCustomerAgedSummary: state.fetchCustomerAgedSummary,
         setDetail: state.setDetail,
         getNoOfSelectedClients: state.getNoOfSelectedClients,
@@ -239,7 +254,13 @@ const CustomerAgedSummaryList = memo(() => {
   // Is Loading
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const [rendererCounter, setRendererCounter] = useState<number>(0); 
+  // Clients List
+  const [clientsList, setClientsList] = useState<number[]>([]);
+
+  // Selected Clients 
+  const [selectedClients, setSelectedClients] = useState<SelectedClientsType>({});
+
+  const [rerender, setRerender] = useState<number>(0);
 
   // Fetch Customer Aged summary Handler
   const fetchCustomerAgedSummaryHandler = () => {
@@ -252,21 +273,24 @@ const CustomerAgedSummaryList = memo(() => {
           
           // Selected clients
           let temp: AttributeType = {};
+          let tempList: number[] = [];
           let noOfClients: number = response.data.length || 0;
           for(let i = 0; i < noOfClients; ++i) {
-            temp[response.data[i].client_id] = response.data[i].client_id;
+            tempList.push(response.data[i].client_id);
+            temp[response.data[i].client_id] = response.data[i];
           }
 
+          setSelectedClients(temp);
+          setClientsList(tempList);
           setDetail("selectedClients", temp);
           setDetail("noOfSelectedClients", noOfClients);
-          setDetail("customerAgedSummaryList", response.data);
         } else {
           showToast(toast, false, response.message || UNKNOWN_SERVER_ERROR_MSG);
-          setDetail("customerAgedSummaryList", []);
+          setDetail("selectedClients", {});
         }
       })
       .catch((err: any) => {
-        setDetail("customerAgedSummaryList", []);
+        setDetail("selectedClients", {});
         showToast(toast, false, err.message);
       })
       .finally(() => {
@@ -290,7 +314,7 @@ const CustomerAgedSummaryList = memo(() => {
    * Send Batch Emails
    */
   const sendBatchEmails = () => {
-    setRendererCounter(rendererCounter + 1);
+
     // email(payload)
     // .then((res: any) => {
     //   let result: APIResponse = res.data;
@@ -350,8 +374,8 @@ const CustomerAgedSummaryList = memo(() => {
             <Box height="60vh" overflowY={"scroll"} width="100%">
               <VStack align="start">
                 <CustomerListHeader/>
-                {customerAgedSummaryList.map((customer: CustomerAgedSummary) => {
-                  return <CustomerDetailRow customer={customer} key={customer.client_id}/> ;
+                {clientsList.map((clientId: number) => {
+                  return <CustomerDetailRow key={clientId} customer={selectedClients[clientId]} /> ;
                 })}
               </VStack>
             </Box>

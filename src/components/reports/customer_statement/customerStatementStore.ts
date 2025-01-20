@@ -18,18 +18,14 @@ export interface CustomerAgedSummary {
   phone_number: string;
   total: number;
   is_email_sent?: boolean;
+  is_excluded?: boolean;
 }
-
-/**
- * Customer Aged Summary List
- */
-export type CustomerAgedSummaryList = CustomerAgedSummary[];
 
 /**
  * Selected Clients Type
  */
 export type SelectedClientsType = {
-  [id: number]: number;
+  [id: number]: CustomerAgedSummary;
 };
 
 /**
@@ -42,7 +38,6 @@ interface CustomerStatement {
   attachTransactions: boolean;
   generateRecordOfAllTransactions: boolean;
   selectedClients: SelectedClientsType;
-  customerAgedSummaryList: CustomerAgedSummaryList;
   noOfSelectedClients: number;
   storeId: number;
   sortAscending: number;
@@ -52,6 +47,7 @@ interface CustomerStatement {
   fetchCustomerAgedSummary: () => any;
   setExcludedClients: (clientId: number) => void;
   getNoOfSelectedClients: () => number;
+  getSelectedClients: () => any;
 }
 
 /**
@@ -99,8 +95,6 @@ export const customerStatementReport = create<CustomerStatement>(
       else if (name === "selectedClients") set({ selectedClients: value });
       else if (name === "noOfSelectedClients") set({noOfSelectedClients: value});
       else if (name === "setAscendingSort") set({ sortAscending: value });
-      else if (name === "customerAgedSummaryList")
-        set({ customerAgedSummaryList: value });
     },
     fetchCustomerAgedSummary: async () => {
       return httpService.fetch(
@@ -114,21 +108,22 @@ export const customerStatementReport = create<CustomerStatement>(
     },
     setExcludedClients: (clientId: number) => {
       let selectedClients: SelectedClientsType = get().selectedClients;
-      if (selectedClients[clientId] === undefined) {
-        selectedClients[clientId] = clientId;
-        get().noOfSelectedClients += 1;
-      } else {
-        delete selectedClients[clientId];
+      if (selectedClients[clientId].is_excluded === undefined || selectedClients[clientId].is_excluded === false) {
+        selectedClients[clientId].is_excluded = true;
         get().noOfSelectedClients -= 1;
+      } else {
+        selectedClients[clientId].is_excluded = false;
+        get().noOfSelectedClients += 1;
       }
-
-      // selectedClients[clientId].
 
       // Set directly, but do not rerender
       get().selectedClients = selectedClients;
     },
     getNoOfSelectedClients: () => {
       return get().noOfSelectedClients;
+    },
+    getSelectedClients:() => {
+      return get().selectedClients;
     }
   })
 );
