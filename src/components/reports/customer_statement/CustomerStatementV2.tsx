@@ -66,10 +66,9 @@ const contentFontStyle: AttributeType = {
 const CustomerDetailRow = memo(
   ({ customer, isEmailSent }: { customer: CustomerAgedSummary, isEmailSent?: boolean}) => {
     // Customer Statement Report
-    const { getSelectedClients, setExcludedClients } =
+    const { setExcludedClients } =
       customerStatementReport(
         (state) => ({
-          getSelectedClients: state.getSelectedClients,
           setExcludedClients: state.setExcludedClients,
         }),
         shallow
@@ -78,11 +77,8 @@ const CustomerDetailRow = memo(
     // Rerender flag
     const [rerender, setRerender] = useState<number>(0);
     
-    // Customer Aged Summary Detail
-    let customerAgedSummaryDetail: CustomerAgedSummary = getSelectedClients()[customer.client_id];
-
     // Exclusion Status
-    let isExcluded: boolean = customerAgedSummaryDetail.is_excluded ? true : false;
+    let isExcluded: boolean = customer.is_excluded ? true : false;
       
     // Select Badge Style based on exclusion status
     let badgeStyle: AttributeType = {};
