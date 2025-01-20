@@ -237,8 +237,8 @@ const CustomerAgedSummaryList = memo(() => {
   // Is Loading
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // Clients List
-  const [clientsList, setClientsList] = useState<number[]>([]);
+  // Client ID List
+  const [clientIdList, setClientIdList] = useState<number[]>([]);
 
   // Selected Clients 
   const [selectedClients, setSelectedClients] = useState<SelectedClientsType>({});
@@ -271,7 +271,8 @@ const CustomerAgedSummaryList = memo(() => {
           }
 
           setSelectedClients(temp);
-          setClientsList(tempList);
+          setClientIdList(tempList);
+          setNoOfSelectedClients(tempList.length);
           setDetail("selectedClients", temp);
           setDetail("noOfSelectedClients", noOfClients);
         } else {
@@ -301,39 +302,9 @@ const CustomerAgedSummaryList = memo(() => {
     storeId: storeId,
   };
 
-  // Client Ids
-  let clientIds: string[] = [];
-
   // Use Effect
   useEffect(() => {
-
-    if(sendBatchEmailState) {
-      console.log(index);
-      // Run Only Once
-      if(index === 0) {
-
-        // Disable Button
-        setIsButtonDisabled(true);
-
-        // Refresh Clients list
-        setSelectedClients(getSelectedClients());
-
-        // Fetch Client Ids
-        clientIds = Object.keys(selectedClients);
-
-        // Return if no client is loaded
-        if(clientIds.length === 0) return;
-
-        // Set No. of selected clients
-        setNoOfSelectedClients(clientIds.length);
-      }
-      else console.log("HERE");
-
-      // Proceed further
-      if(index < noOfSelectedClients) {
-        sendBatchEmails(parseInt(clientIds[index]));
-      }
-    }
+    if(sendBatchEmailState && index < noOfSelectedClients) sendBatchEmails(clientIdList[index]);
   }, [sendBatchEmailState, index]);
 
   /**
@@ -341,27 +312,26 @@ const CustomerAgedSummaryList = memo(() => {
    * @param clientId
    */
   const sendBatchEmails = (clientId: number ) => {
-    console.log(selectedClients[clientId]);
-    // if(index < noOfSelectedClients) {
-    //   if(selectedClients[clientId]?.is_excluded !== true) {
-    //     payload["clientId"] = clientId;
+    if(index < noOfSelectedClients) {
+      if(selectedClients[clientId]?.is_excluded !== true) {
+        payload["clientId"] = clientId;
 
-    //     email(payload).then((res: any) => {
-    //       let result: APIResponse = res.data;
-    //       if (result.status !== true) {
-    //         selectedClients[clientId].is_email_sent = false;
-    //         showToast(toast, false, result.message || UNKNOWN_SERVER_ERROR_MSG);
-    //       } else {
-    //         selectedClients[clientId].is_email_sent = true;
-    //       }
-    //     })
-    //     .catch((_: any) => {
-    //       selectedClients[clientId].is_email_sent = false;
-    //     }).finally (() => {
-    //       setIndex(index + 1);
-    //     });
-    //   }
-    // }
+        email(payload).then((res: any) => {
+          let result: APIResponse = res.data;
+          if (result.status !== true) {
+            selectedClients[clientId].is_email_sent = false;
+            showToast(toast, false, result.message || UNKNOWN_SERVER_ERROR_MSG);
+          } else {
+            selectedClients[clientId].is_email_sent = true;
+          }
+        })
+        .catch((_: any) => {
+          selectedClients[clientId].is_email_sent = false;
+        }).finally (() => {
+          setIndex(index + 1);
+        });
+      }
+    }
   }
 
   const LAYOUT_CODE_1: any = <>
@@ -380,7 +350,7 @@ const CustomerAgedSummaryList = memo(() => {
         />
       </HStack>
       <_Button
-        // isDisabled={isButtonDisabled}
+        isDisabled={isButtonDisabled}
         icon={<FcMoneyTransfer />}
         color="#90EE90"
         bgColor="black"
@@ -390,13 +360,18 @@ const CustomerAgedSummaryList = memo(() => {
         width="25%"
       ></_Button>
       <_Button
-        // isDisabled={isButtonDisabled}
+        isDisabled={isButtonDisabled}
         icon={<MdAlternateEmail color="#0096FF" />}
         color="white"
         bgColor="black"
         fontSize="1.2em"
         label="Send Batch Emails"
         onClick={() => {
+
+          // Return if no client is loaded
+          if(clientIdList.length === 0) return;
+
+          // Set Flag
           setSendBatchEmailState(true);
         }}
         width="25%"
@@ -427,7 +402,7 @@ const CustomerAgedSummaryList = memo(() => {
             <Box height="60vh" overflowY={"scroll"} width="100%">
               <VStack align="start">
                 <CustomerListHeader/>
-                {clientsList.map((clientId: number) => {
+                {clientIdList.map((clientId: number) => {
                   return <CustomerDetailRow key={clientId} customer={selectedClients[clientId]} isEmailSent={selectedClients[clientId].is_email_sent}/>;
                 })}
               </VStack>
