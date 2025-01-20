@@ -231,6 +231,7 @@ const CustomerAgedSummaryList = memo(() => {
     endDate, 
     sortAscending, 
     storeId, 
+    email,
     getSelectedClients,
     fetchCustomerAgedSummary, 
     setDetail, 
@@ -244,6 +245,7 @@ const CustomerAgedSummaryList = memo(() => {
         generateRecordOfAllTransactions: state.generateRecordOfAllTransactions,
         sortAscending: state.sortAscending,
         storeId: state.storeId,
+        email: state.email,
         getSelectedClients: state.getSelectedClients,
         fetchCustomerAgedSummary: state.fetchCustomerAgedSummary,
         setDetail: state.setDetail,
@@ -262,6 +264,7 @@ const CustomerAgedSummaryList = memo(() => {
   // Selected Clients 
   const [selectedClients, setSelectedClients] = useState<SelectedClientsType>({});
 
+  // Rerender
   const [rerender, setRerender] = useState<number>(0);
 
   // Fetch Customer Aged summary Handler
@@ -312,33 +315,52 @@ const CustomerAgedSummaryList = memo(() => {
     storeId: storeId,
   };
 
+
+
   /**
    * Send Batch Emails
    */
   const sendBatchEmails = () => {
 
+    // Return if no client is loaded
+    let clientIds: string[] = Object.keys(selectedClients);
+    if(clientIds.length === 0) return;
+
+    // Disable Button
+    setIsButtonDisabled(true);
+
+    // Refresh Clients list
     setSelectedClients(getSelectedClients());
-    
+
+    // Fetch No. of selected clients
+    let noOfSelectedClients: number = getNoOfSelectedClients();
+
+    // Current Client Id
     let clientId: number = 12782;
-    selectedClients[clientId].is_email_sent = true;
-    setRerender(rerender + 1);
-    // email(payload)
-    // .then((res: any) => {
-    //   let result: APIResponse = res.data;
-    //   if (result.status !== true) {
-    //     showToast(toast, false, result.message || UNKNOWN_SERVER_ERROR_MSG);
-        
-    //   } else {
-    //     showToast(toast, true);
-    //   }
-    // })
-    // .catch((err: any) => {
-    //   showToast(toast, err.status, err.message);
-    // });
+  
+    for(let index = 0; index < noOfSelectedClients; ++index) {
+      clientId = parseInt(clientIds[index]);
+      if(selectedClients[clientId].is_excluded === false) {
+        payload["clientId"] = clientId;
+
+        email(payload).then((res: any) => {
+          let result: APIResponse = res.data;
+          if (result.status !== true) {
+            showToast(toast, false, result.message || UNKNOWN_SERVER_ERROR_MSG);
+          } else {
+            selectedClients[clientId].is_email_sent = true;
+          }
+        })
+        .catch((_: any) => {
+          selectedClients[clientId].is_email_sent = false;
+        }).finally (() => {
+          setRerender(rerender);
+        });
+      }
+    }
   }
 
-  const LAYOUT_CODE_1: any = memo(() => {
-              return <>
+  const LAYOUT_CODE_1: any = <>
                 <_Label fontSize="0.8em" textTransform={"uppercase"}>
                   Fetch Clients By Aged Summary
                 </_Label>
@@ -375,22 +397,20 @@ const CustomerAgedSummaryList = memo(() => {
                   ></_Button>
                 </HStack>
                 <_Divider margin={0} />
-              </>});
+              </>;
 
-  const LAYOUT_CODE_2: any = memo(() => {
-    return <VStack paddingTop={10}>
-          <Center>
-            <Spinner
-              label="Loading Customer Aged Summary"
-              thickness="2px"
-              speed="1s"
-              emptyColor="gray.100"
-              color="#8565c4"
-              boxSize={"24vh"}
-            />
-          </Center>
-        </VStack>
-  });
+  const LAYOUT_CODE_2: any = 
+    <VStack paddingTop={10}>
+      <Center>
+        <Spinner
+            label="Loading Customer Aged Summary"
+            thickness="2px"
+            speed="1s"
+            emptyColor="gray.100"
+            color="#8565c4"
+            boxSize={"24vh"}/>
+        </Center>
+    </VStack>;
 
   return (
     isSessionActive() && (
@@ -402,7 +422,7 @@ const CustomerAgedSummaryList = memo(() => {
               <VStack align="start">
                 <CustomerListHeader/>
                 {clientsList.map((clientId: number) => {
-                  return <CustomerDetailRow key={clientId} customer={selectedClients[clientId]} isEmailSent={selectedClients[clientId].is_email_sent}/> ;
+                  return <CustomerDetailRow key={clientId} customer={selectedClients[clientId]} isEmailSent={selectedClients[clientId].is_email_sent}/>;
                 })}
               </VStack>
             </Box>
