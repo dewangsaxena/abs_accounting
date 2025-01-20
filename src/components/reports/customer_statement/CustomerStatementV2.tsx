@@ -336,7 +336,7 @@ const CustomerAgedSummaryList = memo(() => {
     setSelectedClients(getSelectedClients());
 
     // Fetch No. of selected clients
-    let noOfSelectedClients: number = 10;//getNoOfSelectedClients();
+    let noOfSelectedClients: number = 5;//getNoOfSelectedClients();
 
     // Current Client Id
     let clientId: number = 12782;
