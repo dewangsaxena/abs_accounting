@@ -64,7 +64,7 @@ const contentFontStyle: AttributeType = {
  * @returns
  */
 const CustomerDetailRow = memo(
-  ({ customer, }: { customer: CustomerAgedSummary}) => {
+  ({ customer, isEmailSent }: { customer: CustomerAgedSummary, isEmailSent?: boolean}) => {
     // Customer Statement Report
     const { getSelectedClients, setExcludedClients } =
       customerStatementReport(
@@ -91,7 +91,7 @@ const CustomerDetailRow = memo(
       badgeStyle["variant"] = "outline";
     }
 
-    else if(customerAgedSummaryDetail.is_email_sent === true) {
+    else if(isEmailSent === true) {
       badgeStyle["colorScheme"] = "green";
     }
 
@@ -231,6 +231,7 @@ const CustomerAgedSummaryList = memo(() => {
     endDate, 
     sortAscending, 
     storeId, 
+    getSelectedClients,
     fetchCustomerAgedSummary, 
     setDetail, 
     getNoOfSelectedClients 
@@ -243,6 +244,7 @@ const CustomerAgedSummaryList = memo(() => {
         generateRecordOfAllTransactions: state.generateRecordOfAllTransactions,
         sortAscending: state.sortAscending,
         storeId: state.storeId,
+        getSelectedClients: state.getSelectedClients,
         fetchCustomerAgedSummary: state.fetchCustomerAgedSummary,
         setDetail: state.setDetail,
         getNoOfSelectedClients: state.getNoOfSelectedClients,
@@ -315,6 +317,11 @@ const CustomerAgedSummaryList = memo(() => {
    */
   const sendBatchEmails = () => {
 
+    setSelectedClients(getSelectedClients());
+    
+    let clientId: number = 12782;
+    selectedClients[clientId].is_email_sent = true;
+    setRerender(rerender + 1);
     // email(payload)
     // .then((res: any) => {
     //   let result: APIResponse = res.data;
@@ -330,71 +337,78 @@ const CustomerAgedSummaryList = memo(() => {
     // });
   }
 
+  const LAYOUT_CODE_1: any = memo(() => {
+              return <>
+                <_Label fontSize="0.8em" textTransform={"uppercase"}>
+                  Fetch Clients By Aged Summary
+                </_Label>
+                <HStack width="100%">
+                  <HStack>
+                    <_Label fontSize="0.8em">Sort by Lowest Amount owing:</_Label>
+                    <Switch
+                      id="email-alerts"
+                      colorScheme="teal"
+                      onChange={() => {
+                        setDetail("setAscendingSort", sortAscending ^ 1);
+                      }}
+                    />
+                  </HStack>
+                  <_Button
+                    isDisabled={isButtonDisabled}
+                    icon={<FcMoneyTransfer />}
+                    color="#90EE90"
+                    bgColor="black"
+                    fontSize="1.2em"
+                    label="Fetch Customer Aged Summary"
+                    onClick={fetchCustomerAgedSummaryHandler}
+                    width="25%"
+                  ></_Button>
+                  <_Button
+                    isDisabled={isButtonDisabled}
+                    icon={<MdAlternateEmail color="#0096FF" />}
+                    color="white"
+                    bgColor="black"
+                    fontSize="1.2em"
+                    label="Send Batch Emails"
+                    onClick={sendBatchEmails}
+                    width="25%"
+                  ></_Button>
+                </HStack>
+                <_Divider margin={0} />
+              </>});
+
+  const LAYOUT_CODE_2: any = memo(() => {
+    return <VStack paddingTop={10}>
+          <Center>
+            <Spinner
+              label="Loading Customer Aged Summary"
+              thickness="2px"
+              speed="1s"
+              emptyColor="gray.100"
+              color="#8565c4"
+              boxSize={"24vh"}
+            />
+          </Center>
+        </VStack>
+  });
+
   return (
     isSessionActive() && (
       <>
         <VStack align="start" width="100%">
-          <_Label fontSize="0.8em" textTransform={"uppercase"}>
-            Fetch Clients By Aged Summary
-          </_Label>
-          <HStack width="100%">
-            <HStack>
-              <_Label fontSize="0.8em">Sort by Lowest Amount owing:</_Label>
-              <Switch
-                id="email-alerts"
-                colorScheme="teal"
-                onChange={() => {
-                  setDetail("setAscendingSort", sortAscending ^ 1);
-                }}
-              />
-            </HStack>
-            <_Button
-              isDisabled={isButtonDisabled}
-              icon={<FcMoneyTransfer />}
-              color="#90EE90"
-              bgColor="black"
-              fontSize="1.2em"
-              label="Fetch Customer Aged Summary"
-              onClick={fetchCustomerAgedSummaryHandler}
-              width="25%"
-            ></_Button>
-            <_Button
-              isDisabled={isButtonDisabled}
-              icon={<MdAlternateEmail color="#0096FF" />}
-              color="white"
-              bgColor="black"
-              fontSize="1.2em"
-              label="Send Batch Emails"
-              onClick={sendBatchEmails}
-              width="25%"
-            ></_Button>
-          </HStack>
-          <_Divider margin={0} />
+          {LAYOUT_CODE_1}
           {isLoading === false && <>
             <Box height="60vh" overflowY={"scroll"} width="100%">
               <VStack align="start">
                 <CustomerListHeader/>
                 {clientsList.map((clientId: number) => {
-                  return <CustomerDetailRow key={clientId} customer={selectedClients[clientId]} /> ;
+                  return <CustomerDetailRow key={clientId} customer={selectedClients[clientId]} isEmailSent={selectedClients[clientId].is_email_sent}/> ;
                 })}
               </VStack>
             </Box>
           </>}
         </VStack>
-        {isLoading && (
-          <VStack paddingTop={10}>
-            <Center>
-              <Spinner
-                label="Loading Customer Aged Summary"
-                thickness="2px"
-                speed="1s"
-                emptyColor="gray.100"
-                color="#8565c4"
-                boxSize={"24vh"}
-              />
-            </Center>
-          </VStack>
-        )}
+        {isLoading && LAYOUT_CODE_2}
       </>
     )
   );
