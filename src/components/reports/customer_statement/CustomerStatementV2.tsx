@@ -197,29 +197,7 @@ const CustomerListHeader = memo(() => {
       </HStack>
     );
   }
-})
-
-/**
- * Customer List
- * @param list
- * @returns
- */
-// const CustomerList = memo(() => {
-//   // Customer Statement Report
-//   const { customerAgedSummaryList } = customerStatementReport(
-//     (state) => ({
-//       customerAgedSummaryList: state.customerAgedSummaryList,
-//     }),
-//     shallow
-//   );
-
-//   // Customer List
-//   const customerList: any = customerAgedSummaryList.map(
-//     (customer: CustomerAgedSummary) => {
-//       return <CustomerDetailRow customer={customer} key={customer.client_id}/> ;
-//     }
-//   );
-// });
+});
 
 /**
  * Customer Aged Summary List.
@@ -307,6 +285,7 @@ const CustomerAgedSummaryList = memo(() => {
       });
   };
 
+  // Payload
   let payload: AttributeType = {
     startDate: startDate ? startDate?.toISOString().substring(0, 10) : "",
     endDate: endDate ? endDate?.toISOString().substring(0, 10) : "",
@@ -317,8 +296,6 @@ const CustomerAgedSummaryList = memo(() => {
     ).toString(),
     storeId: storeId,
   };
-
-
 
   /**
    * Send Batch Emails
