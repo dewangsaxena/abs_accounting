@@ -94,7 +94,7 @@ const CustomerDetailRow = memo(
       badgeStyle["colorScheme"] = "green";
     }
     else if(isEmailSent === false) {
-      badgeStyle["colorScheme"] = "red";;
+      badgeStyle["colorScheme"] = "red";
     }
     else {
       badgeStyle["variant"] = "none";
@@ -345,6 +345,8 @@ const CustomerAgedSummaryList = memo(() => {
       clientId = parseInt(clientIds[index]);
       if(selectedClients[clientId].is_excluded !== true) {
         payload["clientId"] = clientId;
+
+        console.log(payload);
 
         email(payload).then((res: any) => {
           let result: APIResponse = res.data;
