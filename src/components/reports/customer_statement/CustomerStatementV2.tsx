@@ -90,14 +90,17 @@ const CustomerDetailRow = memo(
       badgeStyle["colorScheme"] = "red";
       badgeStyle["variant"] = "outline";
     }
-
     else if(isEmailSent === true) {
       badgeStyle["colorScheme"] = "green";
     }
-
+    else if(isEmailSent === false) {
+      badgeStyle["colorScheme"] = "red";;
+    }
     else {
       badgeStyle["variant"] = "none";
     }
+
+    console.log(isEmailSent);
 
     return (
       isSessionActive() && (
@@ -333,19 +336,20 @@ const CustomerAgedSummaryList = memo(() => {
     setSelectedClients(getSelectedClients());
 
     // Fetch No. of selected clients
-    let noOfSelectedClients: number = getNoOfSelectedClients();
+    let noOfSelectedClients: number = 10;//getNoOfSelectedClients();
 
     // Current Client Id
     let clientId: number = 12782;
   
     for(let index = 0; index < noOfSelectedClients; ++index) {
       clientId = parseInt(clientIds[index]);
-      if(selectedClients[clientId].is_excluded === false) {
+      if(selectedClients[clientId].is_excluded !== true) {
         payload["clientId"] = clientId;
 
         email(payload).then((res: any) => {
           let result: APIResponse = res.data;
           if (result.status !== true) {
+            selectedClients[clientId].is_email_sent = false;
             showToast(toast, false, result.message || UNKNOWN_SERVER_ERROR_MSG);
           } else {
             selectedClients[clientId].is_email_sent = true;
@@ -354,7 +358,7 @@ const CustomerAgedSummaryList = memo(() => {
         .catch((_: any) => {
           selectedClients[clientId].is_email_sent = false;
         }).finally (() => {
-          setRerender(rerender);
+          setRerender(rerender + 1);
         });
       }
     }
