@@ -327,7 +327,7 @@ class PrepareDetails_CustomerStatement {
         $txn = self::format_transactions($customer_statements);
         
         $details = [
-            'date' => '',//Utils::get_business_date(),
+            'date' => '',
             'txn' => $txn,
             'current' => Utils::number_format(self::$amount['current']),
             '31-60' => Utils::number_format(self::$amount['31-60']),

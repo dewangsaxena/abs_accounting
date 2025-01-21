@@ -27,6 +27,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         'discount' => 7,
         'pricePerItem' => 15,
         'amount' => 15,
+        'restockingRate' => 5,
     ];
 
     // Keys 
@@ -45,7 +46,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
     private const SHOW_BORDER_FOR_DEBUG = 0;
 
     // Width for table elements 
-    private const TABLE_ELEMENTS_WIDTH = [28, 15, 10, 55, 12, 22, 12, 22, 22];
+    private const TABLE_ELEMENTS_WIDTH = [28, 15, 10, 45, 12, 22, 12, 22, 22, 10];
 
     // Data Table details
     private const MAX_ROWS_FIRST_PAGE = [26, 43];
@@ -287,16 +288,19 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
      * This method will add table header.
      */
     private static function add_table_header() : void {
+        $is_sales_return = self::$details['txn_type_id'] === SALES_RETURN;
+
         self::$pdf -> SetFont(self::ARIAL, 'B', 7);
         self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[0], h:4, txt: 'ITEM IDENTIFIER', border: 'TLBR', ln: 0);
         self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[1], h:4, txt: 'UNIT', border: 'TRB', ln: 0, align: 'C');
         self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[2], h:4, txt: 'QTY', border: 'TRB', ln: 0, align: 'C');
-        self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[3], h:4, txt: 'DESCRIPTION', border: 'TRB', ln: 0, align: 'C');
+        self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[3] + ($is_sales_return ? 0 : self::TABLE_ELEMENTS_WIDTH[9]), h:4, txt: 'DESCRIPTION', border: 'TRB', ln: 0, align: 'C');
         self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[4], h:4, txt: 'TAX %', border: 'TRB', ln: 0);
         self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[5], h:4, txt: 'BASE PRICE', border: 'TRB', ln: 0, align: 'C');
         self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[6], h:4, txt: 'DISC%', border: 'TRB', ln: 0);
         self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[7], h:4, txt: 'UNIT PRICE', border: 'TRB', ln: 0, align: 'C');
-        self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[8], h:4, txt: 'AMOUNT', border: 'TRB', ln: 1, align: 'C');
+        self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[8], h:4, txt: 'AMOUNT', border: 'TRB', ln: $is_sales_return ? 0 : 1, align: 'C');
+        if($is_sales_return) self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[9], h:4, txt: 'RSTK', border: 'TRB', ln: 1, align: 'C');
     }
 
     /**
@@ -433,27 +437,32 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         // Add Bottom Border for cell if last row
         $border = $is_last_row ? 'B' : '';
 
+        // Is Sales Return
+        $is_sales_return = self::$details['txn_type_id'] === SALES_RETURN;
+
         if($is_blank) {
             self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[0], h:self::TABLE_ROW_HEIGHT, txt: '', border: "LR$border", ln: 0, align: 'L');
             self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[1], h:self::TABLE_ROW_HEIGHT, txt: '', border: "R$border", ln: 0, align: 'L');
             self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[2], h:self::TABLE_ROW_HEIGHT, txt: '', border: "R$border", ln: 0);
-            self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[3], h:self::TABLE_ROW_HEIGHT, txt: '', border: "R$border", ln: 0, align: 'L');
+            self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[3] + ($is_sales_return ? 0 : + self::TABLE_ELEMENTS_WIDTH[9]), h:self::TABLE_ROW_HEIGHT, txt: '', border: "R$border", ln: 0, align: 'L');
             self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[4], h:self::TABLE_ROW_HEIGHT, txt: '', border: "R$border", ln: 0);
             self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[5], h:self::TABLE_ROW_HEIGHT, txt: '', border: "R$border", ln: 0, align: 'L');
             self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[6], h:self::TABLE_ROW_HEIGHT, txt: '', border: "R$border", ln: 0);
             self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[7], h:self::TABLE_ROW_HEIGHT, txt: '', border: "R$border", ln: 0, align: 'L');
-            self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[8], h:self::TABLE_ROW_HEIGHT, txt: '', border: "R$border", ln: 1, align: 'L');
+            self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[8], h:self::TABLE_ROW_HEIGHT, txt: '', border: "R$border", ln: $is_sales_return ? 0 : 1, align: 'L');
+            if($is_sales_return) self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[9], h:self::TABLE_ROW_HEIGHT, txt: '', border: "R$border", ln: 1, align: 'L');
         }
         else {
             if(isset($data['identifier'])) self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[0], h: self::TABLE_ROW_HEIGHT, txt: $data['identifier'], border: "LR$border", ln: 0, align: 'L');
             if(isset($data['unit'])) self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[1], h:self::TABLE_ROW_HEIGHT, txt: $data['unit'], border: "R$border", ln: 0, align: 'L');
             if(isset($data['quantity'])) self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[2], h:self::TABLE_ROW_HEIGHT, txt: $data['quantity'], border: "R$border", ln: 0);
-            if(isset($data['description'])) self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[3], h:self::TABLE_ROW_HEIGHT, txt: $data['description'], border: "R$border", ln: 0, align: 'L');
+            if(isset($data['description'])) self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[3] + ($is_sales_return ? 0 : + self::TABLE_ELEMENTS_WIDTH[9]), h:self::TABLE_ROW_HEIGHT, txt: $data['description'], border: "R$border", ln: 0, align: 'L');
             if(isset($data['tax'])) self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[4], h:self::TABLE_ROW_HEIGHT, txt: $data['tax'], border: "R$border", ln: 0);
             if(isset($data['basePrice'])) self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[5], h:self::TABLE_ROW_HEIGHT, txt: $data['basePrice'], border: "R$border", ln: 0, align: 'L');
             if(isset($data['discountRate'])) self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[6], h:self::TABLE_ROW_HEIGHT, txt: $data['discountRate'], border: "R$border", ln: 0);
             if(isset($data['pricePerItem'])) self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[7], h:self::TABLE_ROW_HEIGHT, txt: $data['pricePerItem'], border: "R$border", ln: 0, align: 'L');
-            if(isset($data['amountPerItem'])) self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[8], h:self::TABLE_ROW_HEIGHT, txt: $data['amountPerItem'], border: "R$border", ln: 1, align: 'L');
+            if(isset($data['amountPerItem'])) self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[8], h:self::TABLE_ROW_HEIGHT, txt: $data['amountPerItem'], border: "R$border", ln: $is_sales_return ? 0 : 1, align: 'L');
+            if($is_sales_return) self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[9], h: self::TABLE_ROW_HEIGHT, txt: floatval($data['restockingRate'] ?? 0.0), border: "R$border", ln: 1, align: 'L');
         }
     }
 
@@ -617,6 +626,9 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
                 'isBackOrder' => $records[$i]['isBackOrder'],
             ];
 
+            // Restocking Rate
+            // if(isset($records[$i]['restockingRate'])) $_data['restockingRate'] = number_format($records[$i]['restockingRate'], 2);
+
             // Format for Backorder
             self::format_for_backorder($_data);
     
@@ -633,6 +645,9 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
                 'amountPerItem' => ceil((strlen($_data['amountPerItem'])) / self::MAX_CHARACTER_PER_FIELD['amount']),
                 'isBackOrder' => 1,
             ];
+
+            // Restocking Rate
+            //if(isset($records[$i]['restockingRate'])) $data_rows_required['restockingRate'] = ceil((strlen($_data['restockingRate'])) / self::MAX_CHARACTER_PER_FIELD['restockingRate']);
     
             // Get Max Rows Required
             $max_no_of_rows_required = max(array_values($data_rows_required));
