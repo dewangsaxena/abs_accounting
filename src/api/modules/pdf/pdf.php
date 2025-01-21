@@ -75,7 +75,6 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
 
     // Backorder
     private const BACKORDER_TAG = '(BACKORDER) ';
-    private const BACKORDER_TAG_LENGTH = 12;
 
     // Row height
     private const TABLE_ROW_HEIGHT = 3.5;
