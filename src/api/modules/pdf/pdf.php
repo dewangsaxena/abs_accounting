@@ -630,7 +630,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
             ];
 
             // Restocking Rate
-            // if($is_sales_return) $_data['restockingRate'] = number_format($records[$i]['restockingRate'] ?? 0, 2);
+            if($is_sales_return) $_data['restockingRate'] = number_format($records[$i]['restockingRate'] ?? 0, 2);
 
             // Format for Backorder
             self::format_for_backorder($_data);
@@ -650,7 +650,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
             ];
 
             // Restocking Rate
-            // if($is_sales_return) $data_rows_required['restockingRate'] = ceil((strlen($_data['restockingRate'])) / self::MAX_CHARACTER_PER_FIELD['restockingRate']);
+            if($is_sales_return) $data_rows_required['restockingRate'] = ceil((strlen($_data['restockingRate'])) / self::MAX_CHARACTER_PER_FIELD['restockingRate']);
     
             // Get Max Rows Required
             $max_no_of_rows_required = max(array_values($data_rows_required));
