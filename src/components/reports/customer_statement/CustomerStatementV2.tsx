@@ -61,10 +61,12 @@ const contentFontStyle: AttributeType = {
 /**
  * Customer Detail Row
  * @param customer
+ * @param isEmailSent
+ * @param isProcessingStatements
  * @returns
  */
 const CustomerDetailRow = memo(
-  ({ customer, isEmailSent }: { customer: CustomerAgedSummary, isEmailSent?: boolean}) => {
+  ({ customer, isEmailSent, isProcessingStatements }: { customer: CustomerAgedSummary, isEmailSent?: boolean, isProcessingStatements: boolean}) => {
     const { setExcludedClients } =
       customerStatementReport(
         (state) => ({
@@ -128,6 +130,7 @@ const CustomerDetailRow = memo(
           </Box>
           <Box width="10%">
             <Checkbox
+              isDisabled={isProcessingStatements}
               size="md"
               colorScheme="red"
               icon={<ImCancelCircle />}
@@ -398,7 +401,12 @@ const CustomerAgedSummaryList = memo(() => {
               <VStack align="start">
                 <CustomerListHeader/>
                 {clientIdList.map((clientId: number) => {
-                  return <CustomerDetailRow key={clientId} customer={selectedClients[clientId]} isEmailSent={selectedClients[clientId].is_email_sent}/>;
+                  return <CustomerDetailRow 
+                    key={clientId} 
+                    customer={selectedClients[clientId]} 
+                    isEmailSent={selectedClients[clientId].is_email_sent}
+                    isProcessingStatements={sendBatchEmailState}
+                  />;
                 })}
               </VStack>
             </Box>
