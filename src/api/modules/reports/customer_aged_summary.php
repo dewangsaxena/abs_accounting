@@ -46,6 +46,48 @@ class CustomerAgedSummary {
     LIMIT 1;
     EOS;
 
+    // Credit Transaction Query
+    private const CREDIT_TRANSACTION_QUERY = <<<'EOS'
+        UNION 
+        SELECT 
+            2 AS txn_type,
+            txn.sales_invoice_id AS sales_invoice_id,
+            txn.`date` AS txn_date,
+            -txn.credit_amount AS amount,
+            txn.client_id AS client_id,
+            txn.created AS created_date
+        FROM    
+            sales_return AS txn 
+        WHERE
+            txn.store_id = :store_id
+        AND
+            txn.`date` >= :from_date
+        AND
+            txn.`date` <= :till_date
+        AND
+            ABS(txn.credit_amount) > 0.0000
+        __CLIENT_SELECT__
+        UNION
+        SELECT 
+            3 AS txn_type,
+            NULL AS sales_invoice_id,
+            txn.`date` AS txn_date,
+            -txn.credit_amount AS amount,
+            txn.client_id AS client_id,
+            txn.created AS created_date
+        FROM 
+            credit_note AS txn
+        WHERE 
+            txn.store_id = :store_id
+        AND 
+            txn.`date` >= :from_date
+        AND
+            txn.`date` <= :till_date
+        AND 
+            ABS(txn.credit_amount) > 0.0000 
+        __CLIENT_SELECT__
+    EOS;
+
     // Fetch 
     private const FETCH_QUERY = <<<'EOS'
     SELECT 
@@ -72,44 +114,7 @@ class CustomerAgedSummary {
             AND
                 txn.credit_amount > 0.0000 
             __CLIENT_SELECT__
-            UNION 
-            SELECT 
-                2 AS txn_type,
-                txn.sales_invoice_id AS sales_invoice_id,
-                txn.`date` AS txn_date,
-                -txn.credit_amount AS amount,
-                txn.client_id AS client_id,
-                txn.created AS created_date
-            FROM    
-                sales_return AS txn 
-            WHERE
-                txn.store_id = :store_id
-            AND
-                txn.`date` >= :from_date
-            AND
-                txn.`date` <= :till_date
-            AND
-                ABS(txn.credit_amount) > 0.0000
-            __CLIENT_SELECT__
-            UNION
-            SELECT 
-                3 AS txn_type,
-                NULL AS sales_invoice_id,
-                txn.`date` AS txn_date,
-                -txn.credit_amount AS amount,
-                txn.client_id AS client_id,
-                txn.created AS created_date
-            FROM 
-                credit_note AS txn
-            WHERE 
-                txn.store_id = :store_id
-            AND 
-                txn.`date` >= :from_date
-            AND
-                txn.`date` <= :till_date
-            AND 
-                ABS(txn.credit_amount) > 0.0000 
-            __CLIENT_SELECT__
+            __CREDIT_TRANSACTIONS_QUERY__
             UNION
             SELECT 
                 4 AS txn_type,
@@ -289,6 +294,9 @@ class CustomerAgedSummary {
             $client_sql_statement = 'AND txn.client_id = :client_id ';
             $params[':client_id'] = $client_id;
         }
+
+        // Decide whether to show or omit credit transactions
+        $query = str_replace('__CREDIT_TRANSACTIONS_QUERY__', $omit_credit_records ? '' : self::CREDIT_TRANSACTION_QUERY, $query);
 
         // Replace Client Select Placeholder
         $query = str_replace('__CLIENT_SELECT__', $client_sql_statement, $query);
