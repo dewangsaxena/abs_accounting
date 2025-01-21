@@ -391,6 +391,12 @@ const CustomerAgedSummaryList = memo(() => {
         </Center>
     </VStack>;
 
+  const PROCESSING_STATE_BADGE_CONFIG: AttributeType = {
+    borderBottomColor:"purple",
+    variant: "none",
+    fontSize: "0.8em"
+  };
+
   return (
     isSessionActive() && (
       <>
@@ -400,6 +406,7 @@ const CustomerAgedSummaryList = memo(() => {
             <Box height="60vh" overflowY={"scroll"} width="100%">
               <VStack align="start">
                 <CustomerListHeader/>
+                {sendBatchEmailState && <HStack borderBottomColor={"purple"} borderBottomWidth={1}><Badge {...PROCESSING_STATE_BADGE_CONFIG}>Processed</Badge><Badge {...PROCESSING_STATE_BADGE_CONFIG} color="#bda569">{index}</Badge><Badge {...PROCESSING_STATE_BADGE_CONFIG}> of {noOfSelectedClients} clients.</Badge></HStack>}
                 {clientIdList.map((clientId: number) => {
                   return <CustomerDetailRow 
                     key={clientId} 
