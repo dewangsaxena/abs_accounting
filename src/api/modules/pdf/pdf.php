@@ -12,6 +12,7 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/utils.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/configurations.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/transactions/receipt.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/third_party/fpdf/fpdf.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/transactions/sales_return.php";
 
 class __GeneratePDF_SI_SR_CN_DN_QT {
 
@@ -341,7 +342,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         
         self::$pdf -> Cell(w: 28, h: 4, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> SetFont(self::ARIAL, 'B', 8);
-        self::$pdf -> Cell(w: 118, h: 4, txt: 'Please note all Returns may be subjected to 20% re-stocking fee.', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, align: 'C');
+        self::$pdf -> Cell(w: 118, h: 4, txt: 'Please note all Returns may be subjected upto '. SalesReturn::MAX_RESTOCKING_RATE.'% re-stocking fee.', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, align: 'C');
 
         self::$pdf -> Cell(w: 22, h: 4, txt: 'Total GST/HST Tax:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> SetFont(self::COURIER, '', 8);

@@ -26,7 +26,7 @@ class SalesReturn {
     ];
 
     /* Max Restrocking Rate */
-    private const MAX_RESTOCKING_RATE = 20;
+    public const MAX_RESTOCKING_RATE = 20;
 
     /**
      * This method will validate the items details for validity.
