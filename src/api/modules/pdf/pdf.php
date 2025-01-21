@@ -215,40 +215,40 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
     private static function add_client_details() : void {
 
         // Skip for Credit and Debit note
-        if (self::$details['txn_type_id'] !== 1 && self::$details['txn_type_id'] !== 2 && self::$details['txn_type_id'] !== 5) return;
+        if (self::$transaction_type !== 1 && self::$transaction_type !== 2 && self::$transaction_type !== 5) return;
 
         // Offset
         $offset = 120;
 
         // Change font for details
         self::$pdf -> SetFont(self::ARIAL, 'B', 7.5);
-        self::$pdf -> Cell(w: $offset, h:4, txt: self::$details['txn_type_id'] == 5 ? 'Generated for:' : 'Sold to:', border: self::SHOW_BORDER_FOR_DEBUG, ln: self::$is_wash ? 1 : (self::$details['txn_type_id'] === 1 && self::$is_parts ? 0 : 1));
+        self::$pdf -> Cell(w: $offset, h:4, txt: self::$transaction_type == 5 ? 'Generated for:' : 'Sold to:', border: self::SHOW_BORDER_FOR_DEBUG, ln: self::$is_wash ? 1 : (self::$transaction_type === 1 && self::$is_parts ? 0 : 1));
 
         // Ship to (PARTS ONLY)
-        if(self::$details['txn_type_id'] === 1 && self::$is_parts) self::$pdf -> Cell(w: 20, h:4, txt: 'Ship to:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
+        if(self::$transaction_type === 1 && self::$is_parts) self::$pdf -> Cell(w: 20, h:4, txt: 'Ship to:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
         
         // Client Details
-        self::$pdf -> Cell(w: $offset, h:4, txt: '    '.self::$details['client_details']['sold_to']['client_name'], border: self::SHOW_BORDER_FOR_DEBUG, ln: self::$details['txn_type_id'] === 1 && self::$is_parts ? 0 : 1);
-        if(self::$details['txn_type_id'] === 1 && self::$is_parts) self::$pdf -> Cell(w: 0, h:4, txt: '    '.self::$details['client_details']['ship_to']['client_name'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
+        self::$pdf -> Cell(w: $offset, h:4, txt: '    '.self::$details['client_details']['sold_to']['client_name'], border: self::SHOW_BORDER_FOR_DEBUG, ln: self::$transaction_type === 1 && self::$is_parts ? 0 : 1);
+        if(self::$transaction_type === 1 && self::$is_parts) self::$pdf -> Cell(w: 0, h:4, txt: '    '.self::$details['client_details']['ship_to']['client_name'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
 
         // Switch to new line
-        $ln = isset(self::$details['client_details']['ship_to']['client_address_1'][0]) && self::$details['txn_type_id'] === 1 && self::$is_parts ? 0 : 1;
+        $ln = isset(self::$details['client_details']['ship_to']['client_address_1'][0]) && self::$transaction_type === 1 && self::$is_parts ? 0 : 1;
         
         // Client Address 
         if(isset(self::$details['client_details']['sold_to']['client_address_1'][0])) self::$pdf -> Cell(w: $offset, h:4, txt: '    '.self::$details['client_details']['sold_to']['client_address_1'], border: self::SHOW_BORDER_FOR_DEBUG, ln: $ln);
-        if(self::$details['txn_type_id'] === 1 && self::$is_parts) {
+        if(self::$transaction_type === 1 && self::$is_parts) {
             if(isset(self::$details['client_details']['ship_to']['client_address_1'][0])) self::$pdf -> Cell(w: 0, h:4, txt: '    '.self::$details['client_details']['ship_to']['client_address_1'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
         }
 
-        $ln = isset(self::$details['client_details']['ship_to']['client_address_2'][0]) && self::$details['txn_type_id'] === 1 && self::$is_parts ? 0 : 1;
+        $ln = isset(self::$details['client_details']['ship_to']['client_address_2'][0]) && self::$transaction_type === 1 && self::$is_parts ? 0 : 1;
         if(isset(self::$details['client_details']['sold_to']['client_address_2'][0])) self::$pdf -> Cell(w: $offset, h:4, txt: '    '.self::$details['client_details']['sold_to']['client_address_2'], border: self::SHOW_BORDER_FOR_DEBUG, ln: $ln);
-        if(self::$details['txn_type_id'] === 1 && self::$is_parts) {
+        if(self::$transaction_type === 1 && self::$is_parts) {
             if(isset(self::$details['client_details']['ship_to']['client_address_2'][0])) self::$pdf -> Cell(w: 0, h:4, txt: '    '.self::$details['client_details']['ship_to']['client_address_2'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
         }
 
-        $ln = isset(self::$details['client_details']['ship_to']['client_address_3'][0]) && self::$details['txn_type_id'] === 1 && self::$is_parts ? 0 : 1;
+        $ln = isset(self::$details['client_details']['ship_to']['client_address_3'][0]) && self::$transaction_type === 1 && self::$is_parts ? 0 : 1;
         if(isset(self::$details['client_details']['sold_to']['client_address_3'][0])) self::$pdf -> Cell(w: $offset, h:4, txt: '    '.self::$details['client_details']['sold_to']['client_address_3'], border: self::SHOW_BORDER_FOR_DEBUG, ln: $ln);
-        if(self::$details['txn_type_id'] === 1 && self::$is_parts) {
+        if(self::$transaction_type === 1 && self::$is_parts) {
             if(isset(self::$details['client_details']['ship_to']['client_address_3'][0])) self::$pdf -> Cell(w: 0, h:4, txt: '    '.self::$details['client_details']['ship_to']['client_address_3'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
         }
     }
@@ -288,7 +288,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
      * This method will add table header.
      */
     private static function add_table_header() : void {
-        $is_sales_return = self::$details['txn_type_id'] === SALES_RETURN;
+        $is_sales_return = self::$transaction_type === SALES_RETURN;
 
         self::$pdf -> SetFont(self::ARIAL, 'B', 7);
         self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[0], h:4, txt: 'ITEM IDENTIFIER', border: 'TLBR', ln: 0);
@@ -312,8 +312,8 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         if($add_padding) self::$pdf -> SetY(self::$details['pst_tax'] > 0 ? -89 : -83);
         
         // Flag
-        $is_sales_return = self::$details['txn_type_id'] === 2; 
-        $is_quotations = self::$details['txn_type_id'] === 5;
+        $is_sales_return = self::$transaction_type === 2; 
+        $is_quotations = self::$transaction_type === 5;
 
         // Add Line break
         self::$pdf -> Ln(1);
@@ -438,7 +438,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         $border = $is_last_row ? 'B' : '';
 
         // Is Sales Return
-        $is_sales_return = self::$details['txn_type_id'] === SALES_RETURN;
+        $is_sales_return = self::$transaction_type === SALES_RETURN;
 
         if($is_blank) {
             self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[0], h:self::TABLE_ROW_HEIGHT, txt: '', border: "LR$border", ln: 0, align: 'L');
@@ -610,6 +610,9 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         // Table Data
         $data = [];
 
+        // Check for Sales return
+        $is_sales_return = self::$transaction_type === SALES_RETURN;
+
         for($i = 0; $i < $total_items_sold; ++$i) {
             
             // Data 
@@ -627,7 +630,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
             ];
 
             // Restocking Rate
-            // if(isset($records[$i]['restockingRate'])) $_data['restockingRate'] = number_format($records[$i]['restockingRate'], 2);
+            // if($is_sales_return) $_data['restockingRate'] = number_format($records[$i]['restockingRate'] ?? 0, 2);
 
             // Format for Backorder
             self::format_for_backorder($_data);
@@ -647,7 +650,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
             ];
 
             // Restocking Rate
-            //if(isset($records[$i]['restockingRate'])) $data_rows_required['restockingRate'] = ceil((strlen($_data['restockingRate'])) / self::MAX_CHARACTER_PER_FIELD['restockingRate']);
+            // if($is_sales_return) $data_rows_required['restockingRate'] = ceil((strlen($_data['restockingRate'])) / self::MAX_CHARACTER_PER_FIELD['restockingRate']);
     
             // Get Max Rows Required
             $max_no_of_rows_required = max(array_values($data_rows_required));
@@ -752,12 +755,12 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         }
 
         // Insert Paid Image Only if amount owing is 0.0
-        if((self::$details['txn_type_id'] === 1 || self::$details['txn_type_id'] === 2 || self::$details['txn_type_id'] === 3 || self::$details['txn_type_id'] === 4) && self::$details['amount_owing'] == 0.0) {
+        if((self::$transaction_type === 1 || self::$transaction_type === 2 || self::$transaction_type === 3 || self::$transaction_type === 4) && self::$details['amount_owing'] == 0.0) {
             self::$pdf->Image(PATH_TO_IMAGE_DIR. 'paid.png', 60, 80, 90, 0, 'PNG');
         }
 
         // Show Unpaid Image if Amount Owing > 0.0
-        if((self::$details['is_old_version'] ?? false) === false && (self::$details['txn_type_id'] === 1 || self::$details['txn_type_id'] === 2 || self::$details['txn_type_id'] === 3 || self::$details['txn_type_id'] === 4) && self::$details['amount_owing'] > 0.0) {
+        if((self::$details['is_old_version'] ?? false) === false && (self::$transaction_type === 1 || self::$transaction_type === 2 || self::$transaction_type === 3 || self::$transaction_type === 4) && self::$details['amount_owing'] > 0.0) {
             self::$pdf->Image(PATH_TO_IMAGE_DIR. 'on_account.png', 60, 80, 90, 0, 'PNG');
         }
 
