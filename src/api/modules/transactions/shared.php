@@ -204,7 +204,7 @@ class Shared {
             case SALES_RETURN: $table_name = 'sales_return'; break;
             case CREDIT_NOTE: $table_name = 'credit_note'; break;
             case DEBIT_NOTE: $table_name = 'debit_note'; break;
-            case QUOTATION: $table_name = 'quotations'; break;
+            case QUOTATION: $table_name = 'quotation'; break;
             default: $table_name = '';
         }
 
