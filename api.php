@@ -283,7 +283,7 @@ if (isset($_POST['action'])) {
                     exclude_self: 1,
                     exclude_clients: 1,
                     /* This parameter is passed only for Generating Customer Statement */
-                    omit_credit_records: $data['omitCreditRecords'] ?? 0
+                    omit_credit_records: intval($data['omitCreditRecords'] ?? '0')
                 ),
             ];
             break;
