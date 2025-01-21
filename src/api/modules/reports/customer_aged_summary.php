@@ -264,9 +264,10 @@ class CustomerAgedSummary {
      * @param client_id
      * @param exclude_self
      * @param exclude_clients
+     * @param omit_credit_records
      * @return array
      */
-    public static function fetch_customer_aged_summary(int $store_id, ?string $from_date, string $till_date, int $sort_ascending, int $client_id=null, int $exclude_self=0, int $exclude_clients=0): array {
+    public static function fetch_customer_aged_summary(int $store_id, ?string $from_date, string $till_date, int $sort_ascending, int $client_id=null, int $exclude_self=0, int $exclude_clients=0, int $omit_credit_records=0): array {
 
         // Till Date
         self::$till_date = $till_date;

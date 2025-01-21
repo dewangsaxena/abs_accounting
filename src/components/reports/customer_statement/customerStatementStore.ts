@@ -100,6 +100,7 @@ export const customerStatementReport = create<CustomerStatement>(
           storeId: get().storeId,
           tillDate: get().endDate?.toISOString().substring(0, 10),
           sortAscending: get().sortAscending,
+          omitCreditRecords: 1,
         },
         "customer_aged_summary"
       );
