@@ -393,15 +393,17 @@ class CustomerAgedSummary {
      * @param is_csv
      * @param exclude_self
      * @param exclude_clients
+     * @param omit_credit_records
      */
-    public static function generate(int $store_id, ?string $from_date, string $till_date, int $sort, int $is_csv = 0, int $exclude_self=0, int $exclude_clients=0): void {
+    public static function generate(int $store_id, ?string $from_date, string $till_date, int $sort, int $is_csv = 0, int $exclude_self=0, int $exclude_clients=0, int $omit_credit_records=0): void {
         $customer_aged_summary = self::fetch_customer_aged_summary(
             $store_id, 
             $from_date, 
             $till_date, 
             $sort, 
             exclude_self: $exclude_self, 
-            exclude_clients: $exclude_clients
+            exclude_clients: $exclude_clients,
+            omit_credit_records: $omit_credit_records,
         );
         $details = [
             'summary' => $customer_aged_summary,

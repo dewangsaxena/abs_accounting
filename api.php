@@ -44,7 +44,9 @@ if (isset($_GET['action'])) {
                 intval($_GET['sortAscending'] ?? 0),
                 intval($_GET['isCSV'] ?? '0'),
                 intval($_GET['es'] ?? '1'), /* Exclude Self */
-                intval($_GET['ec'] ?? '1') /* Exclude Client */
+                intval($_GET['ec'] ?? '1'), /* Exclude Client */
+                /* This parameter is passed only for Generating Customer Statement */
+                omit_credit_records: intval($_GET['omitCreditRecords'] ?? '0')
             );
         }
     } else if ($action === 'customer_statement') {
@@ -282,8 +284,6 @@ if (isset($_POST['action'])) {
                     null,
                     exclude_self: 1,
                     exclude_clients: 1,
-                    /* This parameter is passed only for Generating Customer Statement */
-                    omit_credit_records: intval($data['omitCreditRecords'] ?? '0')
                 ),
             ];
             break;
