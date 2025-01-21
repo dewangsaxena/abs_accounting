@@ -322,6 +322,7 @@ const CustomerAgedSummaryList = memo(() => {
           setIndex(index + 1);
         });
       }
+      else setIndex(index + 1);
     }
   }
 
