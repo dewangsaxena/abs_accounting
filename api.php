@@ -284,6 +284,7 @@ if (isset($_POST['action'])) {
                     null,
                     exclude_self: 1,
                     exclude_clients: 1,
+                    omit_credit_records: intval($data['omitCreditRecords'] ?? '0'),
                 ),
             ];
             break;
