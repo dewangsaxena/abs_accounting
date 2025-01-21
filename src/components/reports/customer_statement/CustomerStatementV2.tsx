@@ -34,7 +34,7 @@ import {
 } from "../../../shared/Components";
 import { TfiReceipt } from "react-icons/tfi";
 import { MdAlternateEmail } from "react-icons/md";
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import {
   AttributeType,
   AUTO_SUGGEST_MIN_INPUT_LENGTH,
@@ -45,6 +45,7 @@ import { FcMoneyTransfer } from "react-icons/fc";
 import {
   CustomerAgedSummary,
   customerStatementReport,
+  SelectedClientsType,
 } from "./customerStatementStore";
 import { shallow } from "zustand/shallow";
 import { ImCancelCircle } from "react-icons/im";
@@ -60,29 +61,47 @@ const contentFontStyle: AttributeType = {
 /**
  * Customer Detail Row
  * @param customer
+ * @param isEmailSent
+ * @param isProcessingStatements
  * @returns
  */
 const CustomerDetailRow = memo(
-  ({ customer }: { customer: CustomerAgedSummary }) => {
-    // Customer Statement Report
+  ({ customer, isEmailSent, isProcessingStatements }: { customer: CustomerAgedSummary, isEmailSent?: boolean, isProcessingStatements: boolean}) => {
     const { setExcludedClients } =
       customerStatementReport(
         (state) => ({
-          noOfExcludedClients: state.noOfSelectedClients,
-          selectedClients: state.selectedClients,
           setExcludedClients: state.setExcludedClients,
         }),
         shallow
       );
 
-    // Rerender
+    // Rerender flag
     const [rerender, setRerender] = useState<number>(0);
+    
+    // Exclusion Status
+    let isExcluded: boolean = customer.is_excluded ? true : false;
+      
+    // Select Badge Style based on exclusion status
+    let badgeStyle: AttributeType = {};
+    if(isExcluded === true) {
+      badgeStyle["colorScheme"] = "red";
+      badgeStyle["variant"] = "outline";
+    }
+    else if(isEmailSent === true) {
+      badgeStyle["colorScheme"] = "green";
+    }
+    else if(isEmailSent === false) {
+      badgeStyle["colorScheme"] = "red";
+    }
+    else {
+      badgeStyle["variant"] = "none";
+    }
 
     return (
       isSessionActive() && (
         <HStack width="100%">
           <Box width="30%">
-            <Badge {...contentFontStyle} colorScheme={customer.is_email_sent === true ? "green": customer.is_email_sent === false ? "red": "gray"}>{customer.client_name}</Badge>
+            <Badge {...contentFontStyle} {...badgeStyle}>{customer.client_name}</Badge>
           </Box>
           <Box width="10%">
             <_Label {...contentFontStyle}>
@@ -111,12 +130,13 @@ const CustomerDetailRow = memo(
           </Box>
           <Box width="10%">
             <Checkbox
+              isDisabled={isProcessingStatements}
               size="md"
               colorScheme="red"
               icon={<ImCancelCircle />}
               onChange={(_: any) => {
-                setRerender(rerender + 1);
                 setExcludedClients(customer.client_id);
+                setRerender(rerender + 1);
               }}
             ></Checkbox>
           </Box>
@@ -127,32 +147,18 @@ const CustomerDetailRow = memo(
 );
 
 /**
- * Customer List
- * @param list
- * @returns
+ * Customer List Header
  */
-const CustomerList = memo(() => {
-  // Customer Statement Report
-  const { customerAgedSummaryList } = customerStatementReport(
+const CustomerListHeader = memo(() => {
+  const { noOfSelectedClients } = customerStatementReport(
     (state) => ({
-      customerAgedSummaryList: state.customerAgedSummaryList,
+      noOfSelectedClients: state.noOfSelectedClients,
     }),
     shallow
   );
-
-  // Customer List
-  const customerList = customerAgedSummaryList.map(
-    (customer: CustomerAgedSummary) => {
-      return <CustomerDetailRow customer={customer} key={customer.client_id}/>;
-    }
-  );
-
-  // Display Header
-  if (isSessionActive() && customerAgedSummaryList.length) {
+  if (isSessionActive() && noOfSelectedClients > 0) {
     return (
-      <Box height="60vh" overflowY={"scroll"} width="100%">
-        <VStack align="start">
-          <HStack width="100%">
+      <HStack width="100%">
             <Box width="30%">
               <Badge {...contentFontStyle} variant={"outline"}>
                 Customer Name
@@ -184,13 +190,9 @@ const CustomerList = memo(() => {
               </Badge>
             </Box>
             <Box width="10%"><Badge {...contentFontStyle} variant="solid" colorScheme="red" >Excluded Client(s)</Badge></Box>
-          </HStack>
-          {customerList}
-        </VStack>
-      </Box>
+      </HStack>
     );
   }
-  return <></>;
 });
 
 /**
@@ -199,10 +201,19 @@ const CustomerList = memo(() => {
  */
 const CustomerAgedSummaryList = memo(() => {
   const toast = useToast();
-  const { selectedClients, attachTransactions, generateRecordOfAllTransactions, startDate, endDate, sortAscending, storeId, email, fetchCustomerAgedSummary, setDetail, getNoOfSelectedClients } =
+  const { 
+    attachTransactions, 
+    generateRecordOfAllTransactions, 
+    startDate,
+    endDate, 
+    sortAscending, 
+    storeId, 
+    email,
+    fetchCustomerAgedSummary, 
+    setDetail, 
+  } =
     customerStatementReport(
       (state) => ({
-        selectedClients: state.selectedClients,
         startDate: state.startDate,
         endDate: state.endDate,
         attachTransactions: state.attachTransactions,
@@ -212,7 +223,6 @@ const CustomerAgedSummaryList = memo(() => {
         email: state.email,
         fetchCustomerAgedSummary: state.fetchCustomerAgedSummary,
         setDetail: state.setDetail,
-        getNoOfSelectedClients: state.getNoOfSelectedClients,
       }),
       shallow
     );
@@ -220,6 +230,21 @@ const CustomerAgedSummaryList = memo(() => {
 
   // Is Loading
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  // Client ID List
+  const [clientIdList, setClientIdList] = useState<number[]>([]);
+
+  // Selected Clients 
+  const [selectedClients, setSelectedClients] = useState<SelectedClientsType>({});
+
+  // No. of selected clients
+  const [noOfSelectedClients, setNoOfSelectedClients] = useState<number>(0);
+
+  // Send Batch Email Status
+  const [sendBatchEmailState, setSendBatchEmailState] = useState<boolean>(false);
+
+  // Index
+  const [index, setIndex] = useState<number>(0);
 
   // Fetch Customer Aged summary Handler
   const fetchCustomerAgedSummaryHandler = () => {
@@ -232,21 +257,25 @@ const CustomerAgedSummaryList = memo(() => {
           
           // Selected clients
           let temp: AttributeType = {};
+          let tempList: number[] = [];
           let noOfClients: number = response.data.length || 0;
           for(let i = 0; i < noOfClients; ++i) {
-            temp[response.data[i].client_id] = response.data[i].client_id;
+            tempList.push(response.data[i].client_id);
+            temp[response.data[i].client_id] = response.data[i];
           }
 
+          setSelectedClients(temp);
+          setClientIdList(tempList);
+          setNoOfSelectedClients(tempList.length);
           setDetail("selectedClients", temp);
           setDetail("noOfSelectedClients", noOfClients);
-          setDetail("customerAgedSummaryList", response.data);
         } else {
           showToast(toast, false, response.message || UNKNOWN_SERVER_ERROR_MSG);
-          setDetail("customerAgedSummaryList", []);
+          setDetail("selectedClients", {});
         }
       })
       .catch((err: any) => {
-        setDetail("customerAgedSummaryList", []);
+        setDetail("selectedClients", {});
         showToast(toast, false, err.message);
       })
       .finally(() => {
@@ -255,6 +284,7 @@ const CustomerAgedSummaryList = memo(() => {
       });
   };
 
+  // Payload
   let payload: AttributeType = {
     startDate: startDate ? startDate?.toISOString().substring(0, 10) : "",
     endDate: endDate ? endDate?.toISOString().substring(0, 10) : "",
@@ -266,82 +296,123 @@ const CustomerAgedSummaryList = memo(() => {
     storeId: storeId,
   };
 
+  // Execute Batch Emails
+  useEffect(() => {
+    if(sendBatchEmailState && index < noOfSelectedClients) sendBatchEmails(clientIdList[index]);
+  }, [sendBatchEmailState, index]);
+
   /**
    * Send Batch Emails
+   * @param clientId
    */
-  const sendBatchEmails = () => {
-    
-    // email(payload)
-    // .then((res: any) => {
-    //   let result: APIResponse = res.data;
-    //   if (result.status !== true) {
-    //     showToast(toast, false, result.message || UNKNOWN_SERVER_ERROR_MSG);
-        
-    //   } else {
-    //     showToast(toast, true);
-    //   }
-    // })
-    // .catch((err: any) => {
-    //   showToast(toast, err.status, err.message);
-    // });
+  const sendBatchEmails = (clientId: number ) => {
+    if(index < noOfSelectedClients) {
+      if(selectedClients[clientId]?.is_excluded !== true) {
+        payload["clientId"] = clientId;
+
+        // Send Email
+        email(payload).then((res: any) => {
+          let result: APIResponse = res.data;
+          if (result.status !== true) {
+            selectedClients[clientId].is_email_sent = false;
+          } else {
+            selectedClients[clientId].is_email_sent = true;
+          }
+        })
+        .catch((_: any) => {
+          selectedClients[clientId].is_email_sent = false;
+        }).finally (() => {
+          setIndex(index + 1);
+        });
+      }
+      else setIndex(index + 1);
+    }
   }
+
+  const LAYOUT_CODE_1: any = <>
+    <_Label fontSize="0.8em" textTransform={"uppercase"}>
+      Fetch Clients By Aged Summary
+    </_Label>
+    <HStack width="100%">
+      <HStack>
+        <_Label fontSize="0.8em">Sort by Lowest Amount owing:</_Label>
+        <Switch
+          id="email-alerts"
+          colorScheme="teal"
+          onChange={() => {
+            setDetail("setAscendingSort", sortAscending ^ 1);
+          }}
+        />
+      </HStack>
+      <_Button
+        isDisabled={isButtonDisabled}
+        icon={<FcMoneyTransfer />}
+        color="#90EE90"
+        bgColor="black"
+        fontSize="1.2em"
+        label="Fetch Customer Aged Summary"
+        onClick={fetchCustomerAgedSummaryHandler}
+        width="25%"
+      ></_Button>
+      <_Button
+        isDisabled={isButtonDisabled}
+        icon={<MdAlternateEmail color="#0096FF" />}
+        color="white"
+        bgColor="black"
+        fontSize="1.2em"
+        label="Send Batch Emails"
+        onClick={() => {
+
+          // Return if no client is loaded
+          if(clientIdList.length === 0) return;
+
+          // Disable Button 
+          setIsButtonDisabled(true);
+
+          // Set Flag
+          setSendBatchEmailState(true);
+        }}
+        width="25%"
+      ></_Button>
+    </HStack>
+    <_Divider margin={0} />
+  </>;
+
+  const LAYOUT_CODE_2: any = 
+    <VStack paddingTop={10}>
+      <Center>
+        <Spinner
+            label="Loading Customer Aged Summary"
+            thickness="2px"
+            speed="1s"
+            emptyColor="gray.100"
+            color="#8565c4"
+            boxSize={"24vh"}/>
+        </Center>
+    </VStack>;
 
   return (
     isSessionActive() && (
       <>
         <VStack align="start" width="100%">
-          <_Label fontSize="0.8em" textTransform={"uppercase"}>
-            Fetch Clients By Aged Summary
-          </_Label>
-          <HStack width="100%">
-            <HStack>
-              <_Label fontSize="0.8em">Sort by Lowest Amount owing:</_Label>
-              <Switch
-                id="email-alerts"
-                colorScheme="teal"
-                onChange={() => {
-                  setDetail("setAscendingSort", sortAscending ^ 1);
-                }}
-              />
-            </HStack>
-            <_Button
-              isDisabled={isButtonDisabled}
-              icon={<FcMoneyTransfer />}
-              color="#90EE90"
-              bgColor="black"
-              fontSize="1.2em"
-              label="Fetch Customer Aged Summary"
-              onClick={fetchCustomerAgedSummaryHandler}
-              width="25%"
-            ></_Button>
-            <_Button
-              isDisabled={isButtonDisabled}
-              icon={<MdAlternateEmail color="#0096FF" />}
-              color="white"
-              bgColor="black"
-              fontSize="1.2em"
-              label="Send Batch Emails"
-              onClick={sendBatchEmails}
-              width="25%"
-            ></_Button>
-          </HStack>
-          <_Divider margin={0} />
-          {isLoading === false && <CustomerList />}
+          {LAYOUT_CODE_1}
+          {isLoading === false && <>
+            <Box height="60vh" overflowY={"scroll"} width="100%">
+              <VStack align="start">
+                <CustomerListHeader/>
+                {clientIdList.map((clientId: number) => {
+                  return <CustomerDetailRow 
+                    key={clientId} 
+                    customer={selectedClients[clientId]} 
+                    isEmailSent={selectedClients[clientId].is_email_sent}
+                    isProcessingStatements={sendBatchEmailState}
+                  />;
+                })}
+              </VStack>
+            </Box>
+          </>}
         </VStack>
-        {isLoading && (
-          <VStack paddingTop={10}>
-            <Center>
-              <Spinner
-                label="Loading Customer Aged Summary"
-                thickness="2px"
-                speed="1s"
-                emptyColor="gray.100"
-                color="#8565c4"
-                boxSize={"24vh"}
-              />
-            </Center>
-          </VStack>
-        )}
+        {isLoading && LAYOUT_CODE_2}
       </>
     )
   );
