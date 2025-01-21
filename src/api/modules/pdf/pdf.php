@@ -27,7 +27,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         'discount' => 7,
         'pricePerItem' => 15,
         'amount' => 15,
-        'restockingRate' => 5,
+        'restockingRate' => 6,
     ];
 
     // Keys 
@@ -462,7 +462,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
             if(isset($data['discountRate'])) self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[6], h:self::TABLE_ROW_HEIGHT, txt: $data['discountRate'], border: "R$border", ln: 0);
             if(isset($data['pricePerItem'])) self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[7], h:self::TABLE_ROW_HEIGHT, txt: $data['pricePerItem'], border: "R$border", ln: 0, align: 'L');
             if(isset($data['amountPerItem'])) self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[8], h:self::TABLE_ROW_HEIGHT, txt: $data['amountPerItem'], border: "R$border", ln: $is_sales_return ? 0 : 1, align: 'L');
-            if($is_sales_return) self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[9], h: self::TABLE_ROW_HEIGHT, txt: floatval($data['restockingRate'] ?? 0.0), border: "R$border", ln: 1, align: 'L');
+            if($is_sales_return) self::$pdf -> Cell(w: self::TABLE_ELEMENTS_WIDTH[9], h: self::TABLE_ROW_HEIGHT, txt: floatval($data['restockingRate'] ?? 0.0). '%', border: "R$border", ln: 1, align: 'L');
         }
     }
 
