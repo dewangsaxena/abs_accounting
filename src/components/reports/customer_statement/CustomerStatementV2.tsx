@@ -49,6 +49,9 @@ import {
 } from "./customerStatementStore";
 import { shallow } from "zustand/shallow";
 import { ImCancelCircle } from "react-icons/im";
+import { IoMdDoneAll  } from "react-icons/io";
+import { MdOutlineErrorOutline } from "react-icons/md";
+
 
 // Content Font Style
 const contentFontStyle: AttributeType = {
@@ -100,6 +103,10 @@ const CustomerDetailRow = memo(
     return (
       isSessionActive() && (
         <HStack width="100%">
+          <Box width="1%">
+          {isEmailSent && <IoMdDoneAll color="green" />}
+          {isEmailSent === false && <MdOutlineErrorOutline color="red"/>}
+          </Box>
           <Box width="30%">
             <Badge {...contentFontStyle} {...badgeStyle}>{customer.client_name}</Badge>
           </Box>
@@ -159,6 +166,7 @@ const CustomerListHeader = memo(() => {
   if (isSessionActive() && noOfSelectedClients > 0) {
     return (
       <HStack width="100%">
+            <Box width="1%"></Box>
             <Box width="30%">
               <_Label {...contentFontStyle} >
                 Customer Name
@@ -408,8 +416,10 @@ const CustomerAgedSummaryList = memo(() => {
           {isLoading === false && <>
             <Box height="60vh" overflowY={"scroll"} width="100%">
               <VStack align="start">
+                <Box marginLeft="2%">
+                  {sendBatchEmailState && <HStack borderBottomColor={"purple"} borderBottomWidth={1}><Badge {...PROCESSING_STATE_BADGE_CONFIG}>Processed</Badge><Badge {...PROCESSING_STATE_BADGE_CONFIG} color="#bda569">{index}</Badge><Badge {...PROCESSING_STATE_BADGE_CONFIG}> of {noOfSelectedClients} clients.</Badge></HStack>}
+                </Box>
                 <CustomerListHeader/>
-                {sendBatchEmailState && <HStack borderBottomColor={"purple"} borderBottomWidth={1}><Badge {...PROCESSING_STATE_BADGE_CONFIG}>Processed</Badge><Badge {...PROCESSING_STATE_BADGE_CONFIG} color="#bda569">{index}</Badge><Badge {...PROCESSING_STATE_BADGE_CONFIG}> of {noOfSelectedClients} clients.</Badge></HStack>}
                 {clientIdList.map((clientId: number) => {
                   return <CustomerDetailRow 
                     key={clientId} 
