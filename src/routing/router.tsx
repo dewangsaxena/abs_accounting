@@ -194,11 +194,11 @@ const router = createBrowserRouter([
     element: <CustomerAgedSummary />,
   },
   {
-    path: "/customer_statement",
+    path: "/customer_statement__deprecated",
     element: <CustomerStatement />,
   },
   {
-    path: "/customer_statement2",
+    path: "/customer_statement",
     element: <CustomerStatementV2 />,
   },
   {
