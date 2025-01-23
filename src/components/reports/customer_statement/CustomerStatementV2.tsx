@@ -362,15 +362,17 @@ const CustomerAgedSummaryList = memo(() => {
         fontSize="1.2em"
         label="Send Batch Emails"
         onClick={() => {
+          let promptResponse: string | null = prompt("Confirm batch email operation? Type 'CONFIRM' to proceed.", "");
+          if(promptResponse && promptResponse.trim().toUpperCase() === "CONFIRM") {
+            // Return if no client is loaded
+            if(clientIdList.length === 0) return;
 
-          // Return if no client is loaded
-          if(clientIdList.length === 0) return;
+            // Disable Button 
+            setIsButtonDisabled(true);
 
-          // Disable Button 
-          setIsButtonDisabled(true);
-
-          // Set Flag
-          setSendBatchEmailState(true);
+            // Set Flag
+            setSendBatchEmailState(true);
+          }
         }}
         width="25%"
       ></_Button>
