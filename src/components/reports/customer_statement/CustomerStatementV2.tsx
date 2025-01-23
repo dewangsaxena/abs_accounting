@@ -306,7 +306,7 @@ const CustomerAgedSummaryList = memo(() => {
    * @param clientId
    */
   const sendBatchEmails = (clientId: number ) => {
-    if(index < 5) {
+    if(index < noOfSelectedClients) {
       if(selectedClients[clientId]?.is_excluded !== true) {
         payload["clientId"] = clientId;
 
