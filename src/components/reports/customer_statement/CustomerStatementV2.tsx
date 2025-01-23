@@ -373,6 +373,7 @@ const CustomerAgedSummaryList = memo(() => {
             // Set Flag
             setSendBatchEmailState(true);
           }
+          else alert("Prompt Cancelled.");
         }}
         width="25%"
       ></_Button>
