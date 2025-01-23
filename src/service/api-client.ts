@@ -3,7 +3,7 @@
  */
 import axios from "axios";
 import { getAttributeFromSession } from "../shared/functions";
-import { APP_HOST, APP_VERSION } from "../shared/config";
+import { APP_HOST, CLIENT_APP_VERSION } from "../shared/config";
 
 /* Header Condfiguration */
 axios.defaults.headers.post["Content-Type"] =
@@ -40,7 +40,7 @@ export class HTTPService {
       params["csrf_token"] = localStorage.getItem("csrfToken");
       params["session_id"] = getAttributeFromSession("sessionId");
       params["session_token"] = getAttributeFromSession("sessionToken");
-      params["app_version"] = APP_VERSION;
+      params["app_version"] = CLIENT_APP_VERSION;
     }
     return await axiosInstance.post<APIResponse<T>>(this.endpoint, params);
   }

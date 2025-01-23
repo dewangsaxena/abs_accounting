@@ -37,7 +37,7 @@ import { HTTPService } from "../../../service/api-client";
 import { getAttributeFromSession } from "../../../shared/functions";
 import abs_logo from "/images/logo.png";
 import {
-  APP_VERSION,
+  CLIENT_APP_VERSION,
   MODE_WASH,
   systemConfigMode,
   systemConfigModeColors,
@@ -295,7 +295,7 @@ const Navigation = () => {
               textTransform={"lowercase"}
               fontFamily={numberFont}
             >
-              v{APP_VERSION}
+              v{CLIENT_APP_VERSION}
             </Badge>
           </VStack>
         </CardBody>

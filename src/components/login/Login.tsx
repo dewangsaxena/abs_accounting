@@ -26,7 +26,7 @@ import {
 import { BiSolidLogIn } from "react-icons/bi";
 import { MdAccountCircle, MdVisibility, MdVisibilityOff } from "react-icons/md";
 import {
-  APP_VERSION,
+  CLIENT_APP_VERSION,
   MODE_WASH,
   Stores,
   UNKNOWN_SERVER_ERROR_MSG,
@@ -272,7 +272,7 @@ const Login = () => {
                     textTransform={"lowercase"}
                     fontFamily={numberFont}
                   >
-                    v{APP_VERSION}
+                    v{CLIENT_APP_VERSION}
                   </Badge>
                 </HStack>
               </VStack>
