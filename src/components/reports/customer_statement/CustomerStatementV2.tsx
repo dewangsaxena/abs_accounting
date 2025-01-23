@@ -160,34 +160,34 @@ const CustomerListHeader = memo(() => {
     return (
       <HStack width="100%">
             <Box width="30%">
-              <Badge {...contentFontStyle} variant={"outline"}>
+              <_Label {...contentFontStyle} >
                 Customer Name
-              </Badge>
+              </_Label>
             </Box>
             <Box width="10%">
-              <Badge {...contentFontStyle} variant={"outline"}>
+              <_Label {...contentFontStyle}>
                 Total
-              </Badge>
+              </_Label>
             </Box>
             <Box width="10%">
-              <Badge {...contentFontStyle} variant={"outline"}>
+              <_Label {...contentFontStyle} >
                 Current
-              </Badge>
+              </_Label>
             </Box>
             <Box width="10%">
-              <Badge {...contentFontStyle} variant={"outline"}>
+              <_Label {...contentFontStyle} >
                 30-60
-              </Badge>
+              </_Label>
             </Box>
             <Box width="10%">
-              <Badge {...contentFontStyle} variant={"outline"}>
+              <_Label {...contentFontStyle} >
                 61-90
-              </Badge>
+              </_Label>
             </Box>
             <Box width="10%">
-              <Badge {...contentFontStyle} variant={"outline"}>
+              <_Label {...contentFontStyle} >
                 91+
-              </Badge>
+              </_Label>
             </Box>
             <Box width="10%"><Badge {...contentFontStyle} variant="solid" colorScheme="red" >Excluded Client(s)</Badge></Box>
       </HStack>
