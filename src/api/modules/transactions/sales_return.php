@@ -120,7 +120,7 @@ class SalesReturn {
             $amount_per_item = $item['amountPerItem'];
 
             // Restocking Rate
-            $restocking_rate = is_numeric($item['restockingRate']) ? floatval($item['restockingRate']) : 0;
+            $restocking_rate = is_numeric($item['restockingRate'] ?? null) ? floatval($item['restockingRate']) : 0;
             if(SYSTEM_INIT_MODE === WASH && $restocking_rate != 0) throw new Exception('Restocking Rate Invalid for Wash Mode.');
             else if($restocking_rate < 0) throw new Exception('Restocking Rate cannot be negative.');
             else if($restocking_rate > self::MAX_RESTOCKING_RATE) throw new Exception('Restocking Rate cannot be more than '. self::MAX_RESTOCKING_RATE.'%');
