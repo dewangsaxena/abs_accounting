@@ -1,6 +1,7 @@
 <?php
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/pdf/prepare_pdf_details.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_aged_summary.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/validate.php";
 
 /**
  * This class contains shared queries/configurations.
@@ -1446,4 +1447,22 @@ class Shared {
         }
     }
 
+    /**
+     * This method will check for valid payment method for sales invoice and sales return. If valid, it will return 
+     * the payment method.
+     * @param payment_method
+     * @return int 
+     * @throws Exception
+     */
+    public static function check_for_valid_payment_method_for_sales_invoice_and_return(int $payment_method): int {
+        // Check for Valid Payment Method 
+        if(!Validate::is_numeric($payment_method)) throw new Exception('Invalid Payment Method.');
+        $payment_method = intval($payment_method);
+        if(!array_key_exists($payment_method, PaymentMethod::MODES_OF_PAYMENT)) throw new Exception('Unknown Payment Method.');
+
+        // Check for Disabled Payment method
+        if(in_array($payment_method, PaymentMethod::DISABLED_PAYMENT_METHODS)) throw new Exception(PaymentMethod::DISABLED_PAYMENT_METHODS[PaymentMethod::DEBIT_PAYMENT_METHODS]. ' is disabled.');
+
+        return $payment_method;
+    }
 }

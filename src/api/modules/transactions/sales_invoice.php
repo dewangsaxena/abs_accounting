@@ -158,10 +158,10 @@ class SalesInvoice {
             throw new Exception('This Invoice\'s items are already transferred to another store and cannot be updated. Please create a new Sales Invoice.');
         }
 
-        // Check for Valid Payment Method 
-        if(!Validate::is_numeric($data['paymentMethod'])) throw new Exception('Invalid Payment Method.');
-        $payment_method = intval($data['paymentMethod']);
-        if(!array_key_exists($payment_method, PaymentMethod::MODES_OF_PAYMENT)) throw new Exception('Unknown Payment Method.');
+        // Check for Valid Payment Method
+        $payment_method = Shared::check_for_valid_payment_method_for_sales_invoice_and_return(
+            $data['paymentMethod']
+        );
 
         // Is Pay Later
         $is_pay_later = $payment_method === PaymentMethod::MODES_OF_PAYMENT['Pay Later'];

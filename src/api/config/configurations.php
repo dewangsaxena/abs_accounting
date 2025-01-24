@@ -165,6 +165,13 @@ class PaymentMethod
         PaymentMethod::PAY_LATER => 'Pay Later',
         ...PaymentMethod::DEBIT_PAYMENT_METHODS
     ];
+
+    /**
+     * The following payment methods are disabled.
+     */
+    public const DISABLED_PAYMENT_METHODS = [
+        PaymentMethod::CASH,
+    ];
 }
 
 /* Access Levels */

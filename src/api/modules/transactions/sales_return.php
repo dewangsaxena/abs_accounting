@@ -341,9 +341,9 @@ class SalesReturn {
         if($data['salesRepId'] === 0) throw new Exception('Please select Sales Representative.');
 
         // Check for Valid Payment Method 
-        if(!Validate::is_numeric($data['paymentMethod'])) throw new Exception('Invalid Payment Method.');
-        $payment_method = intval($data['paymentMethod']);
-        if(!array_key_exists($payment_method, PaymentMethod::MODES_OF_PAYMENT)) throw new Exception('Unknown Payment Method.');
+        $payment_method = Shared::check_for_valid_payment_method_for_sales_invoice_and_return(
+            $data['paymentMethod']
+        );
 
         // Is Pay Later
         $is_pay_later = $payment_method === PaymentMethod::MODES_OF_PAYMENT['Pay Later'];
