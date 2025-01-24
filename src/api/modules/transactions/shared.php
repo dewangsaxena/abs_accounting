@@ -1461,7 +1461,7 @@ class Shared {
         if(!array_key_exists($payment_method, PaymentMethod::MODES_OF_PAYMENT)) throw new Exception('Unknown Payment Method.');
 
         // Check for Disabled Payment method
-        if(in_array($payment_method, PaymentMethod::DISABLED_PAYMENT_METHODS)) throw new Exception(PaymentMethod::DISABLED_PAYMENT_METHODS[PaymentMethod::DEBIT_PAYMENT_METHODS]. ' is disabled.');
+        if(in_array($payment_method, PaymentMethod::DISABLED_PAYMENT_METHODS)) throw new Exception(PaymentMethod::DEBIT_PAYMENT_METHODS[$payment_method]. ' is disabled.');
 
         return $payment_method;
     }
