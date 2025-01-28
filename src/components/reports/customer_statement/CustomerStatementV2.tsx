@@ -462,7 +462,7 @@ const CustomerStatementV2 = memo(() => {
       startDate: state.startDate,
       endDate: state.endDate,
       attachTransactions: state.attachTransactions,
-      generateRecordOfAllTransactions: state.clientId,
+      generateRecordOfAllTransactions: state.generateRecordOfAllTransactions,
       storeId: state.storeId,
       email: state.email,
       print: state.print,
