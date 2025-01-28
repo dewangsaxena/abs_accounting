@@ -1314,5 +1314,86 @@ function process_line_codes(): void {
         print_r($e -> getMessage());
     }
 }
-process_line_codes();
+
+function fetch_item_details_by_code(string $code, int $store_id): void {
+    $db = get_db_instance();
+    $query = <<<'EOS'
+    SELECT 
+        it.id, 
+        it.identifier,
+        it.description,
+        it.prices,
+        inv.quantity
+    FROM 
+        items AS it
+    LEFT JOIN 
+        inventory AS inv 
+    ON 
+        it.id = inv.item_id
+    WHERE 
+        it.identifier LIKE :item_code
+    AND
+        inv.quantity > 0
+    AND 
+        inv.store_id = :store_id;
+    EOS;
+
+    $statement = $db -> prepare($query);
+    $statement -> execute([
+        ':item_code' => "$code%",
+        ':store_id' => $store_id,
+    ]);
+
+    $results = $statement -> fetchAll(PDO::FETCH_ASSOC);
+
+    echo <<<'EOS'
+    <html>
+    <body>
+        <table>
+    <tr>
+        <th>Identifier</th>
+        <th>Description</th>
+        <th>Quantity</th>
+        <th colspan="2">Price</th>
+        <th></th>
+        <th colspan="2">Value</th>
+        <th></th>
+    </tr>
+    EOS;
+    $total_value = 0;
+    foreach($results as $r) {
+        $prices = json_decode($r['prices'], JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+        $buying_cost = Utils::round($prices[$store_id]['buyingCost'] ?? 0, 2);
+        $quantity = $r['quantity'];
+        $value = $buying_cost * $quantity;
+        $total_value += $value;
+
+        $identifier = $r['identifier'];
+        $description = $r['description'];
+        
+
+        echo <<<EOS
+        <tr>
+            <td>$identifier</td>
+            <td>$description</td>
+            <td>$quantity</td>
+            <td colspan="2">$buying_cost</td>
+            <td></td>
+            <td colspan="2">$value</td>
+            <td></td>
+        </tr>
+        EOS;
+    }
+
+    $total_value = Utils::number_format($total_value);
+    echo <<<EOS
+    </table>
+    <br><br>
+    Total Value: &nbsp;&nbsp;$ $total_value
+    </body>
+    </html>
+    EOS;
+}
+
+fetch_item_details_by_code('PIC', StoreDetails::CALGARY);
 ?>
