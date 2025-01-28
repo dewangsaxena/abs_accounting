@@ -1395,5 +1395,96 @@ function fetch_item_details_by_code(string $code, int $store_id): void {
     EOS;
 }
 
-fetch_item_details_by_code('PIC', StoreDetails::CALGARY);
+function fetch_item_details_by_identifiers(int $store_id): void {
+
+    $db = get_db_instance();
+    $data = Utils::read_csv_file('items.csv');
+    $identifiers = [];
+    foreach($data as $d) $identifiers[]= $d[0];
+
+    $query = <<<'EOS'
+    SELECT 
+        it.identifier, 
+        it.description,
+        it.prices, 
+        inv.quantity
+    FROM 
+        items AS it
+    LEFT JOIN 
+        inventory AS inv
+    ON 
+        it.id = inv.item_id
+    WHERE
+        it.identifier IN (:placeholder)
+    AND
+        inv.store_id = :store_id;
+    EOS;
+
+    $results = Utils::mysql_in_placeholder_pdo_substitute($identifiers, $query);
+
+    $query = $results['query'];
+    $statement = $db -> prepare($query);
+    $statement -> execute([...$results['values'], ':store_id' => $store_id]);
+    $records = $statement -> fetchAll(PDO::FETCH_ASSOC);
+    
+    echo <<<'EOS'
+    <html>
+    <body>
+        <table>
+    <tr>
+        <th>Identifier</th>
+        <th>Description</th>
+        <th>Quantity</th>
+        <th colspan="2">Price</th>
+        <th></th>
+        <th colspan="2">Value</th>
+        <th></th>
+    </tr>
+    EOS;
+
+    $table = [];
+    foreach($identifiers as $i) $table[$i] = $i;
+
+    $total_value = 0;
+    foreach($records as $r) {
+        $identifier = $r['identifier'];
+
+        if(isset($table[$identifier]) === true) unset($table[$identifier]);
+
+        $description = $r['description'];
+        $prices = json_decode($r['prices'], JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR)[$store_id];
+        $buying_cost = $prices['buyingCost'] ?? 0;
+        $quantity = $r['quantity'];
+        $value = $buying_cost * $quantity;
+        $total_value += $value;
+
+        echo <<<EOS
+        <tr>
+            <td>$identifier</td>
+            <td>$description</td>
+            <td>$quantity</td>
+            <td colspan="2">$buying_cost</td>
+            <td></td>
+            <td colspan="2">$value</td>
+            <td></td>
+        </tr>
+        EOS;
+    }
+
+    $total_value = Utils::number_format($total_value);
+    echo <<<EOS
+    </table>
+    <br><br>
+    Total Value: &nbsp;&nbsp;$ $total_value
+    EOS;
+
+    if(count($table) > 0) {
+        echo '<br><br>Following items were not found:<br><br>';
+        foreach($table as $i) echo "$i<br>";
+    }
+
+    echo "</body></html>";
+}
+
+fetch_item_details_by_identifiers(StoreDetails::CALGARY);
 ?>
