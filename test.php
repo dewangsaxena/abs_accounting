@@ -1398,7 +1398,7 @@ function fetch_item_details_by_code(string $code, int $store_id): void {
 function fetch_item_details_by_identifiers(int $store_id): void {
 
     $db = get_db_instance();
-    $data = Utils::read_csv_file('items.csv');
+    $data = Utils::read_csv_file('items2.csv');
     $identifiers = [];
     foreach($data as $d) $identifiers[]= $d[0];
 
