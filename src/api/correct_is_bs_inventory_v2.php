@@ -241,7 +241,7 @@ class Correct_IS_BS_InventoryV2 {
      * @param bs
      * @param item_information
      */
-    private static function adjust_for_sales_return(string &$unique_id, array &$sales_return, array &$is, array &$bs, array $items_information) : void {
+    private static function adjust_for_sales_return(string &$unique_id, array &$sales_return, array &$is, array &$bs, array &$items_information) : void {
 
         // Payment method
         $payment_method = intval($sales_return['payment_method']);
