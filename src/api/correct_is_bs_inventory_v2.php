@@ -256,6 +256,9 @@ class Correct_IS_BS_InventoryV2 {
         
         // Items
         $items = json_decode($sales_return['details'], true);
+
+        // Calculate total inventory value to be adjusted
+        $adjusted_inventory_value = 0;
         
         foreach($items as $item) {
             if(($item['returnQuantity'] ?? 0) > 0) {
@@ -266,11 +269,17 @@ class Correct_IS_BS_InventoryV2 {
                     // Check for item's existence.
                     if(!isset($items_information[$item['itemId']]['quantity'])) continue;
 
+                    // Adjusted Inventory Value 
+                    $adjusted_inventory_value = ($item['buyingCost'] * $item['returnQuantity']);
+                    
                     // Add to inventory 
                     $items_information[$item['itemId']]['quantity'] += $item['returnQuantity'];
 
+                    // Add to bs
+                    $bs[$unique_id][1520] += $adjusted_inventory_value;
+
                     // Add to inventory To Income Statement
-                    $is[$unique_id][1520] += ($item['buyingCost'] * $item['returnQuantity']);
+                    $is[$unique_id][1520] += $adjusted_inventory_value;
                 }
     
                 // Deduct Discount
@@ -502,6 +511,54 @@ class Correct_IS_BS_InventoryV2 {
                 $total_inventory_value += $temp;
                 $items_information[$item_id]['quantity'] += $quantity;
                 $items_information[$item_id]['value'] += $temp;
+            }
+        }
+    }
+
+    /**
+     * This method will adjust inventory for all existing sales_return.
+     * @param items_information
+     * @param invoices
+     * @param total_inventory_value
+     * @return array
+     */
+    private static function _3_adjust_inventory_for_all_existing_sales_return(array &$items_information, array &$sales_return, float &$total_inventory_value) {
+        $query = <<<EOS
+        SELECT 
+            *
+        FROM 
+            sales_return
+        WHERE 
+            store_id = :store_id
+        ORDER BY 
+            `date` ASC;
+        EOS;
+
+        $statement = self::$db -> prepare($query);
+        $statement -> execute([':store_id' => self::$store_id]);
+        $invoices = $statement -> fetchAll(PDO::FETCH_ASSOC);
+        
+        foreach($invoices as $invoice) {
+            $items = json_decode($invoice['details'], true);
+            
+            foreach($items as $item) {
+                $item_id = $item['itemId'];
+                $quantity = $item['returnQuantity'] ?? 0;
+
+                if($quantity == 0) continue;
+
+                // Check whether the item exists 
+                if(!isset($items_information[$item_id]['price_per_item'])) continue;
+
+                // Deduct from total inventory value
+                $temp = (
+                    $items_information[$item_id]['price_per_item']
+                    *
+                    $quantity
+                );
+                $total_inventory_value -= $temp;
+                $items_information[$item_id]['quantity'] -= $quantity;
+                $items_information[$item_id]['value'] -= $temp;
             }
         }
     }
