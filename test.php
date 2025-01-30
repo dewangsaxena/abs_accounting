@@ -188,7 +188,7 @@ if(SYSTEM_INIT_MODE === PARTS) {
     $store_id = StoreDetails::EDMONTON;
     // generate_list($store_id);die;
     // fetch_inventory($store_id);die;
-    die('EDMONTON : '. (Correct_IS_BS_InventoryV2::correct($store_id) ? 'T' : 'F'));
+    die(StoreDetails::STORE_DETAILS[$store_id]['name'].': '. (Correct_IS_BS_InventoryV2::correct($store_id) ? 'T' : 'F'));
 }
 
 $items = [14942,
