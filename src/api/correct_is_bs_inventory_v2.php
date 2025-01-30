@@ -66,8 +66,8 @@ class Correct_IS_BS_InventoryV2 {
             self::_3_adjust_inventory_for_all_existing_invoices($items_information, $invoices, $total_inventory_value);
 
             // ADDED
-            // $sales_returns = [];
-            // self::_3_adjust_inventory_for_all_existing_sales_return($items_information, $sales_returns, $total_inventory_value);
+            $sales_returns = [];
+            self::_3_adjust_inventory_for_all_existing_sales_return($items_information, $sales_returns, $total_inventory_value);
             // ADDED
             
             // Update Income Statement and Balance Sheet
