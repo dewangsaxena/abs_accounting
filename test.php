@@ -186,9 +186,9 @@ function fetch_inventory(int $store_id): void {
 
 if(SYSTEM_INIT_MODE === PARTS) {
     $store_id = StoreDetails::SLAVE_LAKE;
-    generate_list($store_id);die;
+    // generate_list($store_id);die;
     // fetch_inventory($store_id);die;
-    // die('REGINA : '. (Correct_IS_BS_InventoryV2::correct(StoreDetails::REGINA) ? 'T' : 'F'));
+    die('EDMONTON : '. (Correct_IS_BS_InventoryV2::correct(StoreDetails::EDMONTON) ? 'T' : 'F'));
 }
 
 $items = [14942,
