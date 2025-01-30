@@ -269,11 +269,11 @@ class Correct_IS_BS_InventoryV2 {
                     // Check for item's existence.
                     if(!isset($items_information[$item['itemId']]['quantity'])) continue;
 
-                    // Adjusted Inventory Value 
-                    $adjusted_inventory_value = ($item['buyingCost'] * $item['returnQuantity']);
-                    
                     // Add to inventory 
                     $items_information[$item['itemId']]['quantity'] += $item['returnQuantity'];
+
+                    // Adjusted Inventory Value 
+                    $adjusted_inventory_value = ($item['buyingCost'] * $item['returnQuantity']);
 
                     // Add to bs
                     $bs[$unique_id][1520] += $adjusted_inventory_value;
