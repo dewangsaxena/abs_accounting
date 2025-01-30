@@ -185,10 +185,10 @@ function fetch_inventory(int $store_id): void {
 }
 
 if(SYSTEM_INIT_MODE === PARTS) {
-    $store_id = StoreDetails::SLAVE_LAKE;
+    $store_id = StoreDetails::EDMONTON;
     // generate_list($store_id);die;
     // fetch_inventory($store_id);die;
-    die('EDMONTON : '. (Correct_IS_BS_InventoryV2::correct(StoreDetails::EDMONTON) ? 'T' : 'F'));
+    die('EDMONTON : '. (Correct_IS_BS_InventoryV2::correct($store_id) ? 'T' : 'F'));
 }
 
 $items = [14942,
