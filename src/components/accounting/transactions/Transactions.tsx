@@ -2772,6 +2772,14 @@ const FooterDetails = ({ type, enableEditing, hidePrivateDetails }: FooterProps)
 
   const [disableEmailButton, setDisableEmailButton] = useState<boolean>(false);
 
+  // Print Handler
+  const printHandler = () => {
+    window.open(
+      `${APP_HOST}/api.php?action=print&t=${transactionType}&i=${id}`
+    );
+    window.location.reload();
+  }
+
   // Send Email
   const sendEmailHandler = () => {
     let isNotSuccessful = true;
@@ -2791,6 +2799,7 @@ const FooterDetails = ({ type, enableEditing, hidePrivateDetails }: FooterProps)
       })
       .finally(() => {
         if (isNotSuccessful) setDisableEmailButton(false);
+        printHandler();
       });
   };
 
@@ -3176,7 +3185,7 @@ const FooterDetails = ({ type, enableEditing, hidePrivateDetails }: FooterProps)
                   size="xs"
                   color="white"
                   onClick={sendEmailHandler}
-                  label="Email"
+                  label="Email & Print"
                   width="50%"
                   height="6vh"
                   bgColor={navBgColor}
@@ -3192,12 +3201,7 @@ const FooterDetails = ({ type, enableEditing, hidePrivateDetails }: FooterProps)
                   icon={<AiFillPrinter color="#5D3FD3"></AiFillPrinter>}
                   size="xs"
                   color="white"
-                  onClick={() => {
-                    window.open(
-                      `${APP_HOST}/api.php?action=print&t=${transactionType}&i=${id}`
-                    );
-                    window.location.reload();
-                  }}
+                  onClick={printHandler}
                   label="Print"
                   width="50%"
                   height="6vh"
