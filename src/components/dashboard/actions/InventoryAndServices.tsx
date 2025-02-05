@@ -1,5 +1,5 @@
 import { ActionGroup, ActionGroupDivider, CanvasGrid } from "./Shared";
-import { LuEdit2 } from "react-icons/lu";
+import { FiEdit2 } from "react-icons/fi";
 import { AiOutlineStock } from "react-icons/ai";
 import { IoMdAdd } from "react-icons/io";
 import { PiWaveSineDuotone } from "react-icons/pi";
@@ -393,7 +393,7 @@ const InventoryAndServices = () => {
                             },
                         },
                         {
-                            icon: <LuEdit2 color={iconColor} />,
+                            icon: <FiEdit2 color={iconColor} />,
                             label: "Modify",
                             onClick: () => {
                                 window.open(
