@@ -863,6 +863,7 @@ const Footer = memo(({ isViewOrUpdate, enableEditing }: ReceiptProps) => {
       })
       .finally(() => {
         if (isNotSuccessful) setDisableEmailButton(false);
+        printHandler();
       });
   };
 
@@ -893,6 +894,16 @@ const Footer = memo(({ isViewOrUpdate, enableEditing }: ReceiptProps) => {
         });
     } else showToast(toast, true, "Prompt Cancelled");
   };
+
+  // Print Handler
+  const printHandler = () => {
+    let selectedTxns = btoa(
+      JSON.stringify(extractSelectedTransactions())
+    );
+    window.open(
+      `${APP_HOST}/api.php?action=print&t=${TRANSACTION_TYPES["RC"]}&i=${id}&s=${selectedTxns}`
+    );
+  }
 
   return (
     <Box width="100%" borderTopWidth={1} borderTopColor={"gray"} paddingTop={2}>
@@ -962,14 +973,7 @@ const Footer = memo(({ isViewOrUpdate, enableEditing }: ReceiptProps) => {
                       color="black"
                       icon={<IoPrint color="orange" />}
                       label="Print"
-                      onClick={() => {
-                        let selectedTxns = btoa(
-                          JSON.stringify(extractSelectedTransactions())
-                        );
-                        window.open(
-                          `${APP_HOST}/api.php?action=print&t=${TRANSACTION_TYPES["RC"]}&i=${id}&s=${selectedTxns}`
-                        );
-                      }}
+                      onClick={printHandler}
                     ></_Button>
                   </Box>
                   <Box paddingTop={2}>
@@ -981,7 +985,7 @@ const Footer = memo(({ isViewOrUpdate, enableEditing }: ReceiptProps) => {
                       bgColor="white"
                       color="black"
                       icon={<MdOutlineAlternateEmail color="blue" />}
-                      label="Email"
+                      label="Email & Print"
                       onClick={() => {
                         let selectedTxns = btoa(
                           JSON.stringify(extractSelectedTransactions())
