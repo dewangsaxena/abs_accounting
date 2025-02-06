@@ -2777,7 +2777,6 @@ const FooterDetails = ({ type, enableEditing, hidePrivateDetails }: FooterProps)
     window.open(
       `${APP_HOST}/api.php?action=print&t=${transactionType}&i=${id}`
     );
-    window.location.reload();
   }
 
   // Send Email
@@ -3201,7 +3200,10 @@ const FooterDetails = ({ type, enableEditing, hidePrivateDetails }: FooterProps)
                   icon={<AiFillPrinter color="#5D3FD3"></AiFillPrinter>}
                   size="xs"
                   color="white"
-                  onClick={printHandler}
+                  onClick={() => {
+                    printHandler();
+                    window.location.reload();
+                  }}
                   label="Print"
                   width="50%"
                   height="6vh"
