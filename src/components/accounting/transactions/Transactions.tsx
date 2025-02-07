@@ -2771,6 +2771,7 @@ const FooterDetails = ({ type, enableEditing, hidePrivateDetails }: FooterProps)
   }
 
   const [disableEmailButton, setDisableEmailButton] = useState<boolean>(false);
+  const [disableEmailPrintButton, setDisableEmailPrintButton] = useState<boolean>(false);
 
   // Print Handler
   const printHandler = () => {
@@ -2780,9 +2781,10 @@ const FooterDetails = ({ type, enableEditing, hidePrivateDetails }: FooterProps)
   }
 
   // Send Email
-  const sendEmailHandler = () => {
+  const sendEmailHandler = (doPrint: boolean = false) => {
     let isNotSuccessful = true;
-    setDisableEmailButton(true);
+    if(doPrint) setDisableEmailPrintButton(true);
+    else setDisableEmailButton(true);
     sendEmail()
       .then((res: any) => {
         let result: APIResponse = res.data;
@@ -2797,8 +2799,11 @@ const FooterDetails = ({ type, enableEditing, hidePrivateDetails }: FooterProps)
         showToast(toast, false, err.message);
       })
       .finally(() => {
-        if (isNotSuccessful) setDisableEmailButton(false);
-        printHandler();
+        if (isNotSuccessful) {
+          setDisableEmailButton(false);
+          setDisableEmailPrintButton(false);
+        }
+        else if(doPrint === true) printHandler();
       });
   };
 
@@ -3183,8 +3188,8 @@ const FooterDetails = ({ type, enableEditing, hidePrivateDetails }: FooterProps)
                   icon={<MdAlternateEmail color="#0096FF"></MdAlternateEmail>}
                   size="xs"
                   color="white"
-                  onClick={sendEmailHandler}
-                  label="Email & Print"
+                  onClick={() => sendEmailHandler(false)}
+                  label="Email"
                   width="50%"
                   height="6vh"
                   bgColor={navBgColor}
@@ -3234,6 +3239,25 @@ const FooterDetails = ({ type, enableEditing, hidePrivateDetails }: FooterProps)
                   ></_Button>
                 )}
               </HStack>
+                <HStack>
+                <_Button
+                  isDisabled={
+                    disableEmailPrintButton || clientDetails === null || id === null
+                  }
+                  variant="outline"
+                  icon={<MdAlternateEmail color="#0096FF"></MdAlternateEmail>}
+                  size="xs"
+                  color="white"
+                  onClick={() => sendEmailHandler(true)}
+                  label="Email & Print"
+                  width="50%"
+                  height="6vh"
+                  bgColor={navBgColor}
+                  borderColor="gray.200"
+                  borderWidth={1}
+                  fontSize={"1.25em"}
+                ></_Button>
+                </HStack>
             </SimpleGrid>
           </Box>
         </HStack>
