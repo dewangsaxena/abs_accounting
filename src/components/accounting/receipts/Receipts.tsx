@@ -845,10 +845,12 @@ const Footer = memo(({ isViewOrUpdate, enableEditing }: ReceiptProps) => {
   };
 
   const [disableEmailButton, setDisableEmailButton] = useState<boolean>(false);
+  const [disableEmailPrintButton, setDisableEmailPrintButton] = useState<boolean>(false);
 
   // Send Email Handler
-  const sendEmailHandler = (selectedTxn: string) => {
-    setDisableEmailButton(true);
+  const sendEmailHandler = (selectedTxn: string, doPrint: boolean = false) => {
+    if(doPrint) setDisableEmailPrintButton(true);
+    else setDisableEmailButton(true);
     let isNotSuccessful = true;
     sendEmail(selectedTxn)
       .then((res: any) => {
@@ -862,8 +864,11 @@ const Footer = memo(({ isViewOrUpdate, enableEditing }: ReceiptProps) => {
         showToast(toast, false, err.message);
       })
       .finally(() => {
-        if (isNotSuccessful) setDisableEmailButton(false);
-        printHandler();
+        if (isNotSuccessful) {
+          setDisableEmailPrintButton(false);
+          setDisableEmailButton(false);
+        }
+        else if(doPrint) printHandler();
       });
   };
 
@@ -985,12 +990,12 @@ const Footer = memo(({ isViewOrUpdate, enableEditing }: ReceiptProps) => {
                       bgColor="white"
                       color="black"
                       icon={<MdOutlineAlternateEmail color="blue" />}
-                      label="Email & Print"
+                      label="Email"
                       onClick={() => {
                         let selectedTxns = btoa(
                           JSON.stringify(extractSelectedTransactions())
                         );
-                        sendEmailHandler(selectedTxns);
+                        sendEmailHandler(selectedTxns, false);
                       }}
                     ></_Button>
                   </Box>
@@ -1009,6 +1014,24 @@ const Footer = memo(({ isViewOrUpdate, enableEditing }: ReceiptProps) => {
                       ></_Button>
                     </Box>
                   )}
+                  <Box paddingTop={2}>
+                    <_Button
+                      fontSize="1.2em"
+                      isDisabled={disableEmailPrintButton}
+                      width="100%"
+                      borderRadius={2}
+                      bgColor="white"
+                      color="black"
+                      icon={<MdOutlineAlternateEmail color="blue" />}
+                      label="Email & Print"
+                      onClick={() => {
+                        let selectedTxns = btoa(
+                          JSON.stringify(extractSelectedTransactions())
+                        );
+                        sendEmailHandler(selectedTxns, true);
+                      }}
+                    ></_Button>
+                  </Box>
                 </>
               )}
             </SimpleGrid>
