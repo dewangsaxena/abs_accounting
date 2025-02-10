@@ -5,6 +5,7 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_summa
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/inventory.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/correct_is_bs_inventory_v2.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_aged_summary.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/suppressions.php";
 
 // Inventory::generate_inventory_list(StoreDetails::EDMONTON);
 
