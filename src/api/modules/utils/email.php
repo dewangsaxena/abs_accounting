@@ -96,7 +96,7 @@ class Email {
             }
             $mail -> SetFrom(self::FROM_EMAIL, StoreDetails::STORE_DETAILS[$store_id]['email']['from_name'][SYSTEM_INIT_MODE]);
             $mail -> Subject = $subject;
-            $mail -> Body = <<<'EOS'
+            $mail -> Body = <<<EOS
             $content
             <br><br><br><br>
             <a href="{{{ pm:unsubscribe }}}" style="text-decoration:none;display:none !important;">Unsubscribe from this list.</a>
