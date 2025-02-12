@@ -98,7 +98,6 @@ class Email {
             $mail -> Subject = $subject;
             $mail -> Body = <<<EOS
             $content
-            <br><br><br><br>
             <a href="{{{ pm:unsubscribe }}}" style="text-decoration:none;display:none !important;">Unsubscribe from this list.</a>
             EOS;
             $mail -> Encoding = 'base64';
