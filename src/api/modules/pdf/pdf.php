@@ -2846,13 +2846,27 @@ class __GenerateInventory {
         self::$pdf -> SetFont(self::COURIER, '', 10,);
         self::$pdf -> Cell(w: 50, h: 4, txt: 'IDENTIFIER', border: 1, ln: 0);
     }
+    
+    /**
+     * This method will generate inventory list in Plan HTML.
+     * @param details
+     * @param store_id
+     */
+    public static function generate_inventory_list(array $details, int $store_id): void {
+        // Details
+        self::$details = $details;
+
+        $code = <<<'EOS'
+        
+        EOS;
+    }
 
     /**
      * This method will generate inventory list.
      * @param details
      * @param store_id
      */
-    public static function generate_inventory_list(array $details, int $store_id): void {
+    public static function generate_inventory_list_pdf(array $details, int $store_id): void {
 
         // Details
         self::$details = $details;
@@ -3097,7 +3111,7 @@ class GeneratePDF {
      * @param store_id
      */
     public static function generate_inventory_list(array $details, int $store_id): void {
-        __GenerateInventory::generate_inventory_list($details, $store_id);
+        __GenerateInventory::generate_inventory_list_pdf($details, $store_id);
     }
 
     /**

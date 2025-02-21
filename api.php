@@ -33,8 +33,8 @@ if (isset($_GET['action'])) {
                 intval($_GET['storeId']),
                 $_GET['tillDate'],
                 intval($_GET['isCSV']),
-                intval($_GET['es'] ?? '1'),
-                intval($_GET['ec'] ?? '1'),
+                intval($_GET['es'] ?? '1'), /* Exclude Self */
+                intval($_GET['ec'] ?? '1'), /* Exclude Client */
             );
         } else {
             CustomerAgedSummary::generate(

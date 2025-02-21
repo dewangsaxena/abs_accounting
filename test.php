@@ -7,7 +7,7 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/correct_is_bs_inventory_v2.php
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_aged_summary.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/suppressions.php";
 
-// Inventory::generate_inventory_list(StoreDetails::EDMONTON);
+// Inventory::generate_inventory_list(StoreDetails::EDMONTON);die;
 
 // Inventory::fetch_low_stock(StoreDetails::EDMONTON);
 function generate_list(int $store_id) {
@@ -76,6 +76,8 @@ function generate_list(int $store_id) {
 
     echo $code;
 }
+
+generate_list(StoreDetails::EDMONTON);die;
 
 function fetch_inventory(int $store_id): void {
     $db = get_db_instance();

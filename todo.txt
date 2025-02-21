@@ -60,7 +60,6 @@ TEST SYSTEM FOR WASH SYSTEM.  [COMPLETED]
 
 [INCOMPLETE]
 Add Images Support for Items.
-Inventory Parts Report IN PDF
 
 [CONVERSION]
 Clients   [DONE]
