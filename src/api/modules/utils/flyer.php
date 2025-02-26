@@ -78,11 +78,14 @@ class FlyerManagement {
 
         // Fetch client details
         $client_details = self::fetch_client_detail_of_store($store_id);
+        
+        $no_of_clients = count($client_details);
 
         // Test
-        $index = 0;
-        for($index = 0; $index < $index + 50; ++$index) {
-
+        $index = 170;
+        $limit = $index + 20;
+    
+        for(;$index < $limit; ++$index) {
             $client = $client_details[$index];
             Email::send(
                 subject: $subject,
@@ -96,7 +99,10 @@ class FlyerManagement {
                 is_html: true,
                 add_cc: false,
             );
+            echo "$index<br>";
         }
+        
+        echo "<br><br><br>Done: $index / $no_of_clients";
     }
 }
 
