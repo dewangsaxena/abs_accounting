@@ -77,11 +77,13 @@ class FlyerManagement {
     public static function send_flyer(int $store_id, string $subject, string $content, string $path_to_attachment, string $file_name): void {
 
         // Fetch client details
-        // $client_details = self::fetch_client_detail_of_store($store_id);
+        $client_details = self::fetch_client_detail_of_store($store_id);
 
         // Test
-        $client_details = [['name' => 'Dewang Saxena', 'email_id' => 'dewang2610@gmail.com']];
-        foreach($client_details as $client) {
+        $index = 0;
+        for($index = 0; $index < $index + 50; ++$index) {
+
+            $client = $client_details[$index];
             Email::send(
                 subject: $subject,
                 recipient_email: $client['email_id'],
