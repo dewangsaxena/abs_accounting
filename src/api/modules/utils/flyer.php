@@ -86,6 +86,7 @@ class FlyerManagement {
         $limit = $index + 20;
     
         for(;$index < $limit; ++$index) {
+            if(isset($client_details[$index]) === false) break;
             $client = $client_details[$index];
             Email::send(
                 subject: $subject,
