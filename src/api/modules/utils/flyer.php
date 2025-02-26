@@ -80,9 +80,9 @@ class FlyerManagement {
         // $client_details = self::fetch_client_detail_of_store($store_id);
 
         // Test
-        $client_details = ['name' => 'Dewang Saxena', 'email_id' => 'dewang2610@gmail.com'];
+        $client_details = [['name' => 'Dewang Saxena', 'email_id' => 'dewang2610@gmail.com']];
         foreach($client_details as $client) {
-            $result = Email::send(
+            Email::send(
                 subject: $subject,
                 recipient_email: $client['email_id'],
                 recipient_name: $client['name'],
