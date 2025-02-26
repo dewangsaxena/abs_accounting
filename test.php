@@ -6,6 +6,7 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/inventory.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/correct_is_bs_inventory_v2.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_aged_summary.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/suppressions.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/flyer.php";
 
 // Inventory::generate_inventory_list(StoreDetails::EDMONTON);die;
 
@@ -77,7 +78,7 @@ function generate_list(int $store_id) {
     echo $code;
 }
 
-generate_list(StoreDetails::EDMONTON);die;
+// generate_list(StoreDetails::EDMONTON);die;
 
 function fetch_inventory(int $store_id): void {
     $db = get_db_instance();
@@ -191,7 +192,7 @@ if(SYSTEM_INIT_MODE === PARTS) {
     $store_id = StoreDetails::EDMONTON;
     // generate_list($store_id);die;
     // fetch_inventory($store_id);die;
-    die(StoreDetails::STORE_DETAILS[$store_id]['name'].': '. (Correct_IS_BS_InventoryV2::correct($store_id) ? 'T' : 'F'));
+    // die(StoreDetails::STORE_DETAILS[$store_id]['name'].': '. (Correct_IS_BS_InventoryV2::correct($store_id) ? 'T' : 'F'));
 }
 
 $items = [14942,
@@ -1489,5 +1490,15 @@ function fetch_item_details_by_identifiers(int $store_id): void {
     echo "</body></html>";
 }
 
-fetch_item_details_by_identifiers(StoreDetails::CALGARY);
+// fetch_item_details_by_identifiers(StoreDetails::CALGARY);
+
+// Flyer Send
+FlyerManagement::send_flyer(
+    StoreDetails::EDMONTON,
+    'Promotional Email',
+    'Some content',
+    "{$_SERVER['DOCUMENT_ROOT']}/tmp/flyer.jpg",
+    'Flyer',
+);
+
 ?>
