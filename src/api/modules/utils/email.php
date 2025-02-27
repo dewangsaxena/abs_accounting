@@ -111,7 +111,14 @@ class Email {
             }
             
             /* Add Attachment */ 
+            /* This will also detect extension and append it if not present in file already. */
             if($path_to_attachment !== null) {
+                $extension = (new SplFileInfo($file_name)) -> getExtension();
+                if(isset($extension[0]) === false) {
+                    // Take Extension from Path
+                    $extension = (new SplFileInfo($path_to_attachment)) -> getExtension();
+                    if(isset($extension[0]) === true) $file_name = "$file_name.$extension";
+                } 
                 $mail -> AddAttachment($path_to_attachment, $file_name);
             }
             

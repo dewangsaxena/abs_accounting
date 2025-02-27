@@ -1493,21 +1493,20 @@ function fetch_item_details_by_identifiers(int $store_id): void {
 // fetch_item_details_by_identifiers(StoreDetails::CALGARY);
 
 // Flyer Send
-FlyerManagement::send_flyer(
-    store_id: StoreDetails::EDMONTON,
-    subject: 'Promotional Email From ABS Truck & Trailer Parts Ltd.',
-    content: <<<'EOS'
-    Dear Client,
-    <br><br>
-    We at ABS Truck and Trailer Parts Ltd. are happy to announce our monthly promotion <b>till end of March</b> on items specified in the flyer attached.
-    We expect to do business with you soon.
-    <br><br>
-    Thanks and Regards,<br>
-    ABS Truck and Trailer Parts Ltd.<br>
-    Edmonton
-EOS,
-    path_to_attachment: "{$_SERVER['DOCUMENT_ROOT']}/tmp/flyer.jpg",
-    file_name: 'Flyer_Edmonton_March_2025',
-);
-
+// FlyerManagement::send_flyer(
+//     store_id: StoreDetails::EDMONTON,
+//     subject: 'Promotional Email From ABS Truck & Trailer Parts Ltd.',
+//     content: <<<'EOS'
+//     Dear Client,
+//     <br><br>
+//     We at ABS Truck and Trailer Parts Ltd. are happy to announce our monthly promotion <b>till end of March</b> on items specified in the flyer attached.
+//     We expect to do business with you soon.
+//     <br><br>
+//     Thanks and Regards,<br>
+//     ABS Truck and Trailer Parts Ltd.<br>
+//     Edmonton
+// EOS,
+//     path_to_attachment: "{$_SERVER['DOCUMENT_ROOT']}/tmp/flyer.jpg",
+//     file_name: 'Flyer_Edmonton_March_2025',
+// );
 ?>
