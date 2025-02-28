@@ -1447,7 +1447,7 @@ class Shared {
             if($transaction_year !== $initial_txn_year) throw new Exception('Cannot change year of transaction.');
 
             // Only I can change the Transaction Date.
-            if($data['txnDate'] != $data['initial']['txnDate']) throw new Exception('Cannot Change Date of Transaction.');
+            if($new_date != $old_date) throw new Exception('Cannot Change Date of Transaction.');
         }
     }
 
