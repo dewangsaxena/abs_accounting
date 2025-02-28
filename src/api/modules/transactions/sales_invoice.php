@@ -31,6 +31,9 @@ class SalesInvoice {
         'category',
     ];
 
+    // Flag
+    private static $is_self_client = false;
+
     /**
      * This method will validate the items details for validity.
      * @param items
@@ -404,6 +407,9 @@ class SalesInvoice {
             // Client Id 
             $client_id = $validated_details['client_id'];
 
+            // Is Self Client
+            self::$is_self_client = isset(Client::SELF_CLIENT_WHITELIST[$client_id]);
+
             // Check for Fresh Copy of Client.
             Client::check_fresh_copy_of_client($client_id, $data['clientDetails']['lastModifiedTimestamp'], $db);
 
@@ -482,11 +488,13 @@ class SalesInvoice {
                     $affected_accounts[$account],
                 );
 
-                IncomeStatementActions::update_account_values(
-                    $is_affected_accounts,
-                    $account,
-                    $affected_accounts[$account],
-                );
+                if(self::$is_self_client === false) {
+                    IncomeStatementActions::update_account_values(
+                        $is_affected_accounts,
+                        $account,
+                        $affected_accounts[$account],
+                    );
+                }
             }
             
             /* ADD TO PAYMENT METHOD ACCOUNT */
@@ -497,11 +505,14 @@ class SalesInvoice {
                     $payment_method_account,
                     $sum_total,
                 );
-                IncomeStatementActions::update_account_values(
-                    $is_affected_accounts,
-                    $payment_method_account,
-                    $sum_total
-                );
+
+                if(self::$is_self_client === false) {
+                    IncomeStatementActions::update_account_values(
+                        $is_affected_accounts,
+                        $payment_method_account,
+                        $sum_total
+                    );
+                }
             }
             else throw new Exception('Invalid Payment Method Account.');
 
@@ -520,11 +531,13 @@ class SalesInvoice {
             );
 
             /* ADJUST DISCOUNT ACCOUNT */
-            IncomeStatementActions::update_account_values(
-                $is_affected_accounts,
-                AccountsConfig::TOTAL_DISCOUNT,
-                $txn_discount
-            );
+            if(self::$is_self_client === false) {
+                IncomeStatementActions::update_account_values(
+                    $is_affected_accounts,
+                    AccountsConfig::TOTAL_DISCOUNT,
+                    $txn_discount
+                );
+            }
 
             /* COMMIT UPDATES TO BALANCE SHEET */ 
             BalanceSheetActions::update_from(
@@ -710,6 +723,9 @@ class SalesInvoice {
             // Client Id
             $client_id = $details['client_id'];
 
+            // Is Self Client
+            self::$is_self_client = isset(Client::SELF_CLIENT_WHITELIST[$client_id]);
+
             // Check for Fresh Copy of Client.
             Client::check_fresh_copy_of_client($client_id, $data['clientDetails']['lastModifiedTimestamp'], $db);
 
@@ -853,12 +869,14 @@ class SalesInvoice {
                     $account,
                     $affected_accounts[$account]
                 );
-    
-                IncomeStatementActions::update_account_values(
-                    $is_affected_accounts,
-                    $account,
-                    $affected_accounts[$account]
-                );
+                
+                if(self::$is_self_client === false) {
+                    IncomeStatementActions::update_account_values(
+                        $is_affected_accounts,
+                        $account,
+                        $affected_accounts[$account]
+                    );
+                }
             }
 
             // ADD TO PAYMENT METHOD ACCOUNT
@@ -869,11 +887,14 @@ class SalesInvoice {
                     $payment_method_account,
                     $details['sum_total'],
                 );
-                IncomeStatementActions::update_account_values(
-                    $is_affected_accounts,
-                    $payment_method_account,
-                    $details['sum_total'],
-                );
+
+                if(self::$is_self_client === false) {
+                    IncomeStatementActions::update_account_values(
+                        $is_affected_accounts,
+                        $payment_method_account,
+                        $details['sum_total'],
+                    );
+                }
             }
             else throw new Exception('Invalid Payment Method Account.');
 
@@ -892,12 +913,14 @@ class SalesInvoice {
             );
             
             // ADJUST DISCOUNT ACCOUNT
-            IncomeStatementActions::update_account_values(
-                $is_affected_accounts,
-                AccountsConfig::TOTAL_DISCOUNT,
-                $details['txn_discount']
-            );
-
+            if(self::$is_self_client === false) {
+                IncomeStatementActions::update_account_values(
+                    $is_affected_accounts,
+                    AccountsConfig::TOTAL_DISCOUNT,
+                    $details['txn_discount']
+                );
+            }
+            
             // COMMIT UPDATES TO BALANCE SHEET
             BalanceSheetActions::update_from(
                 $bs_affected_accounts,
@@ -1125,21 +1148,25 @@ class SalesInvoice {
                 $affected_accounts[$account]
             );
 
-            // Adjust COGS From Income Statement
-            IncomeStatementActions::update_account_values(
-                $is_affected_accounts,
-                $account,
-                $affected_accounts[$account]
-            );
+            if(self::$is_self_client === false) {
+                // Adjust COGS From Income Statement
+                IncomeStatementActions::update_account_values(
+                    $is_affected_accounts,
+                    $account,
+                    $affected_accounts[$account]
+                );
+            }
         }
 
         /* !! Discount */
         // Update Income Statement
-        IncomeStatementActions::update_account_values(
-            $is_affected_accounts, 
-            AccountsConfig::TOTAL_DISCOUNT,
-            -$details['initial']['txnDiscount']
-        );
+        if(self::$is_self_client === false) {
+            IncomeStatementActions::update_account_values(
+                $is_affected_accounts, 
+                AccountsConfig::TOTAL_DISCOUNT,
+                -$details['initial']['txnDiscount']
+            );
+        }
 
         /* !! GST/HST TAX */ 
         /* Adjust Balance Sheet */
@@ -1177,12 +1204,14 @@ class SalesInvoice {
                 $old_sum_total
             );
 
-            // Update Income Statement
-            IncomeStatementActions::update_account_values(
-                $is_affected_accounts,
-                $old_payment_method_account,
-                $old_sum_total
-            );
+            if(self::$is_self_client === false) {
+                // Update Income Statement
+                IncomeStatementActions::update_account_values(
+                    $is_affected_accounts,
+                    $old_payment_method_account,
+                    $old_sum_total
+                );
+            }
         }
     }
 

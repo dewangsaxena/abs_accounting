@@ -31,9 +31,29 @@ class Stats
             $receipt_discount = 0;
 
             // Params
-            $params = [':date' => $current_date, ':store_id' => $store_id];
+            $self_clients = array_keys(Client::SELF_CLIENT_WHITELIST);
 
-            $statement = $db->prepare('SELECT sub_total, sub_total, txn_discount, cogs FROM sales_invoice WHERE `date` = :date AND store_id = :store_id;');
+            $query = <<<'EOS'
+            SELECT 
+                sub_total, 
+                sub_total, 
+                txn_discount, 
+                cogs 
+            FROM 
+                sales_invoice
+            WHERE 
+                `date` = :date
+            AND 
+                store_id = :store_id
+            AND
+                client_id NOT IN (:placeholder);
+            EOS;
+            $result = Utils::mysql_in_placeholder_pdo_substitute($self_clients, $query);
+            $params = array_merge(
+                [':date' => $current_date, ':store_id' => $store_id],
+                $result['values'],
+            );
+            $statement = $db->prepare($result['query']);
             $statement->execute($params);
             $result = $statement->fetchAll(PDO::FETCH_ASSOC);
             foreach ($result as $r) {
@@ -42,7 +62,27 @@ class Stats
                 $discount += $r['txn_discount'];
             }
 
-            $statement = $db->prepare('SELECT sub_total, sub_total, txn_discount, cogr, restocking_fees FROM sales_return WHERE `date` = :date AND store_id = :store_id;');
+            $result = Utils::mysql_in_placeholder_pdo_substitute(
+                $self_clients,
+                <<<'EOS'
+                SELECT 
+                    sub_total, 
+                    sub_total, 
+                    txn_discount, 
+                    cogr, 
+                    restocking_fees 
+                FROM 
+                    sales_return 
+                WHERE 
+                    `date` = :date 
+                AND 
+                    store_id = :store_id
+                AND 
+                    client_id NOT IN (:placeholder);
+                EOS
+            );
+            
+            $statement = $db->prepare($result['query']);
             $statement->execute($params);
             $result = $statement->fetchAll(PDO::FETCH_ASSOC);
             foreach ($result as $r) {
@@ -51,8 +91,10 @@ class Stats
                 $discount -= $r['txn_discount'];
             }
 
+            // Receipt
+            $params_receipt = [':date' => $current_date, ':store_id' => $store_id];
             $statement = $db->prepare('SELECT sum_total, total_discount FROM receipt WHERE `date` = :date AND store_id = :store_id AND do_conceal = 0;');
-            $statement->execute($params);
+            $statement->execute($params_receipt);
             $result = $statement->fetchAll(PDO::FETCH_ASSOC);
             foreach ($result as $r) {
                 $receipt_payment += $r['sum_total'];
