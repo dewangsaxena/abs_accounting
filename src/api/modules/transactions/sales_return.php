@@ -28,6 +28,9 @@ class SalesReturn {
     /* Max Restrocking Rate */
     public const MAX_RESTOCKING_RATE = 20;
 
+    // Flag
+    private static $is_self_client = false;
+
     /**
      * This method will validate the items details for validity.
      * @param items
@@ -551,6 +554,9 @@ class SalesReturn {
             // Client Id 
             $client_id = $validated_details['client_id'];
 
+            // Self Client
+            self::$is_self_client = isset(Client::SELF_CLIENT_WHITELIST[$client_id]);
+
             // Check for Fresh Copy of Client.
             Client::check_fresh_copy_of_client($client_id, $data['clientDetails']['lastModifiedTimestamp'], $db);
 
@@ -626,11 +632,13 @@ class SalesReturn {
                 );
 
                 if($account !== AccountsConfig::SALES_INVENTORY_A) {
-                    IncomeStatementActions::update_account_values(
-                        $is_affected_accounts,
-                        $account,
-                        $affected_accounts[$account],
-                    );
+                    if(self::$is_self_client === false) {
+                        IncomeStatementActions::update_account_values(
+                            $is_affected_accounts,
+                            $account,
+                            $affected_accounts[$account],
+                        );
+                    } 
                 }
             }
 
@@ -668,18 +676,23 @@ class SalesReturn {
             );
 
             /* ADJUST DISCOUNT ACCOUNT */
-            IncomeStatementActions::update_account_values(
-                $is_affected_accounts,
-                AccountsConfig::TOTAL_DISCOUNT,
-                -$txn_discount
-            );
+            if(self::$is_self_client === false) {
+                IncomeStatementActions::update_account_values(
+                    $is_affected_accounts,
+                    AccountsConfig::TOTAL_DISCOUNT,
+                    -$txn_discount
+                );
+            }
 
             /* Adjust Sales Return Account */
-            IncomeStatementActions::update_account_values(
-                $is_affected_accounts, 
-                AccountsConfig::SALES_RETURN,
-                $sub_total,
-            );
+            if(self::$is_self_client === false) {
+                IncomeStatementActions::update_account_values(
+                    $is_affected_accounts, 
+                    AccountsConfig::SALES_RETURN,
+                    $sub_total,
+                );
+            }
+            
 
             /* COMMIT UPDATES TO BALANCE SHEET */ 
             BalanceSheetActions::update_from(
@@ -863,29 +876,35 @@ class SalesReturn {
 
             if($account !== AccountsConfig::SALES_INVENTORY_A) {
                 // Adjust COGS From Income Statement
-                IncomeStatementActions::update_account_values(
-                    $is_affected_accounts,
-                    $account,
-                    $affected_accounts[$account]
-                );
+                if(self::$is_self_client === false) {
+                    IncomeStatementActions::update_account_values(
+                        $is_affected_accounts,
+                        $account,
+                        $affected_accounts[$account]
+                    );
+                }
             }
         }
 
         /* !! Sales Return */
-        IncomeStatementActions::update_account_values(
-            $is_affected_accounts, 
-            AccountsConfig::SALES_RETURN,
-            -($details['initial']['subTotal'] + $details['initial']['restockingFees']),
-        );
+        if(self::$is_self_client === false) {
+            IncomeStatementActions::update_account_values(
+                $is_affected_accounts, 
+                AccountsConfig::SALES_RETURN,
+                -($details['initial']['subTotal'] + $details['initial']['restockingFees']),
+            );
+        }
 
         /* !! Discount */
         // Update Income Statement
-        IncomeStatementActions::update_account_values(
-            $is_affected_accounts, 
-            AccountsConfig::TOTAL_DISCOUNT,
-            $details['initial']['txnDiscount']
-        );
-
+        if(self::$is_self_client === false) {
+            IncomeStatementActions::update_account_values(
+                $is_affected_accounts, 
+                AccountsConfig::TOTAL_DISCOUNT,
+                $details['initial']['txnDiscount']
+            );
+        }
+        
         /* !! GST/HST TAX */ 
         /* Adjust Balance Sheet */
         BalanceSheetActions::update_account_value(
@@ -960,6 +979,9 @@ class SalesReturn {
 
             // Client Id
             $client_id = $validated_details['client_id'];
+
+            // Is Self Client 
+            self::$is_self_client = isset(Client::SELF_CLIENT_WHITELIST[$client_id]);
 
             // Check for Fresh Copy of Client.
             Client::check_fresh_copy_of_client($client_id, $data['clientDetails']['lastModifiedTimestamp'], $db);
@@ -1067,11 +1089,13 @@ class SalesReturn {
                 );
                 
                 if($account !== AccountsConfig::SALES_INVENTORY_A) {
-                    IncomeStatementActions::update_account_values(
-                        $is_affected_accounts,
-                        $account,
-                        $affected_accounts[$account]
-                    );
+                    if(self::$is_self_client === false) {
+                        IncomeStatementActions::update_account_values(
+                            $is_affected_accounts,
+                            $account,
+                            $affected_accounts[$account]
+                        );
+                    }
                 }
             }
 
@@ -1087,11 +1111,13 @@ class SalesReturn {
             );
 
             /* Adjust Sales Return Account */
-            IncomeStatementActions::update_account_values(
-                $is_affected_accounts, 
-                AccountsConfig::SALES_RETURN,
-                $sub_total,
-            );
+            if(self::$is_self_client === false) {
+                IncomeStatementActions::update_account_values(
+                    $is_affected_accounts, 
+                    AccountsConfig::SALES_RETURN,
+                    $sub_total,
+                );
+            }
 
             // Add Restocking Fees
             BalanceSheetActions::update_account_value(
@@ -1115,11 +1141,13 @@ class SalesReturn {
             );
             
             // ADJUST DISCOUNT ACCOUNT
-            IncomeStatementActions::update_account_values(
-                $is_affected_accounts,
-                AccountsConfig::TOTAL_DISCOUNT,
-                -$txn_discount
-            );
+            if(self::$is_self_client === false) {
+                IncomeStatementActions::update_account_values(
+                    $is_affected_accounts,
+                    AccountsConfig::TOTAL_DISCOUNT,
+                    -$txn_discount
+                );
+            }
 
             // COMMIT UPDATES TO BALANCE SHEET
             BalanceSheetActions::update_from(
