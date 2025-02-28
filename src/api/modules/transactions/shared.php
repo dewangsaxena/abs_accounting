@@ -344,6 +344,7 @@ class Shared {
             case SALES_INVOICE: return SalesInvoice::calculate_amount($items, $disable_federal_taxes, $disable_provincial_taxes);
             case SALES_RETURN: return SalesReturn::calculate_amount($items, $disable_federal_taxes, $disable_provincial_taxes);
             case QUOTATION: return Quotations::calculate_amount($items, $disable_federal_taxes, $disable_provincial_taxes);
+            default: return [];
         }
     }
 
