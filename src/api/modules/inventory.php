@@ -62,8 +62,6 @@ class Inventory {
             15004,  /* Head Light */
             8454, /* 4707p */
             4548, /* 4709 */
-            // 14200,  /* Dayton Slack Adjuster */ 
-            // 2136, /* Slack Adjuster */ 
             6802, /* Brake Drum */
             12004, /* 171702 Turbo */
             22651, /* Door Handle */ 
