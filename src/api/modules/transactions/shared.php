@@ -751,6 +751,18 @@ class Shared {
                 $is_any_filter_selected = true;
             }
 
+            if(is_numeric($data['transactionAmountGreaterThanEqualTo'] ?? null)) {
+                $query .= ' AND txn_tb.`sum_total` >= :sumTotal ';
+                $values[':sumTotal'] = $data['transactionAmountGreaterThanEqualTo'];
+                $is_any_filter_selected = true;
+            }
+
+            if(is_numeric($data['transactionAmountLessThanEqualTo'] ?? null)) {
+                $query .= ' AND txn_tb.`sum_total` <= :sumTotal ';
+                $values[':sumTotal'] = $data['transactionAmountLessThanEqualTo'];
+                $is_any_filter_selected = true;
+            }
+
             // PO Number
             if(isset($data['poNumber'])) {
                 $query .= ' AND txn_tb.`po` LIKE :poNumber ';
