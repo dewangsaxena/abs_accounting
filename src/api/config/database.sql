@@ -200,6 +200,9 @@ CREATE TABLE IF NOT EXISTS items(
     /* Frequency */
     frequency JSON NOT NULL DEFAULT '{}',
 
+    /* Discount Disabled */
+    discount_disabled JSON NOT NULL DEFAULT '{}',
+
     /* Dates */ 
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modified TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -553,19 +556,6 @@ CREATE TABLE receipt(
 ALTER TABLE receipt AUTO_INCREMENT=10000;
 CREATE INDEX idx_receipt_client_id ON receipt(client_id);
 CREATE INDEX idx_receipt_sales_rep_id ON receipt(sales_rep_id);
-
-/* Flyer Campaign */
-CREATE TABLE flyer_campaigns(
-    id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    tag VARCHAR(32) NOT NULL COMMENT 'Campaign Unique Tag',
-    `date_from` DATE NOT NULL,
-    `date_till` DATE NOT NULL,
-    store_id SMALLINT UNSIGNED NOT NULL,
-    `details` JSON NOT NULL,
-    CONSTRAINT FK_fc_store_id FOREIGN KEY(store_id) REFERENCES store_details(id)
-);
-ALTER TABLE flyer_campaigns AUTO_INCREMENT=10000;
-CREATE INDEX idx_flyer_campaigns_store_id ON store_details(store_id);
 
 /* Purchase Vendors */
 CREATE TABLE purchase_vendors(
