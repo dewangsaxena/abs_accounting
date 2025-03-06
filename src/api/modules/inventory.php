@@ -271,6 +271,7 @@ class Inventory {
             `account_variance` = :account_variance,
             `account_expense` = :account_expense,
             `is_inactive` = :is_inactive,
+            `is_discount_disabled` = :is_discount_disabled,
             `is_core` = :is_core,
             `memo` = :memo,
             `additional_information` = :additional_information,
