@@ -55,6 +55,7 @@ export interface ItemDetails {
   additionalInformation: string;
   category: number;
   isInactive: { [storeId: number]: number };
+  isDiscountDisabled: { [storeId:number]: number };
   isCore: number;
   account: Account;
   storeId: number;
@@ -83,6 +84,7 @@ interface ItemStore extends ItemDetails {
       | "additionalInformation"
       | "category"
       | "isInactive"
+      | "isDiscountDisabled"
       | "isCore"
       | "accountAssets"
       | "accountRevenue"
@@ -120,6 +122,7 @@ export const itemStore = create<ItemStore>((set, get) => ({
   category: systemConfigMode === MODE_PARTS ? 1 : 0,
   isCore: 0,
   isInactive: {},
+  isDiscountDisabled: {},
   storeId: storeId,
   account: {
     assets: systemConfigMode === MODE_PARTS ? 1520 : 0,
@@ -154,6 +157,7 @@ export const itemStore = create<ItemStore>((set, get) => ({
       | "additionalInformation"
       | "category"
       | "isInactive"
+      | "isDiscountDisabled"
       | "isCore"
       | "accountAssets"
       | "accountRevenue"
@@ -227,6 +231,11 @@ export const itemStore = create<ItemStore>((set, get) => ({
       let is_inactive = get().isInactive;
       is_inactive[get().storeId] = value;
       set({ isInactive: is_inactive });
+    }
+    if (fieldName === "isDiscountDisabled") {
+      let isDiscountDisabled =  get().isDiscountDisabled;
+      isDiscountDisabled[get().storeId] = value;
+      set({isDiscountDisabled: isDiscountDisabled});
     }
     if (fieldName === "isCore") set({ isCore: value });
     if (fieldName === "accountAssets") {
