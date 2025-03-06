@@ -1429,9 +1429,10 @@ class Shared {
      */
     public static function check_transaction_older_than_2_days(string $initial_date, int $store_id): void {
         // Check whether the update is made within 2 Days
-        $txn_date = date_parse_from_format('Y-m-d', $initial_date);
-        $current_date = date_parse_from_format('Y-m-d', Utils::get_business_date($store_id));
-        if(abs($txn_date['day'] - $current_date['day']) > 2) throw new Exception('Cannot Update Transaction after 2 days.');
+        $initial_date = date_create($initial_date);
+        $current_date = date_create(Utils::get_business_date($store_id));
+        $difference = date_diff($initial_date, $current_date);
+        if($difference -> d > 3) throw new Exception('Cannot Update Transaction after 2 days.');
     }
 
     /**
