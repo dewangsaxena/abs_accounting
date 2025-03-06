@@ -277,6 +277,7 @@ export const itemStore = create<ItemStore>((set, get) => ({
     set({ memo: details.memo });
     set({ additionalInformation: details.additionalInformation });
     set({ isInactive: details.isInactive });
+    set({isDiscountDisabled: details.isDiscountDisabled});
     set({ isCore: details.isCore });
     set({ account: details.account });
     set({ quantitiesAllStores: details.quantitiesAllStores });
