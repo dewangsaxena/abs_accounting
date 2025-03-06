@@ -507,6 +507,10 @@ class Inventory {
                 // Add Key if not exists
                 if (!array_key_exists($store_id, $is_inactive)) $is_inactive[$store_id] = 0;
 
+                // Is Discount Disabled
+                $is_discount_disabled = json_decode($record['is_discount_disabled'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+                if(!array_key_exists($store_id, $is_discount_disabled)) $is_discount_disabled[$store_id] = 0;
+
                 /* Include Only Active Items */
                 if (($exclude_inactive === 1 && $is_inactive[$store_id] === $exclude_inactive) === false) {
                     $item_id = $record['id'];
@@ -547,6 +551,9 @@ class Inventory {
 
                     // Add Is Inactive 
                     $items[$item_id]['isInactive'] = $is_inactive;
+
+                    // Add Discount Disabled Flag
+                    $items[$item_id]['isDiscountDisabled'] = $is_discount_disabled;
                 }
             }
 
