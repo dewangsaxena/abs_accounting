@@ -753,13 +753,13 @@ class Shared {
 
             if(is_numeric($data['transactionAmountGreaterThanEqualTo'] ?? null)) {
                 $query .= ' AND txn_tb.`sum_total` >= :transactionAmountGreaterThanEqualTo ';
-                $values[':transactionAmountGreaterThanEqualTo'] = $data['transactionAmountGreaterThanEqualTo'];
+                $values[':transactionAmountGreaterThanEqualTo'] = intval($data['transactionAmountGreaterThanEqualTo']);
                 $is_any_filter_selected = true;
             }
 
             if(is_numeric($data['transactionAmountLessThanEqualTo'] ?? null)) {
                 $query .= ' AND txn_tb.`sum_total` <= :transactionAmountLessThanEqualTo ';
-                $values[':transactionAmountLessThanEqualTo'] = $data['transactionAmountLessThanEqualTo'];
+                $values[':transactionAmountLessThanEqualTo'] = intval($data['transactionAmountLessThanEqualTo']);
                 $is_any_filter_selected = true;
             }
 
