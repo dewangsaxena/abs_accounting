@@ -717,57 +717,59 @@ const Item = ({ isViewOrUpdate = false }: { isViewOrUpdate?: boolean }) => {
                   </Box>
                 </VStack>
                 <_Divider></_Divider>
-                <VStack alignItems={"left"}>
-                  <Box>
-                    <_Label
-                      letterSpacing={2}
-                      fontSize={"0.8em"}
-                      fontWeight={"bold"}
-                    >
-                      REORDER QUANTITY
-                    </_Label>
-                  </Box>
-                  <Box>
-                    <HStack>
-                      <Box width="100%">
-                        <HStack spacing={2}>
-                          <Box width="15%">
-                            <_Label letterSpacing={2} fontSize="0.8em">
-                              Minimum level:
-                            </_Label>
-                          </Box>
-                          <Box width="75%" transform="translateY(-30%);">
-                            <_InputLeftElement
-                              fontFamily={numberFont}
-                              type="number"
-                              defaultValue={
-                                reorderQuantity[currentStoreId] || 0
-                              }
-                              placeholder="Minimum level"
-                              borderRadius={inputConfig.borderRadius}
-                              borderBottomColor={inputConfig.borderColor}
-                              borderBottomWidth={inputConfig.borderWidth}
-                              size={inputConfig.size}
-                              fontWeight="bold"
-                              fontSize={inputConfig.fontSize}
-                              letterSpacing={inputConfig.letterSpacing}
-                              width={"25%"}
-                              leftElement={<BsGraphDown color={"#FFBD33"} />}
-                              onBlur={(event: any) => {
-                                if (event) {
-                                  setField(
-                                    "reorderQuantity",
-                                    event.target.value.trim()
-                                  );
+                <HStack width="100%">
+                  <VStack alignItems={"left"} width="40%" >
+                    <Box width="100%">
+                      <_Label
+                        letterSpacing={2}
+                        fontSize={"0.8em"}
+                        fontWeight={"bold"}
+                      >
+                        REORDER QUANTITY
+                      </_Label>
+                    </Box>
+                    <Box width="100%">
+                      <HStack width="100%">
+                        <Box width="100%">
+                          <HStack spacing={2}>
+                            <Box width="50%" >
+                              <_Label letterSpacing={1} fontSize="0.8em">
+                                Minimum level:
+                              </_Label>
+                            </Box>
+                            <Box width="50%" transform="translateY(-30%);">
+                              <_InputLeftElement
+                                fontFamily={numberFont}
+                                type="number"
+                                defaultValue={
+                                  reorderQuantity[currentStoreId] || 0
                                 }
-                              }}
-                            ></_InputLeftElement>
-                          </Box>
-                        </HStack>
-                      </Box>
-                    </HStack>
-                  </Box>
-                </VStack>
+                                placeholder="Minimum level"
+                                borderRadius={inputConfig.borderRadius}
+                                borderBottomColor={inputConfig.borderColor}
+                                borderBottomWidth={inputConfig.borderWidth}
+                                size={inputConfig.size}
+                                fontWeight="bold"
+                                fontSize={inputConfig.fontSize}
+                                letterSpacing={inputConfig.letterSpacing}
+                                width={"100%%"}
+                                leftElement={<BsGraphDown color={"#FFBD33"} />}
+                                onBlur={(event: any) => {
+                                  if (event) {
+                                    setField(
+                                      "reorderQuantity",
+                                      event.target.value.trim()
+                                    );
+                                  }
+                                }}
+                              ></_InputLeftElement>
+                            </Box>
+                          </HStack>
+                        </Box>
+                      </HStack>
+                    </Box>
+                  </VStack>
+                </HStack>
               </TabPanel>
 
               <TabPanel padding={0}>
