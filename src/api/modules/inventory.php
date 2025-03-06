@@ -271,6 +271,7 @@ class Inventory {
             `account_variance` = :account_variance,
             `account_expense` = :account_expense,
             `is_inactive` = :is_inactive,
+            `is_discount_disabled` = :is_discount_disabled,
             `is_core` = :is_core,
             `memo` = :memo,
             `additional_information` = :additional_information,
@@ -388,13 +389,20 @@ class Inventory {
                 $item_id = intval($data['id']);
                 $values[':id'] = $item_id;
                 $is_inactive = $data['isInactive'] ?? [];
-                if (!array_key_exists($store_id, $data['isInactive'])) $is_inactive[$store_id] = 0;
+                if (!array_key_exists($store_id, $is_inactive)) $is_inactive[$store_id] = 0;
 
                 // Last Modified Timestamp
                 $values[':last_modified_timestamp'] = $data['lastModifiedTimestamp'];
 
                 // Convert to JSON 
                 $values[':is_inactive'] = json_encode($is_inactive, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+
+                // Disable Discount Flag
+                $is_discount_disabled = $data['isDiscountDisabled'] ?? [];
+                if(!array_key_exists($store_id, $is_discount_disabled)) $is_discount_disabled[$store_id] = 0;
+                $values[':is_discount_disabled'] = json_encode($is_discount_disabled, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+
+                // Update Item
                 $response = self::update($db, $values);
                 if ($response['status'] === false) throw new Exception($response['message']);
 
@@ -499,6 +507,10 @@ class Inventory {
                 // Add Key if not exists
                 if (!array_key_exists($store_id, $is_inactive)) $is_inactive[$store_id] = 0;
 
+                // Is Discount Disabled
+                $is_discount_disabled = json_decode($record['is_discount_disabled'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+                if(!array_key_exists($store_id, $is_discount_disabled)) $is_discount_disabled[$store_id] = 0;
+
                 /* Include Only Active Items */
                 if (($exclude_inactive === 1 && $is_inactive[$store_id] === $exclude_inactive) === false) {
                     $item_id = $record['id'];
@@ -535,10 +547,13 @@ class Inventory {
                     ];
 
                     /* Check whether item discount is disabled. */
-                    if (self::check_item_discount_disabled($item_id, $store_id)) $items[$item_id]['disableDiscount'] = true;
+                    if(isset($is_discount_disabled[$store_id]) && $is_discount_disabled[$store_id] == 1) $items[$item_id]['disableDiscount'] = true;
 
                     // Add Is Inactive 
                     $items[$item_id]['isInactive'] = $is_inactive;
+
+                    // Add Discount Disabled Flag
+                    $items[$item_id]['isDiscountDisabled'] = $is_discount_disabled;
                 }
             }
 

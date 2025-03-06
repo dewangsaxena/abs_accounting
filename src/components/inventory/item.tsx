@@ -345,6 +345,7 @@ const Item = ({ isViewOrUpdate = false }: { isViewOrUpdate?: boolean }) => {
     category,
     isCore,
     isInactive,
+    isDiscountDisabled, 
     storeId: _storeId,
     account,
     quantitiesAllStores,
@@ -717,57 +718,93 @@ const Item = ({ isViewOrUpdate = false }: { isViewOrUpdate?: boolean }) => {
                   </Box>
                 </VStack>
                 <_Divider></_Divider>
-                <VStack alignItems={"left"}>
-                  <Box>
-                    <_Label
-                      letterSpacing={2}
-                      fontSize={"0.8em"}
-                      fontWeight={"bold"}
-                    >
-                      REORDER QUANTITY
-                    </_Label>
-                  </Box>
-                  <Box>
-                    <HStack>
-                      <Box width="100%">
-                        <HStack spacing={2}>
-                          <Box width="15%">
-                            <_Label letterSpacing={2} fontSize="0.8em">
-                              Minimum level:
-                            </_Label>
-                          </Box>
-                          <Box width="75%" transform="translateY(-30%);">
-                            <_InputLeftElement
-                              fontFamily={numberFont}
-                              type="number"
-                              defaultValue={
-                                reorderQuantity[currentStoreId] || 0
-                              }
-                              placeholder="Minimum level"
-                              borderRadius={inputConfig.borderRadius}
-                              borderBottomColor={inputConfig.borderColor}
-                              borderBottomWidth={inputConfig.borderWidth}
-                              size={inputConfig.size}
-                              fontWeight="bold"
-                              fontSize={inputConfig.fontSize}
-                              letterSpacing={inputConfig.letterSpacing}
-                              width={"25%"}
-                              leftElement={<BsGraphDown color={"#FFBD33"} />}
-                              onBlur={(event: any) => {
-                                if (event) {
-                                  setField(
-                                    "reorderQuantity",
-                                    event.target.value.trim()
-                                  );
+                <HStack width="100%" spacing={10}>
+                  <VStack alignItems={"left"} width="40%" >
+                    <Box width="100%">
+                      <_Label
+                        letterSpacing={2}
+                        fontSize={"0.8em"}
+                        fontWeight={"bold"}
+                      >
+                        REORDER QUANTITY
+                      </_Label>
+                    </Box>
+                    <Box width="100%">
+                      <HStack width="100%">
+                        <Box width="100%">
+                          <HStack spacing={2}>
+                            <Box width="50%" >
+                              <_Label letterSpacing={1} fontSize="0.8em">
+                                Minimum level:
+                              </_Label>
+                            </Box>
+                            <Box width="50%" transform="translateY(-30%);">
+                              <_InputLeftElement
+                                fontFamily={numberFont}
+                                type="number"
+                                defaultValue={
+                                  reorderQuantity[currentStoreId] || 0
                                 }
-                              }}
-                            ></_InputLeftElement>
-                          </Box>
-                        </HStack>
-                      </Box>
-                    </HStack>
-                  </Box>
-                </VStack>
+                                placeholder="Minimum level"
+                                borderRadius={inputConfig.borderRadius}
+                                borderBottomColor={inputConfig.borderColor}
+                                borderBottomWidth={inputConfig.borderWidth}
+                                size={inputConfig.size}
+                                fontWeight="bold"
+                                fontSize={inputConfig.fontSize}
+                                letterSpacing={inputConfig.letterSpacing}
+                                width={"100%%"}
+                                leftElement={<BsGraphDown color={"#FFBD33"} />}
+                                onBlur={(event: any) => {
+                                  if (event) {
+                                    setField(
+                                      "reorderQuantity",
+                                      event.target.value.trim()
+                                    );
+                                  }
+                                }}
+                              ></_InputLeftElement>
+                            </Box>
+                          </HStack>
+                        </Box>
+                      </HStack>
+                    </Box>
+                  </VStack>
+                  <VStack>
+                    <Box width="100%">
+                      <_Label
+                          letterSpacing={2}
+                          fontSize={"0.8em"}
+                          fontWeight={"bold"}
+                          color="#8B0000"
+                        >
+                          DISABLE DISCOUNT
+                      </_Label>
+                    </Box>
+                    <Box width="100%">
+                      <Checkbox
+                        isChecked={
+                          currentStoreId in isDiscountDisabled
+                            ? isDiscountDisabled[currentStoreId]
+                              ? true
+                              : false
+                            : false
+                        }
+                        onChange={() => {
+                          if (currentStoreId in isDiscountDisabled) {
+                            setField("isDiscountDisabled", isDiscountDisabled[currentStoreId] ^ 1);
+                          } else {
+                            setField("isDiscountDisabled", 0);
+                          }
+                        }}
+                        size="md"
+                        colorScheme="red"
+                      >
+                        <_Label fontSize="0.8em">Is Discount Disabled?</_Label>
+                      </Checkbox>
+                    </Box>
+                  </VStack>
+                </HStack>
               </TabPanel>
 
               <TabPanel padding={0}>

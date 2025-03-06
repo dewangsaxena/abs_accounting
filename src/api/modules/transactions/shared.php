@@ -433,6 +433,12 @@ class Shared {
         // Check whether date,current year transaction is being posted in the same year.
         Shared::validate_new_date_of_transaction($data, $transaction_date);
 
+        // Check for transaction date
+        if(isset($data['initial']['txnDate'])) Shared::check_transaction_older_than_2_days(
+            $data['initial']['txnDate'], 
+            $store_id,
+        );
+
         // Disable Federal Taxes
         $disable_federal_taxes = $data['disableFederalTaxes'] ?? null;
         $disable_provincial_taxes = $data['disableProvincialTaxes'] ?? null;
@@ -1414,6 +1420,19 @@ class Shared {
         $details['sumTotal'] = $initial_details['txn']['sum_total'];
         $details['txnDate'] = $initial_details['txn']['date'];
         $details['txnDiscount'] = $initial_details['txn']['txn_discount'];
+    }
+
+    /**
+     * This method will check transaction older than 2 days.
+     * @param initial_date
+     * @param store_id
+     */
+    public static function check_transaction_older_than_2_days(string $initial_date, int $store_id): void {
+        // Check whether the update is made within 2 Days
+        $initial_date = date_create($initial_date);
+        $current_date = date_create(Utils::get_business_date($store_id));
+        $difference = date_diff($initial_date, $current_date);
+        if($difference -> d > 3) throw new Exception('Cannot Update Transaction after 2 days.');
     }
 
     /**
