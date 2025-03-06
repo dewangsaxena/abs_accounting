@@ -685,21 +685,16 @@ class Shared {
             // Add Filters
             $values[':store_id'] = $store_id;
 
-            // Flag
-            $is_any_filter_selected = false;
-
             // Transaction ID
             if(is_numeric($data['transactionId'] ?? null)) {
                 $query .= ' AND txn_tb.id = :id ';
                 $values[':id'] = $data['transactionId'];
-                $is_any_filter_selected = true;
             }
 
             // Client Id
             if(is_numeric($data['clientId'] ?? null)) {
                 $query .= ' AND client_id = :clientId ';
                 $values[':clientId'] = $data['clientId'];
-                $is_any_filter_selected = true;
             }
 
             // Txn Start Date
@@ -708,7 +703,6 @@ class Shared {
                 $values[':txnStartDate'] = Utils::get_YYYY_mm_dd(
                     Utils::convert_utc_str_timestamp_to_localtime($data['txnStartDate'], $store_id), 
                 );
-                $is_any_filter_selected = true;
             }
 
             // Txn End Date
@@ -717,7 +711,6 @@ class Shared {
                 $values[':txnEndDate'] = Utils::get_YYYY_mm_dd(
                     Utils::convert_utc_str_timestamp_to_localtime($data['txnEndDate'], $store_id), 
                 );
-                $is_any_filter_selected = true;
             }
 
             // Month
@@ -733,50 +726,52 @@ class Shared {
                 if(is_numeric($data['year'] ?? null)) $year = $data['year'];
                 else $year = date('Y');
                 $values[':__month'] = "$year-".$data['month'].'-__';
-
-                $is_any_filter_selected = true;
             }
 
             // Year
             if(is_numeric($data['year'] ?? null)) {
                 $query .= ' AND txn_tb.`date` LIKE :__year ';
                 $values[':__year'] = $data['year'].'-__-__';
-                $is_any_filter_selected = true;
             }
 
             // Transaction Amount
             if(is_numeric($data['transactionAmount'] ?? null)) {
                 $query .= ' AND txn_tb.`sum_total` = :sumTotal ';
                 $values[':sumTotal'] = $data['transactionAmount'];
-                $is_any_filter_selected = true;
+            }
+
+            if(is_numeric($data['transactionAmountGreaterThanEqualTo'] ?? null)) {
+                $query .= ' AND txn_tb.`sum_total` >= :transactionAmountGreaterThanEqualTo ';
+                $values[':transactionAmountGreaterThanEqualTo'] = intval($data['transactionAmountGreaterThanEqualTo']);
+            }
+
+            if(is_numeric($data['transactionAmountLessThanEqualTo'] ?? null)) {
+                $query .= ' AND txn_tb.`sum_total` <= :transactionAmountLessThanEqualTo ';
+                $values[':transactionAmountLessThanEqualTo'] = intval($data['transactionAmountLessThanEqualTo']);
             }
 
             // PO Number
             if(isset($data['poNumber'])) {
                 $query .= ' AND txn_tb.`po` LIKE :poNumber ';
                 $values[':poNumber'] = '%'. $data['poNumber']. '%';
-                $is_any_filter_selected = true;
             }
 
             // Unit Number
             if(isset($data['unitNumber'])) {
                 $query .= ' AND txn_tb.`unit_no` LIKE :unitNumber ';
                 $values[':unitNumber'] = '%'. $data['unitNumber']. '%';
-                $is_any_filter_selected = true;
             }
 
             // VIN 
             if(isset($data['vinNumber'])) {
                 $query .= ' AND txn_tb.vin LIKE :vinNumber ';
                 $values[':vinNumber'] = '%'. $data['vinNumber']. '%';
-                $is_any_filter_selected = true;
             }
 
             // Item Identifier
             if(is_numeric($data['itemIdentifier'] ?? null)) {
                 $query .= ' AND txn_tb.`details` LIKE :itemIdentifier ';
                 $values[':itemIdentifier'] = '%"itemId":'. $data['itemIdentifier'].',%';
-                $is_any_filter_selected = true;
             }
 
             // Find By Core
@@ -789,39 +784,33 @@ class Shared {
             if(isset($data['salesRepId']) && is_numeric($data['salesRepId']) && intval($data['salesRepId']) !== 0) {
                 $query .= ' AND txn_tb.sales_rep_id = :sales_rep_id ';
                 $values[':sales_rep_id'] = $data['salesRepId'];
-                $is_any_filter_selected = true;
             }
 
             // Find Unpaid
             if(($data['findUnpaidTransactions'] ?? 0) === 1) {
                 $query .= ' AND txn_tb.`credit_amount` > 0 ';
-                $is_any_filter_selected = true;
             }
 
             // Find Paid
             if(($data['findPaidTransactions'] ?? 0) === 1) {
                 $query .= ' AND txn_tb.`credit_amount` = 0 ';
-                $is_any_filter_selected = true;
             }
 
             // Find BackOrder
             if(($data['findByBackOrder'] ?? 0) === 1) {
                 $query .= ' AND txn_tb.details LIKE \'%"isBackOrder":1%\'';
-                $is_any_filter_selected = true;
             }
 
             // Search by Sales Invoice Id
             if(is_numeric($data['salesInvoiceId'])) {
                 $query .= ' AND txn_tb.sales_invoice_id = :salesInvoiceId ';
                 $values[':salesInvoiceId'] = intval($data['salesInvoiceId']);
-                $is_any_filter_selected = true;
             }
 
             // Address
             if(isset($data['address'][0])) {
                 $query .= ' AND txn_tb.`shipping_addresses` LIKE :addresses ';
                 $values[':addresses'] = '%'. $data['address'] .'%';
-                $is_any_filter_selected = true;
             }
 
             // Payment Method 
@@ -829,7 +818,6 @@ class Shared {
             if($__payment_method !== -1) {
                 $query .= ' AND txn_tb.`payment_method` = :paymentMethod ';
                 $values[':paymentMethod'] = $data['paymentMethod'];
-                $is_any_filter_selected = true;
             }
 
             // Skip Forgiven Receipts unless explicitly selected.
@@ -846,7 +834,6 @@ class Shared {
                 $query .= ' AND txn_tb.`details` LIKE :txn_fingerprint ';
                 $fingerprint = TRANSACTION_NAMES_ABBR[intval($data['transactionTypeForReceipt'])].'-'. intval($data['transactionNumberForReceipt']);
                 $values[':txn_fingerprint'] = '%"txnId":"'. $fingerprint.'",%';
-                $is_any_filter_selected = true;
             }
 
             $query .= <<<'EOS'

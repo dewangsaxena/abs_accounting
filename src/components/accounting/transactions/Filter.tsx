@@ -117,6 +117,8 @@ interface FilterDetails {
   month?: number;
   year?: number;
   transactionAmount?: number;
+  transactionAmountGreaterThanEqualTo?: number;
+  transactionAmountLessThanEqualTo?: number;
   poNumber?: string;
   unitNumber?: string;
   vinNumber?: string;
@@ -159,6 +161,10 @@ const filterStore = create<FilterDetails>((set, get) => ({
     else if (propertyName === "year") set({ year: value });
     else if (propertyName === "transactionAmount")
       set({ transactionAmount: value });
+    else if (propertyName === "transactionAmountGreaterThanEqualTo")
+      set({ transactionAmountGreaterThanEqualTo: value });
+    else if (propertyName === "transactionAmountLessThanEqualTo")
+      set({ transactionAmountLessThanEqualTo: value });
     else if (propertyName === "poNumber") set({ poNumber: value.trim() });
     else if (propertyName === "unitNumber") set({ unitNumber: value.trim() });
     else if (propertyName === "vinNumber") set({ vinNumber: value.trim() });
@@ -214,6 +220,8 @@ const SearchPanel = ({ type, setShowSpinner }: FilterProps) => {
     txnEndDate,
     year,
     transactionAmount,
+    transactionAmountGreaterThanEqualTo,
+    transactionAmountLessThanEqualTo,
     poNumber,
     unitNumber,
     vinNumber,
@@ -234,6 +242,8 @@ const SearchPanel = ({ type, setShowSpinner }: FilterProps) => {
       txnEndDate: state.txnEndDate,
       year: state.year,
       transactionAmount: state.transactionAmount,
+      transactionAmountGreaterThanEqualTo: state.transactionAmountGreaterThanEqualTo,
+      transactionAmountLessThanEqualTo: state.transactionAmountLessThanEqualTo,
       poNumber: state.poNumber,
       unitNumber: state.unitNumber,
       vinNumber: state.vinNumber,
@@ -580,6 +590,53 @@ const SearchPanel = ({ type, setShowSpinner }: FilterProps) => {
                 ></_Input>
               </Box>
             </HStack>
+
+            <HStack>
+              <Box width="40%">
+                <_Label fontSize="0.75em">Transaction Amount &gt;=:</_Label>
+              </Box>
+              <Box width="60%">
+                <_Input
+                  _key={getUUID()}
+                  defaultValue={transactionAmountGreaterThanEqualTo}
+                  fontSize={".8em"}
+                  fontFamily={numberFont}
+                  type="number"
+                  onBlur={(event: any) => {
+                    setProperty(
+                      "transactionAmountGreaterThanEqualTo",
+                      event && event.target
+                        ? parseFloat(event.target.value)
+                        : undefined
+                    );
+                  }}
+                ></_Input>
+              </Box>
+            </HStack>
+
+            <HStack>
+              <Box width="40%">
+                <_Label fontSize="0.75em">Transaction Amount &lt;=:</_Label>
+              </Box>
+              <Box width="60%">
+                <_Input
+                  _key={getUUID()}
+                  defaultValue={transactionAmountLessThanEqualTo}
+                  fontSize={".8em"}
+                  fontFamily={numberFont}
+                  type="number"
+                  onBlur={(event: any) => {
+                    setProperty(
+                      "transactionAmountLessThanEqualTo",
+                      event && event.target
+                        ? parseFloat(event.target.value)
+                        : undefined
+                    );
+                  }}
+                ></_Input>
+              </Box>
+            </HStack>
+
             {/* P.O */}
             {showExtraFilters && (
               <HStack>
