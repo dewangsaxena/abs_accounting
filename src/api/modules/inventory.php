@@ -388,13 +388,20 @@ class Inventory {
                 $item_id = intval($data['id']);
                 $values[':id'] = $item_id;
                 $is_inactive = $data['isInactive'] ?? [];
-                if (!array_key_exists($store_id, $data['isInactive'])) $is_inactive[$store_id] = 0;
+                if (!array_key_exists($store_id, $is_inactive)) $is_inactive[$store_id] = 0;
 
                 // Last Modified Timestamp
                 $values[':last_modified_timestamp'] = $data['lastModifiedTimestamp'];
 
                 // Convert to JSON 
                 $values[':is_inactive'] = json_encode($is_inactive, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+
+                // Disable Discount Flag
+                $is_discount_disabled = $data['isDiscountDisabled'] ?? [];
+                if(!array_key_exists($store_id, $is_discount_disabled)) $is_discount_disabled[$store_id] = 0;
+                $values[':is_discount_disabled'] = json_encode($is_discount_disabled, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+
+                // Update Item
                 $response = self::update($db, $values);
                 if ($response['status'] === false) throw new Exception($response['message']);
 
