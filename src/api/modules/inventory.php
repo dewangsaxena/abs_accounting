@@ -547,7 +547,7 @@ class Inventory {
                     ];
 
                     /* Check whether item discount is disabled. */
-                    if (self::check_item_discount_disabled($item_id, $store_id)) $items[$item_id]['disableDiscount'] = true;
+                    if(isset($is_discount_disabled[$store_id]) && $is_discount_disabled[$store_id] == 1) $items[$item_id]['disableDiscount'] = true;
 
                     // Add Is Inactive 
                     $items[$item_id]['isInactive'] = $is_inactive;
