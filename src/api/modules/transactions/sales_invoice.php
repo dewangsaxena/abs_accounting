@@ -196,11 +196,12 @@ class SalesInvoice {
         // Validate New Date(if any)
         Shared::validate_new_date_of_transaction($data, $transaction_date);
 
-        // Check whether the update is made within 2 Days
-        $txn_date = date_parse_from_format('Y-m-d', $transaction_date);
-        $current_date = date_parse_from_format('Y-m-d', Utils::get_business_date($store_id));
-        if(abs($txn_date['day'] - $current_date['day']) > 2) throw new Exception('Cannot Update Transaction after 2 days.');
-
+        // Check for transaction date
+        if(isset($data['initial']['txnDate'])) Shared::check_transaction_older_than_2_days(
+            $data['initial']['txnDate'], 
+            $store_id,
+        );
+        
         // Disable Federal Taxes
         $disable_federal_taxes = $data['disableFederalTaxes'] ?? null;
         $disable_provincial_taxes = $data['disableProvincialTaxes'] ?? null;

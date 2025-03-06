@@ -1417,6 +1417,18 @@ class Shared {
     }
 
     /**
+     * This method will check transaction older than 2 days.
+     * @param initial_date
+     * @param store_id
+     */
+    public static function check_transaction_older_than_2_days(string $initial_date, int $store_id): void {
+        // Check whether the update is made within 2 Days
+        $txn_date = date_parse_from_format('Y-m-d', $initial_date);
+        $current_date = date_parse_from_format('Y-m-d', Utils::get_business_date($store_id));
+        if(abs($txn_date['day'] - $current_date['day']) > 2) throw new Exception('Cannot Update Transaction after 2 days.');
+    }
+
+    /**
      * This method will validate year of transaction. This will check whether the transaction when updated
      * is being posted in the same year of the initial transaction.
      * @param data
