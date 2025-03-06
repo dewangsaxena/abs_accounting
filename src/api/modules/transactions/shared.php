@@ -1448,6 +1448,9 @@ class Shared {
 
             // Only I can change the Transaction Date.
             if(intval($_SESSION['user_id'] ?? 0) !== SpecialExceptions::ROOT && $new_date != $old_date) throw new Exception('Cannot Change Date of Transaction.');
+
+            // Only Allow Date Change if the transaction is upto 2 days old.
+            if(abs($new_date['day'] - $old_date['day']) > 2) throw new Exception('Cannot update transactions after 2 days.');
         }
     }
 
