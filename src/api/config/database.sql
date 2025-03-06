@@ -204,7 +204,7 @@ CREATE TABLE IF NOT EXISTS items(
     frequency JSON NOT NULL DEFAULT '{}',
 
     /* Discount Disabled */
-    discount_disabled JSON NOT NULL DEFAULT '{}',
+    is_discount_disabled JSON NOT NULL DEFAULT '{}',
 
     /* Dates */ 
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
