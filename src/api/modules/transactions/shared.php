@@ -752,14 +752,14 @@ class Shared {
             }
 
             if(is_numeric($data['transactionAmountGreaterThanEqualTo'] ?? null)) {
-                $query .= ' AND txn_tb.`sum_total` >= :sumTotal ';
-                $values[':sumTotal'] = $data['transactionAmountGreaterThanEqualTo'];
+                $query .= ' AND txn_tb.`sum_total` >= :transactionAmountGreaterThanEqualTo ';
+                $values[':transactionAmountGreaterThanEqualTo'] = $data['transactionAmountGreaterThanEqualTo'];
                 $is_any_filter_selected = true;
             }
 
             if(is_numeric($data['transactionAmountLessThanEqualTo'] ?? null)) {
-                $query .= ' AND txn_tb.`sum_total` <= :sumTotal ';
-                $values[':sumTotal'] = $data['transactionAmountLessThanEqualTo'];
+                $query .= ' AND txn_tb.`sum_total` <= :transactionAmountLessThanEqualTo ';
+                $values[':transactionAmountLessThanEqualTo'] = $data['transactionAmountLessThanEqualTo'];
                 $is_any_filter_selected = true;
             }
 
