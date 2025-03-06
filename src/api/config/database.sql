@@ -17,6 +17,9 @@ upload_max_filesize = 1024M
 post_max_size = 1024M
 date.timezone=UTC
 
+[config.inc.php]
+$cfg['ExecTimeLimit'] = 0;
+
 @author Dewang Saxena, <dewang2610@gmail.com>
 @date July 13, 2023
 */
