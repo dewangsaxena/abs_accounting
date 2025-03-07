@@ -429,11 +429,7 @@ const InventoryAndServices = () => {
                     ></ActionGroup>
                 </Box>
                 <ActionGroupDivider count={2}></ActionGroupDivider>
-                <Box
-                    visibility={
-                        systemConfigMode === MODE_WASH ? "hidden" : "visible"
-                    }
-                >
+                <Box>
                     <ActionGroup
                         elementWidth={180}
                         title="Fetch"
@@ -443,18 +439,19 @@ const InventoryAndServices = () => {
                                 label: "Low Stock",
                                 onClick: () => {
                                     if (systemConfigMode !== MODE_PARTS) return;
-                                    window.open(
-                                        `${APP_HOST}/api.php?action=low_stock&store_id=${localStorage.getItem(
-                                            "storeId"
-                                        )}`
-                                    );
+                                    else {
+                                        window.open(
+                                            `${APP_HOST}/api.php?action=low_stock&store_id=${localStorage.getItem(
+                                                "storeId"
+                                            )}`
+                                        );
+                                    }
                                 },
                             },
                             {
                                 icon: <PiWaveSineDuotone color={iconColor} />,
                                 label: "Frequency",
                                 onClick: () => {
-                                    if (systemConfigMode !== MODE_PARTS) return;
                                     window.open("/item_frequency", "_blank");
                                 },
                             },
