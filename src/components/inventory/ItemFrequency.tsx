@@ -22,7 +22,9 @@ import {
 import {
   AttributeType,
   AUTO_SUGGEST_MIN_INPUT_LENGTH,
+  MODE_PARTS,
   MONTHS,
+  systemConfigMode,
   UNKNOWN_SERVER_ERROR_MSG,
 } from "../../shared/config";
 import { useState } from "react";
@@ -552,18 +554,22 @@ const Report = () => {
             <_Label fontSize={"0.8em"} letterSpacing={2} color="green">
               <i>{description}</i>
             </_Label>
-            <_Label>~</_Label>
-            <Tooltip label="Existing Quantity">
-              <Badge
-                fontSize="0.8em"
-                letterSpacing={2}
-                fontWeight="bold"
-                bgColor="transparent"
-                fontFamily={numberFont}
-              >
-                {existingQuantity}
-              </Badge>
-            </Tooltip>
+            {systemConfigMode === MODE_PARTS && <>
+              <_Label>~</_Label>
+              <Tooltip label="Existing Quantity">
+                <Badge
+                  fontSize="0.8em"
+                  letterSpacing={2}
+                  fontWeight="bold"
+                  bgColor="transparent"
+                  fontFamily={numberFont}
+                >
+                  {existingQuantity}
+                </Badge>
+              </Tooltip>
+              </>
+            }
+            
           </HStack>
           <_Divider margin={0} />
           {yearsKeys.length > 0 ? (
