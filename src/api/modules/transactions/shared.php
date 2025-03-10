@@ -434,10 +434,14 @@ class Shared {
         Shared::validate_new_date_of_transaction($data, $transaction_date);
 
         // Check for transaction date
-        if(isset($data['initial']['txnDate'])) Shared::check_transaction_older_than_2_days(
-            $data['initial']['txnDate'], 
-            $store_id,
-        );
+        /* Make an Exception for J.LOEWEN MECHANICAL LTD */
+        if($client_id !== 14376) {
+            if(isset($data['initial']['txnDate'])) Shared::check_transaction_older_than_2_days(
+                $data['initial']['txnDate'], 
+                $store_id,
+            );
+        }
+        
 
         // Disable Federal Taxes
         $disable_federal_taxes = $data['disableFederalTaxes'] ?? null;
