@@ -441,7 +441,6 @@ class Shared {
                 $store_id,
             );
         }
-        
 
         // Disable Federal Taxes
         $disable_federal_taxes = $data['disableFederalTaxes'] ?? null;
