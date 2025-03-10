@@ -1562,6 +1562,7 @@ function fix_inventory_value(int $store_id): void {
         echo $e -> getMessage();
     }
 }
-fix_inventory_value(StoreDetails::EDMONTON);
+fix_balance_sheet();
+// fix_inventory_value(StoreDetails::EDMONTON);
 
 ?>
