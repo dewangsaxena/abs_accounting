@@ -1419,7 +1419,7 @@ class Shared {
         $initial_date = date_create($initial_date);
         $current_date = date_create(Utils::get_business_date($store_id));
         $difference = date_diff($initial_date, $current_date);
-        if($difference -> d > 3) throw new Exception('Cannot Update Transaction after 2 days.');
+        if($difference -> d > 2) throw new Exception('Cannot Update Transaction after 2 days.');
     }
 
     /**
