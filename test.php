@@ -11,7 +11,7 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/flyer.php";
 // Inventory::generate_inventory_list(StoreDetails::EDMONTON);die;
 
 // Inventory::fetch_low_stock(StoreDetails::EDMONTON);
-function generate_list(int $store_id) {
+function generate_list(int $store_id, bool $do_print=true) : float {
     $db = get_db_instance();
     $query = <<<'EOS'
     SELECT 
@@ -72,13 +72,17 @@ function generate_list(int $store_id) {
         EOS;
     }
 
-    $total_value = Utils::number_format($total_value, 2);
-    $code .= "</table><br><br>Total Inventory Value: &nbsp;&nbsp;&nbsp;&nbsp;<label style='letter-spacing: 2px;font-weight:bold;'>\$ $total_value</label>";
+    
+    if($do_print) {
+        $total_value = Utils::number_format($total_value, 2);
+        $code .= "</table><br><br>Total Inventory Value: &nbsp;&nbsp;&nbsp;&nbsp;<label style='letter-spacing: 2px;font-weight:bold;'>\$ $total_value</label>";
+        echo $code;
+    }
 
-    echo $code;
+    return $total_value;
 }
 
-// generate_list(StoreDetails::EDMONTON);die;
+// generate_list(StoreDetails::EDMONTON, true);die;
 
 function fetch_inventory(int $store_id): void {
     $db = get_db_instance();
@@ -1509,4 +1513,55 @@ function fetch_item_details_by_identifiers(int $store_id): void {
 //     path_to_attachment: "{$_SERVER['DOCUMENT_ROOT']}/tmp/flyer.jpg",
 //     file_name: 'Flyer_Edmonton_March_2025',
 // );
+
+function fix_balance_sheet(): void {
+    try {
+        $db = get_db_instance();
+        $db -> beginTransaction();
+        $amount = 45281.2500 + 69746.2500;
+
+        $accounts = AccountsConfig::ACCOUNTS;
+        $accounts[AccountsConfig::CHEQUE_RECEIVABLES] = -$amount;
+        BalanceSheetActions::update_from($accounts, '2025-01-01', StoreDetails::EDMONTON, $db);
+        $db -> commit();
+    }
+    catch(Exception $e) {
+        $db -> rollBack();
+        echo $e -> getMessage();
+    }
+}
+
+function fix_inventory_value(int $store_id): void {
+    $db =  get_db_instance();
+    try {
+        $db -> beginTransaction();
+
+        $statement = $db -> prepare('SELECT id, `statement` FROM balance_sheet WHERE store_id = :store_id ORDER BY id DESC LIMIT 1;');
+        $statement -> execute([':store_id' => $store_id]);
+        $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
+        $balance_sheet = json_decode($result[0]['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+        $balance_sheet[AccountsConfig::INVENTORY_A] = generate_list($store_id, false);
+        $balance_sheet = json_encode($balance_sheet, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+
+        $statement = $db -> prepare(<<<'EOS'
+        UPDATE 
+            balance_sheet
+        SET 
+            `statement` = :statement
+        WHERE 
+            id = :id;
+        EOS);
+        $is_successful = $statement -> execute([':id' => $result[0]['id'], ':statement' => $balance_sheet]);
+        
+        if($is_successful !== true && $statement -> rowCount() < 1) throw new Exception('Unable to Update Balance Sheet.');
+        $db -> commit();
+        echo 'Successfully Updated Balance Sheet';
+    }
+    catch(Exception $e) {
+        $db -> rollBack();
+        echo $e -> getMessage();
+    }
+}
+fix_inventory_value(StoreDetails::EDMONTON);
+
 ?>
