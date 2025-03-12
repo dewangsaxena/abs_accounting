@@ -8,7 +8,7 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_aged_
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/suppressions.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/flyer.php";
 
-Inventory::generate_inventory_list(StoreDetails::CALGARY);die;
+// Inventory::generate_inventory_list(StoreDetails::CALGARY);die;
 
 // Inventory::fetch_low_stock(StoreDetails::EDMONTON);
 function generate_list(int $store_id, bool $do_print=true) : float {
@@ -82,7 +82,7 @@ function generate_list(int $store_id, bool $do_print=true) : float {
     return $total_value;
 }
 
-echo generate_list(StoreDetails::SLAVE_LAKE, false);die;
+// echo generate_list(StoreDetails::SLAVE_LAKE, false);die;
 
 function fetch_inventory(int $store_id): void {
     $db = get_db_instance();
@@ -1565,4 +1565,41 @@ function fix_inventory_value(int $store_id): void {
 // fix_balance_sheet();
 // fix_inventory_value(StoreDetails::SLAVE_LAKE);
 
+function update_last_sold_for_items(int $store_id): void {
+    $db = get_db_instance();
+    try {
+        $db -> beginTransaction();
+
+        $statement = $db -> prepare('SELECT id FROM items WHERE id > 0 and id <= 1000;');
+        $statement -> execute();
+        $results = $statement -> fetchAll(PDO::FETCH_ASSOC);
+        $items = [];
+        foreach($results as $result) $items[]= $result['id'];
+
+        $statement = $db -> prepare('SELECT id, modified FROM sales_invoice WHERE store_id = :store_id AND `details` LIKE :item_tag ORDER BY `date` DESC LIMIT 1;');
+        
+        $counter = 0;
+        foreach($items as $item) {
+            $item_id = $item;
+            $statement -> execute([
+                ':store_id' => $store_id,
+                ':item_tag' => "%\"itemId\":$item_id,%",
+            ]);
+            $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
+            if(count($result) > 0) {
+                echo $item_id. '<br>';
+                print_r($result);
+                ++$counter;
+            }
+        }
+
+        $db -> commit();
+    }
+    catch(Exception $e) {
+        $db -> rollBack();
+        echo $e -> getMessage();
+    }
+}
+
+update_last_sold_for_items(StoreDetails::EDMONTON);
 ?>
