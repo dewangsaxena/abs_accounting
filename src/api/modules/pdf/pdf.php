@@ -2861,6 +2861,7 @@ class __GenerateInventory {
             $description = $item['description'];
             $quantity = $item['quantity'];
             $value = Utils::number_format($item['value']);
+            if($value <= 0) continue;
             $buying_cost = Utils::number_format($item['buying_cost']);
             $item_code .= <<<EOS
             <tr>
@@ -2873,7 +2874,6 @@ class __GenerateInventory {
             EOS;
 
             $total_inventory_value += $item['value'];
-            break;
         }
 
         $total_inventory_value = Utils::number_format($total_inventory_value);
