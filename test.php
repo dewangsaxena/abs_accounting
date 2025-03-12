@@ -82,7 +82,7 @@ function generate_list(int $store_id, bool $do_print=true) : float {
     return $total_value;
 }
 
-// echo generate_list(StoreDetails::SLAVE_LAKE, false);die;
+echo generate_list(StoreDetails::SLAVE_LAKE, false);die;
 
 function fetch_inventory(int $store_id): void {
     $db = get_db_instance();
