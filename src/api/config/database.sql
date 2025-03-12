@@ -206,6 +206,9 @@ CREATE TABLE IF NOT EXISTS items(
     /* Discount Disabled */
     is_discount_disabled JSON NOT NULL DEFAULT '{}',
 
+    /* Last Sold */
+    last_sold JSON NOT NULL DEFAULT '{}',
+
     /* Dates */ 
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modified TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
