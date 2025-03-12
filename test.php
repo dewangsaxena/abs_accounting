@@ -82,7 +82,7 @@ function generate_list(int $store_id, bool $do_print=true) : float {
     return $total_value;
 }
 
-// generate_list(StoreDetails::EDMONTON, true);die;
+echo generate_list(StoreDetails::EDMONTON, false);die;
 
 function fetch_inventory(int $store_id): void {
     $db = get_db_instance();
@@ -1562,7 +1562,7 @@ function fix_inventory_value(int $store_id): void {
         echo $e -> getMessage();
     }
 }
-fix_balance_sheet();
+// fix_balance_sheet();
 // fix_inventory_value(StoreDetails::EDMONTON);
 
 ?>
