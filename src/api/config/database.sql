@@ -200,9 +200,6 @@ CREATE TABLE IF NOT EXISTS items(
     /* Images */ 
     images JSON NOT NULL DEFAULT '{}',
 
-    /* Frequency */
-    frequency JSON NOT NULL DEFAULT '{}',
-
     /* Discount Disabled */
     is_discount_disabled JSON NOT NULL DEFAULT '{}',
 
