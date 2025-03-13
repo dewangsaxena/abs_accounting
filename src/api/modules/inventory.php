@@ -1705,4 +1705,41 @@ class Inventory {
             return ['status' => false, 'message' => $e->getMessage()];
         }
     }
+
+    /**
+     * This method will update last sold for items.
+     * @param transaction_id
+     * @param item_ids
+     * @param date
+     * @param store_id
+     * @param db
+     */
+    public static function update_last_sold_for_items(int &$transaction_id, array &$item_ids, string &$date, int &$store_id, PDO &$db): void {
+
+        // Fetch Item Details
+        $query = 'SELECT id, last_sold FROM items WHERE id IN (:placeholder);';
+        $result = Utils::mysql_in_placeholder_pdo_substitute($item_ids, $query);
+        $query = $result['query'];
+        $params = $result['values'];
+        $statement_fetch = $db -> prepare($query);
+        $statement_fetch -> execute($params);
+        $result = $statement_fetch -> fetchAll(PDO::FETCH_ASSOC);
+
+        // Update
+        $statement_update = $db -> prepare('UPDATE items SET last_sold = :last_sold WHERE id = :id;');
+        foreach($result as $r) {
+            $item_id = intval($r['id']);
+            $last_sold = json_decode($r['last_sold'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+
+            // Update Last Sold Date
+            $last_sold[$store_id] = $date;
+
+            // Convert to json
+            $last_sold = json_encode($last_sold, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+
+            // Update 
+            $is_successful = $statement_update -> execute([':last_sold' => $last_sold, ':id' => $item_id]);
+            if($is_successful !== true && $statement_update -> rowCount() < 1) throw new Exception('Cannot Update Last Sold for txn #: '. $transaction_id);
+        }
+    }
 }
