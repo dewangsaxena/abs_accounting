@@ -1570,30 +1570,48 @@ function update_last_sold_for_items(int $store_id): void {
     try {
         $db -> beginTransaction();
 
-        $statement = $db -> prepare('SELECT id FROM items WHERE id > 0 and id <= 1000;');
-        $statement -> execute();
-        $results = $statement -> fetchAll(PDO::FETCH_ASSOC);
-        $items = [];
-        foreach($results as $result) $items[]= $result['id'];
+        $statement = $db -> prepare('SELECT `date`, `details` FROM sales_invoice WHERE store_id = :store_id;');
+        $statement -> execute([':store_id' => $store_id]);
+        $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
 
-        $statement = $db -> prepare('SELECT id, modified FROM sales_invoice WHERE store_id = :store_id AND `details` LIKE :item_tag ORDER BY `date` DESC LIMIT 1;');
-        
-        $counter = 0;
-        foreach($items as $item) {
-            $item_id = $item;
-            $statement -> execute([
-                ':store_id' => $store_id,
-                ':item_tag' => "%\"itemId\":$item_id,%",
-            ]);
-            $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
-            if(count($result) > 0) {
-                echo $item_id. '<br>';
-                print_r($result);
-                ++$counter;
+        $last_sold_dates = [];
+        foreach($result as $r) {
+            $date = $r['date'];
+            $details = json_decode($r['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+            foreach($details as $item) {
+                if(isset($last_sold_dates[$item['itemId']]) === false) $last_sold_dates[$item['itemId']] = '';
+                if($date > $last_sold_dates[$item['itemId']]) $last_sold_dates[$item['itemId']] = $date;
             }
         }
 
+        $statement_fetch = $db -> prepare('SELECT id, last_sold FROM items WHERE id = :id;');
+        $statement_update = $db -> prepare(<<<'EOS'
+        UPDATE 
+            items
+        SET
+            last_sold = :last_sold
+        WHERE 
+            id = :id;
+        EOS);
+
+        $item_ids = array_keys($last_sold_dates);
+        foreach($item_ids as $item_id) {
+            $statement_fetch -> execute([':id' => $item_id]);
+            $last_sold = $statement_fetch -> fetchAll(PDO::FETCH_ASSOC)[0]['last_sold'];
+            $last_sold = json_decode($last_sold, true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+            $last_sold[$store_id] = $last_sold_dates[$item_id];
+
+            // Update 
+            $last_sold = json_encode($last_sold, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+            $is_successful = $statement_update -> execute([':last_sold' => $last_sold, ':id' => $item_id]);
+            if($is_successful !== true || $statement_update -> rowCount() < 1) throw new Exception(
+                'Cannot update item: '. $item_id
+            );
+        }
+
         $db -> commit();
+
+        echo 'Updated Last Sold for Items.';
     }
     catch(Exception $e) {
         $db -> rollBack();
@@ -1601,5 +1619,5 @@ function update_last_sold_for_items(int $store_id): void {
     }
 }
 
-update_last_sold_for_items(StoreDetails::EDMONTON);
+update_last_sold_for_items(StoreDetails::CALGARY);
 ?>
