@@ -2868,8 +2868,8 @@ class __GenerateInventory {
                 <td>$identifier</td>
                 <td><i>$description</i></td>
                 <td>$quantity</td>
-                <td>$value</td>
                 <td>$buying_cost</td>
+                <td>$value</td>
             </tr>
             EOS;
 
@@ -2929,6 +2929,100 @@ class __GenerateInventory {
         </table>
         <div style="margin-top:5%">
             <span style="font-size: 1em;">TOTAL INVENTORY VALUE: $ $total_inventory_value</span>
+        </div>
+        </body>
+        </html>
+        EOS;
+    }
+
+    /**
+     * This method will generate dead inventory list.
+     * @param item_details
+     * @param month
+     * @param store_id
+     */
+    public static function generate_dead_inventory_list(int $store_id, int $month): void {
+        $ret_value = Inventory::get_dead_inventory($store_id, $month);
+        $item_details = $ret_value['dead_stock'];
+        $total_dead_inventory_value = Utils::number_format($ret_value['value'], 2);
+        $store_details = 
+        StoreDetails::STORE_DETAILS[$store_id]['name']. 
+        " ~ <u style='color:#800000;'>LAST SOLD $month MONTHS AGO</u>".
+        ' ~ AS ON '. 
+        Utils::format_to_human_readable_date(Utils::get_business_date($store_id));
+
+        $item_code = '';
+        foreach($item_details as $item) {
+
+            $identifier = $item['identifier'];
+            $description = $item['description'];
+            $quantity = $item['quantity'];
+            $value = Utils::number_format($item['value']);
+            if($value <= 0) continue;
+            $buying_cost = Utils::number_format($item['buying_cost']);
+            $last_sold = Utils::format_to_human_readable_date($item['last_sold']);
+            $item_code .= <<<EOS
+            <tr>
+                <td>$identifier</td>
+                <td><i>$description</i></td>
+                <td>$quantity</td>
+                <td>$buying_cost</td>
+                <td>$value</td>
+                <td>$last_sold</td>
+            </tr>
+            EOS;
+        }
+
+        echo <<<EOS
+        <html>
+        <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+        <style>
+        body {
+            font-family: "Roboto Mono", monospace;
+            font-optical-sizing: auto;
+            font-weight: light;
+            font-style: normal;
+        }
+        th {
+            letter-spacing: 0.1em;
+            font-size: 1em;
+            text-transform: uppercase;
+            font-weight: normal;
+            text-align: left;
+            padding: 5px;
+        }
+
+        td {
+            letter-spacing: 0.1em;
+            font-size: 1em;
+            text-transform: uppercase;
+            font-weight: normal;
+            padding: 5px;
+        }
+        </style>
+        </head>
+        <body>
+        <div style="margin-bottom: 0.8%;">
+            <h2 style="text-transform: uppercase;">DEAD INVENTORY FOR $store_details</h2>
+        </div>
+        <table style="border-collapse:collapse">
+            <thead>
+                <tr style="border-bottom: 2px dashed black;">
+                    <th>Identifier</th>
+                    <th>Description</th>
+                    <th>Qty.</th>
+                    <th>$ Per Item</th>
+                    <th>Value</th>
+                    <th>Last Sold</th>
+                </tr>
+            </thead>
+        $item_code
+        </table>
+        <div style="margin-top:5%">
+            <span style="font-size: 1em;">TOTAL INVENTORY VALUE: $ $total_dead_inventory_value</span>
         </div>
         </body>
         </html>
@@ -3186,6 +3280,15 @@ class GeneratePDF {
      */
     public static function generate_inventory_list(array $details, int $store_id): void {
         __GenerateInventory::generate_inventory_list($details, $store_id);
+    }
+
+    /**
+     * This method will generate dead inventory list.
+     * @param store_id
+     * @param month
+     */
+    public static function generate_dead_inventory_list(int $store_id, int $month): void {
+        __GenerateInventory::generate_dead_inventory_list($store_id, $month);
     }
 
     /**

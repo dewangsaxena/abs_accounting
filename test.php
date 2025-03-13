@@ -1619,5 +1619,7 @@ function update_last_sold_for_items(int $store_id): void {
     }
 }
 
-update_last_sold_for_items(StoreDetails::EDMONTON);
+// update_last_sold_for_items(StoreDetails::EDMONTON);
+// print_r(Inventory::get_dead_inventory(StoreDetails::EDMONTON));
+GeneratePDF::generate_dead_inventory_list(StoreDetails::EDMONTON, 3);
 ?>

@@ -1745,4 +1745,68 @@ class Inventory {
             if($is_successful !== true && $statement_update -> rowCount() < 1) throw new Exception('Cannot Update Last Sold for transaction.');
         }
     }
+
+    /**
+     * This method will generate dead stock report.
+     * @param store_id
+     * @param month
+     * @return array
+     */
+    public static function get_dead_inventory(int $store_id, int $month): array {
+        $db = get_db_instance();
+
+        $statement = $db -> prepare(<<<'EOS'
+        SELECT 
+            i.identifier, 
+            i.`description`, 
+            i.last_sold,
+            i.prices,
+            inv.quantity
+        FROM
+            items AS i
+        LEFT JOIN 
+            inventory AS inv
+        ON 
+            i.id = inv.item_id
+        WHERE
+            last_sold LIKE :last_sold_tag
+        AND 
+            inv.quantity > 0
+        AND
+            inv.store_id = :store_id;
+        EOS);
+        $statement -> execute([':last_sold_tag' => "%\"$store_id\":%", ':store_id' => $store_id]);
+        $results = $statement -> fetchAll(PDO::FETCH_ASSOC);
+
+        $dead_stock = [];
+        $total_dead_inventory_value = 0;
+        foreach($results as $result) {
+            $last_sold = json_decode($result['last_sold'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+            if(isset($last_sold[$store_id]) === false) continue;
+            $date_diff = Utils::get_difference_from_current_date(
+                $last_sold[$store_id],
+                Utils::get_business_date($store_id),
+                $store_id,
+            );
+
+            if($date_diff['m'] >= $month) {
+                $prices = json_decode($result['prices'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+                if(isset($prices[$store_id]) === false) continue;
+                $value = $prices[$store_id]['buyingCost'] * $result['quantity'];
+                $dead_stock[] = [
+                    'identifier' => $result['identifier'],
+                    'description' => $result['description'], 
+                    'last_sold' => $last_sold[$store_id],
+                    'quantity' => $result['quantity'],
+                    'buying_cost' => $prices[$store_id]['buyingCost'],
+                    'value' => $value,
+                ];
+                $total_dead_inventory_value += $value;
+            }
+        }
+        return [
+            'dead_stock' => $dead_stock,
+            'value' => $total_dead_inventory_value,
+        ];
+    }
 }
