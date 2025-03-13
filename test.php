@@ -1619,5 +1619,5 @@ function update_last_sold_for_items(int $store_id): void {
     }
 }
 
-update_last_sold_for_items(StoreDetails::CALGARY);
+update_last_sold_for_items(StoreDetails::EDMONTON);
 ?>
