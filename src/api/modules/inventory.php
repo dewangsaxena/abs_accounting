@@ -1708,13 +1708,16 @@ class Inventory {
 
     /**
      * This method will update last sold for items.
-     * @param transaction_id
-     * @param item_ids
+     * @param items
      * @param date
      * @param store_id
      * @param db
      */
-    public static function update_last_sold_for_items(int &$transaction_id, array &$item_ids, string &$date, int &$store_id, PDO &$db): void {
+    public static function update_last_sold_for_items(array &$items, string &$date, int &$store_id, PDO &$db): void {
+
+        // Fetch item ids
+        $item_ids = [];
+        foreach($items as $item) $item_ids[]= $item['itemId'];
 
         // Fetch Item Details
         $query = 'SELECT id, last_sold FROM items WHERE id IN (:placeholder);';
@@ -1739,7 +1742,7 @@ class Inventory {
 
             // Update 
             $is_successful = $statement_update -> execute([':last_sold' => $last_sold, ':id' => $item_id]);
-            if($is_successful !== true && $statement_update -> rowCount() < 1) throw new Exception('Cannot Update Last Sold for txn #: '. $transaction_id);
+            if($is_successful !== true && $statement_update -> rowCount() < 1) throw new Exception('Cannot Update Last Sold for transaction.');
         }
     }
 }
