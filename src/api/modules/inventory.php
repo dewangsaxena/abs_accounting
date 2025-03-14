@@ -1843,7 +1843,7 @@ class Inventory {
             $items_frequency = [];
 
             // Fetch Sales Invoice
-            $statement = $db -> prepare('SELECT * FROM sales_invoice WHERE store_id = :store_id AND `date` LIKE :year;');
+            $statement = $db -> prepare('SELECT `details` FROM sales_invoice WHERE store_id = :store_id AND `date` LIKE :year;');
             $statement -> execute($params);
             $invoices = $statement -> fetchAll(PDO::FETCH_ASSOC);
 
@@ -1857,7 +1857,7 @@ class Inventory {
             }
 
             // Fetch Sales Returns
-            $statement = $db -> prepare('SELECT * FROM sales_return WHERE store_id = :store_id AND `date` LIKE :year;');
+            $statement = $db -> prepare('SELECT `details` FROM sales_return WHERE store_id = :store_id AND `date` LIKE :year;');
             $statement -> execute($params);
             $sales_returns = $statement -> fetchAll(PDO::FETCH_ASSOC);
 

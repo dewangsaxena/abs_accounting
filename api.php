@@ -78,6 +78,10 @@ if (isset($_GET['action'])) {
         Inventory::generate_dead_inventory(intval($_GET['storeId']), intval($_GET['month']));
         die;
     }
+    else if($action === 'fetch_item_sold_report' && is_numeric($_GET['storeId'] ?? null) && is_numeric($_GET['year'] ?? null)) {
+        Inventory::fetch_quantity_sold_for_all_items(intval($_GET['storeId']), intval($_GET['year']));
+        die;
+    }
     else {
         require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/pdf/pdf.php";
         $transaction_type = intval($_GET['t'] ?? 0);
