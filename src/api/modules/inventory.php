@@ -1753,6 +1753,8 @@ class Inventory {
      * @return array
      */
     public static function get_dead_inventory(int $store_id, int $month): array {
+
+        $start = microtime(true);
         $db = get_db_instance();
 
         $statement = $db -> prepare(<<<'EOS'
@@ -1808,6 +1810,8 @@ class Inventory {
                 $total_dead_inventory_value += $value;
             }
         }
+        $end = microtime(true);
+        print_r($end-$start);
         return [
             'dead_stock' => $dead_stock,
             'value' => $total_dead_inventory_value,
