@@ -1820,8 +1820,9 @@ class Inventory {
      * @param month
      */
     public static function generate_dead_inventory(int $store_id, int $month): void {
+        $inventory_details = self::get_dead_inventory($store_id, $month);
         GeneratePDF::generate_dead_inventory_list(
-            self::get_dead_inventory($store_id, $month), 
+            $inventory_details, 
             $store_id, 
             $month
         );
