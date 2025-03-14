@@ -25,11 +25,12 @@ import {
     _Divider,
     _InputLeftElement,
     _Label,
+    _Select,
 } from "../../../shared/Components";
 import { CiDiscount1 } from "react-icons/ci";
 import { useState } from "react";
 import { BiSolidLock, BiSolidLockOpen } from "react-icons/bi";
-
+import { IoStopCircleOutline } from "react-icons/io5";
 import { RxUpdate } from "react-icons/rx";
 import {
     ProfitMarginIndex,
@@ -374,6 +375,7 @@ const ProfitMarginsHandler = () => {
 };
 
 const InventoryAndServices = () => {
+    const [deadInventoryMonth, setDeadInventoryMonth] = useState<number>(3);
     return (
         <>
             <CanvasGrid>
@@ -458,9 +460,23 @@ const InventoryAndServices = () => {
                         ]}
                     ></ActionGroup>
                 </Box>
+                <Box>
+                    <_Label fontSize="0.8em" textTransform={"uppercase"}>Generate Dead Inventory Report</_Label>
+                    <_Divider margin={2}/>
+                    <HStack>
+                        <_Select onChange={(event:any) => {
+                            setDeadInventoryMonth(parseInt(event.target.value));
+                        }} options={{3: "3 Months", 6: "6 Months", 9: "9 Months", 12: "12 Months"}}></_Select>
+                        <_Button bgColor="black" fontSize={"1.2em"} icon={<IoStopCircleOutline color="#E3242B"/>}label="Fetch Dead Stock" onClick={() => {
+                            window.open(
+                                `${APP_HOST}/api.php?action=dead_inventory_report&month=${deadInventoryMonth}&storeId=${localStorage.getItem("storeId")}`, 
+                                "_blank"
+                            );
+                        }}></_Button>
+                    </HStack>
+                </Box>
+                <_Divider/><_Divider/>
                 <ProfitMarginsHandler />
-                <_Divider></_Divider>
-                <_Divider></_Divider>
             </CanvasGrid>
         </>
     );

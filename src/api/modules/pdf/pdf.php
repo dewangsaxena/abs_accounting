@@ -2937,14 +2937,14 @@ class __GenerateInventory {
 
     /**
      * This method will generate dead inventory list.
+     * @param inventory_details
      * @param item_details
      * @param month
      * @param store_id
      */
-    public static function generate_dead_inventory_list(int $store_id, int $month): void {
-        $ret_value = Inventory::get_dead_inventory($store_id, $month);
-        $item_details = $ret_value['dead_stock'];
-        $total_dead_inventory_value = Utils::number_format($ret_value['value'], 2);
+    public static function generate_dead_inventory_list(array $inventory_details, int $store_id, int $month): void {
+        $item_details = $inventory_details['dead_stock'];
+        $total_dead_inventory_value = Utils::number_format($inventory_details['value'], 2);
         $store_details = 
         StoreDetails::STORE_DETAILS[$store_id]['name']. 
         " ~ <u style='color:#800000;'>LAST SOLD $month MONTHS AGO</u>".
@@ -3284,11 +3284,12 @@ class GeneratePDF {
 
     /**
      * This method will generate dead inventory list.
+     * @param inventory_details
      * @param store_id
      * @param month
      */
-    public static function generate_dead_inventory_list(int $store_id, int $month): void {
-        __GenerateInventory::generate_dead_inventory_list($store_id, $month);
+    public static function generate_dead_inventory_list(array $inventory_details, int $store_id, int $month): void {
+        __GenerateInventory::generate_dead_inventory_list($inventory_details, $store_id, $month);
     }
 
     /**

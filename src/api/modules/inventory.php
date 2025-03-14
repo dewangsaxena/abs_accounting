@@ -1809,4 +1809,17 @@ class Inventory {
             'value' => $total_dead_inventory_value,
         ];
     }
+
+    /**
+     * This method will generate dead inventory stock.
+     * @param store_id
+     * @param month
+     */
+    public static function generate_dead_inventory(int $store_id, int $month): void {
+        GeneratePDF::generate_dead_inventory_list(
+            Inventory::get_dead_inventory($store_id, $month), 
+            $store_id, 
+            $month
+        );
+    }
 }
