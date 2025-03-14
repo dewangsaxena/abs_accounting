@@ -1790,9 +1790,7 @@ class Inventory {
             );
 
             if($month >= 12) $flag = $date_diff['y'] >= 1;
-            else if($date_diff['y'] > 1 || $date_diff['m'] >= $month) {
-                $flag = true;
-            }
+            else if($date_diff['y'] >= 1 || $date_diff['m'] >= $month) $flag = true;
             else $flag = false;
 
             if($flag) {
