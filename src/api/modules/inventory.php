@@ -1775,7 +1775,7 @@ class Inventory {
         AND
             inv.store_id = :store_id;
         EOS);
-        $statement -> execute([':store_id' => $store_id]);
+        $statement -> execute([':last_sold_tag' => "%\"$store_id\":%", ':store_id' => $store_id]);
         $results = $statement -> fetchAll(PDO::FETCH_ASSOC);
 
         $dead_stock = [];
