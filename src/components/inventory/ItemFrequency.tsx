@@ -390,7 +390,7 @@ const ReportCard = ({ year }: { year: number }) => {
               </Box>
               <Box width="30%">
                 <Badge {...badgeStyleConfig} colorScheme="teal">
-                  {quantity}
+                  {formatNumberWithDecimalPlaces(quantity, 2)}
                 </Badge>
               </Box>
             </HStack>
