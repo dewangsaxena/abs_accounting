@@ -1621,5 +1621,6 @@ function update_last_sold_for_items(int $store_id): void {
 
 // update_last_sold_for_items(StoreDetails::EDMONTON);
 // print_r(Inventory::get_dead_inventory(StoreDetails::EDMONTON));
-Inventory::generate_dead_inventory(StoreDetails::EDMONTON, 3);
+// Inventory::generate_dead_inventory(StoreDetails::EDMONTON, 3);s
+Inventory::fetch_quantity_sold_for_all_items(StoreDetails::EDMONTON, 2024, 1);
 ?>

@@ -1752,7 +1752,7 @@ class Inventory {
      * @param month
      * @return array
      */
-    public static function get_dead_inventory(int $store_id, int $month): array {
+    private static function get_dead_inventory(int $store_id, int $month): array {
         $db = get_db_instance();
 
         $statement = $db -> prepare(<<<'EOS'
@@ -1821,9 +1821,94 @@ class Inventory {
      */
     public static function generate_dead_inventory(int $store_id, int $month): void {
         GeneratePDF::generate_dead_inventory_list(
-            Inventory::get_dead_inventory($store_id, $month), 
+            self::get_dead_inventory($store_id, $month), 
             $store_id, 
             $month
         );
+    }
+
+    /**
+     * This method will fetch quantity sold for all items.
+     * @param store_id
+     * @param year
+     * @param sort_order
+     * @return array
+     */
+    private static function __fetch_quantity_sold_for_all_items(int $store_id, int $year, int $sort_order): array {
+        $db = get_db_instance();
+        try {
+            $params = [':store_id' => $store_id, ':year' => "$year-__-__"];
+
+            // Item Frequency
+            $items_frequency = [];
+
+            // Fetch Sales Invoice
+            $statement = $db -> prepare('SELECT * FROM sales_invoice WHERE store_id = :store_id AND `date` LIKE :year;');
+            $statement -> execute($params);
+            $invoices = $statement -> fetchAll(PDO::FETCH_ASSOC);
+
+            foreach($invoices as $invoice) {
+                $items = json_decode($invoice['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+                foreach($items as $item) {
+                    $item_id = $item['itemId'];
+                    if(isset($items_frequency[$item_id]) === false) $items_frequency[$item_id] = 0;
+                    $items_frequency[$item_id] += $item['quantity'];
+                }
+            }
+
+            // Fetch Sales Returns
+            $statement = $db -> prepare('SELECT * FROM sales_return WHERE store_id = :store_id AND `date` LIKE :year;');
+            $statement -> execute($params);
+            $sales_returns = $statement -> fetchAll(PDO::FETCH_ASSOC);
+
+            foreach($sales_returns as $sales_return) {
+                $items = json_decode($sales_return['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+                foreach($items as $item) {
+                    $item_id = $item['itemId'];
+                    if(isset($items_frequency[$item_id]) && isset($items_frequency[$item_id]['returnQuantity']) && $items_frequency[$item_id]['returnQuantity'] > 0) {
+                        $items_frequency[$item_id] -= $item['returnQuantity'];
+                    }
+                }
+            }
+            
+            // Sort
+            if($sort_order) arsort($items_frequency);
+            else asort($items_frequency);
+
+            $item_details = [];
+            foreach($items_frequency as $item => $quantity) {
+                $item_details[$item] = ['quantity' => $quantity];
+            }
+
+            // Fetch Item Details
+            $query = 'SELECT id, identifier, `description` FROM items WHERE id IN (:placeholder);';
+            $ret_values = Utils::mysql_in_placeholder_pdo_substitute(array_keys($item_details), $query);
+            $query = $ret_values['query'];
+            $values = $ret_values['values'];
+
+            $statement = $db -> prepare($query);
+            $statement -> execute($values);
+            $item_records = $statement -> fetchAll(PDO::FETCH_ASSOC);
+            foreach($item_records as $item) {
+                $item_id = $item['id'];
+                $item_details[$item_id]['identifier'] = $item['identifier'];
+                $item_details[$item_id]['description'] = $item['description'];
+            }
+            return $item_details;
+        }
+        catch(Exception $e) {
+            print_r($e -> getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * This method will fetch quantity sold fopr all items.
+     * @param store_id
+     * @param year
+     * @param sort_order 0 -> Ascending, 1 -> Descending
+     */
+    public static function fetch_quantity_sold_for_all_items(int $store_id, int $year, int $sort_order=1): void {
+        self::__fetch_quantity_sold_for_all_items($store_id, $year, $sort_order);
     }
 }
