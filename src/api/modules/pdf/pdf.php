@@ -2846,13 +2846,84 @@ class __GenerateInventory {
         self::$pdf -> SetFont(self::COURIER, '', 10,);
         self::$pdf -> Cell(w: 50, h: 4, txt: 'IDENTIFIER', border: 1, ln: 0);
     }
+
+    /**
+     * This method will generate item sold quantity report for year and store.
+     * @param item_details
+     */
+    public static function generate_item_sold_quantity(array &$item_details, int $store_id, int $year): void {
+
+        $item_code = '';
+        foreach($item_details as $item) {
+            $identifier = $item['identifier'];
+            $description = $item['description'];
+            $quantity = $item['quantity'];
+            $item_code .= <<<EOS
+            <tr>
+                <td>$identifier</td>
+                <td><i>$description</i></td>
+                <td>$quantity</td>
+            </tr>
+            EOS;
+        }
+        $store_details = StoreDetails::STORE_DETAILS[$store_id]['name']. ' FOR THE YEAR: '. $year;
+
+        echo <<<EOS
+        <html>
+        <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+        <style>
+        body {
+            font-family: "Roboto Mono", monospace;
+            font-optical-sizing: auto;
+            font-weight: light;
+            font-style: normal;
+        }
+        th {
+            letter-spacing: 0.1em;
+            font-size: 1em;
+            text-transform: uppercase;
+            font-weight: normal;
+            text-align: left;
+            padding: 5px;
+        }
+
+        td {
+            letter-spacing: 0.1em;
+            font-size: 1em;
+            text-transform: uppercase;
+            font-weight: normal;
+            padding: 5px;
+        }
+        </style>
+        </head>
+        <body>
+        <div style="margin-bottom: 0.8%;">
+            <h2 style="text-transform: uppercase;">ITEM SOLD FOR $store_details</h2>
+        </div>
+        <table style="border-collapse:collapse">
+            <thead>
+                <tr style="border-bottom: 2px dashed black;">
+                    <th>Identifier</th>
+                    <th>Description</th>
+                    <th>Qty Sold</th>
+                </tr>
+            </thead>
+        $item_code
+        </table>
+        </body>
+        </html>
+        EOS;
+    }
     
     /**
      * This method will generate inventory list in Plain HTML.
      * @param item_details
      * @param store_id
      */
-    public static function generate_inventory_list(array $item_details, int $store_id): void {
+    public static function generate_inventory_list(array &$item_details, int $store_id): void {
         $item_code = '';
         $total_inventory_value = 0;
         foreach($item_details as $item) {
@@ -2942,7 +3013,7 @@ class __GenerateInventory {
      * @param month
      * @param store_id
      */
-    public static function generate_dead_inventory_list(array $inventory_details, int $store_id, int $month): void {
+    public static function generate_dead_inventory_list(array &$inventory_details, int $store_id, int $month): void {
         $item_details = $inventory_details['dead_stock'];
         $total_dead_inventory_value = Utils::number_format($inventory_details['value'], 2);
         $store_details = 
@@ -3278,7 +3349,7 @@ class GeneratePDF {
      * @param details
      * @param store_id
      */
-    public static function generate_inventory_list(array $details, int $store_id): void {
+    public static function generate_inventory_list(array &$details, int $store_id): void {
         __GenerateInventory::generate_inventory_list($details, $store_id);
     }
 
@@ -3288,8 +3359,16 @@ class GeneratePDF {
      * @param store_id
      * @param month
      */
-    public static function generate_dead_inventory_list(array $inventory_details, int $store_id, int $month): void {
+    public static function generate_dead_inventory_list(array &$inventory_details, int $store_id, int $month): void {
         __GenerateInventory::generate_dead_inventory_list($inventory_details, $store_id, $month);
+    }
+
+    /**
+     * This method will generate item sold quantity report for year and store.
+     * @param item_details
+     */
+    public static function generate_item_sold_quantity(array &$item_details, int $store_id, int $year): void {
+        __GenerateInventory::generate_item_sold_quantity($item_details, $store_id, $year);
     }
 
     /**

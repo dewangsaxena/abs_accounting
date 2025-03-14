@@ -23,6 +23,7 @@ import {
     SectionHeader,
     _Button,
     _Divider,
+    _Input,
     _InputLeftElement,
     _Label,
     _Select,
@@ -54,6 +55,7 @@ import {
     systemConfigMode,
 } from "../../../shared/config";
 import { FcInfo } from "react-icons/fc";
+import { FcSalesPerformance } from "react-icons/fc";
 
 /** Price Margins */
 const ProfitMarginsHandler = () => {
@@ -376,6 +378,7 @@ const ProfitMarginsHandler = () => {
 
 const InventoryAndServices = () => {
     const [deadInventoryMonth, setDeadInventoryMonth] = useState<number>(3);
+    const [reportYear, setReportYear] = useState<number>(new Date().getFullYear());
     return (
         <>
             <CanvasGrid>
@@ -461,19 +464,38 @@ const InventoryAndServices = () => {
                     ></ActionGroup>
                 </Box>
                 <Box>
-                    <_Label fontSize="0.8em" textTransform={"uppercase"}>Generate Dead Inventory Report</_Label>
-                    <_Divider margin={2}/>
-                    <HStack>
-                        <_Select onChange={(event:any) => {
-                            setDeadInventoryMonth(parseInt(event.target.value));
-                        }} options={{3: "3 Months", 6: "6 Months", 9: "9 Months", 12: "12 Months"}}></_Select>
-                        <_Button bgColor="black" fontSize={"1.2em"} icon={<IoStopCircleOutline color="#E3242B"/>}label="Fetch Dead Stock" onClick={() => {
-                            window.open(
-                                `${APP_HOST}/api.php?action=dead_inventory_report&month=${deadInventoryMonth}&storeId=${localStorage.getItem("storeId")}`, 
-                                "_blank"
-                            );
-                        }}></_Button>
-                    </HStack>
+                    <VStack align="left">
+                        <Box>
+                            <_Label fontSize="0.8em" textTransform={"uppercase"}>Fetch Dead Inventory Report</_Label>
+                            <_Divider margin={2}/>
+                            <HStack>
+                                <_Select onChange={(event:any) => {
+                                    setDeadInventoryMonth(parseInt(event.target.value));
+                                }} options={{3: "3 Months", 6: "6 Months", 9: "9 Months", 12: "12 Months"}}></_Select>
+                                <_Button bgColor="black" fontSize={"1.2em"} icon={<IoStopCircleOutline color="#E3242B"/>}label="Fetch Dead Stock" onClick={() => {
+                                    window.open(
+                                        `${APP_HOST}/api.php?action=dead_inventory_report&month=${deadInventoryMonth}&storeId=${localStorage.getItem("storeId")}`, 
+                                        "_blank"
+                                    );
+                                }}></_Button>
+                            </HStack>
+                        </Box>
+                        <Box marginTop={5}>
+                        <_Label fontSize="0.8em" textTransform={"uppercase"}>Fetch Item Sold Report</_Label>
+                            <_Divider margin={2}/>
+                            <HStack>
+                                <_Input defaultValue={reportYear} type="number" onBlur={(event:any) => {
+                                    setReportYear(parseInt(event.target.value));
+                                }}></_Input>
+                                <_Button bgColor="black" fontSize={"1.2em"} icon={<FcSalesPerformance />}label="Fetch Sold Report" onClick={() => {
+                                    window.open(
+                                        `${APP_HOST}/api.php?action=fetch_item_sold_report&year=${reportYear}&storeId=${localStorage.getItem("storeId")}`, 
+                                        "_blank"
+                                    );
+                                }}></_Button>
+                            </HStack>
+                        </Box>
+                    </VStack>
                 </Box>
                 <_Divider/><_Divider/>
                 <ProfitMarginsHandler />
