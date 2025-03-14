@@ -1769,13 +1769,11 @@ class Inventory {
         ON 
             i.id = inv.item_id
         WHERE
-            last_sold LIKE :last_sold_tag
-        AND 
             inv.quantity > 0
         AND
             inv.store_id = :store_id;
         EOS);
-        $statement -> execute([':last_sold_tag' => "%\"$store_id\":%", ':store_id' => $store_id]);
+        $statement -> execute([':store_id' => $store_id]);
         $results = $statement -> fetchAll(PDO::FETCH_ASSOC);
 
         $dead_stock = [];
@@ -1789,7 +1787,13 @@ class Inventory {
                 $store_id,
             );
 
-            if($date_diff['m'] >= $month) {
+            if($month >= 12) $flag = $date_diff['y'] >= 1;
+            else if($date_diff['y'] > 1 || $date_diff['m'] >= $month) {
+                $flag = true;
+            }
+            else $flag = false;
+
+            if($flag) {
                 $prices = json_decode($result['prices'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
                 if(isset($prices[$store_id]) === false) continue;
                 $value = $prices[$store_id]['buyingCost'] * $result['quantity'];
