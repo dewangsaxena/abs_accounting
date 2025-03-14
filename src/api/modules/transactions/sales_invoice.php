@@ -674,6 +674,9 @@ class SalesInvoice {
                 ':purchased_by' => $validated_details['purchased_by'],
             ];
 
+            // Update Last Sold Date
+            Inventory::update_last_sold_for_items($details, $date, $store_id, $db);
+
             /* CHECK FOR ANY ERROR */
             assert_success();
 
@@ -994,7 +997,7 @@ class SalesInvoice {
             WHERE
                 id = :id
             AND
-                is_invoice_transferred = 0
+                is_invoice_transferred = 0;
             EOS;
 
             $params = [
@@ -1032,6 +1035,9 @@ class SalesInvoice {
 
             // Update Last Purchase Date
             Client::update_last_purchase_date($client_id, $invoice_id, $details['txn_date'], $db, $store_id);
+
+            // Update Last Sold Date for items
+            Inventory::update_last_sold_for_items($data['details'], $details['txn_date'], $store_id, $db);
 
             // CHECK FOR ANY ERROR
             assert_success();

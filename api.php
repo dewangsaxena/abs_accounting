@@ -73,7 +73,12 @@ if (isset($_GET['action'])) {
     } else if ($action === 'last_purchase_before') {
         Client::fetch_clients_by_last_purchase_date($_GET['lastPurchaseBefore'], intval($_GET['storeId']));
         die;
-    } else {
+    } 
+    else if($action === 'dead_inventory_report' && is_numeric($_GET['storeId'] ?? null) && is_numeric($_GET['month'] ?? null)) {
+        Inventory::generate_dead_inventory(intval($_GET['storeId']), intval($_GET['month']));
+        die;
+    }
+    else {
         require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/pdf/pdf.php";
         $transaction_type = intval($_GET['t'] ?? 0);
         $params = ['action' => $action, 'transactionType' => $transaction_type];

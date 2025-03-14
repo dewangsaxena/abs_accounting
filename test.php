@@ -8,7 +8,7 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_aged_
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/suppressions.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/flyer.php";
 
-// Inventory::generate_inventory_list(StoreDetails::EDMONTON);die;
+// Inventory::generate_inventory_list(StoreDetails::CALGARY);die;
 
 // Inventory::fetch_low_stock(StoreDetails::EDMONTON);
 function generate_list(int $store_id, bool $do_print=true) : float {
@@ -82,7 +82,7 @@ function generate_list(int $store_id, bool $do_print=true) : float {
     return $total_value;
 }
 
-echo generate_list(StoreDetails::SLAVE_LAKE, false);die;
+// echo generate_list(StoreDetails::SLAVE_LAKE, false);die;
 
 function fetch_inventory(int $store_id): void {
     $db = get_db_instance();
@@ -1565,4 +1565,61 @@ function fix_inventory_value(int $store_id): void {
 // fix_balance_sheet();
 // fix_inventory_value(StoreDetails::SLAVE_LAKE);
 
+function update_last_sold_for_items(int $store_id): void {
+    $db = get_db_instance();
+    try {
+        $db -> beginTransaction();
+
+        $statement = $db -> prepare('SELECT `date`, `details` FROM sales_invoice WHERE store_id = :store_id;');
+        $statement -> execute([':store_id' => $store_id]);
+        $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
+
+        $last_sold_dates = [];
+        foreach($result as $r) {
+            $date = $r['date'];
+            $details = json_decode($r['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+            foreach($details as $item) {
+                if(isset($last_sold_dates[$item['itemId']]) === false) $last_sold_dates[$item['itemId']] = '';
+                if($date > $last_sold_dates[$item['itemId']]) $last_sold_dates[$item['itemId']] = $date;
+            }
+        }
+
+        $statement_fetch = $db -> prepare('SELECT id, last_sold FROM items WHERE id = :id;');
+        $statement_update = $db -> prepare(<<<'EOS'
+        UPDATE 
+            items
+        SET
+            last_sold = :last_sold
+        WHERE 
+            id = :id;
+        EOS);
+
+        $item_ids = array_keys($last_sold_dates);
+        foreach($item_ids as $item_id) {
+            $statement_fetch -> execute([':id' => $item_id]);
+            $last_sold = $statement_fetch -> fetchAll(PDO::FETCH_ASSOC)[0]['last_sold'];
+            $last_sold = json_decode($last_sold, true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+            $last_sold[$store_id] = $last_sold_dates[$item_id];
+
+            // Update 
+            $last_sold = json_encode($last_sold, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+            $is_successful = $statement_update -> execute([':last_sold' => $last_sold, ':id' => $item_id]);
+            if($is_successful !== true || $statement_update -> rowCount() < 1) throw new Exception(
+                'Cannot update item: '. $item_id
+            );
+        }
+
+        $db -> commit();
+
+        echo 'Updated Last Sold for Items.';
+    }
+    catch(Exception $e) {
+        $db -> rollBack();
+        echo $e -> getMessage();
+    }
+}
+
+// update_last_sold_for_items(StoreDetails::EDMONTON);
+// print_r(Inventory::get_dead_inventory(StoreDetails::EDMONTON));
+Inventory::generate_dead_inventory(StoreDetails::EDMONTON, 3);
 ?>
