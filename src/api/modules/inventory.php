@@ -1769,7 +1769,8 @@ class Inventory {
         ON 
             i.id = inv.item_id
         WHERE
-        
+            last_sold LIKE :last_sold_tag
+        AND
             inv.quantity > 0
         AND
             inv.store_id = :store_id;
