@@ -33,6 +33,7 @@ import {
   buildSearchListForItem,
   calculateCOGSMargin,
   calculateProfitMargin,
+  formatNumber,
   formatNumberWithDecimalPlaces,
   isSessionActive,
   redirectIfInvalidSession,
@@ -497,7 +498,7 @@ const BreakDownByMonth = ({ year }: { year: number }) => {
                   colorScheme="white"
                   fontWeight={"bold"}
                 >
-                  {report[year][month].quantity}
+                  {formatNumber(report[year][month].quantity, 2)}
                 </Badge>
               </Tooltip>
             </HStack>

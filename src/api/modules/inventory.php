@@ -1909,6 +1909,9 @@ class Inventory {
      * @param sort_order 0 -> Ascending, 1 -> Descending
      */
     public static function fetch_quantity_sold_for_all_items(int $store_id, int $year, int $sort_order=1): void {
-        self::__fetch_quantity_sold_for_all_items($store_id, $year, $sort_order);
+        $item_details = self::__fetch_quantity_sold_for_all_items($store_id, $year, $sort_order);
+        if(count($item_details)) {
+            GeneratePDF::generate_item_sold_quantity($item_details, $store_id, $year);
+        }
     }
 }
