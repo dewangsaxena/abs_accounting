@@ -754,13 +754,18 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
             self::$pdf->Image(file:PATH_TO_IMAGE_DIR. 'traction_banner.png', x:65, y:14, h: 26, w:80, type:'PNG');
         }
 
+        // Quotations are not valid proof of purchase.
+        if(self::$transaction_type === QUOTATION) {
+            self::$pdf->Image(PATH_TO_IMAGE_DIR. 'not_proof_of_purchase.png', 60, 80, 90, 0, 'PNG');
+        }
+
         // Insert Paid Image Only if amount owing is 0.0
-        if((self::$transaction_type === 1 || self::$transaction_type === 2 || self::$transaction_type === 3 || self::$transaction_type === 4) && self::$details['amount_owing'] == 0.0) {
+        if((self::$transaction_type === SALES_INVOICE || self::$transaction_type === SALES_RETURN || self::$transaction_type === CREDIT_NOTE || self::$transaction_type === DEBIT_NOTE) && self::$details['amount_owing'] == 0.0) {
             self::$pdf->Image(PATH_TO_IMAGE_DIR. 'paid.png', 60, 80, 90, 0, 'PNG');
         }
 
         // Show Unpaid Image if Amount Owing > 0.0
-        if((self::$details['is_old_version'] ?? false) === false && (self::$transaction_type === 1 || self::$transaction_type === 2 || self::$transaction_type === 3 || self::$transaction_type === 4) && self::$details['amount_owing'] > 0.0) {
+        if((self::$details['is_old_version'] ?? false) === false && (self::$transaction_type === SALES_INVOICE || self::$transaction_type === SALES_RETURN || self::$transaction_type === CREDIT_NOTE || self::$transaction_type === DEBIT_NOTE) && self::$details['amount_owing'] > 0.0) {
             self::$pdf->Image(PATH_TO_IMAGE_DIR. 'on_account.png', 60, 80, 90, 0, 'PNG');
         }
 

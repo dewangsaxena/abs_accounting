@@ -10,3 +10,7 @@ export interface VendorDetails {
     isInactive: number;
     totalPurchased: number;
 }
+
+export interface VendorDetailsStore extends VendorDetails {
+    
+}
