@@ -1,11 +1,11 @@
 
-import { Box, HStack, useToast } from "@chakra-ui/react";
+import { Box, Checkbox, HStack, useToast, VStack } from "@chakra-ui/react";
 import { buildSearchListForClient, redirectIfInvalidSession, showToast } from "../../../shared/functions";
 import { VendorDetails, vendorDetailsStore } from "./store";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { APIResponse } from "../../../service/api-client";
 import { AUTO_SUGGEST_MIN_INPUT_LENGTH, UNKNOWN_SERVER_ERROR_MSG } from "../../../shared/config";
-import { _Label } from "../../../shared/Components";
+import { _Button, _Input, _Label } from "../../../shared/Components";
 import {
   inputConfig,
   iconColor,
@@ -14,13 +14,21 @@ import {
   AutoSuggestStyle,
 } from "../../../shared/style";
 import AutoSuggest from "react-autosuggest";
+import { LiaUserEditSolid, LiaUserPlusSolid } from "react-icons/lia";
 
 /**
  * Vendor Details
  */
-interface __VendorDetails extends VendorDetails {
+interface __VendorDetails {
   isViewOrUpdate: boolean;
 }
+
+/** 
+ * Vendor Primary Details
+ */
+const VendorPrimaryDetails = memo(() => {
+  return <></>;
+});
 
 /**
  * Vendor Details
@@ -74,8 +82,14 @@ const Vendor = ({isViewOrUpdate}: __VendorDetails ) => {
       });
   };
 
+  /**
+   * Click Handler
+   */
+  const clickHandler = () => {
+
+  }
+
   return <>
-  
   {isViewOrUpdate && 
     <Box>
       <HStack>
@@ -130,6 +144,58 @@ const Vendor = ({isViewOrUpdate}: __VendorDetails ) => {
       </HStack>
     </Box>
     }
+
+    <VStack align="left" spacing={10}>
+      <_Input
+        _key={`name.${id}`}
+        isDisabled={inputDisable}
+        defaultValue={name}
+        borderBottomColor={"red"}
+        borderBottomWidth={inputConfig.borderWidth}
+        borderRadius={inputConfig.borderRadius}
+        size={inputConfig.size}
+        fontSize={inputConfig.fontSize}
+        letterSpacing={inputConfig.letterSpacing}
+        placeholder="Vendor Name"
+        onBlur={(event: any) => {
+          if (event) {
+            setField("name", event.target.value.trim());
+          }
+        }}
+      ></_Input>
+      <Checkbox
+        key={`is_default_shipping_address.${id}`}
+        isDisabled={inputDisable}
+        colorScheme="red"
+        onChange={() => {
+          setField("isInactive", isInactive ^ 1);
+        }}
+      >
+        <_Label fontSize="0.8em">Is Disabled?</_Label>
+      </Checkbox>
+
+      <_Button
+        isDisabled={inputDisable}
+        icon={
+          isViewOrUpdate ? (
+            <LiaUserEditSolid color={iconColor} />
+          ) : (
+            <LiaUserPlusSolid color={iconColor} />
+          )
+        }
+        size="sm"
+        label={(isViewOrUpdate ? "Update" : "Add") + " Vendor"}
+        width="100%"
+        bgColor={"white"}
+        variant="outline"
+        borderColor="gray.200"
+        borderWidth={1}
+        color="black"
+        fontSize="1.2em"
+        onClick={clickHandler}
+        isLoading={loadingState}
+      ></_Button>
+    </VStack>
   </>;
 }
 
