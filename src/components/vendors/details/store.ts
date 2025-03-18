@@ -12,5 +12,44 @@ export interface VendorDetails {
 }
 
 export interface VendorDetailsStore extends VendorDetails {
-    
+    setDetails: (details: VendorDetails) => void;
+    setField: (fieldName: string, fieldValue: any) => void;
+    fetch: (
+        searchTerm: string,
+        excludeInactive?: boolean,
+        fetchInvoices?: boolean
+      ) => any;
+    reset: () => any;
 }
+
+export const vendorDetailsStore = create<VendorDetailsStore>((set, get) => ({
+    id: null,
+    name: "",
+    isInactive: 0,
+    totalPurchased: 0,
+    setDetails: (details: VendorDetails) => {
+        set({id: details.id});
+        set({name: details.name});
+        set({isInactive: details.isInactive});
+        set({totalPurchased: details.totalPurchased});
+    },
+    setField: (fieldName: string, fieldValue: any) => {
+        if(fieldName === "id") set({id: fieldValue});
+        else if(fieldName === "name") set({id: fieldValue});
+        else if(fieldName === "isInactive") set({id: fieldValue});
+        else if(fieldName === "totalPurchased") set({id: fieldValue});
+    },
+    fetch: (
+        searchTerm: string,
+        excludeInactive?: boolean,
+        fetchInvoices?: boolean
+      ) => {
+
+    },
+    reset: () => {
+        set({id: null});
+        set({name: ''});
+        set({isInactive: 0});
+        set({totalPurchased: 0});
+    },
+}));
