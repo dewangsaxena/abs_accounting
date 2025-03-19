@@ -52,7 +52,6 @@ export const vendorDetailsStore = create<VendorDetailsStore>((set, get) => ({
         excludeInactive?: boolean,
         fetchInvoices?: boolean
       ) => {
-
     },
     reset: () => {
         set({id: null});
