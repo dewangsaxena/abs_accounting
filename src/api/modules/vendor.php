@@ -24,7 +24,7 @@ class Vendor {
      * @param details
      */
     private static function validate_details(array &$details): void {
-        if(isset($details['name']) === false || Validate::is_name($details['name']) == false) {
+        if(isset($details['name']) === false || Validate::is_name($details['name']) === false) {
             throw new Exception('Vendor name is Invalid.');
         }
     }

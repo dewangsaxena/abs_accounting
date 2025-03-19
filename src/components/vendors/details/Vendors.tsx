@@ -23,13 +23,6 @@ interface __VendorDetails {
   isViewOrUpdate: boolean;
 }
 
-/** 
- * Vendor Primary Details
- */
-const VendorPrimaryDetails = memo(() => {
-  return <></>;
-});
-
 /**
  * Vendor Details
  * @returns 
@@ -48,6 +41,8 @@ const Vendor = ({isViewOrUpdate}: __VendorDetails ) => {
     name,
     isInactive,
     totalPurchased,
+    add, 
+    update,
     setDetails,
     setField,
     fetch,
@@ -86,7 +81,54 @@ const Vendor = ({isViewOrUpdate}: __VendorDetails ) => {
    * Click Handler
    */
   const clickHandler = () => {
-
+    let isOperationSuccessful: boolean = false;
+    try {
+      if(isViewOrUpdate) {
+        update()
+        .then((res: any) => {
+          let response: APIResponse<VendorDetails> = res.data;
+          if(response.status !== true) {
+            setInputDisable(false);
+            isOperationSuccessful = false;
+          }
+          else isOperationSuccessful = true;
+          showToast(toast, response.status, response.message);
+        })
+        .catch((error: any) => {
+          isOperationSuccessful = false;
+          showToast(toast, false, error.message);
+          setInputDisable(false);
+        })
+        .finally(function () {
+          if (isOperationSuccessful) window.location.reload();
+          setLoadingState(false);
+        });
+      }
+      else {
+        add()
+        .then((res: any) => {
+          let response: APIResponse<VendorDetails> = res.data;
+          if(response.status !== true) {
+            setInputDisable(false);
+            isOperationSuccessful = false;
+          }
+          else isOperationSuccessful = true;
+          showToast(toast, response.status, response.message);
+        })
+        .catch((error: any) => {
+          isOperationSuccessful = false;
+          showToast(toast, false, error.message);
+          setInputDisable(false);
+        })
+        .finally(function () {
+          if (isOperationSuccessful) window.location.reload();
+          setLoadingState(false);
+        });
+      }
+    }
+    catch(err) {
+      setInputDisable(false);
+    }
   }
 
   return <>
@@ -147,7 +189,6 @@ const Vendor = ({isViewOrUpdate}: __VendorDetails ) => {
 
     <VStack align="left" spacing={10}>
       <_Input
-        _key={`name.${id}`}
         isDisabled={inputDisable}
         defaultValue={name}
         borderBottomColor={"red"}
@@ -159,6 +200,7 @@ const Vendor = ({isViewOrUpdate}: __VendorDetails ) => {
         placeholder="Vendor Name"
         onBlur={(event: any) => {
           if (event) {
+            console.log(event.target.value);
             setField("name", event.target.value.trim());
           }
         }}

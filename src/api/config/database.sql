@@ -570,44 +570,20 @@ CREATE TABLE purchase_vendors(
 ALTER TABLE purchase_vendors AUTO_INCREMENT=10000;
 CREATE INDEX idx_purchase_vendors_name ON purchase_vendors(`name`);
 
-/* Purchase Invoices */
-CREATE TABLE purchase_invoices(
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    vendor_id INT UNSIGNED NOT NULL,
-    `date` DATE NOT NULL DEFAULT NOW() COMMENT 'This store date in Local Timzone.',
-    sum_total NUMERIC(13, 4) NOT NULL,
-    details JSON NOT NULL,
-    po VARCHAR(32) DEFAULT NULL,
-    store_id SMALLINT UNSIGNED NOT NULL,
-    notes TEXT DEFAULT NULL COMMENT 'Txn. Specific Notes.',
-    sales_rep_id INT UNSIGNED NOT NULL,
-
-    /* Account Number */
-    account_number VARCHAR(32) DEFAULT NULL,
-
-    /* Meta Data */
-    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    modified TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT FK_pi_store_id FOREIGN KEY(store_id) REFERENCES store_details(id),
-    CONSTRAINT FK_pi_sales_rep_id FOREIGN KEY(sales_rep_id) REFERENCES users(id)
-);
-ALTER TABLE purchase_invoices AUTO_INCREMENT=10000;
-CREATE INDEX idx_purchase_invoices_store_id ON purchase_invoices(store_id);
-CREATE INDEX idx_purchase_invoices_vendor_id ON purchase_invoices(vendor_id);
-
 /* Vendors */
 CREATE TABLE vendors(
     id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `name` VARCHAR(128) NOT NULL,
     is_inactive JSON NOT NULL DEFAULT '{}',
+    total_purchased NUMERIC(13, 4) NOT NULL DEFAULT 0,
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modified TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 ALTER TABLE vendors AUTO_INCREMENT = 10000;
 CREATE INDEX idx_vendor_name ON vendors(`name`);
 
-/* Vendor Purchases */
-CREATE TABLE vendor_purchases(
+/* Purchase Invoices */
+CREATE TABLE purchase_invoices(
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     vendor_id INT UNSIGNED NOT NULL,
     `date` DATE NOT NULL DEFAULT NOW() COMMENT 'This store date in Local Timzone.',
@@ -624,14 +600,15 @@ CREATE TABLE vendor_purchases(
     /* COGP: Cogs of Goods Purchased */ 
     cogp NUMERIC(13, 4) NOT NULL,
     purchased_by VARCHAR(32) DEFAULT NULL,
-    versions JSON DEFAULT NULL,
+    account_number VARCHAR(32) DEFAULT NULL,
+    po VARCHAR(32) DEFAULT NULL,
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modified TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT FK_vp_vendor_id FOREIGN KEY(vendor_id) REFERENCES vendors(id),
     CONSTRAINT FK_vp_store_id FOREIGN KEY(store_id) REFERENCES store_details(id),
     CONSTRAINT FK_vp_sales_rep_id FOREIGN KEY(sales_rep_id) REFERENCES users(id)
 );
-ALTER TABLE vendor_purchases AUTO_INCREMENT = 10000;
-CREATE INDEX idx_vendor_purchases_vendor_id ON vendor_purchases(vendor_id);
-CREATE INDEX idx_vendor_purchases_store_id ON vendor_purchases(store_id);
-CREATE INDEX idx_vendor_purchases_sales_rep_id ON vendor_purchases(sales_rep_id);
+ALTER TABLE purchase_invoices AUTO_INCREMENT = 10000;
+CREATE INDEX idx_purchase_invoices_vendor_id ON purchase_invoices(vendor_id);
+CREATE INDEX idx_purchase_invoices_store_id ON purchase_invoices(store_id);
+CREATE INDEX idx_purchase_invoices_sales_rep_id ON purchase_invoices(sales_rep_id);

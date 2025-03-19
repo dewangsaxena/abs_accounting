@@ -4,6 +4,9 @@ import { HTTPService } from "../../../service/api-client";
 // Http Service
 const httpService = new HTTPService();
 
+/**
+ * Vendor Details
+ */
 export interface VendorDetails {
     id: number | null;
     name: string;
@@ -11,6 +14,9 @@ export interface VendorDetails {
     totalPurchased: number;
 }
 
+/**
+ * Vendor Details Store
+ */
 export interface VendorDetailsStore extends VendorDetails {
     add: () => any;
     update: () => any;
@@ -43,9 +49,8 @@ export const vendorDetailsStore = create<VendorDetailsStore>((set, get) => ({
     },
     setField: (fieldName: string, fieldValue: any) => {
         if(fieldName === "id") set({id: fieldValue});
-        else if(fieldName === "name") set({id: fieldValue});
-        else if(fieldName === "isInactive") set({id: fieldValue});
-        else if(fieldName === "totalPurchased") set({id: fieldValue});
+        else if(fieldName === "name") set({name: fieldValue});
+        else if(fieldName === "isInactive") set({isInactive: fieldValue});
     },
     fetch: (
         searchTerm: string,
