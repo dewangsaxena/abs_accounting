@@ -485,7 +485,7 @@ const CustomerAndSales = () => {
                 icon: <LiaUserPlusSolid color={iconColor} />,
                 label: "Create",
                 onClick: () => {
-                  window.open("/vendor", '_blank', "toolbar=no,scrollbars=yes,width=1000,height=500,top=200,left=300");
+                  window.open("/vendor", '_blank', "toolbar=no,scrollbars=yes,width=1000,height=200,top=200,left=300");
                 },
               },
               {

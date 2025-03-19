@@ -234,7 +234,7 @@ const Vendor = ({isViewOrUpdate}: __VendorDetails ) => {
       <HStack>
         <_Label fontSize={"0.9em"}>Amount Purchased: </_Label>
         <CurrencyIcon/>
-        <_Label fontFamily={numberFont}>{formatNumberWithDecimalPlaces(totalPurchased)}</_Label>
+        <_Label fontFamily={numberFont} fontSize="0.9em">{formatNumberWithDecimalPlaces(totalPurchased)}</_Label>
       </HStack>
       <Checkbox
         key={`is_inactive.${id}`}
