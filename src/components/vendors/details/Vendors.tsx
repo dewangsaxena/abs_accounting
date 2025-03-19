@@ -1,8 +1,8 @@
 
-import { Box, Checkbox, HStack, SimpleGrid, useToast, VStack } from "@chakra-ui/react";
-import { buildSearchListForClient, formatNumberWithDecimalPlaces, redirectIfInvalidSession, showToast } from "../../../shared/functions";
+import { Box, Checkbox, HStack, SimpleGrid, useToast } from "@chakra-ui/react";
+import { formatNumberWithDecimalPlaces, redirectIfInvalidSession, showToast } from "../../../shared/functions";
 import { VendorDetails, vendorDetailsStore } from "./store";
-import { memo, useState } from "react";
+import { useState } from "react";
 import { APIResponse } from "../../../service/api-client";
 import { AUTO_SUGGEST_MIN_INPUT_LENGTH, UNKNOWN_SERVER_ERROR_MSG } from "../../../shared/config";
 import { _Button, _Divider, _Input, _Label, CurrencyIcon } from "../../../shared/Components";
@@ -10,7 +10,6 @@ import {
   inputConfig,
   iconColor,
   numberFont,
-  AsyncSelectStyle,
   AutoSuggestStyle,
 } from "../../../shared/style";
 import AutoSuggest from "react-autosuggest";
