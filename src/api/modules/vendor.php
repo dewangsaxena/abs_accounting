@@ -90,67 +90,91 @@ class Vendor {
 
     /**
      * This method will create vendor.
+     * @param db
      * @param details
-     * @return array
+     * @return void
      */
-    public static function create(array $details): array {
-        $db = get_db_instance();
-        try {
-            $db -> beginTransaction();
+    private static function create(PDO &$db, array $details): void {
 
-            // Validate Details
-            self::validate_details($details);
+        // Store ID
+        $store_id = intval($_SESSION['store_id']);
 
-            // Format Details
-            self::format_details($details);
-
-            // Store ID
-            $store_id = intval($_SESSION['store_id']);
-
-            $query = <<<'EOS'
-            INSERT INTO vendors
-            (
-                `name`,
-                `is_inactive`
-            )
-            VALUES
-            (
-                :name,
-                :is_inactive
-            );
-            EOS;
-            $statement = $db -> prepare($query);
-            $is_successful = $statement -> execute([
-                ':name' => $details['name'],
-                ':is_inactive' => json_encode([$store_id => 0], JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
-            ]);
-            if($is_successful !== true || $statement -> rowCount() < 1) throw new Exception('Unable to Add Vendor.');
-
-            if($db -> inTransaction()) $db -> commit();
-            return ['status' => true];
-        }
-        catch(Exception $e) {
-            if($db -> inTransaction()) $db -> rollBack();
-            return ['status' => false, 'message' => $e -> getMessage()];
-        }
+        // Query
+        $query = <<<'EOS'
+        INSERT INTO vendors
+        (
+            `name`,
+            `is_inactive`
+        )
+        VALUES
+        (
+            :name,
+            :is_inactive
+        );
+        EOS;
+        $statement = $db -> prepare($query);
+        $is_successful = $statement -> execute([
+            ':name' => $details['name'],
+            ':is_inactive' => json_encode([$store_id => 0], JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
+        ]);
+        if($is_successful !== true || $statement -> rowCount() < 1) throw new Exception('Unable to Add Vendor.');
     }
 
     /**
      * This method will update vendor name.
+     * @param db
+     * @param details
+     * @return void
+     */
+    private static function update(PDO &$db, array $details) : void {
+
+        // Fetch Latest Copy of Vendor
+        $statement = $db -> prepare('SELECT * FROM vendors WHERE id = :id;');
+        $statement -> execute([':id' => $details['id']]);
+        $existing_record = $statement -> fetchAll(PDO::FETCH_ASSOC);
+        if(count($existing_record) > 0) $existing_record = $existing_record[0];
+        else throw new Exception('No such vendor found.');
+
+        // Store ID
+        $store_id = intval($_SESSION['store_id']);
+
+        // Is Inactive 
+        $is_inactive = json_decode($existing_record['is_inactive'], true, flags: JSON_THROW_ON_ERROR | JSON_NUMERIC_CHECK);
+
+        // Update Is Inactive Status
+        $is_inactive[$store_id] = intval($details['isInactive']);
+
+        // Query
+        $query = <<<'EOS'
+        UPDATE
+            vendors
+        SET 
+            `name` = :name,
+            `is_inactive` = :is_inactive,
+            `modified` = CURRENT_TIMESTAMP
+        WHERE 
+            `id` = :id;
+        EOS;
+        $statement = $db -> prepare($query);
+        $is_successful = $statement -> execute([
+            ':name' => $details['name'],
+            ':is_inactive' => json_encode($is_inactive, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
+            ':id' => $details['id'],
+        ]);
+
+        // Check for Update
+        if($is_successful !== true && $statement -> rowCount() < 1) throw new Exception('Unable to update Vendor Details');
+    }
+
+    /**
+     * This method will process.
      * @param details
      * @return array
      */
-    public static function update(array $details) : array {
+    public static function process(array $details): array {
         $db = get_db_instance();
         try {
             $db -> beginTransaction();
-
-            // Fetch Latest Copt of Vendor
-            $statement = $db -> prepare('SELECT * FROM vendors WHERE id = :id;');
-            $statement -> execute([':id' => $details['id']]);
-            $existing_record = $statement -> fetchAll(PDO::FETCH_ASSOC);
-            if(count($existing_record) > 0) $existing_record = $existing_record[0];
-            else throw new Exception('No such vendor found.');
 
             // Validate 
             self::validate_details($details);
@@ -158,42 +182,13 @@ class Vendor {
             // Format
             self::format_details($details);
 
-            // Fetch Vendor Details
-            $existing_vendor_details = self::fetch(['id' => $details['id']]);
-            if($existing_vendor_details['status'] === false) throw new Exception('Unable to find Vendor.');
-            $existing_vendor_details = $existing_vendor_details['data'][0];
+            // Select Operation
+            if($details['action'] === self::ADD) self::create($db, $details);
+            else self::update($db, $details);
 
-            // Store ID
-            $store_id = intval($_SESSION['store_id']);
-
-            // Is Inactive 
-            $is_inactive = json_decode($existing_record['is_inactive'], true, flags: JSON_THROW_ON_ERROR | JSON_NUMERIC_CHECK);
-
-            // Update Is Inactive Status
-            $is_inactive[$store_id] = intval($details['isInactive']);
-
-            // Query
-            $query = <<<'EOS'
-            UPDATE
-                vendors
-            SET 
-                `name` = :name,
-                `is_inactive` = :is_inactive,
-                `modified` = CURRENT_TIMESTAMP
-            WHERE 
-                `id` = :id;
-            EOS;
-            $statement = $db -> prepare($query);
-            $is_successful = $statement -> execute([
-                ':name' => $details['name'],
-                ':is_inactive' => json_encode($is_inactive, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
-                ':id' => $details['id'],
-            ]);
-
-            // Check for Update
-            if($is_successful !== true && $statement -> rowCount() < 1) throw new Exception('Unable to update Vendor Details');
-
+            // Commit
             if($db -> inTransaction()) $db -> commit();
+
             return ['status' => true];
         }
         catch(Exception $e) {

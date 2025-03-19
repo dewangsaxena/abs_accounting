@@ -319,11 +319,11 @@ if (isset($_POST['action'])) {
 
         /* Vendor */
         case Vendor::ADD:
-            $response = Vendor::create($data);
+            $response = Vendor::process($data);
             break;
 
         case Vendor::UPDATE:
-            $response = Vendor::update($data);
+            $response = Vendor::process($data);
             break;
             
         case Vendor::FETCH:
