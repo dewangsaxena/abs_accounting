@@ -475,6 +475,29 @@ const CustomerAndSales = () => {
             ]}
           ></ActionGroup>
         </Box>
+        <ActionGroupDivider count={2} />
+        <Box visibility={systemConfigMode === MODE_WASH ? "hidden" : "visible"}>
+          <ActionGroup
+            elementWidth={150}
+            title="Vendor"
+            actions={[
+              {
+                icon: <LiaUserPlusSolid color={iconColor} />,
+                label: "Create",
+                onClick: () => {
+                  window.open("/vendor", '_blank', "toolbar=no,scrollbars=yes,width=1000,height=500,top=200,left=300");
+                },
+              },
+              {
+                icon: <LiaUserEditSolid color={iconColor} />,
+                label: "Update",
+                onClick: () => {
+                  if (systemConfigMode === MODE_PARTS) transferInvOpen();
+                },
+              },
+            ]}
+          ></ActionGroup>
+        </Box>
       </CanvasGrid>
 
       <TransferInvoiceToStore

@@ -247,9 +247,8 @@ const Vendor = ({isViewOrUpdate}: __VendorDetails ) => {
       >
         <_Label fontSize="0.8em">Is Disabled?</_Label>
       </Checkbox>
-
-      
     </SimpleGrid>
+    
     <Box marginTop={10}>
       <_Button
           isDisabled={inputDisable}
