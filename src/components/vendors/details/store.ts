@@ -12,6 +12,8 @@ export interface VendorDetails {
 }
 
 export interface VendorDetailsStore extends VendorDetails {
+    add: () => any;
+    update: () => any;
     setDetails: (details: VendorDetails) => void;
     setField: (fieldName: string, fieldValue: any) => void;
     fetch: (
@@ -27,6 +29,12 @@ export const vendorDetailsStore = create<VendorDetailsStore>((set, get) => ({
     name: "",
     isInactive: 0,
     totalPurchased: 0,
+    add: async () => {
+        return await httpService.add(get(), "vendor_add");
+    },
+    update: async () => {
+        return await httpService.add(get(), "vendor_update");
+    },
     setDetails: (details: VendorDetails) => {
         set({id: details.id});
         set({name: details.name});
