@@ -85,7 +85,7 @@ class Vendor {
                 'isInactive' => $is_inactive,
             ];
         }
-        return $vendor_records;
+        return ['status' => true, 'data' => $vendor_records];
     }
 
     /**
@@ -145,12 +145,34 @@ class Vendor {
         try {
             $db -> beginTransaction();
 
+            // Fetch Latest Copt of Vendor
+            $statement = $db -> prepare('SELECT * FROM vendors WHERE id = :id;');
+            $statement -> execute([':id' => $details['id']]);
+            $existing_record = $statement -> fetchAll(PDO::FETCH_ASSOC);
+            if(count($existing_record) > 0) $existing_record = $existing_record[0];
+            else throw new Exception('No such vendor found.');
+
             // Validate 
             self::validate_details($details);
 
             // Format
             self::format_details($details);
 
+            // Fetch Vendor Details
+            $existing_vendor_details = self::fetch(['id' => $details['id']]);
+            if($existing_vendor_details['status'] === false) throw new Exception('Unable to find Vendor.');
+            $existing_vendor_details = $existing_vendor_details['data'][0];
+
+            // Store ID
+            $store_id = intval($_SESSION['store_id']);
+
+            // Is Inactive 
+            $is_inactive = json_decode($existing_record['is_inactive'], true, flags: JSON_THROW_ON_ERROR | JSON_NUMERIC_CHECK);
+
+            // Update Is Inactive Status
+            $is_inactive[$store_id] = intval($details['isInactive']);
+
+            // Query
             $query = <<<'EOS'
             UPDATE
                 vendors
@@ -162,10 +184,14 @@ class Vendor {
                 `id` = :id;
             EOS;
             $statement = $db -> prepare($query);
-            $statement -> execute([
+            $is_successful = $statement -> execute([
                 ':name' => $details['name'],
-                ':is_inactive' => [],
+                ':is_inactive' => json_encode($is_inactive, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
+                ':id' => $details['id'],
             ]);
+
+            // Check for Update
+            if($is_successful !== true && $statement -> rowCount() < 1) throw new Exception('Unable to update Vendor Details');
 
             if($db -> inTransaction()) $db -> commit();
             return ['status' => true];

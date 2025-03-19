@@ -1,11 +1,11 @@
 
-import { Box, Checkbox, HStack, useToast, VStack } from "@chakra-ui/react";
-import { buildSearchListForClient, redirectIfInvalidSession, showToast } from "../../../shared/functions";
+import { Box, Checkbox, HStack, SimpleGrid, useToast, VStack } from "@chakra-ui/react";
+import { buildSearchListForClient, formatNumberWithDecimalPlaces, redirectIfInvalidSession, showToast } from "../../../shared/functions";
 import { VendorDetails, vendorDetailsStore } from "./store";
 import { memo, useState } from "react";
 import { APIResponse } from "../../../service/api-client";
 import { AUTO_SUGGEST_MIN_INPUT_LENGTH, UNKNOWN_SERVER_ERROR_MSG } from "../../../shared/config";
-import { _Button, _Input, _Label } from "../../../shared/Components";
+import { _Button, _Divider, _Input, _Label, CurrencyIcon } from "../../../shared/Components";
 import {
   inputConfig,
   iconColor,
@@ -22,6 +22,28 @@ import { LiaUserEditSolid, LiaUserPlusSolid } from "react-icons/lia";
 interface __VendorDetails {
   isViewOrUpdate: boolean;
 }
+
+const buildSearchListForVendor = (
+  data: VendorDetails[] | undefined
+): any => {
+  console.log(data);
+  if (data === undefined) return null;
+  let newOptions = [];
+  let length = data.length;
+  let vendorDetails: VendorDetails;
+  let statusTag: string = "";
+  for (let i = 0; i < length; ++i) {
+    statusTag = "";
+    vendorDetails = data[i];
+    if (vendorDetails.isInactive) statusTag = ` ● (INACTIVE)`;
+    newOptions.push({
+      label: `${vendorDetails.name}${statusTag}`,
+      value: vendorDetails,
+    });
+  }
+  console.log(newOptions);
+  return newOptions;
+};
 
 /**
  * Vendor Details
@@ -58,13 +80,19 @@ const Vendor = ({isViewOrUpdate}: __VendorDetails ) => {
   const [selectedVendor, setSelectedVendor] = useState<string>("");
   const [vendorSuggestions, setVendorSuggestions] = useState<any>([]);
 
+  // On Vendor Select
+  const onVendorSelect = (selectedVendor: any) => {
+    setDetails(selectedVendor.value);
+  };
+
   // Select Load options
   const loadOptions = (searchTerm: string) => {
       fetch(searchTerm, false)
       .then((res: any) => {
         let response: APIResponse<VendorDetails[]> = res.data;
-        if (response.status === true) {}
-        // setVendorSuggestions(buildSearchListForClient(response.data));
+        if (response.status === true) {
+          setVendorSuggestions(buildSearchListForVendor(response.data));
+        }
         else
         showToast(
             toast,
@@ -152,10 +180,10 @@ const Vendor = ({isViewOrUpdate}: __VendorDetails ) => {
                 setInputDisable(false);
               }}
               onSuggestionSelected={(_: any, { suggestionIndex }) => {
-                // onClientSelect(clientSuggestions[suggestionIndex]);
+                onVendorSelect(vendorSuggestions[suggestionIndex]);
               }}
               getSuggestionValue={(suggestion: any) => {
-                return `${suggestion.value.primaryDetails.name}`;
+                return `${suggestion.value.name}`;
               }}
               renderSuggestion={(suggestion: any) => (
                 <span>&nbsp;{suggestion.label}</span>
@@ -187,7 +215,7 @@ const Vendor = ({isViewOrUpdate}: __VendorDetails ) => {
     </Box>
     }
 
-    <VStack align="left" spacing={10}>
+    <SimpleGrid columns={3} spacing={10}>
       <_Input
         isDisabled={inputDisable}
         defaultValue={name}
@@ -200,14 +228,19 @@ const Vendor = ({isViewOrUpdate}: __VendorDetails ) => {
         placeholder="Vendor Name"
         onBlur={(event: any) => {
           if (event) {
-            console.log(event.target.value);
             setField("name", event.target.value.trim());
           }
         }}
       ></_Input>
+      <HStack>
+        <_Label>Amount Purchased: </_Label>
+        <CurrencyIcon/>
+        <_Label fontFamily={numberFont}>{formatNumberWithDecimalPlaces(totalPurchased)}</_Label>
+      </HStack>
       <Checkbox
-        key={`is_default_shipping_address.${id}`}
+        key={`is_inactive.${id}`}
         isDisabled={inputDisable}
+        isChecked={isInactive ? true : false}
         colorScheme="red"
         onChange={() => {
           setField("isInactive", isInactive ^ 1);
@@ -216,28 +249,31 @@ const Vendor = ({isViewOrUpdate}: __VendorDetails ) => {
         <_Label fontSize="0.8em">Is Disabled?</_Label>
       </Checkbox>
 
+      
+    </SimpleGrid>
+    <Box marginTop={10}>
       <_Button
-        isDisabled={inputDisable}
-        icon={
-          isViewOrUpdate ? (
-            <LiaUserEditSolid color={iconColor} />
-          ) : (
-            <LiaUserPlusSolid color={iconColor} />
-          )
-        }
-        size="sm"
-        label={(isViewOrUpdate ? "Update" : "Add") + " Vendor"}
-        width="100%"
-        bgColor={"white"}
-        variant="outline"
-        borderColor="gray.200"
-        borderWidth={1}
-        color="black"
-        fontSize="1.2em"
-        onClick={clickHandler}
-        isLoading={loadingState}
-      ></_Button>
-    </VStack>
+          isDisabled={inputDisable}
+          icon={
+            isViewOrUpdate ? (
+              <LiaUserEditSolid color={iconColor} />
+            ) : (
+              <LiaUserPlusSolid color={iconColor} />
+            )
+          }
+          size="sm"
+          label={(isViewOrUpdate ? "Update" : "Add") + " Vendor"}
+          width="100%"
+          bgColor={"white"}
+          variant="outline"
+          borderColor="gray.200"
+          borderWidth={1}
+          color="black"
+          fontSize="1.2em"
+          onClick={clickHandler}
+          isLoading={loadingState}
+        ></_Button>
+      </Box>
   </>;
 }
 
