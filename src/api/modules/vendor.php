@@ -37,10 +37,14 @@ class Vendor {
         $details['name'] = trim(ucwords(strtolower($details['name'])));
     }
 
+    /**
+     * This method will fetch vendor details. 
+     * @param filters
+     * @return array
+     */
     public static function fetch(array $filters=[]): array {
         $db = get_db_instance();
         
-
         $query = <<<'EOS'
         SELECT 
             *
@@ -57,9 +61,11 @@ class Vendor {
             $query .= ' AND id = :id ';
             $params[':id'] = $filters['id'];
         }
+
+        // Search by name
         else if(isset($filters['term'])) {
             $query .= ' AND `name` LIKE :term ';
-            $params[':term'] = '%'.$filters['term'].'%';
+            $params[':term'] = '%'.$filters['name'].'%';
         }
 
         $query .= ';';
