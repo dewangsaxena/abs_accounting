@@ -218,6 +218,15 @@ const router = createBrowserRouter([
     path: "/vendor_update",
     element: <Vendor isViewOrUpdate={true}/>,
   },
+  {
+    path: "/purchase_invoice",
+    element: 
+    <Transactions 
+      type={TRANSACTION_TYPES["PI"]} 
+      name="Purchase Invoice" 
+      isViewOrUpdate={false}
+    ></Transactions>,
+  },
 ]);
 
 export default router;

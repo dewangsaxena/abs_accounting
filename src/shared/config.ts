@@ -132,6 +132,7 @@ export const TRANSACTION_TYPES: { [txnType: string]: number } = {
   DN: 4,
   QT: 5,
   RC: 6,
+  PI: 7,
 };
 
 /**
