@@ -133,7 +133,7 @@ const Vendor = ({isViewOrUpdate}: __VendorDetails ) => {
 
   return <>
   {isViewOrUpdate && 
-    <Box>
+    <Box marginBottom={10}>
       <HStack>
         <Box width="10%">
           <_Label fontSize="0.8em">Showing Details for: </_Label>

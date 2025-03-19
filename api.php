@@ -326,7 +326,8 @@ if (isset($_POST['action'])) {
             $response = Vendor::update($data);
             break;
             
-        case Vendor::fetch($data);
+        case Vendor::FETCH:
+            $response = Vendor::fetch($data);
             break;
     }
 

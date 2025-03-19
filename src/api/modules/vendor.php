@@ -65,7 +65,7 @@ class Vendor {
         // Search by name
         else if(isset($filters['term'])) {
             $query .= ' AND `name` LIKE :term ';
-            $params[':term'] = '%'.$filters['name'].'%';
+            $params[':term'] = '%'.trim($filters['term']).'%';
         }
 
         $query .= ';';
@@ -122,7 +122,7 @@ class Vendor {
             $statement = $db -> prepare($query);
             $is_successful = $statement -> execute([
                 ':name' => $details['name'],
-                ':is_inactive' => json_encode([$store_id => false], JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
+                ':is_inactive' => json_encode([$store_id => 0], JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
             ]);
             if($is_successful !== true || $statement -> rowCount() < 1) throw new Exception('Unable to Add Vendor.');
 

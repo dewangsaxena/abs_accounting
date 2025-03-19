@@ -25,7 +25,6 @@ export interface VendorDetailsStore extends VendorDetails {
     fetch: (
         searchTerm: string,
         excludeInactive?: boolean,
-        fetchInvoices?: boolean
       ) => any;
     reset: () => any;
 }
@@ -52,11 +51,15 @@ export const vendorDetailsStore = create<VendorDetailsStore>((set, get) => ({
         else if(fieldName === "name") set({name: fieldValue});
         else if(fieldName === "isInactive") set({isInactive: fieldValue});
     },
-    fetch: (
+    fetch: async (
         searchTerm: string,
         excludeInactive?: boolean,
-        fetchInvoices?: boolean
       ) => {
+        let payload = {
+            term: searchTerm,
+            exclude_inactive: excludeInactive ? 1 : 0,
+        };
+        return await httpService.fetch<VendorDetails[]>(payload, "vendor_fetch");
     },
     reset: () => {
         set({id: null});
