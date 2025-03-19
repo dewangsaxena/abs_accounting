@@ -158,7 +158,7 @@ const Vendor = ({isViewOrUpdate}: __VendorDetails ) => {
     }
   }
 
-  return <>
+  return <Box padding={2}>
   {isViewOrUpdate && 
     <Box marginBottom={10}>
       <HStack>
@@ -232,7 +232,7 @@ const Vendor = ({isViewOrUpdate}: __VendorDetails ) => {
         }}
       ></_Input>
       <HStack>
-        <_Label>Amount Purchased: </_Label>
+        <_Label fontSize={"0.9em"}>Amount Purchased: </_Label>
         <CurrencyIcon/>
         <_Label fontFamily={numberFont}>{formatNumberWithDecimalPlaces(totalPurchased)}</_Label>
       </HStack>
@@ -248,7 +248,7 @@ const Vendor = ({isViewOrUpdate}: __VendorDetails ) => {
         <_Label fontSize="0.8em">Is Disabled?</_Label>
       </Checkbox>
     </SimpleGrid>
-    
+
     <Box marginTop={10}>
       <_Button
           isDisabled={inputDisable}
@@ -272,7 +272,7 @@ const Vendor = ({isViewOrUpdate}: __VendorDetails ) => {
           isLoading={loadingState}
         ></_Button>
       </Box>
-  </>;
+  </Box>;
 }
 
 export default Vendor;
