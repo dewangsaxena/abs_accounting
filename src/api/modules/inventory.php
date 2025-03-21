@@ -140,7 +140,8 @@ class Inventory {
             `is_core`,
             `memo`,
             `additional_information`,
-            `reorder_quantity`
+            `reorder_quantity`,
+            `last_sold`
         )
         VALUES
         (
@@ -160,7 +161,8 @@ class Inventory {
             :is_core,
             :memo,
             :additional_information,
-            :reorder_quantity
+            :reorder_quantity,
+            :last_sold
         );
         EOS;
         $statement = $db->prepare($query);
@@ -394,6 +396,7 @@ class Inventory {
                 $is_inactive = $data['isInactive'] ?? [];
                 if (!array_key_exists($store_id, $is_inactive)) $is_inactive[$store_id] = 0;
                 $values[':is_inactive'] = json_encode($is_inactive, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+                $values[':last_sold'] = '{}';
                 $success_status = self::add($db, $values, $data['initialQuantity'], $data['prices'][$store_id]['buyingCost']);
             } else if ($data['action'] === 'inv_update') {
                 $item_id = intval($data['id']);
