@@ -982,7 +982,7 @@ const ItemFieldRow = memo(
       details[rowIndex].itemId = event.value.id;
 
       // Check for EHC Items     
-      if(details[rowIndex].itemId && EHC_ITEMS_LIST.includes(details[rowIndex].itemId)) {
+      if(EHC_ITEMS_LIST.includes(details[rowIndex].itemId || 0)) {
           // Disable Federal and Provincial Taxes
           details[rowIndex].gstHSTTaxRate = 0;
           details[rowIndex].pstTaxRate = 0;
