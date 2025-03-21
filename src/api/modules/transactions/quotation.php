@@ -51,10 +51,10 @@ class Quotations {
             foreach($keys as $key) if(floatval($item[$key]) <= 0) return ['status' => false, 'message' => "$key less than or equal to 0 for $identifier."];
 
             // Check for GST/HST Tax Rate
-            if($disable_federal_taxes === 0 && $item['gstHSTTaxRate'] <= 0) return ['status' => false, 'message' => "GSTHSTTaxRate less than or equal to 0 for $identifier."];
+            if(in_array($item['itemId'], Inventory::EHC_ITEMS) === false && $disable_federal_taxes === 0 && $item['gstHSTTaxRate'] <= 0) return ['status' => false, 'message' => "GSTHSTTaxRate less than or equal to 0 for $identifier."];
 
             // Check for PST if applicable
-            if($disable_provincial_taxes === 0 && (StoreDetails::STORE_DETAILS[$_SESSION['store_id']]['pst_tax_rate'] > 0) && floatval($item['pstTaxRate']) < 0) {
+            if(in_array($item['itemId'], Inventory::EHC_ITEMS) === false && $disable_provincial_taxes === 0 && (StoreDetails::STORE_DETAILS[$_SESSION['store_id']]['pst_tax_rate'] > 0) || floatval($item['pstTaxRate']) < 0) {
                 return ['status' => false, 'message' => 'PST Tax Invalid.'];
             }
 
@@ -88,8 +88,12 @@ class Quotations {
         $provincial_tax_rate = $disable_provincial_taxes ? 0 : PROVINCIAL_TAX_RATE;
         foreach($items as $item) { 
             $total += $item['amountPerItem'];
-            $pst_tax += (($item['amountPerItem'] * $provincial_tax_rate) / 100);
-            $gst_hst_tax += (($item['amountPerItem'] * $federal_tax_rate) / 100);
+
+            // Add Taxes
+            if(in_array($item['itemId'], Inventory::EHC_ITEMS) === false) {
+                $pst_tax += (($item['amountPerItem'] * $provincial_tax_rate) / 100);
+                $gst_hst_tax += (($item['amountPerItem'] * $federal_tax_rate) / 100);
+            }
             $base_price = $item['basePrice'];
             $quantity = $item['quantity'];
             $txn_discount += ((($base_price * $quantity) * $item['discountRate']) / 100);
