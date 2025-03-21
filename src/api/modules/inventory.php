@@ -564,6 +564,16 @@ class Inventory {
 
                     // Add Discount Disabled Flag
                     $items[$item_id]['isDiscountDisabled'] = $is_discount_disabled;
+
+                    // Last Sold
+                    $last_sold = json_decode($record['last_sold'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+                    if(isset($last_sold[$store_id])) {
+                        $last_sold = Utils::convert_date_to_human_readable($last_sold[$store_id]);
+                    }
+                    else $last_sold = 'N/A';
+
+                    // Update
+                    $items[$item_id]['lastSold'] = $last_sold;
                 }
             }
 
@@ -616,7 +626,7 @@ class Inventory {
      * @param db
      * @return array
      */
-    public static function fetch_profit_margins(int $store_id, PDO &$db = null): array {
+    public static function fetch_profit_margins(int $store_id, PDO | null &$db = null): array {
         try {
             if (is_null($db)) $db = get_db_instance();
             $statement = $db->prepare('SELECT profit_margins, modified FROM store_details WHERE id = :store_id;');
