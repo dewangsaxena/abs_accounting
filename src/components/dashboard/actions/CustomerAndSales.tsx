@@ -475,7 +475,7 @@ const CustomerAndSales = () => {
             ]}
           ></ActionGroup>
         </Box>
-        <ActionGroupDivider count={2} />
+        {/* <ActionGroupDivider count={2} />
         <Box visibility={systemConfigMode === MODE_WASH ? "hidden" : "visible"}>
           <ActionGroup
             elementWidth={150}
@@ -497,7 +497,7 @@ const CustomerAndSales = () => {
               },
             ]}
           ></ActionGroup>
-        </Box>
+        </Box> */}
       </CanvasGrid>
 
       <TransferInvoiceToStore
