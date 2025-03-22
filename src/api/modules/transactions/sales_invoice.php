@@ -76,7 +76,7 @@ class SalesInvoice {
             if(in_array($item['itemId'], Inventory::EHC_ITEMS) === false && $disable_federal_taxes === 0 && $item['gstHSTTaxRate'] <= 0) return ['status' => false, 'message' => "GSTHSTTaxRate less than or equal to 0 for $identifier."];
 
             // Check for PST if applicable
-            if(in_array($item['itemId'], Inventory::EHC_ITEMS) === false && $disable_provincial_taxes === 0 && (StoreDetails::STORE_DETAILS[$_SESSION['store_id']]['pst_tax_rate'] > 0) || floatval($item['pstTaxRate']) < 0) {
+            if(in_array($item['itemId'], Inventory::EHC_ITEMS) === false && $disable_provincial_taxes === 0 && (StoreDetails::STORE_DETAILS[$_SESSION['store_id']]['pst_tax_rate'] > 0) && floatval($item['pstTaxRate']) < 0) {
                 return ['status' => false, 'message' => 'PST Tax Invalid.'];
             }
 
