@@ -9,6 +9,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) session_start();
 
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/configurations.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/client.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/vendor.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/inventory.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/user_management.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/transactions.php";
@@ -314,6 +315,19 @@ if (isset($_POST['action'])) {
             /* Item Frequency */
         case 'item_frequency':
             $response = Inventory::frequency($data['partId'] ?? null, $data['startDate'] ?? null, $data['endDate'] ?? null);
+            break;
+
+        /* Vendor */
+        case Vendor::ADD:
+            $response = Vendor::process($data);
+            break;
+
+        case Vendor::UPDATE:
+            $response = Vendor::process($data);
+            break;
+            
+        case Vendor::FETCH:
+            $response = Vendor::fetch($data);
             break;
     }
 

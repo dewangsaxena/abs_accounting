@@ -42,6 +42,7 @@ import {
   APP_HOST,
   AUTO_SUGGEST_MIN_INPUT_LENGTH,
   AttributeType,
+  EHC_ITEMS_LIST,
   MODE_WASH,
   PAY_LATER_ID,
   TRANSACTION_TYPES,
@@ -979,15 +980,27 @@ const ItemFieldRow = memo(
 
       // Set Details
       details[rowIndex].itemId = event.value.id;
+
+      // Check for EHC Items     
+      if(EHC_ITEMS_LIST.includes(details[rowIndex].itemId || 0)) {
+          // Disable Federal and Provincial Taxes
+          details[rowIndex].gstHSTTaxRate = 0;
+          details[rowIndex].pstTaxRate = 0;
+
+          // Set Discount to 0
+          details[rowIndex].discountRate = 0;
+      }
+      else {
+        details[rowIndex].gstHSTTaxRate = disableFederalTaxes
+        ? 0
+        : GST_HST_TAX_RATE;
+        details[rowIndex].pstTaxRate = disableProvincialTaxes ? 0 : PST_TAX_RATE;
+      }
       details[rowIndex].identifier = event.value.identifier;
       details[rowIndex].description = event.value.description;
       details[rowIndex].unit = event.value.unit;
       details[rowIndex].category = event.value.category;
       details[rowIndex].buyingCost = event.value.prices[storeId].buyingCost;
-      details[rowIndex].gstHSTTaxRate = disableFederalTaxes
-        ? 0
-        : GST_HST_TAX_RATE;
-      details[rowIndex].pstTaxRate = disableProvincialTaxes ? 0 : PST_TAX_RATE;
     };
 
     const toast = useToast();

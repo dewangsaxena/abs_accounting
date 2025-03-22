@@ -338,7 +338,6 @@ export const clientStore = create<ClientStore>((set, get) => ({
     return await httpService.fetch<ClientDetails[]>(payload, "client_fetch");
   },
   add: async () => {
-    console.log(JSON.parse(JSON.stringify(get())));
     return await httpService.add(get(), "client_add");
   },
   update: async () => {

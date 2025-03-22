@@ -8,7 +8,7 @@ This file contains configurations used by the application.
 /**
  * Client App Version
  */
-define('CLIENT_APP_VERSION', '2.2.30');
+define('CLIENT_APP_VERSION', '2.2.32');
 
 /* Hosts */
 define('__LOCALHOST__', 0);
@@ -187,6 +187,7 @@ define('CREDIT_NOTE', 3);
 define('DEBIT_NOTE', 4);
 define('QUOTATION', 5);
 define('RECEIPT', 6);
+define('PURCHASE_INVOICE', 7);
 
 /* Transactions Names */
 define('TRANSACTION_NAMES', [
@@ -196,6 +197,7 @@ define('TRANSACTION_NAMES', [
     DEBIT_NOTE => 'Debit Note',
     QUOTATION => 'Quotation',
     RECEIPT => 'Receipt',
+    PURCHASE_INVOICE => 'Purchase Invoice',
 ]);
 
 // Transaction abbr
@@ -206,6 +208,7 @@ define('TRANSACTION_NAMES_ABBR', [
     DEBIT_NOTE => 'DN',
     QUOTATION => 'QT',
     RECEIPT => 'RT',
+    PURCHASE_INVOICE => 'PI',
 ]);
 
 /**

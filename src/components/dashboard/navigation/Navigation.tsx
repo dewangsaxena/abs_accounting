@@ -15,7 +15,6 @@ import { PiWarehouseFill, PiScalesLight } from "react-icons/pi";
 import { PiCurrencyDollarSimpleThin } from "react-icons/pi";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { TbReportMoney } from "react-icons/tb";
-// import { TbReportAnalytics } from "react-icons/tb";
 import { CiSettings, CiUser } from "react-icons/ci";
 import { BiLogOut } from "react-icons/bi";
 import { BsLock } from "react-icons/bs";
@@ -85,7 +84,6 @@ const Navigation = () => {
             }}
             bgColor={navBgColor}
           ></_Button>
-
           <_Button
             height={10}
             fontSize="1.5em"
@@ -151,15 +149,6 @@ const Navigation = () => {
             marginTop={2}
             bgColor={navBgColor}
           ></_Button>
-          {/* <_Button
-            height={10}
-            fontSize="1.5em"
-            icon={<TbReportAnalytics color="#FFFF00" />}
-            label="Customer Sales"
-            onClick={() => {}}
-            marginTop={2}
-            bgColor={navBgColor}
-          ></_Button> */}
           <_Button
             height={10}
             fontSize="1.5em"

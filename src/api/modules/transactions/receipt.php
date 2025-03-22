@@ -302,6 +302,7 @@ class Receipt {
                     $db
                 );
             }
+            else if($payment_method === PaymentMethod::CASH) throw new Exception('Cash payment method has been disabled.');
             else {
                 // Add Total Amount to Receipt Payment Method
                 $payment_method_account = AccountsConfig::get_account_code_by_payment_method($payment_method);
@@ -435,6 +436,9 @@ class Receipt {
             $date = Utils::get_YYYY_mm_dd(
                 Utils::convert_utc_str_timestamp_to_localtime($data['date'], $store_id)
             );
+
+            // Cash Payment Disabled
+            if($payment_method === PaymentMethod::CASH) throw new Exception('Cash payment method has been disabled.');
             
             // Change Payment Method
             if($payment_method !== $initial_payment_method) {

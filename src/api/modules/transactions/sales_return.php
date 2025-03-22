@@ -77,10 +77,10 @@ class SalesReturn {
             foreach($keys as $key) if(floatval($item[$key]) < 0) return ['status' => false, 'message' => "$key less than or equal to 0 for $identifier."];
 
             // Check for GST/HST Tax Rate
-            if($disable_federal_taxes === 0 && floatval($item['gstHSTTaxRate']) !== FEDERAL_TAX_RATE) return ['status' => false, 'message' => "GSTHSTTaxRate less than or equal to 0 for $identifier."];
+            if(in_array($item['itemId'], Inventory::EHC_ITEMS) === false && $disable_federal_taxes === 0 && floatval($item['gstHSTTaxRate']) !== FEDERAL_TAX_RATE) return ['status' => false, 'message' => "GSTHSTTaxRate less than or equal to 0 for $identifier."];
 
             // Check for PST if applicable
-            if($disable_provincial_taxes === 0 && (StoreDetails::STORE_DETAILS[$store_id]['pst_tax_rate'] > 0) && floatval($item['pstTaxRate']) !== StoreDetails::STORE_DETAILS[$store_id]['pst_tax_rate']) {
+            if(in_array($item['itemId'], Inventory::EHC_ITEMS) === false && $disable_provincial_taxes === 0 && (StoreDetails::STORE_DETAILS[$store_id]['pst_tax_rate'] > 0) && floatval($item['pstTaxRate']) !== StoreDetails::STORE_DETAILS[$store_id]['pst_tax_rate']) {
                 return ['status' => false, 'message' => 'PST Tax Invalid.'];
             }
 
@@ -135,8 +135,12 @@ class SalesReturn {
             $total_restocking_fees += $restocking_fees;
             
             $sub_total += $amount_per_item;
-            $pst_tax += (($amount_per_item * $provincial_tax_rate) / 100);
-            $gst_hst_tax += (($amount_per_item * $federal_tax_rate) / 100);
+
+            // Add Taxes
+            if(in_array($item['itemId'], Inventory::EHC_ITEMS) === false) {
+                $pst_tax += (($item['amountPerItem'] * $provincial_tax_rate) / 100);
+                $gst_hst_tax += (($item['amountPerItem'] * $federal_tax_rate) / 100);
+            }
             $base_price = $item['basePrice'];
             $return_quantity = $item['returnQuantity'];
             $txn_discount += ((($base_price * $return_quantity) * $item['discountRate']) / 100);

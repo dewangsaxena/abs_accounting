@@ -303,7 +303,7 @@ CREATE TABLE IF NOT EXISTS sales_invoice(
     CONSTRAINT FK_si_store_id FOREIGN KEY(store_id) REFERENCES store_details(id),
     CONSTRAINT FK_si_sales_rep_id FOREIGN KEY(sales_rep_id) REFERENCES users(id)
 );
-ALTER TABLE sales_invoice AUTO_INCREMENT=10000;
+ALTER TABLE sales_invoice AUTO_INCREMENT = 10000;
 CREATE INDEX idx_sales_invoice_client_id ON sales_invoice(client_id);
 CREATE INDEX idx_sales_invoice_store_id ON sales_invoice(store_id);
 CREATE INDEX idx_sales_invoice_sales_rep_id ON sales_invoice(sales_rep_id);
@@ -368,7 +368,7 @@ CREATE TABLE IF NOT EXISTS sales_return(
     CONSTRAINT FK_sr_store_id FOREIGN KEY(store_id) REFERENCES store_details(id),
     CONSTRAINT FK_sr_sales_rep_id FOREIGN KEY(sales_rep_id) REFERENCES users(id)
 );
-ALTER TABLE sales_return AUTO_INCREMENT=10000;
+ALTER TABLE sales_return AUTO_INCREMENT = 10000;
 CREATE INDEX idx_sales_return_client_id ON sales_return(client_id);
 CREATE INDEX idx_sales_return_store_id ON sales_return(store_id);
 CREATE INDEX idx_sales_return_sales_rep_id ON sales_return(sales_rep_id);
@@ -408,7 +408,7 @@ CREATE TABLE IF NOT EXISTS credit_note(
     CONSTRAINT FK_cn_store_id FOREIGN KEY(store_id) REFERENCES store_details(id),
     CONSTRAINT FK_cn_sales_rep_id FOREIGN KEY(sales_rep_id) REFERENCES users(id)
 );
-ALTER TABLE credit_note AUTO_INCREMENT=10000;
+ALTER TABLE credit_note AUTO_INCREMENT = 10000;
 CREATE INDEX idx_credit_note_client_id ON credit_note(client_id);
 CREATE INDEX idx_credit_note_store_id ON credit_note(store_id);
 CREATE INDEX idx_credit_note_sales_rep_id ON credit_note(sales_rep_id);
@@ -448,7 +448,7 @@ CREATE TABLE IF NOT EXISTS debit_note(
     CONSTRAINT FK_dn_store_id FOREIGN KEY(store_id) REFERENCES store_details(id),
     CONSTRAINT FK_dn_sales_rep_id FOREIGN KEY(sales_rep_id) REFERENCES users(id)
 );
-ALTER TABLE debit_note AUTO_INCREMENT=10000;
+ALTER TABLE debit_note AUTO_INCREMENT = 10000;
 CREATE INDEX idx_debit_note_client_id ON debit_note(client_id);
 CREATE INDEX idx_debit_note_store_id ON debit_note(store_id);
 CREATE INDEX idx_debit_note_sales_rep_id ON debit_note(sales_rep_id);
@@ -570,27 +570,45 @@ CREATE TABLE purchase_vendors(
 ALTER TABLE purchase_vendors AUTO_INCREMENT=10000;
 CREATE INDEX idx_purchase_vendors_name ON purchase_vendors(`name`);
 
+/* Vendors */
+CREATE TABLE vendors(
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `name` VARCHAR(128) NOT NULL,
+    is_inactive JSON NOT NULL DEFAULT '{}',
+    total_purchased NUMERIC(13, 4) NOT NULL DEFAULT 0,
+    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    modified TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE vendors AUTO_INCREMENT = 10000;
+CREATE INDEX idx_vendor_name ON vendors(`name`);
+
 /* Purchase Invoices */
 CREATE TABLE purchase_invoices(
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     vendor_id INT UNSIGNED NOT NULL,
     `date` DATE NOT NULL DEFAULT NOW() COMMENT 'This store date in Local Timzone.',
+    credit_amount NUMERIC(13, 4) DEFAULT 0,
     sum_total NUMERIC(13, 4) NOT NULL,
+    sub_total NUMERIC(13, 4) NOT NULL,
+    gst_hst_tax NUMERIC(13, 4) NOT NULL,
+    pst_tax NUMERIC(13, 4) NOT NULL,
+    txn_discount NUMERIC(13, 4) NOT NULL,
     details JSON NOT NULL,
-    po VARCHAR(32) DEFAULT NULL,
     store_id SMALLINT UNSIGNED NOT NULL,
     notes TEXT DEFAULT NULL COMMENT 'Txn. Specific Notes.',
-    sales_rep_id INT UNSIGNED NOT NULL,
-
-    /* Account Number */
+    sales_rep_id INT UNSIGNED NOT NULL, 
+    /* COGP: Cogs of Goods Purchased */ 
+    cogp NUMERIC(13, 4) NOT NULL,
+    purchased_by VARCHAR(32) DEFAULT NULL,
     account_number VARCHAR(32) DEFAULT NULL,
-
-    /* Meta Data */
+    po VARCHAR(32) DEFAULT NULL,
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modified TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT FK_pi_store_id FOREIGN KEY(store_id) REFERENCES store_details(id),
-    CONSTRAINT FK_pi_sales_rep_id FOREIGN KEY(sales_rep_id) REFERENCES users(id)
+    CONSTRAINT FK_vp_vendor_id FOREIGN KEY(vendor_id) REFERENCES vendors(id),
+    CONSTRAINT FK_vp_store_id FOREIGN KEY(store_id) REFERENCES store_details(id),
+    CONSTRAINT FK_vp_sales_rep_id FOREIGN KEY(sales_rep_id) REFERENCES users(id)
 );
-ALTER TABLE purchase_invoices AUTO_INCREMENT=10000;
-CREATE INDEX idx_purchase_invoices_store_id ON purchase_invoices(store_id);
+ALTER TABLE purchase_invoices AUTO_INCREMENT = 10000;
 CREATE INDEX idx_purchase_invoices_vendor_id ON purchase_invoices(vendor_id);
+CREATE INDEX idx_purchase_invoices_store_id ON purchase_invoices(store_id);
+CREATE INDEX idx_purchase_invoices_sales_rep_id ON purchase_invoices(sales_rep_id);

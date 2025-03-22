@@ -349,6 +349,7 @@ const Item = ({ isViewOrUpdate = false }: { isViewOrUpdate?: boolean }) => {
     storeId: _storeId,
     account,
     quantitiesAllStores,
+    lastSold,
     setField,
     setDetails,
     fetch,
@@ -1048,6 +1049,12 @@ const Item = ({ isViewOrUpdate = false }: { isViewOrUpdate?: boolean }) => {
                   >
                     <_Label fontSize="0.8em">Is Core?</_Label>
                   </Checkbox>
+                </Box>
+                <Box width="40%">
+                  <HStack>
+                  <_Label fontSize="0.8em">Last Sold : </_Label>
+                  <_Label fontSize="0.8em" fontFamily={numberFont} letterSpacing={2} textTransform={"uppercase"}><b>{lastSold}</b></_Label>
+                  </HStack>
                 </Box>
               </HStack>
             </Box>

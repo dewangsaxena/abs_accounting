@@ -60,6 +60,7 @@ export interface ItemDetails {
   account: Account;
   storeId: number;
   lastModifiedTimestamp: string;
+  lastSold: string;
 }
 
 /**
@@ -132,6 +133,7 @@ export const itemStore = create<ItemStore>((set, get) => ({
     expense: 0,
   },
   lastModifiedTimestamp: "",
+  lastSold: "",
   prependItemTag: () => {
     let identifier: string = ITEM_DETAILS_TAG + get().identifier;
     let description: string = ITEM_DETAILS_TAG + get().description;
@@ -282,6 +284,7 @@ export const itemStore = create<ItemStore>((set, get) => ({
     set({ account: details.account });
     set({ quantitiesAllStores: details.quantitiesAllStores });
     set({ lastModifiedTimestamp: details.lastModifiedTimestamp });
+    set({ lastSold: details.lastSold });
   },
   fetch: async (searchTerm: string, excludeInactive: boolean = false) => {
     let payload = {
@@ -325,5 +328,6 @@ export const itemStore = create<ItemStore>((set, get) => ({
     set({ isCore: 0 });
     set({ isInactive: {} });
     set({ lastModifiedTimestamp: "" });
+    set({ lastSold: "" });
   },
 }));

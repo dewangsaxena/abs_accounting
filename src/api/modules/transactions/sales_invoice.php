@@ -73,10 +73,10 @@ class SalesInvoice {
             }
 
             // Check for GST/HST Tax Rate
-            if($disable_federal_taxes === 0 && $item['gstHSTTaxRate'] <= 0) return ['status' => false, 'message' => "GSTHSTTaxRate less than or equal to 0 for $identifier."];
+            if(in_array($item['itemId'], Inventory::EHC_ITEMS) === false && $disable_federal_taxes === 0 && $item['gstHSTTaxRate'] <= 0) return ['status' => false, 'message' => "GSTHSTTaxRate less than or equal to 0 for $identifier."];
 
             // Check for PST if applicable
-            if($disable_provincial_taxes === 0 && (StoreDetails::STORE_DETAILS[$_SESSION['store_id']]['pst_tax_rate'] > 0) && floatval($item['pstTaxRate']) < 0) {
+            if(in_array($item['itemId'], Inventory::EHC_ITEMS) === false && $disable_provincial_taxes === 0 && (StoreDetails::STORE_DETAILS[$_SESSION['store_id']]['pst_tax_rate'] > 0) && floatval($item['pstTaxRate']) < 0) {
                 return ['status' => false, 'message' => 'PST Tax Invalid.'];
             }
 
@@ -114,8 +114,13 @@ class SalesInvoice {
             // Skip Back Order
             if($item['isBackOrder'] === 1) continue;
             $total += $item['amountPerItem'];
-            $pst_tax += (($item['amountPerItem'] * $provincial_tax_rate) / 100);
-            $gst_hst_tax += (($item['amountPerItem'] * $federal_tax_rate) / 100);
+
+            // Add Taxes
+            if(in_array($item['itemId'], Inventory::EHC_ITEMS) === false) {
+                $pst_tax += (($item['amountPerItem'] * $provincial_tax_rate) / 100);
+                $gst_hst_tax += (($item['amountPerItem'] * $federal_tax_rate) / 100);
+            }
+            
             $base_price = $item['basePrice'];
             $quantity = $item['quantity'];
             $cogs += ($item['buyingCost'] * $quantity);
@@ -339,7 +344,7 @@ class SalesInvoice {
      * @param db
      * @return array
      */
-    private static function check_quantity_of_items(array $items, PDO &$db=null) : array {
+    private static function check_quantity_of_items(array $items, PDO | null &$db=null) : array {
         try {
             $ids = [];
             $details = [];
@@ -372,8 +377,8 @@ class SalesInvoice {
             $item_quantities = $item_quantities['data'];
 
             foreach($ids as $id) {
-                $inventory_quantity = $item_quantities[$id][$store_id]['quantity'];
-                if($details[$id]['quantity'] > $inventory_quantity) {
+                $inventory_quantity = $item_quantities[$id][$store_id]['quantity'] ?? 0;
+                if(in_array($id, Inventory::EHC_ITEMS) === false && $details[$id]['quantity'] > $inventory_quantity) {
                     throw new Exception("{$details[$id]['identifier']} quantity is low in inventory.");
                 }
             }

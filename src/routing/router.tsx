@@ -15,6 +15,7 @@ import CustomerStatement from "../components/reports/customer_statement/Customer
 import CustomerSummary from "../components/reports/customer_summary/CustomerSummary";
 import ItemFrequency from "../components/inventory/ItemFrequency";
 import CustomerStatementV2 from "../components/reports/customer_statement/CustomerStatementV2";
+import Vendor from "../components/vendors/details/Vendors";
 
 const router = createBrowserRouter([
   {
@@ -208,6 +209,23 @@ const router = createBrowserRouter([
   {
     path: "/item_frequency",
     element: <ItemFrequency />,
+  },
+  {
+    path: "/vendor",
+    element: <Vendor isViewOrUpdate={false}/>,
+  },
+  {
+    path: "/vendor_update",
+    element: <Vendor isViewOrUpdate={true}/>,
+  },
+  {
+    path: "/purchase_invoice",
+    element: 
+    <Transactions 
+      type={TRANSACTION_TYPES["PI"]} 
+      name="Purchase Invoice" 
+      isViewOrUpdate={false}
+    ></Transactions>,
   },
 ]);
 

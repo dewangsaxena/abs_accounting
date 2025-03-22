@@ -1,7 +1,7 @@
 /**
  * Configurations used the application.
  */
-export const CLIENT_APP_VERSION = "2.2.30";
+export const CLIENT_APP_VERSION = "2.2.32";
 
 // Stores
 export class Stores {
@@ -132,6 +132,7 @@ export const TRANSACTION_TYPES: { [txnType: string]: number } = {
   DN: 4,
   QT: 5,
   RC: 6,
+  PI: 7,
 };
 
 /**
@@ -182,3 +183,20 @@ export const MONTHS: { [monthIndex: number]: string } = {
 
 // Item Details Tag
 export const ITEM_DETAILS_TAG = "85163d53-ace8-4140-b83c-1c89294f6464";
+
+/**
+ * EHC Items List.
+ */
+export const EHC_ITEMS_LIST: number[] = [
+  21764, /* ENVIRONMENTAL FEE */
+  25379, /* Environment FEE */
+  22712, /* EHC FEE */
+  26832, /* EHC ON OIL */
+  33649, /* EHC ON OIL - JUG */
+  19417, /* EHC-AB-333-C */
+  24473, /* EHC-FEE */
+  25219, /* EHCAB01 */
+  31447, /* EHCAB02 */
+  40057, /* EHCAB04 */
+  40058, /* EHCAB06 */
+]

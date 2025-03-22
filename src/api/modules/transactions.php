@@ -29,6 +29,7 @@ function handle_transactions(array $data) {
         case DEBIT_NOTE: $response = DebitNote::process($data); break;
         case SALES_RETURN: $response = SalesReturn::process($data); break;
         case RECEIPT: $response = Receipt::process($data); break;
+        case PURCHASE_INVOICE: $response = PurchaseInvoice::process($data); break;
         default: $response = ['status' => false, 'message' => 'Invalid Transaction Type.'];
     }
     return $response;
