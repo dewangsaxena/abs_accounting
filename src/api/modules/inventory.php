@@ -874,7 +874,16 @@ class Inventory {
                         $current_record['modified'],
                         $store_id,
                     ));
-                    if(count($date) > 0) $date = Utils::convert_date_to_human_readable($date[0]);
+                    if(count($date) > 0) {
+                        $timestamp = $date[0];
+                        $date = Utils::convert_date_to_human_readable($timestamp);
+                        $current_date = Utils::convert_date_to_human_readable(Utils::get_business_date($store_id));
+                        if($current_date === $date) $date = 'Today';
+                        else {
+                            $diff = Utils::get_difference_from_current_date($current_date, $timestamp, $store_id);
+                            if($diff['d'] == 1) $date = 'Yesterday';
+                        }
+                    }
                     else $date = '';
                     $response[$item_id]['lastModifiedTimestamp'] = $date;
                 }
