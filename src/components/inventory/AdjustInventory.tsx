@@ -53,6 +53,7 @@ export interface InventoryResponseObject {
   aisle: string;
   shelf: string;
   column: string;
+  readonly lastModifiedTimestamp: string;
   readonly identifier: string;
   readonly description: string;
   readonly unit: string;
@@ -77,6 +78,7 @@ interface RowProps {
  * @returns
  */
 const Row = memo(({ isDisabled, _key, invDetails }: RowProps) => {
+  const [lastModifiedTimestamp, setLastModifiedTimestamp] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [unit, setUnit] = useState<string>("");
   const [buyingCost, setBuyingCost] = useState<number>(0);
@@ -112,6 +114,7 @@ const Row = memo(({ isDisabled, _key, invDetails }: RowProps) => {
   };
 
   const setItemDetails = (response: InventoryResponseObject) => {
+    setLastModifiedTimestamp(response.lastModifiedTimestamp);
     setUnit(response.unit);
     setDescription(response.description);
     setBuyingCost(response.buyingCost);
@@ -131,6 +134,7 @@ const Row = memo(({ isDisabled, _key, invDetails }: RowProps) => {
       identifier: response.identifier,
       description: response.description,
       unit: response.unit,
+      lastModifiedTimestamp: response.lastModifiedTimestamp,
     };
   };
 
@@ -144,6 +148,7 @@ const Row = memo(({ isDisabled, _key, invDetails }: RowProps) => {
     setQuantity(0);
     setAmount(0);
     setExistingQuantity(0);
+    setLastModifiedTimestamp("");
     delete invDetails[_key];
   };
 
@@ -186,6 +191,10 @@ const Row = memo(({ isDisabled, _key, invDetails }: RowProps) => {
             }}
             highlightFirstSuggestion={true}
           ></AutoSuggest>
+        </Box>
+        {/* Last Modified Timestamp */}
+        <Box width="8%" paddingLeft={1} >
+          <_Label fontSize="0.8em" fontFamily={numberFont} letterSpacing={2}>{lastModifiedTimestamp}</_Label>
         </Box>
         {/* Inventory Quantity  */}
         <Box transform={"translateY(-6px);"} width="8%">
@@ -350,6 +359,16 @@ const Header = () => {
             fontSize="0.8em"
           >
             Item Identifier
+          </_Label>
+        </Box>
+        <Box width="8%">
+          <_Label
+            textTransform="uppercase"
+            letterSpacing={2}
+            fontWeight="bold"
+            fontSize="0.8em"
+          >
+            Last Modified
           </_Label>
         </Box>
         <Box width="8%">
