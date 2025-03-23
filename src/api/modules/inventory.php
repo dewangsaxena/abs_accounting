@@ -883,7 +883,7 @@ class Inventory {
                         if($current_date === $date) $date = 'Today';
                         else {
                             $diff = Utils::get_difference_from_current_date($current_date, $local_timestamp, $store_id);
-                            if($diff['d'] == 1) $date = 'Yesterday';
+                            if($diff['d'] <= 1) $date = 'Yesterday';
                         }
                     }
                     else $date = '';
