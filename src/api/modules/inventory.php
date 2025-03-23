@@ -870,22 +870,25 @@ class Inventory {
                     $response[$item_id]['shelf'] = $current_record['shelf'];
                     $response[$item_id]['column'] = $current_record['column'];
                     $response[$item_id]['existingQuantity'] = $current_record['quantity'];
+                    $timestamp = $current_record['modified'];
                     $date = explode(' ', Utils::convert_utc_str_timestamp_to_localtime(
                         $current_record['modified'],
                         $store_id,
                     ));
+                    $time = $date[1]. ' '. $date[2];
                     if(count($date) > 0) {
-                        $timestamp = $date[0];
                         $date = Utils::convert_date_to_human_readable($timestamp);
                         $current_date = Utils::convert_date_to_human_readable(Utils::get_business_date($store_id));
-                        if($current_date === $date) $date = 'Today';
+                        if($current_date === $date) {
+                            $date = 'Today';
+                        }
                         else {
                             $diff = Utils::get_difference_from_current_date($current_date, $timestamp, $store_id);
                             if($diff['d'] == 1) $date = 'Yesterday';
                         }
                     }
                     else $date = '';
-                    $response[$item_id]['lastModifiedTimestamp'] = $date;
+                    $response[$item_id]['lastModifiedTimestamp'] = "$date @ $time";
                 }
 
                 // Format Resonse
