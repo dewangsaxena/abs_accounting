@@ -855,6 +855,7 @@ class Inventory {
                 AND
                     store_id = {$_SESSION['store_id']};
                 EOS;
+                
                 $ret = Utils::mysql_in_placeholder($ids, $query);
                 $values = $ret['values'];
                 $query = $ret['query'];
@@ -883,7 +884,7 @@ class Inventory {
                         if($current_date === $date) $date = 'Today';
                         else {
                             $diff = Utils::get_difference_from_current_date($current_date, $local_timestamp, $store_id);
-                            if($diff['d'] <= 1) $date = 'Yesterday';
+                            if($diff['d'] <= 1 && $diff['m'] === 0 and $diff['y'] === 0) $date = 'Yesterday';
                         }
                     }
                     else $date = '';
