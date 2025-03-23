@@ -871,17 +871,16 @@ class Inventory {
                     $response[$item_id]['column'] = $current_record['column'];
                     $response[$item_id]['existingQuantity'] = $current_record['quantity'];
                     $timestamp = $current_record['modified'];
-                    $date = explode(' ', Utils::convert_utc_str_timestamp_to_localtime(
+                    $local_timestamp = Utils::convert_utc_str_timestamp_to_localtime(
                         $current_record['modified'],
                         $store_id,
-                    ));
+                    );
+                    $date = explode(' ', $local_timestamp);
                     $time = $date[1]. ' '. $date[2];
                     if(count($date) > 0) {
-                        $date = Utils::convert_date_to_human_readable($timestamp);
+                        $date = Utils::convert_date_to_human_readable(Utils::get_YYYY_mm_dd($local_timestamp));
                         $current_date = Utils::convert_date_to_human_readable(Utils::get_business_date($store_id));
-                        if($current_date === $date) {
-                            $date = 'Today';
-                        }
+                        if($current_date === $date) $date = 'Today';
                         else {
                             $diff = Utils::get_difference_from_current_date($current_date, $timestamp, $store_id);
                             if($diff['d'] == 1) $date = 'Yesterday';
