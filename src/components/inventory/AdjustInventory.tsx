@@ -489,8 +489,10 @@ const AdjustInventory = memo(() => {
     let count: number = keys.length;
     let temp: any = JSON.parse(JSON.stringify(invDetails));
     for (let i = 0; i < count; ++i) {
-      temp[i].identifier = ITEM_DETAILS_TAG + invDetails[i].identifier;
-      temp[i].description = ITEM_DETAILS_TAG + invDetails[i].description;
+      if(invDetails[i]) {
+        temp[i].identifier = ITEM_DETAILS_TAG + invDetails[i].identifier;
+        temp[i].description = ITEM_DETAILS_TAG + invDetails[i].description;
+      }
     }
     return temp;
   };
@@ -527,11 +529,13 @@ const AdjustInventory = memo(() => {
         })
         .catch((error: any) => {
           setIsDisabled(false);
+          setLabel("Adjustment Failed");
           showToast(toastInstance, false, error.message);
         })
         .finally(function () {});
     } catch (e) {
       setIsDisabled(false);
+      setLabel("Adjustment Failed");
     } finally {
       setIsLoading(false);
     }
