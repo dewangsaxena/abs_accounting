@@ -850,7 +850,7 @@ class Client {
      * @param db
      * @return array 
      */
-    public static function fetch(array|null $params=[], PDO &$db=null) : array {
+    public static function fetch(array|null $params=[], PDO | null &$db=null) : array {
         try {
             if(is_null($db)) $db = get_db_instance();
 
