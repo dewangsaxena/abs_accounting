@@ -28,35 +28,37 @@ class Client {
      * Client Id : Store ID
      */
     public const SELF_CLIENT_WHITELIST = [
-        /* ABS Truck Wash And Lube */
-        13735 => StoreDetails::EDMONTON,
+        PARTS => [
+            /* ABS Truck Wash And Lube */
+            13735 => StoreDetails::EDMONTON,
 
-        /* ABS Trucking Ltd. */
-        14506 => StoreDetails::EDMONTON, 
+            /* ABS Trucking Ltd. */
+            14506 => StoreDetails::EDMONTON, 
 
-        /* ABS Truck & Trailer Parts Ltds. */ 
-        15260 => StoreDetails::EDMONTON,
+            /* ABS Truck & Trailer Parts Ltds. */ 
+            15260 => StoreDetails::EDMONTON,
 
-        /* ABS TRUCK PARTS NISKU */ 
-        16047 => StoreDetails::NISKU,
+            /* ABS TRUCK PARTS NISKU */ 
+            16047 => StoreDetails::NISKU,
 
-        /* ABS Truck Wash and Lube Nisku */
-        15356 => StoreDetails::NISKU,
+            /* ABS Truck Wash and Lube Nisku */
+            15356 => StoreDetails::NISKU,
 
-        /* ABS Truck & Trailer Parts Slave Lake */ 
-        17671 => StoreDetails::SLAVE_LAKE,
+            /* ABS Truck & Trailer Parts Slave Lake */ 
+            17671 => StoreDetails::SLAVE_LAKE,
 
-        /* ABS Truck & Trailer Parts Calgary */ 
-        18636 => StoreDetails::CALGARY,
+            /* ABS Truck & Trailer Parts Calgary */ 
+            18636 => StoreDetails::CALGARY,
 
-        /* Traction Delta */ 
-        17773 => StoreDetails::DELTA,
-        
-        /* 1721534 AB LTD */
-        16630 => StoreDetails::EDMONTON,
+            /* Traction Delta */ 
+            17773 => StoreDetails::DELTA,
+            
+            /* 1721534 AB LTD */
+            16630 => StoreDetails::EDMONTON,
 
-        /* ABS TRUCK AND TRAILER PARTS SK LTD. */
-        20432 => StoreDetails::REGINA,
+            /* ABS TRUCK AND TRAILER PARTS SK LTD. */
+            20432 => StoreDetails::REGINA,
+        ],
     ];
 
     /**
@@ -790,7 +792,7 @@ class Client {
      * @return int
      */
     public static function is_self_client(int $client_id): int {
-        return isset(self::SELF_CLIENT_WHITELIST[$client_id]) ? 1 : 0;
+        return isset(self::SELF_CLIENT_WHITELIST[SYSTEM_INIT_MODE][$client_id]) ? 1 : 0;
     }
 
     /**
