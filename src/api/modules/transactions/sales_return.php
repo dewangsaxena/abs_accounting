@@ -344,6 +344,9 @@ class SalesReturn {
             throw new Exception('Cannot Process Sales Return for Invalid Customer.');
         }
 
+        // Disable self client
+        if(Client::is_self_client($client_id)) throw new Exception('Transactions disabled for Self Client.');
+
         // Sales Rep Id
         if($data['salesRepId'] === 0) throw new Exception('Please select Sales Representative.');
 

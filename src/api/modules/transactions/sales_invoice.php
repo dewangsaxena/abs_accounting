@@ -158,6 +158,9 @@ class SalesInvoice {
             throw new Exception('Cannot Process Sales Invoice for Invalid Customer.');
         }
 
+        // Disable Self Client 
+        if(Client::is_self_client($client_id)) throw new Exception('Transactions disabled for Self Client.');
+
         // Sales Rep Id
         if($data['salesRepId'] === 0) throw new Exception('Please select Sales Representative.');
 

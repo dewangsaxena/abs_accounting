@@ -128,6 +128,9 @@ class Quotations {
             throw new Exception('Cannot Process Quotations for Invalid Customer.');
         }
 
+        // Disable Self Client
+        if(Client::is_self_client($client_id)) throw new Exception('Transactions disabled for Self Client.');
+
         // Validate Store
         $store_id = intval($_SESSION['store_id']);
         if(key_exists($store_id, StoreDetails::STORE_DETAILS) === false) throw new Exception('Store is Invalid.');

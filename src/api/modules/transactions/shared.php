@@ -397,7 +397,7 @@ class Shared {
      * @param txn_type
      * @return array
      */
-    public static function validate_details_for_credit_and_debit_note(array $data, string $txn_type=null): array {
+    public static function validate_details_for_credit_and_debit_note(array $data, string | null $txn_type=null): array {
         // Client Id 
         $client_id = $data['clientDetails']['id'] ?? null;
 
@@ -405,6 +405,9 @@ class Shared {
         if(!Validate::is_numeric($client_id)) {
             throw new Exception('Cannot Process Txn for Invalid Customer.');
         }
+
+        // Disable Self Client
+        if(Client::is_self_client($client_id)) throw new Exception('Transactions disabled for Self Client.');
 
         // Check for Credit Eligible Transaction
         Client::is_credit_txn_eligible_for_client($data['clientDetails']['primaryDetails']);
