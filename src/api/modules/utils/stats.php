@@ -31,7 +31,7 @@ class Stats
             $receipt_discount = 0;
 
             // Params
-            $self_clients = array_keys(Client::SELF_CLIENT_WHITELIST);
+            $self_clients = array_keys(Client::SELF_CLIENT_WHITELIST[SYSTEM_INIT_MODE]);
 
             $query = <<<'EOS'
             SELECT 

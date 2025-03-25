@@ -1222,7 +1222,7 @@ class Shared {
     public static function check_balance_due_over_60_plus_days(int $client_id, int $store_id): void {
 
         // Dont Check for Self Client.
-        if(isset(Client::SELF_CLIENT_WHITELIST[$client_id])) return;
+        if(isset(Client::SELF_CLIENT_WHITELIST[SYSTEM_INIT_MODE][$client_id])) return;
 
         $customer_aged_summary = CustomerAgedSummary::fetch_customer_aged_summary_of_client(
             $client_id, 

@@ -422,7 +422,7 @@ class SalesInvoice {
             $client_id = $validated_details['client_id'];
 
             // Is Self Client
-            self::$is_self_client = isset(Client::SELF_CLIENT_WHITELIST[$client_id]);
+            self::$is_self_client = isset(Client::SELF_CLIENT_WHITELIST[SYSTEM_INIT_MODE][$client_id]);
 
             // Check for Fresh Copy of Client.
             Client::check_fresh_copy_of_client($client_id, $data['clientDetails']['lastModifiedTimestamp'], $db);
@@ -741,7 +741,7 @@ class SalesInvoice {
             $client_id = $details['client_id'];
 
             // Is Self Client
-            self::$is_self_client = isset(Client::SELF_CLIENT_WHITELIST[$client_id]);
+            self::$is_self_client = isset(Client::SELF_CLIENT_WHITELIST[SYSTEM_INIT_MODE][$client_id]);
 
             // Check for Fresh Copy of Client.
             Client::check_fresh_copy_of_client($client_id, $data['clientDetails']['lastModifiedTimestamp'], $db);
@@ -1446,12 +1446,12 @@ class SalesInvoice {
             foreach($sales_invoices_details as $si) {
 
                 // Check for White Listed Clients
-                if(isset(Client::SELF_CLIENT_WHITELIST[$si['client_id']]) === false) {
+                if(isset(Client::SELF_CLIENT_WHITELIST[SYSTEM_INIT_MODE][$si['client_id']]) === false) {
                     throw new Exception('Invalid Client for Sales Invoice #: '. $si['id']);
                 }
 
                 // Check whether sales invoice belongs to valid store.
-                if(Client::SELF_CLIENT_WHITELIST[$si['client_id']] !== $transfer_to) throw new Exception('Sales Invoice #'. $si['id']. ' does not belong to the selected store.');
+                if(Client::SELF_CLIENT_WHITELIST[SYSTEM_INIT_MODE][$si['client_id']] !== $transfer_to) throw new Exception('Sales Invoice #'. $si['id']. ' does not belong to the selected store.');
 
                 // Update Flag
                 $is_successful = $statement_flag -> execute([':id' => $si['id']]);
