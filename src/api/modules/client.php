@@ -59,6 +59,7 @@ class Client {
             /* ABS TRUCK AND TRAILER PARTS SK LTD. */
             20432 => StoreDetails::REGINA,
         ],
+        WASH => [],
     ];
 
     /**
