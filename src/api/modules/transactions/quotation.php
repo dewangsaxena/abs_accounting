@@ -569,7 +569,7 @@ class Quotations {
                 else $record['shipping_addresses'] = '{}';
 
                 // Is Self Client
-                $record['is_self_client'] = Client::is_self_client($record['client_id']);
+                $record['is_self_client'] = Client::is_self_client($record['client_id']) ? 1 : 0;
 
                 // ID
                 $formatted_record[$record['id']] = $record;

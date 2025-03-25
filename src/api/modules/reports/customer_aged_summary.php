@@ -237,7 +237,7 @@ class CustomerAgedSummary {
     private static function exclude_self_companies(array &$summary): array {
         $new_summary = [];
         foreach($summary as $s) {
-            if(isset(Client::SELF_CLIENT_WHITELIST[SYSTEM_INIT_MODE][$s['client_id']]) === false) $new_summary[]= $s;
+            if(Client::is_self_client($s['client_id']) === false) $new_summary[]= $s;
         }
         return $new_summary;
     }

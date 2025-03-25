@@ -395,7 +395,7 @@ class SalesInvoice {
      * @param db
      * @return array
      */
-    private static function create_sales_invoice(array $data, PDO &$db=null): array {
+    private static function create_sales_invoice(array $data, PDO | null &$db=null): array {
         if($db === null) {
             $db = get_db_instance();
             $is_new_connection = true;
@@ -422,7 +422,7 @@ class SalesInvoice {
             $client_id = $validated_details['client_id'];
 
             // Is Self Client
-            self::$is_self_client = isset(Client::SELF_CLIENT_WHITELIST[SYSTEM_INIT_MODE][$client_id]);
+            self::$is_self_client = Client::is_self_client($client_id);
 
             // Check for Fresh Copy of Client.
             Client::check_fresh_copy_of_client($client_id, $data['clientDetails']['lastModifiedTimestamp'], $db);
@@ -741,7 +741,7 @@ class SalesInvoice {
             $client_id = $details['client_id'];
 
             // Is Self Client
-            self::$is_self_client = isset(Client::SELF_CLIENT_WHITELIST[SYSTEM_INIT_MODE][$client_id]);
+            self::$is_self_client = Client::is_self_client($client_id);
 
             // Check for Fresh Copy of Client.
             Client::check_fresh_copy_of_client($client_id, $data['clientDetails']['lastModifiedTimestamp'], $db);
@@ -1446,7 +1446,7 @@ class SalesInvoice {
             foreach($sales_invoices_details as $si) {
 
                 // Check for White Listed Clients
-                if(isset(Client::SELF_CLIENT_WHITELIST[SYSTEM_INIT_MODE][$si['client_id']]) === false) {
+                if(Client::is_self_client($si['client_id']) === false) {
                     throw new Exception('Invalid Client for Sales Invoice #: '. $si['id']);
                 }
 

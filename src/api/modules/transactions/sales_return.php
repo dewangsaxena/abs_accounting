@@ -568,7 +568,7 @@ class SalesReturn {
             $client_id = $validated_details['client_id'];
 
             // Self Client
-            self::$is_self_client = isset(Client::SELF_CLIENT_WHITELIST[SYSTEM_INIT_MODE][$client_id]);
+            self::$is_self_client = Client::is_self_client($client_id) ? true : false;
 
             // Check for Fresh Copy of Client.
             Client::check_fresh_copy_of_client($client_id, $data['clientDetails']['lastModifiedTimestamp'], $db);
@@ -994,7 +994,7 @@ class SalesReturn {
             $client_id = $validated_details['client_id'];
 
             // Is Self Client 
-            self::$is_self_client = isset(Client::SELF_CLIENT_WHITELIST[SYSTEM_INIT_MODE][$client_id]);
+            self::$is_self_client = Client::is_self_client($client_id) ? true : false;
 
             // Check for Fresh Copy of Client.
             Client::check_fresh_copy_of_client($client_id, $data['clientDetails']['lastModifiedTimestamp'], $db);

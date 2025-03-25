@@ -790,10 +790,10 @@ class Client {
     /**
      * This method will check whether the client is self client or not.
      * @param client_id
-     * @return int
+     * @return bool
      */
-    public static function is_self_client(int $client_id): int {
-        return isset(self::SELF_CLIENT_WHITELIST[SYSTEM_INIT_MODE][$client_id]) ? 1 : 0;
+    public static function is_self_client(int $client_id): bool {
+        return isset(self::SELF_CLIENT_WHITELIST[SYSTEM_INIT_MODE][$client_id]);
     }
 
     /**
@@ -1006,7 +1006,7 @@ class Client {
                     'nameHistory' => json_decode($record['name_history'], true, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
                     'additionalEmailAddresses' => $record['additional_email_addresses'],
                     'lastModifiedTimestamp' => $record['modified'],
-                    'isSelfClient' => self::is_self_client($record['id']),
+                    'isSelfClient' => self::is_self_client($record['id']) ? true : false,
                     'customSellingPriceForItems' => $custom_selling_price_for_items,
                     'lastPurchaseDate' => is_string($last_purchase_date) ? Utils::format_to_human_readable_date($last_purchase_date) : 'N/A',
                 ];
