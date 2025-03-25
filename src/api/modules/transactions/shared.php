@@ -407,7 +407,7 @@ class Shared {
         }
 
         // Disable Self Client
-        if(Client::is_self_client($client_id)) throw new Exception('Transactions disabled for Self Client.');
+        if(Client::is_inter_store_client($client_id)) throw new Exception('Transactions disabled for Self Client.');
 
         // Check for Credit Eligible Transaction
         Client::is_credit_txn_eligible_for_client($data['clientDetails']['primaryDetails']);

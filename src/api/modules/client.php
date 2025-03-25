@@ -63,6 +63,37 @@ class Client {
     ];
 
     /**
+     * Inter stores.
+     */
+    private const INTER_STORES = [
+        PARTS => [
+            /* ABS Truck & Trailer Parts Ltds. */ 
+            15260 => StoreDetails::EDMONTON,
+
+            /* ABS TRUCK PARTS NISKU */ 
+            16047 => StoreDetails::NISKU,
+
+            /* ABS Truck Wash and Lube Nisku */
+            15356 => StoreDetails::NISKU,
+
+            /* ABS Truck & Trailer Parts Slave Lake */ 
+            17671 => StoreDetails::SLAVE_LAKE,
+
+            /* ABS Truck & Trailer Parts Calgary */ 
+            18636 => StoreDetails::CALGARY,
+
+            /* Traction Delta */ 
+            17773 => StoreDetails::DELTA,
+            
+            /* 1721534 AB LTD */
+            16630 => StoreDetails::EDMONTON,
+
+            /* ABS TRUCK AND TRAILER PARTS SK LTD. */
+            20432 => StoreDetails::REGINA,
+        ],
+    ];
+
+    /**
      * Client Catgeory
      */
     public const CATEGORY_ALL = 0;
@@ -794,6 +825,14 @@ class Client {
      */
     public static function is_self_client(int $client_id): bool {
         return isset(self::SELF_CLIENT_WHITELIST[SYSTEM_INIT_MODE][$client_id]);
+    }
+
+    /**
+     * This method will check whether the client is inter store.
+     * @param client_id
+     */
+    public static function is_inter_store_client($client_id): bool {
+        return isset(self::INTER_STORES[SYSTEM_INIT_MODE][$client_id]);
     }
 
     /**
