@@ -1006,7 +1006,7 @@ class Client {
                     'nameHistory' => json_decode($record['name_history'], true, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
                     'additionalEmailAddresses' => $record['additional_email_addresses'],
                     'lastModifiedTimestamp' => $record['modified'],
-                    'isSelfClient' => self::is_self_client($record['id']) ? true : false,
+                    'isSelfClient' => self::is_self_client($record['id']) ? 1 : 0,
                     'customSellingPriceForItems' => $custom_selling_price_for_items,
                     'lastPurchaseDate' => is_string($last_purchase_date) ? Utils::format_to_human_readable_date($last_purchase_date) : 'N/A',
                 ];

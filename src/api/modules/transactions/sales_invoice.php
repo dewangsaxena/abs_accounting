@@ -42,7 +42,7 @@ class SalesInvoice {
      * @param is_self_client
      * @return array
      */
-    private static function validate_items_details(array $items, int $disable_federal_taxes, int $disable_provincial_taxes, int $is_self_client=0) : array {
+    private static function validate_items_details(array $items, int $disable_federal_taxes, int $disable_provincial_taxes, bool $is_self_client = false) : array {
 
         // Validate Item Count
         if(count($items) < 1) return ['status' => false, 'message' => 'Invalid Items Count.'];
