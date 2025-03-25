@@ -204,7 +204,7 @@ class AccountsConfig {
 
         /* Custom Account */ 
         10000 => 'Total Discount',
-        10001 => 'Cheque Receivables',
+        10001 => 'Cheque Received',
         10002 => 'PST Charged on Sales',
         
         /* Wash Specific */
@@ -417,7 +417,7 @@ class AccountsConfig {
 
         /* Custom Account */ 
         10000 => ['number' => 10000, 'name' => 'Total Discount', 'code' => '10000 Total Discount'],
-        10001 => ['number' => 10001, 'name' => 'Cheque Receivables', 'code' => '10001 Cheque'],
+        10001 => ['number' => 10001, 'name' => 'Cheque Received', 'code' => '10001 Cheque'],
         10002 => ['number' => 10002, 'name' => 'PST Charged on Sales'],
 
         /* Wash specific */ 
