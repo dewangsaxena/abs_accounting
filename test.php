@@ -1665,5 +1665,5 @@ function transfer_account(int $store_id): void {
         print_r($e -> getMessage());
     }
 }
-transfer_account(StoreDetails::EDMONTON);
+// transfer_account(StoreDetails::EDMONTON);
 ?>
