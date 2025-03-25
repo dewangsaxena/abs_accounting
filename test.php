@@ -1621,6 +1621,49 @@ function update_last_sold_for_items(int $store_id): void {
 
 // update_last_sold_for_items(StoreDetails::EDMONTON);
 // print_r(Inventory::get_dead_inventory(StoreDetails::EDMONTON));
-// Inventory::generate_dead_inventory(StoreDetails::EDMONTON, 3);s
-Inventory::fetch_quantity_sold_for_all_items(StoreDetails::EDMONTON, 2024, 1);
+// Inventory::generate_dead_inventory(StoreDetails::EDMONTON, 3);
+// Inventory::fetch_quantity_sold_for_all_items(StoreDetails::EDMONTON, 2024, 1);
+
+
+function transfer_account(int $store_id): void {
+    $db = get_db_instance();
+    try {
+        $db -> beginTransaction();
+
+        // Fetch Balance Sheets
+        $statement = $db -> prepare('SELECT * FROM balance_sheet WHERE store_id = :store_id AND `date` >= "2025-01-01";');
+        $statement -> execute([':store_id' => $store_id]);
+        $balance_sheet = $statement -> fetchAll(PDO::FETCH_ASSOC);
+
+        // Update Balance sheet
+        $statement = $db -> prepare(<<<'EOS'
+        UPDATE 
+            balance_sheet
+        SET 
+            statement = :statement 
+        WHERE 
+            id = :id;
+        EOS);
+
+        foreach($balance_sheet as $bs) {
+            $id = $bs['id'];
+            $accounts = json_decode($bs['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+            $accounts[AccountsConfig::CHEQUING_BANK_ACCOUNT] += $accounts[AccountsConfig::CASH_TO_BE_DEPOSITED];
+            $accounts[AccountsConfig::CASH_TO_BE_DEPOSITED] = 0;
+
+            $accounts = json_encode($accounts, flags: JSON_THROW_ON_ERROR | JSON_NUMERIC_CHECK);
+            $is_successful = $statement -> execute([':id' => $id, ':statement' => $accounts]);
+
+            if($is_successful !== true && $statement -> rowCount() < 1) throw new Exception('Unable to Update Balance Sheet # '. $id);
+        }
+        if($db -> inTransaction()) $db -> commit();
+
+        echo 'Transferred';
+    }
+    catch(Exception $e) {
+        $db -> rollBack();
+        print_r($e -> getMessage());
+    }
+}
+transfer_account(StoreDetails::EDMONTON);
 ?>
