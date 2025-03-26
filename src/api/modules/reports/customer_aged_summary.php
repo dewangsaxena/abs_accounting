@@ -145,7 +145,7 @@ class CustomerAgedSummary {
      * @param db
      * @return bool
      */
-    private static function check_statement_exists(int $store_id, string $date, PDO &$db=null): bool {
+    private static function check_statement_exists(int $store_id, string $date, PDO | null &$db=null): bool {
         $statement = $db -> prepare(self::FETCH_CUSTOMER_SUMMARY_AS_PER_STORE_AND_DATE);
         $statement -> execute([
             ':store_id' => $store_id,
@@ -279,7 +279,7 @@ class CustomerAgedSummary {
      * @param omit_credit_records
      * @return array
      */
-    public static function fetch_customer_aged_summary(int $store_id, ?string $from_date, string $till_date, int $sort_ascending, int $client_id=null, int $exclude_self=0, int $exclude_clients=0, int $omit_credit_records=0): array {
+    public static function fetch_customer_aged_summary(int $store_id, ?string $from_date, string $till_date, int $sort_ascending, int | null $client_id=null, int $exclude_self=0, int $exclude_clients=0, int $omit_credit_records=0): array {
 
         // Till Date
         self::$till_date = $till_date;
@@ -509,7 +509,7 @@ class CustomerAgedSummary {
      * @param db
      * @return void
      */
-    public static function save_last_statement(int $store_id, PDO &$db=null): void {
+    public static function save_last_statement(int $store_id, PDO | null &$db=null): void {
 
         // Current Date
         $current_date = Utils::get_business_date($store_id);
