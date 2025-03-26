@@ -721,5 +721,81 @@ class BalanceSheetActions {
             }
         }
     }
+
+    /**
+     * Create Historical Balance Sheet
+     */
+    private const CREATE_HISTORICAL_BALANCE_SHEET = <<<'EOS'
+    INSERT INTO historical_balance_sheet
+    (
+        `statement`,
+        `date`,
+        `store_id`
+    )
+    VALUES
+    (
+        :statement,
+        :date,
+        :store_id
+    );
+    EOS;
+
+    // Fetch Historical Statement for Date and Store.
+    private const FETCH_HISTORICAL_BALANCE_SHEET_PER_STORE_AND_DATE = <<<'EOS'
+    SELECT 
+        * 
+    FROM 
+        historical_balance_sheet 
+    WHERE 
+        store_id = :store_id
+    AND
+        `date` = :date 
+    ORDER BY 
+        `date` DESC
+    LIMIT 1;
+    EOS;
+    
+    /**
+     * This method will check whether statement exists for a particular date for a store.
+     * @param store_id
+     * @param date
+     * @param db
+     * @return bool
+     */
+    private static function check_statement_exists(int $store_id, string $date, PDO | null &$db=null): bool {
+        $statement = $db -> prepare(self::FETCH_BALANCE_SHEET_AS_PER_STORE_AND_DATE);
+        $statement -> execute([
+            ':store_id' => $store_id,
+            ':date' => $date,
+        ]);
+        $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
+        return isset($result[0]);
+    }
+
+    /**
+     * This method will save balance sheet for historical purposes.
+     * 
+     * @param store_id
+     * @param db
+     * @return void
+     */
+    public static function save_balance_sheet(int $store_id, PDO | null &$db): void {
+        // Current Date
+        $current_date = Utils::get_business_date($store_id);
+
+        // Create Date from TimeStamp
+        $for_date = date_create($current_date);
+
+        // Subtract Date
+        date_sub($for_date, date_interval_create_from_date_string('1 days'));
+
+        // Convert to Format
+        $for_date = date_format($for_date, 'Y-m-d');
+
+        // Check for Presence of Statement.
+        if(self::check_statement_exists($store_id, $for_date, $db) === false) {
+
+        }
+    }
 }
 ?>
