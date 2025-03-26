@@ -7,6 +7,11 @@ header('Access-Control-Allow-Headers: X-Requested-With');
 if (isset($_POST['session_id'][0])) session_id($_POST['session_id']);
 if (session_status() !== PHP_SESSION_ACTIVE) session_start();
 
+/* Disable error reporting. */
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
+error_reporting(0);
+
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/configurations.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/client.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/vendor.php";
@@ -104,11 +109,6 @@ if (isset($_GET['action'])) {
     /* Terminate Script */
     die;
 }
-
-/* Disable error reporting. */
-ini_set('display_errors', 0);
-ini_set('display_startup_errors', 0);
-error_reporting(0);
 
 if (isset($_POST['action'])) {
 
