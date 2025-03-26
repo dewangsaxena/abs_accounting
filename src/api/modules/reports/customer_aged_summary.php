@@ -546,5 +546,82 @@ class CustomerAgedSummary {
             if($is_successful !== true || $statement -> rowCount() < 1) throw new Exception('Unable to Save Last Customer Aged Statement.');
         }
     }
+
+    /**
+     * This method will fetch customer aged summary.
+     * @param txn_date
+     * @param store_id
+     * @param db
+     * @return array
+     */
+    private static function fetch_customer_aged_summary_since(string $txn_date, int $store_id, PDO &$db): array {
+        $statement = $db -> prepare(<<<'EOS'
+        SELECT 
+            * 
+        FROM 
+            customer_aged_summary
+        WHERE 
+            `date` >= :date
+        AND
+            store_id = :store_id;
+        EOS);
+
+        $statement -> execute([':date' => $txn_date, ':store_id' => $store_id]);
+        return $statement -> fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * This method will update customer aged summary.
+     * @param client_id
+     * @param txn_date
+     * @param txn_amount
+     * @param store_id
+     * @param db
+     */
+    public static function update_customer_aged_summary(int $client_id, string $txn_date, float $txn_amount, int $store_id, PDO &$db): void {
+        // Fetch Historical Statement
+        $customer_aged_statements = self::fetch_customer_aged_summary_since($store_id, $txn_date, $db);
+
+        // Cache
+        $update_statement = $db -> prepare(<<<'EOS'
+        UPDATE 
+            customer_aged_summary
+        SET 
+            statement = :statement
+        WHERE
+            id = :id;
+        EOS);
+
+        foreach($customer_aged_statements as $customer_aged_statement) {
+
+            // Get Date Difference
+            $result = Shared::get_txn_age(
+                $txn_date,
+                $customer_aged_statement['date'],
+                $txn_amount,
+                $store_id
+            );
+
+            // Statement
+            $statement = json_decode($customer_aged_statement['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+
+            // Adjust in statement
+            $statement[$client_id]['total'] += $result['total'];
+            $statement[$client_id]['current'] += $result['current'];
+            $statement[$client_id]['31-60'] += $result['31-60'];
+            $statement[$client_id]['61-90'] += $result['61-90'];
+            $statement[$client_id]['91+'] += $result['91+'];
+
+            // Update Statement
+            $statement = json_encode($statement, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+
+            $is_successful = $update_statement -> execute([
+                ':statement' => $statement,
+                ':id' => $customer_aged_statement['id']
+            ]);
+            
+            if($is_successful !== true || $update_statement -> rowCount() < 1) throw new Exception('Unable to Update Customer Aged Summary.');
+        }
+    }
 }
 ?>

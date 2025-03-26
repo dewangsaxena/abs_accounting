@@ -1246,7 +1246,7 @@ class Shared {
      * @param amount
      * @param store_id
      */
-    public static function get_txn_age(string $txn_date, DateTime $till_date, float $amount, int $store_id): array {
+    public static function get_txn_age(string $txn_date, DateTime | string $till_date, float $amount, int $store_id): array {
 
         // Aged Amounts.
         $aged_amounts = [

@@ -1666,4 +1666,11 @@ function transfer_account(int $store_id): void {
     }
 }
 // transfer_account(StoreDetails::EDMONTON);
+
+print_r(Shared::get_txn_age(
+    '2025-01-01',
+    '2025-03-26',
+    100,
+    StoreDetails::EDMONTON,
+));
 ?>
