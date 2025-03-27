@@ -1797,6 +1797,7 @@ function generate_report(array &$data, PDO $db, string $report_date, int $store_
     EOS;
     foreach($client_list as $client_id) {
         
+        $total_outstanding = 0;
         $code .= '<tr><td colspan="7">'.$client_details[$client_id].'</td></tr>';
 
         // List All Transactions
@@ -1804,6 +1805,7 @@ function generate_report(array &$data, PDO $db, string $report_date, int $store_
         foreach($client_transactions_types as $txn_records) {
             $code .= '<tr>';
             foreach($txn_records as $txn) {
+                $total_outstanding += $txn['sum_total'];
                 $code .= get_row_code($txn, $txn['date'], $report_date, $store_id);
                 $code .= '</tr>';
                 if(isset($txn['receipt_payments'])) {
@@ -1812,13 +1814,14 @@ function generate_report(array &$data, PDO $db, string $report_date, int $store_
                     // Show Receipt Payments
                     foreach($receipt_payments as $rp) {
                         $code .= '<tr>';
+                        $total_outstanding -= $rp['sum_total'];
                         $code .= get_row_code($rp, $rp['date'], $report_date, $store_id);
                         $code .= '</tr>';
                     }
                 }
-                
             }
         }
+        $code .= "<tr><td colspan='7'>$total_outstanding</td></tr>";
     }
 
     $code .= <<<'EOS'
