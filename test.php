@@ -1694,7 +1694,7 @@ function process_transaction(array &$transactions, array &$data, int $txn_type):
             'sum_total' => $is_credit_txn ? -$txn['sum_total'] : $txn['sum_total'],
             'txn_type_id' => $txn_type,
         ];
-        if(isset($txn['credit_amount'])) $temp['credit_amount'] = $txn['credit_amount'];
+        if(isset($txn['credit_amount'])) $temp['credit_amount'] = $is_credit_txn ? -$txn['credit_amount']: $txn['credit_amount'];
         $data[$client_id][$txn_type][$txn['id']] = $temp;
     }
 }
@@ -1751,11 +1751,11 @@ function get_row_code(array $txn, string $txn_date, string $report_date, int $st
     $code .= '<td>'.$txn['txn_id'].'</td>';
     $code .= '<td>'.$txn['date'].'</td>';
     $code .= '<td>'.$txn['txn_type'].'</td>';
-    $code .= '<td>'.Utils::round($diff['total'], 2).'</td>';
-    $code .= '<td>'.Utils::round($diff['current'], 2).'</td>';
-    $code .= '<td>'.Utils::round($diff['31-60'], 2).'</td>';
-    $code .= '<td>'.Utils::round($diff['61-90'], 2).'</td>';
-    $code .= '<td>'.Utils::round($diff['91+'], 2).'</td>';
+    $code .= '<td>'.Utils::number_format($diff['total'], 2).'</td>';
+    $code .= '<td>'.Utils::number_format($diff['current'], 2).'</td>';
+    $code .= '<td>'.Utils::number_format($diff['31-60'], 2).'</td>';
+    $code .= '<td>'.Utils::number_format($diff['61-90'], 2).'</td>';
+    $code .= '<td>'.Utils::number_format($diff['91+'], 2).'</td>';
     return $code;
 }
 
@@ -1808,7 +1808,7 @@ function generate_report(array &$data, PDO $db, string $report_date, int $store_
         foreach($client_transactions_types as $txn_records) {
             $code .= '<tr>';
             foreach($txn_records as $txn) {
-                $total_outstanding_per_client += $txn['sum_total'];
+                $total_outstanding_per_client += $txn['credit_amount'];
                 $code .= get_row_code($txn, $txn['date'], $report_date, $store_id);
                 $code .= '</tr>';
                 if(isset($txn['receipt_payments'])) {
@@ -1824,9 +1824,10 @@ function generate_report(array &$data, PDO $db, string $report_date, int $store_
                 }
             }
         }
-        $code .= "<tr><td colspan='7'><b>Total Outstanding: $total_outstanding_per_client</b></td></tr>";
 
         $total_outstanding += $total_outstanding_per_client;
+        $total_outstanding_per_client = Utils::number_format($total_outstanding_per_client);
+        $code .= "<tr><td colspan='7'><b>Total Outstanding: $total_outstanding_per_client</b></td></tr>";
     }
 
     $code .= <<<EOS
@@ -1861,32 +1862,33 @@ function eliminate_paid_transactions(array &$data) : void {
 function generate_client_aged_detail(int $store_id, string $receipt_exclude_date): void {
     $db = get_db_instance();
 
-    $params = [':store_id' => $store_id];
+    $params_txn = [':store_id' => $store_id, ':till_date' => $receipt_exclude_date];
+    $params_receipt = [':store_id' => $store_id, ':exclude_from' => $receipt_exclude_date];
     $data = [];
 
     // Select Invoices
-    $statement_invoices = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id FROM sales_invoice WHERE store_id = :store_id AND payment_method = 0;');
-    $statement_invoices -> execute($params);
+    $statement_invoices = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id FROM sales_invoice WHERE store_id = :store_id AND payment_method = 0 AND `date` < :till_date;');
+    $statement_invoices -> execute($params_txn);
     $sales_invoices = $statement_invoices -> fetchAll(PDO::FETCH_ASSOC);
 
     // Sales Returns
-    $statement_sales_return = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id FROM sales_return WHERE store_id = :store_id AND payment_method = 0;');
-    $statement_sales_return -> execute($params);
+    $statement_sales_return = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id FROM sales_return WHERE store_id = :store_id AND payment_method = 0 AND `date` < :till_date');
+    $statement_sales_return -> execute($params_txn);
     $sales_returns = $statement_sales_return -> fetchAll(PDO::FETCH_ASSOC);
 
     // Credit Note
-    $statement_credit_note = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id  FROM credit_note WHERE store_id = :store_id;');
-    $statement_credit_note -> execute($params);
+    $statement_credit_note = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id  FROM credit_note WHERE store_id = :store_id AND `date` < :till_date');
+    $statement_credit_note -> execute($params_txn);
     $credit_notes = $statement_credit_note -> fetchAll(PDO::FETCH_ASSOC);
 
     // Debit Note
-    $statement_debit_note = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id  FROM debit_note WHERE store_id = :store_id;');
-    $statement_debit_note -> execute($params);
+    $statement_debit_note = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id  FROM debit_note WHERE store_id = :store_id AND `date` < :till_date');
+    $statement_debit_note -> execute($params_txn);
     $debit_notes = $statement_debit_note -> fetchAll(PDO::FETCH_ASSOC);
 
     // Receipts
     $statement_receipt = $db -> prepare('SELECT id, sum_total, `date`, `details`, client_id, payment_method FROM receipt WHERE store_id = :store_id AND do_conceal = 0 AND `date` >= :exclude_from;');
-    $statement_receipt -> execute([...$params, ':exclude_from' => $receipt_exclude_date]);
+    $statement_receipt -> execute($params_receipt);
     $receipts = $statement_receipt -> fetchAll(PDO::FETCH_ASSOC);
 
     // Reverse Receipts
