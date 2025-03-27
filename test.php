@@ -1685,11 +1685,13 @@ function process_transaction(array &$transactions, array &$data, int $txn_type):
             RECEIPT => [],
         ];
 
+        $is_credit_txn = $txn_type === CREDIT_NOTE || $txn_type === SALES_RETURN;
+
         $temp = [
             'txn_id' => $txn['id'],
             'date' => $txn['date'],
             'txn_type' => TRANSACTION_NAMES[$txn_type],
-            'sum_total' => $txn['sum_total'],
+            'sum_total' => $is_credit_txn ? -$txn['sum_total'] : $txn['sum_total'],
             'txn_type_id' => $txn_type,
         ];
         if(isset($txn['credit_amount'])) $temp['credit_amount'] = $txn['credit_amount'];
