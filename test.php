@@ -1889,7 +1889,6 @@ function generate_client_aged_detail(int $store_id, string $receipt_exclude_date
     add_receipt_payments($receipts, $data);
     // display_txn($data);
     eliminate_paid_transactions($data);
-    // display_txn($data);
 
     generate_report($data, $db, '2025-02-28', $store_id);
 }
