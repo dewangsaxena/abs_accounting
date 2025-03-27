@@ -1798,7 +1798,7 @@ function generate_report(array &$data, PDO $db, string $report_date, int $store_
     foreach($client_list as $client_id) {
         
         $total_outstanding = 0;
-        $code .= '<tr><td colspan="7">'.$client_details[$client_id].'</td></tr>';
+        $code .= '<tr><td colspan="7" style="letter-spacing:2px;"><b>'.strtoupper($client_details[$client_id]).'</b></td></tr>';
 
         // List All Transactions
         $client_transactions_types = $data[$client_id];
@@ -1821,7 +1821,7 @@ function generate_report(array &$data, PDO $db, string $report_date, int $store_
                 }
             }
         }
-        $code .= "<tr><td colspan='7'>$total_outstanding</td></tr>";
+        $code .= "<tr><td colspan='7'><b>Total Outstanding: $total_outstanding</b></td></tr>";
     }
 
     $code .= <<<'EOS'
