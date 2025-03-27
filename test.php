@@ -1706,6 +1706,7 @@ function reverse_receipts(array &$receipts, array &$data): void {
         foreach($details as $d) {
             $txn_type = $d['type'];
             $txn_id = $d['id'];
+            if(isset($data[$client_id][$txn_type][$txn_id]) === false) continue;
             $data[$client_id][$txn_type][$txn_id]['credit_amount'] += $d['amountReceived'];
         }
     }
@@ -1849,8 +1850,12 @@ function eliminate_paid_transactions(array &$data) : void {
         $transaction_by_types = $data[$client_id];
         foreach($transaction_by_types as $txn_by_type) {
             foreach($txn_by_type as $txn) {
+                if(isset($txn['txn_type_id']) === false) {
+                    print_r($txn);die;
+                }
                 if($txn['txn_type_id'] == RECEIPT) continue;
                 if($txn['credit_amount'] == 0) {
+                    
                     // Delete record
                     unset($data[$client_id][$txn['txn_type_id']][$txn['txn_id']]);
                 }
@@ -1900,7 +1905,7 @@ function generate_client_aged_detail(int $store_id, string $receipt_exclude_date
     reverse_receipts($receipts, $data);
     add_receipt_payments($receipts, $data);
     // display_txn($data);
-    eliminate_paid_transactions($data);
+    // eliminate_paid_transactions($data);
 
     generate_report($data, $db, '2025-02-28', $store_id);
 }
