@@ -1667,10 +1667,44 @@ function transfer_account(int $store_id): void {
 }
 // transfer_account(StoreDetails::EDMONTON);
 
-print_r(Shared::get_txn_age(
-    '2025-01-01',
-    '2025-03-01',
-    100,
-    StoreDetails::EDMONTON,
-));
-?>
+// print_r(Shared::get_txn_age(
+//     '2025-01-01',
+//     '2025-03-01',
+//     100,
+//     StoreDetails::EDMONTON,
+// ));
+
+function generate_client_aged_detail(int $store_id, string $from_date, string $till_date): void {
+    $db = get_db_instance();
+
+    // Select Invoices
+    $statement_invoices = $db -> prepare('SELECT id, sum_total, `date` FROM sales_invoice WHERE store_id = :store_id AND payment_method = 0 AND `date` >= :from_date AND `date` <= :till_date;');
+    $statement_invoices -> execute([':store_id' => $store_id, ':from_date' => $from_date, ':till_date' => $till_date]);
+    $sales_invoices = $statement_invoices -> fetchAll(PDO::FETCH_ASSOC);
+
+    // Sales Returns
+    $statement_sales_return = $db -> prepare('SELECT id, sum_total, `date` FROM sales_return WHERE store_id = :store_id AND payment_method = 0 AND `date` >= :from_date AND `date` <= :till_date;');
+    $statement_sales_return -> execute([':store_id' => $store_id, ':from_date' => $from_date, ':till_date' => $till_date]);
+    $sales_returns = $statement_sales_return -> fetchAll(PDO::FETCH_ASSOC);
+
+    // Credit Note
+    $statement_credit_note = $db -> prepare('SELECT id, sum_total, `date` FROM credit_note WHERE store_id = :store_id AND `date` >= :from_date AND `date` <= :till_date;');
+    $statement_credit_note -> execute([':store_id' => $store_id, ':from_date' => $from_date, ':till_date' => $till_date]);
+    $credit_notes = $statement_credit_note -> fetchAll(PDO::FETCH_ASSOC);
+
+    // Debit Note
+    $statement_debit_note = $db -> prepare('SELECT id, sum_total, `date` FROM debit_note WHERE store_id = :store_id AND `date` >= :from_date AND `date` <= :till_date;');
+    $statement_debit_note -> execute([':store_id' => $store_id, ':from_date' => $from_date, ':till_date' => $till_date]);
+    $debit_notes = $statement_debit_note -> fetchAll(PDO::FETCH_ASSOC);
+
+    // Receipts
+    $statement_receipt = $db -> prepare('SELECT id, sum_total, `date` FROM receipt WHERE store_id = :store_id AND `date` >= :from_date AND `date` <= :till_date;');
+    $statement_receipt -> execute([':store_id' => $store_id, ':from_date' => $from_date, ':till_date' => $till_date]);
+    $receipts = $statement_receipt -> fetchAll(PDO::FETCH_ASSOC);
+
+    // Reverse Receipts
+
+}
+
+generate_client_aged_detail(StoreDetails::EDMONTON, '2025-02-01', '2025-02-28');
+?>  
