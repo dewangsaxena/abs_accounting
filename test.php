@@ -1674,6 +1674,109 @@ function transfer_account(int $store_id): void {
 //     StoreDetails::EDMONTON,
 // ));
 
+function process_transaction(array &$transactions, array &$data, int $txn_type): void {
+    foreach($transactions as $txn) {
+        $client_id = $txn['client_id'];
+        if(isset($data[$client_id]) === false) $data[$client_id] = [
+            SALES_INVOICE => [],
+            SALES_RETURN => [],
+            CREDIT_NOTE => [],
+            DEBIT_NOTE => [],
+            RECEIPT => [],
+        ];
+
+        $temp = [
+            'txn_id' => $txn['id'],
+            'date' => $txn['date'],
+            'txn_type' => TRANSACTION_NAMES[$txn_type],
+            'sum_total' => $txn['sum_total'],
+        ];
+        if(isset($txn['credit_amount'])) $temp['credit_amount'] = $txn['credit_amount'];
+        $data[$client_id][$txn_type][$txn['id']] = $temp;
+    }
+}
+
+function reverse_receipts(array &$receipts, array &$data): void {
+    foreach($receipts as $receipt) {
+        $client_id = $receipt['client_id'];
+        $details = json_decode($receipt['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+        foreach($details as $d) {
+            $txn_type = $d['type'];
+            $txn_id = $d['id'];
+            $data[$client_id][$txn_type][$txn_id]['credit_amount'] += $d['amountReceived'];
+        }
+    }
+}
+
+function add_receipt_payments(array &$receipts, array &$data): void {
+    foreach($receipts as $receipt) {
+        $receipt_id = $receipt['id'];
+        $client_id = $receipt['client_id'];
+        $details = json_decode($receipt['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+        foreach($details as $d) {
+            $txn_type = $d['type'];
+            $txn_id = $d['id'];
+            if(isset($data[$client_id][$txn_type][$txn_id]['receipt_payments']) === false) {
+                $data[$client_id][$txn_type][$txn_id]['receipt_payments'][$receipt_id] = [
+                    'payment_method' => $receipt['payment_method'],
+                    'date' => $receipt['date'],
+                    'txn_type' => 'Receipt Payment',
+                    'sum_total' => $d['amountReceived'],
+                ];
+            }
+        }
+    }
+}
+
+function display_txn(array &$data) {
+    $txn_types = [SALES_INVOICE, SALES_RETURN, CREDIT_NOTE, DEBIT_NOTE, RECEIPT];
+    foreach($data as $d) {
+        foreach($txn_types as $txn_type) {
+            foreach($d[$txn_type] as $x) {
+                print_r($x);
+                echo '<br>';
+            }
+        }   
+    }
+}
+
+function generate_report(array &$data, PDO $db, string $report_date): void {
+    $client_list = array_keys($data);
+
+    $results = Utils::mysql_in_placeholder_pdo_substitute(
+        $client_list,
+        'SELECT id, `name` FROM clients WHERE id IN (:placeholder);',
+    );
+
+    $query = $results['query'];
+    $values = $results['values'];
+
+    $statement = $db -> prepare($query);
+    $statement -> execute($values);
+    $temp = $statement -> fetchAll(PDO::FETCH_ASSOC);
+
+    // Format Client Details
+    $client_details = [];
+    foreach($temp as $t) {
+        $client_details[$t['id']] = $t['name'];
+    }
+
+    // 
+    $TXN_TYPES = [SALES_INVOICE, SALES_RETURN, CREDIT_NOTE, DEBIT_NOTE, RECEIPT];
+    
+    foreach($client_list as $client_id) {
+        echo $client_details[$client_id].'<br>';
+
+        // List All Transactions
+        $client_transactions_types = $data[$client_id];
+
+        foreach($client_transactions_types as $txn_type) {
+
+        }
+    }
+
+}
+
 function generate_client_aged_detail(int $store_id, string $receipt_exclude_date): void {
     $db = get_db_instance();
 
@@ -1681,33 +1784,43 @@ function generate_client_aged_detail(int $store_id, string $receipt_exclude_date
     $data = [];
 
     // Select Invoices
-    $statement_invoices = $db -> prepare('SELECT id, sum_total, `date`, client_id FROM sales_invoice WHERE store_id = :store_id AND payment_method = 0;');
+    $statement_invoices = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id FROM sales_invoice WHERE store_id = :store_id AND payment_method = 0;');
     $statement_invoices -> execute($params);
     $sales_invoices = $statement_invoices -> fetchAll(PDO::FETCH_ASSOC);
 
     // Sales Returns
-    $statement_sales_return = $db -> prepare('SELECT id, sum_total, `date`, client_id FROM sales_return WHERE store_id = :store_id AND payment_method = 0;');
+    $statement_sales_return = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id FROM sales_return WHERE store_id = :store_id AND payment_method = 0;');
     $statement_sales_return -> execute($params);
     $sales_returns = $statement_sales_return -> fetchAll(PDO::FETCH_ASSOC);
 
     // Credit Note
-    $statement_credit_note = $db -> prepare('SELECT id, sum_total, `date`, client_id  FROM credit_note WHERE store_id = :store_id;');
+    $statement_credit_note = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id  FROM credit_note WHERE store_id = :store_id;');
     $statement_credit_note -> execute($params);
     $credit_notes = $statement_credit_note -> fetchAll(PDO::FETCH_ASSOC);
 
     // Debit Note
-    $statement_debit_note = $db -> prepare('SELECT id, sum_total, `date`, client_id  FROM debit_note WHERE store_id = :store_id;');
+    $statement_debit_note = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id  FROM debit_note WHERE store_id = :store_id;');
     $statement_debit_note -> execute($params);
     $debit_notes = $statement_debit_note -> fetchAll(PDO::FETCH_ASSOC);
 
     // Receipts
-    $statement_receipt = $db -> prepare('SELECT id, sum_total, `date`, `details`, client_id  FROM receipt WHERE store_id = :store_id AND `date` >= :exclude_from;');
+    $statement_receipt = $db -> prepare('SELECT id, sum_total, `date`, `details`, client_id, payment_method FROM receipt WHERE store_id = :store_id AND `date` >= :exclude_from;');
     $statement_receipt -> execute([...$params, ':exclude_from' => $receipt_exclude_date]);
     $receipts = $statement_receipt -> fetchAll(PDO::FETCH_ASSOC);
 
     // Reverse Receipts
-    print_r($receipts);
+    process_transaction($sales_invoices, $data, SALES_INVOICE);
+    process_transaction($sales_returns, $data, SALES_RETURN);
+    process_transaction($credit_notes, $data, CREDIT_NOTE);
+    process_transaction($debit_notes, $data, DEBIT_NOTE);
+    process_transaction($receipts, $data, RECEIPT);
+
+    reverse_receipts($receipts, $data);
+    add_receipt_payments($receipts, $data);
+    display_txn($data);
+
+    generate_report($data, $db, '2025-02-28');
 }
 
-generate_client_aged_detail(StoreDetails::NISKU, '2025-03-01');
+generate_client_aged_detail(StoreDetails::EDMONTON, '2025-03-01');
 ?>  
