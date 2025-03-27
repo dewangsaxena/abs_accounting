@@ -1718,6 +1718,7 @@ function add_receipt_payments(array &$receipts, array &$data): void {
             $txn_id = $d['id'];
             if(isset($data[$client_id][$txn_type][$txn_id]['receipt_payments']) === false) {
                 $data[$client_id][$txn_type][$txn_id]['receipt_payments'][$receipt_id] = [
+                    'txn_id' => $receipt_id,
                     'payment_method' => $receipt['payment_method'],
                     'date' => $receipt['date'],
                     'txn_type' => 'Receipt Payment',
@@ -1739,6 +1740,19 @@ function display_txn(array &$data) {
         }   
     }
 }
+
+function get_row_code(array $txn): string {
+    $code = '';
+    $code .= '<td>'.$txn['txn_id'].'</td>';
+    $code .= '<td>'.$txn['date'].'</td>';
+    $code .= '<td>'.$txn['txn_type'].'</td>';
+    $code .= '<td>'.'</td>';
+    $code .= '<td>'.'</td>';
+    $code .= '<td>'.'</td>';
+    $code .= '<td>'.'</td>';
+    return $code;
+}
+
 
 function generate_report(array &$data, PDO $db, string $report_date): void {
     $client_list = array_keys($data);
@@ -1764,16 +1778,52 @@ function generate_report(array &$data, PDO $db, string $report_date): void {
     // 
     $TXN_TYPES = [SALES_INVOICE, SALES_RETURN, CREDIT_NOTE, DEBIT_NOTE, RECEIPT];
     
+    $code = <<<'EOS'
+    <html>
+    <body>
+    <table>
+    <thead>
+        <tr>Source</tr>
+        <tr>Date</tr>
+        <tr>Transaction Type</tr>
+        <tr>Total</tr>
+        <tr>Current</tr>
+        <tr>31 - 60</tr>
+        <tr>61 - 90</tr>
+        <tr>91+</tr>
+    </thead>
+    <tbody>
+    EOS;
     foreach($client_list as $client_id) {
-        echo $client_details[$client_id].'<br>';
+        
+        $code .= '<tr><td colspan="7">'.$client_details[$client_id].'</td></tr>';
 
         // List All Transactions
         $client_transactions_types = $data[$client_id];
+        foreach($client_transactions_types as $txn_records) {
+            $code .= '<tr>';
+            foreach($txn_records as $txn) {
+                
+                $code .= get_row_code($txn);
+                $receipt_payments = $txn['receipt_payments'];
 
-        foreach($client_transactions_types as $txn_type) {
-
+                // Show Receipt Payments
+                foreach($receipt_payments as $rp) {
+                    $code .= get_row_code($rp);
+                }
+            }
+            $code .= '</tr>';
         }
     }
+
+    $code .= <<<'EOS'
+    </tbody>
+    </table>
+    </body>
+    </html>
+    EOS;
+
+    echo $code;
 
 }
 
@@ -1817,7 +1867,7 @@ function generate_client_aged_detail(int $store_id, string $receipt_exclude_date
 
     reverse_receipts($receipts, $data);
     add_receipt_payments($receipts, $data);
-    display_txn($data);
+    // display_txn($data);
 
     generate_report($data, $db, '2025-02-28');
 }
