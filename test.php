@@ -1720,15 +1720,21 @@ function add_receipt_payments(array &$receipts, array &$data): void {
         foreach($details as $d) {
             $txn_type = $d['type'];
             $txn_id = $d['id'];
+
+            // Check transaction exists
+            if(isset($data[$client_id][$txn_type][$txn_id]) === false) continue;
+
             if(isset($data[$client_id][$txn_type][$txn_id]['receipt_payments']) === false) {
-                $data[$client_id][$txn_type][$txn_id]['receipt_payments'][$receipt_id] = [
-                    'txn_id' => $receipt_id,
-                    'payment_method' => $receipt['payment_method'],
-                    'date' => $receipt['date'],
-                    'txn_type' => 'Receipt Payment',
-                    'sum_total' => $d['amountReceived'],
-                ];
+                $data[$client_id][$txn_type][$txn_id]['receipt_payments'] = [];
             }
+
+            $data[$client_id][$txn_type][$txn_id]['receipt_payments'][$receipt_id] = [
+                'txn_id' => $receipt_id,
+                'payment_method' => $receipt['payment_method'],
+                'date' => $receipt['date'],
+                'txn_type' => 'Receipt Payment',
+                'sum_total' => $d['amountReceived'],
+            ];
         }
     }
 }
@@ -1747,7 +1753,6 @@ function display_txn(array &$data) {
 
 function get_row_code(array $txn, string $txn_date, string $report_date, int $store_id): string {
     $diff = Shared::get_txn_age($txn_date, $report_date, $txn['sum_total'], $store_id);
-    
     $code = '';
     $code .= '<td>'.$txn['txn_id'].'</td>';
     $code .= '<td>'.$txn['date'].'</td>';
@@ -1806,26 +1811,36 @@ function generate_report(array &$data, PDO $db, string $report_date, int $store_
 
         // List All Transactions
         $client_transactions_types = $data[$client_id];
-        foreach($client_transactions_types as $txn_records) {
-            $code .= '<tr>';
-            foreach($txn_records as $txn) {
-                $total_outstanding_per_client += $txn['credit_amount'];
-                $code .= get_row_code($txn, $txn['date'], $report_date, $store_id);
-                $code .= '</tr>';
-                if(isset($txn['receipt_payments'])) {
-                    $receipt_payments = $txn['receipt_payments'];
-
-                    // Show Receipt Payments
-                    foreach($receipt_payments as $rp) {
-                        $code .= '<tr>';
-                        $total_outstanding_per_client -= $rp['sum_total'];
-                        $code .= get_row_code($rp, $rp['date'], $report_date, $store_id);
-                        $code .= '</tr>';
+        try {
+            foreach($client_transactions_types as $txn_records) {
+                $code .= '<tr>';
+                foreach($txn_records as $txn) {
+                    
+                    $total_outstanding_per_client += $txn['credit_amount'];
+                    
+                    $code .= get_row_code($txn, $txn['date'], $report_date, $store_id);
+                    $code .= '</tr>';
+                    if(isset($txn['receipt_payments'])) {
+                        $receipt_payments = $txn['receipt_payments'];
+    
+                        // Show Receipt Payments
+                        foreach($receipt_payments as $rp) {
+                            $code .= '<tr>';
+                            $total_outstanding_per_client -= $rp['sum_total'];
+                            $code .= get_row_code($rp, $rp['date'], $report_date, $store_id);
+                            $code .= '</tr>';
+                        }
                     }
                 }
             }
-        }
 
+            assert_success();
+        }
+        catch(Exception $e) {
+            print_r($e -> getMessage());
+            die;
+        }
+        
         $total_outstanding += $total_outstanding_per_client;
         $total_outstanding_per_client = Utils::number_format($total_outstanding_per_client);
         $code .= "<tr><td colspan='7'><b>Total Outstanding: $total_outstanding_per_client</b></td></tr>";
@@ -1850,10 +1865,7 @@ function eliminate_paid_transactions(array &$data) : void {
         $transaction_by_types = $data[$client_id];
         foreach($transaction_by_types as $txn_by_type) {
             foreach($txn_by_type as $txn) {
-                if(isset($txn['txn_type_id']) === false) {
-                    print_r($txn);die;
-                }
-                if($txn['txn_type_id'] == RECEIPT) continue;
+                if($txn['txn_type_id'] === RECEIPT) continue;
                 if($txn['credit_amount'] == 0) {
                     
                     // Delete record
@@ -1905,7 +1917,7 @@ function generate_client_aged_detail(int $store_id, string $receipt_exclude_date
     reverse_receipts($receipts, $data);
     add_receipt_payments($receipts, $data);
     // display_txn($data);
-    // eliminate_paid_transactions($data);
+    eliminate_paid_transactions($data);
 
     generate_report($data, $db, '2025-02-28', $store_id);
 }
