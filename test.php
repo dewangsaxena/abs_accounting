@@ -1690,6 +1690,7 @@ function process_transaction(array &$transactions, array &$data, int $txn_type):
             'date' => $txn['date'],
             'txn_type' => TRANSACTION_NAMES[$txn_type],
             'sum_total' => $txn['sum_total'],
+            'txn_type_id' => $txn_type,
         ];
         if(isset($txn['credit_amount'])) $temp['credit_amount'] = $txn['credit_amount'];
         $data[$client_id][$txn_type][$txn['id']] = $temp;
@@ -1748,11 +1749,11 @@ function get_row_code(array $txn, string $txn_date, string $report_date, int $st
     $code .= '<td>'.$txn['txn_id'].'</td>';
     $code .= '<td>'.$txn['date'].'</td>';
     $code .= '<td>'.$txn['txn_type'].'</td>';
-    $code .= '<td>'.Utils::round($diff['total']).'</td>';
-    $code .= '<td>'.Utils::round($diff['current']).'</td>';
-    $code .= '<td>'.Utils::round($diff['31-60']).'</td>';
-    $code .= '<td>'.Utils::round($diff['61-90']).'</td>';
-    $code .= '<td>'.Utils::round($diff['91+']).'</td>';
+    $code .= '<td>'.Utils::round($diff['total'], 2).'</td>';
+    $code .= '<td>'.Utils::round($diff['current'], 2).'</td>';
+    $code .= '<td>'.Utils::round($diff['31-60'], 2).'</td>';
+    $code .= '<td>'.Utils::round($diff['61-90'], 2).'</td>';
+    $code .= '<td>'.Utils::round($diff['91+'], 2).'</td>';
     return $code;
 }
 
@@ -1804,6 +1805,7 @@ function generate_report(array &$data, PDO $db, string $report_date, int $store_
             $code .= '<tr>';
             foreach($txn_records as $txn) {
                 $code .= get_row_code($txn, $txn['date'], $report_date, $store_id);
+                $code .= '</tr>';
                 if(isset($txn['receipt_payments'])) {
                     $receipt_payments = $txn['receipt_payments'];
 
@@ -1816,7 +1818,6 @@ function generate_report(array &$data, PDO $db, string $report_date, int $store_
                 }
                 
             }
-            $code .= '</tr>';
         }
     }
 
@@ -1829,6 +1830,23 @@ function generate_report(array &$data, PDO $db, string $report_date, int $store_
 
     echo $code;
 
+}
+
+function eliminate_paid_transactions(array &$data) : void {
+    $client_ids = array_keys($data);
+    foreach($client_ids as $client_id) {
+        $transaction_by_types = $data[$client_id];
+        foreach($transaction_by_types as $txn_by_type) {
+            foreach($txn_by_type as $txn) {
+                if($txn['txn_type_id'] == RECEIPT) continue;
+                if($txn['credit_amount'] == 0) {
+                    // print_r($data[$client_id][$txn['tnx_type_id']][$txn['txn_id']]);die;
+                    // Delete record
+                    unset($data[$client_id][$txn['txn_type_id']][$txn['txn_id']]);
+                }
+            }
+        }
+    }
 }
 
 function generate_client_aged_detail(int $store_id, string $receipt_exclude_date): void {
@@ -1870,6 +1888,8 @@ function generate_client_aged_detail(int $store_id, string $receipt_exclude_date
 
     reverse_receipts($receipts, $data);
     add_receipt_payments($receipts, $data);
+    // display_txn($data);
+    eliminate_paid_transactions($data);
     // display_txn($data);
 
     generate_report($data, $db, '2025-02-28', $store_id);
