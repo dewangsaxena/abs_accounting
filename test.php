@@ -1741,20 +1741,23 @@ function display_txn(array &$data) {
     }
 }
 
-function get_row_code(array $txn): string {
+function get_row_code(array $txn, string $txn_date, string $report_date, int $store_id): string {
+    $diff = Shared::get_txn_age($txn_date, $report_date, $txn['sum_total'], $store_id);
+    
     $code = '';
     $code .= '<td>'.$txn['txn_id'].'</td>';
     $code .= '<td>'.$txn['date'].'</td>';
     $code .= '<td>'.$txn['txn_type'].'</td>';
-    $code .= '<td>'.'</td>';
-    $code .= '<td>'.'</td>';
-    $code .= '<td>'.'</td>';
-    $code .= '<td>'.'</td>';
+    $code .= '<td>'.Utils::round($diff['total']).'</td>';
+    $code .= '<td>'.Utils::round($diff['current']).'</td>';
+    $code .= '<td>'.Utils::round($diff['31-60']).'</td>';
+    $code .= '<td>'.Utils::round($diff['61-90']).'</td>';
+    $code .= '<td>'.Utils::round($diff['91+']).'</td>';
     return $code;
 }
 
 
-function generate_report(array &$data, PDO $db, string $report_date): void {
+function generate_report(array &$data, PDO $db, string $report_date, int $store_id): void {
     $client_list = array_keys($data);
 
     $results = Utils::mysql_in_placeholder_pdo_substitute(
@@ -1774,9 +1777,6 @@ function generate_report(array &$data, PDO $db, string $report_date): void {
     foreach($temp as $t) {
         $client_details[$t['id']] = $t['name'];
     }
-
-    // 
-    $TXN_TYPES = [SALES_INVOICE, SALES_RETURN, CREDIT_NOTE, DEBIT_NOTE, RECEIPT];
     
     $code = <<<'EOS'
     <html>
@@ -1803,14 +1803,18 @@ function generate_report(array &$data, PDO $db, string $report_date): void {
         foreach($client_transactions_types as $txn_records) {
             $code .= '<tr>';
             foreach($txn_records as $txn) {
-                
-                $code .= get_row_code($txn);
-                $receipt_payments = $txn['receipt_payments'];
+                $code .= get_row_code($txn, $txn['date'], $report_date, $store_id);
+                if(isset($txn['receipt_payments'])) {
+                    $receipt_payments = $txn['receipt_payments'];
 
-                // Show Receipt Payments
-                foreach($receipt_payments as $rp) {
-                    $code .= get_row_code($rp);
+                    // Show Receipt Payments
+                    foreach($receipt_payments as $rp) {
+                        $code .= '<tr>';
+                        $code .= get_row_code($rp, $rp['date'], $report_date, $store_id);
+                        $code .= '</tr>';
+                    }
                 }
+                
             }
             $code .= '</tr>';
         }
@@ -1863,13 +1867,12 @@ function generate_client_aged_detail(int $store_id, string $receipt_exclude_date
     process_transaction($sales_returns, $data, SALES_RETURN);
     process_transaction($credit_notes, $data, CREDIT_NOTE);
     process_transaction($debit_notes, $data, DEBIT_NOTE);
-    process_transaction($receipts, $data, RECEIPT);
 
     reverse_receipts($receipts, $data);
     add_receipt_payments($receipts, $data);
     // display_txn($data);
 
-    generate_report($data, $db, '2025-02-28');
+    generate_report($data, $db, '2025-02-28', $store_id);
 }
 
 generate_client_aged_detail(StoreDetails::EDMONTON, '2025-03-01');
