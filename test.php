@@ -1840,7 +1840,6 @@ function eliminate_paid_transactions(array &$data) : void {
             foreach($txn_by_type as $txn) {
                 if($txn['txn_type_id'] == RECEIPT) continue;
                 if($txn['credit_amount'] == 0) {
-                    // print_r($data[$client_id][$txn['tnx_type_id']][$txn['txn_id']]);die;
                     // Delete record
                     unset($data[$client_id][$txn['txn_type_id']][$txn['txn_id']]);
                 }
