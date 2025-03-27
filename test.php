@@ -1883,7 +1883,7 @@ function generate_client_aged_detail(int $store_id, string $receipt_exclude_date
     $debit_notes = $statement_debit_note -> fetchAll(PDO::FETCH_ASSOC);
 
     // Receipts
-    $statement_receipt = $db -> prepare('SELECT id, sum_total, `date`, `details`, client_id, payment_method FROM receipt WHERE store_id = :store_id AND `date` >= :exclude_from;');
+    $statement_receipt = $db -> prepare('SELECT id, sum_total, `date`, `details`, client_id, payment_method FROM receipt WHERE store_id = :store_id AND do_conceal = 0 AND `date` >= :exclude_from;');
     $statement_receipt -> execute([...$params, ':exclude_from' => $receipt_exclude_date]);
     $receipts = $statement_receipt -> fetchAll(PDO::FETCH_ASSOC);
 
