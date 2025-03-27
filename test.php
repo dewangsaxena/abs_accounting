@@ -1669,7 +1669,7 @@ function transfer_account(int $store_id): void {
 
 print_r(Shared::get_txn_age(
     '2025-01-01',
-    '2025-03-26',
+    '2025-03-01',
     100,
     StoreDetails::EDMONTON,
 ));
