@@ -1766,7 +1766,7 @@ function get_row_code(array $txn, string $txn_date, string $report_date, int $st
 }
 
 
-function generate_report(array &$data, PDO $db, string $report_date, int $store_id, array $client_data): void {
+function generate_report(array &$data, PDO $db, string $report_date, int $store_id, array $client_data, bool $show_error_list = false): void {
     $client_list = array_keys($data);
 
     $results = Utils::mysql_in_placeholder_pdo_substitute(
@@ -1872,11 +1872,10 @@ function generate_report(array &$data, PDO $db, string $report_date, int $store_
 
     echo $code;
 
-    echo '<br><br>';
-    foreach($error_list as $e) {
-        echo $e.'<br>';
+    if($show_error_list) {
+        echo '<br><br>';
+        foreach($error_list as $e) echo $e.'<br>';
     }
-
 }
 
 function eliminate_paid_transactions(array &$data) : void {
@@ -1938,10 +1937,10 @@ function generate_client_aged_detail(int $store_id, string $receipt_exclude_date
     add_receipt_payments($receipts, $data);
     eliminate_paid_transactions($data);
 
-    generate_report($data, $db, '2025-02-28', $store_id, $client_list);
+    generate_report($data, $db, '2025-02-28', $store_id, $client_list, true);
 }
 
-$file = Utils::read_csv_file("{$_SERVER['DOCUMENT_ROOT']}/tmp/calgary.csv");
+$file = Utils::read_csv_file("{$_SERVER['DOCUMENT_ROOT']}/tmp/slave_lake.csv");
 
 function format_client_name(array $data): array {
     $clients = [];
@@ -1951,5 +1950,5 @@ function format_client_name(array $data): array {
     return $clients;
 }
 $client_list = format_client_name($file);
-generate_client_aged_detail(StoreDetails::CALGARY, '2025-03-01', $client_list);
+generate_client_aged_detail(StoreDetails::SLAVE_LAKE, '2025-03-01', $client_list);
 ?>  
