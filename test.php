@@ -1794,14 +1794,16 @@ function generate_report(array &$data, PDO $db, string $report_date, int $store_
     <body>
     <table>
     <thead>
-        <tr>Source</tr>
-        <tr>Date</tr>
-        <tr>Transaction Type</tr>
-        <tr>Total</tr>
-        <tr>Current</tr>
-        <tr>31 - 60</tr>
-        <tr>61 - 90</tr>
-        <tr>91+</tr>
+        <tr>
+            <th>Source</th>
+            <th>Date</th>
+            <th>thansaction Type</th>
+            <th>Total</th>
+            <th>Current</th>
+            <th>31 - 60</th>
+            <th>61 - 90</th>
+            <th>91+</th>
+        </tr>
     </thead>
     <tbody>
     EOS;
@@ -1861,8 +1863,7 @@ function generate_report(array &$data, PDO $db, string $report_date, int $store_
 
     $total_outstanding = Utils::number_format($total_outstanding);
     $code .= <<<EOS
-    <br><br>
-    <p><b>Total Receivables: $total_outstanding<b/></p>
+    <p><b>Total Receivables: $ $total_outstanding<b/></p>
     </tbody>
     </table>
     </body>
