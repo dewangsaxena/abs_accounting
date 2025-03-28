@@ -1811,7 +1811,6 @@ function generate_report(array &$data, PDO $db, string $report_date, int $store_
 
         // List All Transactions
         $client_transactions_types = $data[$client_id];
-        try {
             foreach($client_transactions_types as $txn_records) {
                 $code .= '<tr>';
                 foreach($txn_records as $txn) {
@@ -1827,19 +1826,13 @@ function generate_report(array &$data, PDO $db, string $report_date, int $store_
                         foreach($receipt_payments as $rp) {
                             $code .= '<tr>';
                             $total_outstanding_per_client -= $rp['sum_total'];
+                            $rp['sum_total'] = -$rp['sum_total'];
                             $code .= get_row_code($rp, $rp['date'], $report_date, $store_id);
                             $code .= '</tr>';
                         }
                     }
                 }
             }
-
-            assert_success();
-        }
-        catch(Exception $e) {
-            print_r($e -> getMessage());
-            die;
-        }
         
         $total_outstanding += $total_outstanding_per_client;
         $total_outstanding_per_client = Utils::number_format($total_outstanding_per_client);
