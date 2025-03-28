@@ -166,7 +166,7 @@ export const APP_HOST = isParts
   ? "https://" + DOMAINS_BASE_URLS["wash"]
   : isTenLeasing ? 
     "https://" + DOMAINS_BASE_URLS["ten_leasing"]
-  : "http://" + DOMAINS_BASE_URLS["localhost"]
+  : "http://" + DOMAINS_BASE_URLS["localhost"];
 
 /** Min Length before fetching */
 export const AUTO_SUGGEST_MIN_INPUT_LENGTH: number = 1;
