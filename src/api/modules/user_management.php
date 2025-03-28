@@ -605,7 +605,7 @@ class UserManagement {
         $data = [
             'id' => self::ROOT_USER_ID,
             'name' => 'Dewang Saxena',
-            'username' => 'dewang',
+            'username' => 'dewangs',
             'password' => 'helloworld',
             'access_level' => 0,
             'store_id' => 1,
