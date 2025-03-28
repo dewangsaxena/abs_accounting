@@ -1937,7 +1937,7 @@ function generate_client_aged_detail(int $store_id, string $receipt_exclude_date
     add_receipt_payments($receipts, $data);
     eliminate_paid_transactions($data);
 
-    generate_report($data, $db, '2025-02-28', $store_id, $client_list, true);
+    generate_report($data, $db, '2025-02-28', $store_id, $client_list, false);
 }
 
 $file = Utils::read_csv_file("{$_SERVER['DOCUMENT_ROOT']}/tmp/nisku_wash.csv");
