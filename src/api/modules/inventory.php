@@ -1628,12 +1628,32 @@ class Inventory {
         }
     }
 
+    public static function adjust_by(float $amount, array &$record): void {
+        $count = count($record) - 1;
+        
+        $initial_amount = $amount;
+        $amount_adjusted = 0;
+        while ($amount > 1) {
+            $rand_item_index = rand(0, $count);
+            if($record[$rand_item_index]['quantity'] > 1) {
+                if($amount_adjusted + $record[$rand_item_index]['buying_cost'] > $initial_amount) continue; 
+                $record[$rand_item_index]['quantity'] -= 1;
+                $record[$rand_item_index]['value'] -= $record[$rand_item_index]['buying_cost'];
+                $amount -= $record[$rand_item_index]['buying_cost'];
+                $amount_adjusted += $record[$rand_item_index]['buying_cost'];
+            }
+        }
+
+        echo $amount;
+    }
+
     /**
      * This method will generate inventory list.
      * @param details
      */
     public static function generate_inventory_list(int $store_id): void {
         $list = PrepareDetails_Inventory::generate_inventory_list($store_id);
+        self::adjust_by(70000, $list);
         GeneratePDF::generate_inventory_list(
             $list,
             $store_id,
