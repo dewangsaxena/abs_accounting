@@ -1940,7 +1940,7 @@ function generate_client_aged_detail(int $store_id, string $receipt_exclude_date
     generate_report($data, $db, '2025-02-28', $store_id, $client_list, true);
 }
 
-$file = Utils::read_csv_file("{$_SERVER['DOCUMENT_ROOT']}/tmp/slave_lake.csv");
+$file = Utils::read_csv_file("{$_SERVER['DOCUMENT_ROOT']}/tmp/nisku_wash.csv");
 
 function format_client_name(array $data): array {
     $clients = [];
@@ -1950,5 +1950,5 @@ function format_client_name(array $data): array {
     return $clients;
 }
 $client_list = format_client_name($file);
-generate_client_aged_detail(StoreDetails::SLAVE_LAKE, '2025-03-01', $client_list);
+generate_client_aged_detail(StoreDetails::NISKU, '2025-03-01', $client_list);
 ?>  
