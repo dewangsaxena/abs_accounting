@@ -1766,7 +1766,7 @@ function get_row_code(array $txn, string $txn_date, string $report_date, int $st
 }
 
 
-function generate_report(array &$data, PDO $db, string $report_date, int $store_id): void {
+function generate_report(array &$data, PDO $db, string $report_date, int $store_id, array $client_data): void {
     $client_list = array_keys($data);
 
     $results = Utils::mysql_in_placeholder_pdo_substitute(
@@ -1786,6 +1786,8 @@ function generate_report(array &$data, PDO $db, string $report_date, int $store_
     foreach($temp as $t) {
         $client_details[$t['id']] = $t['name'];
     }
+
+    $error_list = [];
     
     $code = <<<'EOS'
     <html>
@@ -1806,38 +1808,55 @@ function generate_report(array &$data, PDO $db, string $report_date, int $store_
     $total_outstanding = 0;
     foreach($client_list as $client_id) {
         
+        $temp_code = '';
         $total_outstanding_per_client = 0;
-        $code .= '<tr><td colspan="7" style="letter-spacing:2px;"><b>'.strtoupper($client_details[$client_id]).'</b></td></tr>';
+        $client_name = strtoupper($client_details[$client_id]);
+        $temp_code .= '<tr><td colspan="7" style="letter-spacing:2px;"><b>'.$client_name.'</b></td></tr>';
 
         // List All Transactions
         $client_transactions_types = $data[$client_id];
-            foreach($client_transactions_types as $txn_records) {
-                $code .= '<tr>';
-                foreach($txn_records as $txn) {
-                    
-                    $total_outstanding_per_client += $txn['credit_amount'];
-                    
-                    $code .= get_row_code($txn, $txn['date'], $report_date, $store_id);
-                    $code .= '</tr>';
-                    if(isset($txn['receipt_payments'])) {
-                        $receipt_payments = $txn['receipt_payments'];
+        foreach($client_transactions_types as $txn_records) {
+            $temp_code .= '<tr>';
+            foreach($txn_records as $txn) {
+                
+                $total_outstanding_per_client += $txn['credit_amount'];
+                
+                $temp_code .= get_row_code($txn, $txn['date'], $report_date, $store_id);
+                $temp_code .= '</tr>';
+                if(isset($txn['receipt_payments'])) {
+                    $receipt_payments = $txn['receipt_payments'];
     
-                        // Show Receipt Payments
-                        foreach($receipt_payments as $rp) {
-                            if($rp['date'] > $report_date) continue;
-                            $code .= '<tr>';
-                            $total_outstanding_per_client -= $rp['sum_total'];
-                            $rp['sum_total'] = -$rp['sum_total'];
-                            $code .= get_row_code($rp, $rp['date'], $report_date, $store_id);
-                            $code .= '</tr>';
-                        }
+                    // Show Receipt Payments
+                    foreach($receipt_payments as $rp) {
+                        if($rp['date'] > $report_date) continue;
+                        $temp_code .= '<tr>';
+                        $total_outstanding_per_client -= $rp['sum_total'];
+                        $rp['sum_total'] = -$rp['sum_total'];
+                        $temp_code .= get_row_code($rp, $rp['date'], $report_date, $store_id);
+                        $temp_code .= '</tr>';
                     }
                 }
             }
-        
-        $total_outstanding += $total_outstanding_per_client;
-        $total_outstanding_per_client = Utils::number_format($total_outstanding_per_client);
-        $code .= "<tr><td colspan='7'><b>Total Outstanding: $total_outstanding_per_client</b></td></tr>";
+        }
+    
+        if($total_outstanding_per_client != 0) {
+            $total_outstanding += $total_outstanding_per_client;
+            $total_outstanding_per_client_formatted = Utils::number_format($total_outstanding_per_client);
+            $code .= "<tr><td colspan='7'><b>Total Outstanding: $total_outstanding_per_client_formatted</b></td></tr>";
+            
+            if(isset($client_data[$client_name]) === false) {
+                $error_list[]= $client_name;
+            }
+            else {
+                $total_outstanding_per_client = strval(Utils::round($total_outstanding_per_client, 2));
+                $str_client_amount = strval($client_data[$client_name]);
+                if($total_outstanding_per_client != $str_client_amount) {
+                    $error_list []= $client_name;
+                }
+            }
+
+            $code .= $temp_code;
+        }
     }
 
     $code .= <<<EOS
@@ -1850,6 +1869,11 @@ function generate_report(array &$data, PDO $db, string $report_date, int $store_
     EOS;
 
     echo $code;
+
+    echo '<br><br>';
+    foreach($error_list as $e) {
+        echo $e.'<br>';
+    }
 
 }
 
@@ -1870,7 +1894,7 @@ function eliminate_paid_transactions(array &$data) : void {
     }
 }
 
-function generate_client_aged_detail(int $store_id, string $receipt_exclude_date): void {
+function generate_client_aged_detail(int $store_id, string $receipt_exclude_date, array $client_list): void {
     $db = get_db_instance();
 
     $params_txn = [':store_id' => $store_id, ':till_date' => $receipt_exclude_date];
@@ -1912,8 +1936,18 @@ function generate_client_aged_detail(int $store_id, string $receipt_exclude_date
     add_receipt_payments($receipts, $data);
     eliminate_paid_transactions($data);
 
-    generate_report($data, $db, '2025-02-28', $store_id);
+    generate_report($data, $db, '2025-02-28', $store_id, $client_list);
 }
 
-generate_client_aged_detail(StoreDetails::EDMONTON, '2025-03-01');
+$file = Utils::read_csv_file("{$_SERVER['DOCUMENT_ROOT']}/tmp/bcc6f21491a11e15db4863f37484df0f.csv");
+
+function format_client_name(array $data): array {
+    $clients = [];
+    foreach($data as $d) {
+        $clients[strtoupper($d[0])] = $d[2];
+    }
+    return $clients;
+}
+$client_list = format_client_name($file);
+generate_client_aged_detail(StoreDetails::EDMONTON, '2025-03-01', $client_list);
 ?>  
