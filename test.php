@@ -1949,6 +1949,6 @@ function format_client_name(array $data): array {
     }
     return $clients;
 }
-$client_list = format_client_name($file);
-generate_client_aged_detail(StoreDetails::NISKU, '2025-03-01', $client_list);
+// $client_list = format_client_name($file);
+// generate_client_aged_detail(StoreDetails::NISKU, '2025-03-01', $client_list);
 ?>  

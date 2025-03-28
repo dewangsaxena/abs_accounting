@@ -504,6 +504,26 @@ class CustomerAgedSummary {
     }
 
     /**
+     * This method will set client id as key.
+     * @param customer_aged_summary
+     * @return array
+     */
+    private static function set_client_id_as_key(array $customer_aged_summary): array {
+        $formatted_record = [];
+        foreach($customer_aged_summary as $r) {
+            $client_id = $r['client_id'];
+            $formatted_record[$client_id] = [
+                'total' => $r['total'],
+                'current' => $r['current'],
+                '31-60' => $r['31-60'],
+                '61-90' => $r['61-90'],
+                '91+' => $r['91+'],
+            ];
+        }
+        return $formatted_record;
+    }
+
+    /**
      * This method will save last statement.
      * @param store_id
      * @param db
@@ -532,6 +552,9 @@ class CustomerAgedSummary {
             // Delete Keys such as Client Name, and Phone number.
             // These details will be set when data is fetched to ensure latest details are provided.
             self::delete_keys($statement);
+            
+            // Set Client Id as Key
+            self::set_client_id_as_key($statement);
 
             // Add Statement to Database
             $values = [
