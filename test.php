@@ -1706,11 +1706,8 @@ function reverse_receipts(array &$receipts, array &$data): void {
         foreach($details as $d) {
             $txn_type = $d['type'];
             $txn_id = $d['id'];
-            echo $data[$client_id][$txn_type][$txn_id]['credit_amount'].'<br>';
             if(isset($data[$client_id][$txn_type][$txn_id]) === false) continue;
             $data[$client_id][$txn_type][$txn_id]['credit_amount'] += $d['amountReceived'];
-            echo $data[$client_id][$txn_type][$txn_id]['credit_amount'];
-            die;
         }
     }
 }
@@ -1736,7 +1733,7 @@ function add_receipt_payments(array &$receipts, array &$data): void {
                 'payment_method' => $receipt['payment_method'],
                 'date' => $receipt['date'],
                 'txn_type' => 'Receipt Payment',
-                'sum_total' => $d['amountReceived'],
+                'sum_total' => ($d['amountReceived'] + $d['discountGiven']),
             ];
         }
     }
@@ -1827,6 +1824,7 @@ function generate_report(array &$data, PDO $db, string $report_date, int $store_
     
                         // Show Receipt Payments
                         foreach($receipt_payments as $rp) {
+                            if($rp['date'] >= '2025-03-01') continue;
                             $code .= '<tr>';
                             $total_outstanding_per_client -= $rp['sum_total'];
                             $rp['sum_total'] = -$rp['sum_total'];
