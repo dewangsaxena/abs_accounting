@@ -539,7 +539,7 @@ CREATE INDEX idx_historical_balance_sheet_date ON historical_balance_sheet(`date
  */
 CREATE TABLE customer_aged_summary(
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `summary` JSON NOT NULL,
+    `statement` JSON NOT NULL,
     `date` DATE NOT NULL,
     store_id SMALLINT UNSIGNED NOT NULL,
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

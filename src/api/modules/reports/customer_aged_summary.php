@@ -594,6 +594,31 @@ class CustomerAgedSummary {
     }
 
     /**
+     * This method will fetch customer aged summary till the date given.
+     * @param txn_date
+     * @param store_id
+     * @param db
+     * @return array
+     */
+    private static function fetch_customer_aged_summary_till_date(string $txn_date, int $store_id, PDO &$db): array {
+        $statement = $db -> prepare(<<<'EOS'
+        SELECT 
+            * 
+        FROM 
+            customer_aged_summary
+        WHERE 
+            `date` <= :date
+        AND
+            store_id = :store_id
+        ORDER BY
+            `date` DESC;
+        EOS);
+
+        $statement -> execute([':date' => $txn_date, ':store_id' => $store_id]);
+        return $statement -> fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
      * This method will create a new statement if not already present.
      * @param txn_date
      * @param store_id
@@ -645,8 +670,39 @@ class CustomerAgedSummary {
      */
     public static function update_customer_aged_summary(int $client_id, string $txn_date, float $txn_amount, int $store_id, PDO &$db): void {
 
-        // Create Statement
-        self::create_statement_if_not_exists($txn_date, $store_id, $db);
+        // Fetch Customer Aged Summary till date
+        $last_statements = self::fetch_customer_aged_summary_till_date($txn_date, $store_id, $db);
+
+        // Base Statement
+        $base_statement = [];
+        
+        // Check whether the last statement is of the current date.
+        if(isset($last_statements[0])) {
+
+            // Check whether the last statement is of the txn date.
+            // If yes, use that as the base statement.
+            if($last_statements[0]['date'] === $txn_date) $base_statement = $last_statements[0]['statement'];
+            else {
+                // Use the Last Available Statement available.
+                // This could be of prior date to the txn date.
+                $base_statement = $last_statements[1] ?? [];
+            }
+        }
+        
+        if(count($base_statement) === 0) {
+            // Create new Statement
+            // Add Statement to Database
+            $values = [
+                ':summary' => json_encode($base_statement, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
+                ':date' => $txn_date, 
+                ':store_id' => $store_id,
+            ];
+
+            // Insert into DB
+            $statement = $db -> prepare(self::CREATE_SUMMARY);
+            $is_successful = $statement -> execute($values);
+            if($is_successful !== true || $statement -> rowCount() < 1) throw new Exception('Unable to Create Customer Aged Statement.');
+        }
 
         // Fetch Historical Statement
         $customer_aged_statements = self::fetch_customer_aged_summary_since($store_id, $txn_date, $db);
