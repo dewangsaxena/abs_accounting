@@ -685,7 +685,7 @@ class CustomerAgedSummary {
             else {
                 // Use the Last Available Statement available.
                 // This could be of prior date to the txn date.
-                $base_statement = $last_statements[1] ?? [];
+                $base_statement = $last_statements[1]['statement'] ?? [];
             }
         }
         
