@@ -1824,7 +1824,7 @@ function generate_report(array &$data, PDO $db, string $report_date, int $store_
     
                         // Show Receipt Payments
                         foreach($receipt_payments as $rp) {
-                            if($rp['date'] >= '2025-03-01') continue;
+                            if($rp['date'] > $report_date) continue;
                             $code .= '<tr>';
                             $total_outstanding_per_client -= $rp['sum_total'];
                             $rp['sum_total'] = -$rp['sum_total'];
