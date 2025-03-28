@@ -1481,4 +1481,24 @@ class Shared {
 
         return $payment_method;
     }
+
+    /**
+     * This method will assert current month of transaction.
+     * @param txn_date
+     * @param store_id
+     * @throws Exception
+     */
+    public static function assert_current_month_of_transaction(string $txn_date, int $store_id): void {
+        $current_date_parts = explode('-', Utils::get_business_date($store_id));
+        $current_year = intval($current_date_parts[0]);
+        $current_month = intval($current_date_parts[1]);
+
+        $txn_date_parts = explode('-', $txn_date);
+        $txn_year = intval($txn_date_parts[0]);
+        $txn_month = intval($txn_date_parts[1]);
+
+        if(($txn_year === $current_year && $txn_month === $current_month) === false) throw new Exception(
+            'Cannot Create or Update Transaction in Different Month/Year. Please create new Transaction on current date.'
+        );
+    }
 }
