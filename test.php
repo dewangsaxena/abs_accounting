@@ -1872,10 +1872,10 @@ function generate_report(array &$data, PDO $db, string $report_date, int $store_
 
     echo $code;
 
-    // echo '<br><br>';
-    // foreach($error_list as $e) {
-    //     echo $e.'<br>';
-    // }
+    echo '<br><br>';
+    foreach($error_list as $e) {
+        echo $e.'<br>';
+    }
 
 }
 
@@ -1941,7 +1941,7 @@ function generate_client_aged_detail(int $store_id, string $receipt_exclude_date
     generate_report($data, $db, '2025-02-28', $store_id, $client_list);
 }
 
-$file = Utils::read_csv_file("{$_SERVER['DOCUMENT_ROOT']}/tmp/bcc6f21491a11e15db4863f37484df0f.csv");
+$file = Utils::read_csv_file("{$_SERVER['DOCUMENT_ROOT']}/tmp/calgary.csv");
 
 function format_client_name(array $data): array {
     $clients = [];
@@ -1951,5 +1951,5 @@ function format_client_name(array $data): array {
     return $clients;
 }
 $client_list = format_client_name($file);
-generate_client_aged_detail(StoreDetails::EDMONTON, '2025-03-01', $client_list);
+generate_client_aged_detail(StoreDetails::CALGARY, '2025-03-01', $client_list);
 ?>  
