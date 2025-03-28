@@ -1706,8 +1706,11 @@ function reverse_receipts(array &$receipts, array &$data): void {
         foreach($details as $d) {
             $txn_type = $d['type'];
             $txn_id = $d['id'];
+            echo $data[$client_id][$txn_type][$txn_id]['credit_amount'].'<br>';
             if(isset($data[$client_id][$txn_type][$txn_id]) === false) continue;
             $data[$client_id][$txn_type][$txn_id]['credit_amount'] += $d['amountReceived'];
+            echo $data[$client_id][$txn_type][$txn_id]['credit_amount'];
+            die;
         }
     }
 }
@@ -1877,22 +1880,22 @@ function generate_client_aged_detail(int $store_id, string $receipt_exclude_date
     $data = [];
 
     // Select Invoices
-    $statement_invoices = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id FROM sales_invoice WHERE store_id = :store_id AND payment_method = 0 AND `date` < :till_date;');
+    $statement_invoices = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id FROM sales_invoice WHERE store_id = :store_id AND payment_method = 0 AND `date` <= :till_date;');
     $statement_invoices -> execute($params_txn);
     $sales_invoices = $statement_invoices -> fetchAll(PDO::FETCH_ASSOC);
 
     // Sales Returns
-    $statement_sales_return = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id FROM sales_return WHERE store_id = :store_id AND payment_method = 0 AND `date` < :till_date');
+    $statement_sales_return = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id FROM sales_return WHERE store_id = :store_id AND payment_method = 0 AND `date` <= :till_date');
     $statement_sales_return -> execute($params_txn);
     $sales_returns = $statement_sales_return -> fetchAll(PDO::FETCH_ASSOC);
 
     // Credit Note
-    $statement_credit_note = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id  FROM credit_note WHERE store_id = :store_id AND `date` < :till_date');
+    $statement_credit_note = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id  FROM credit_note WHERE store_id = :store_id AND `date` <= :till_date');
     $statement_credit_note -> execute($params_txn);
     $credit_notes = $statement_credit_note -> fetchAll(PDO::FETCH_ASSOC);
 
     // Debit Note
-    $statement_debit_note = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id  FROM debit_note WHERE store_id = :store_id AND `date` < :till_date');
+    $statement_debit_note = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id  FROM debit_note WHERE store_id = :store_id AND `date` <= :till_date');
     $statement_debit_note -> execute($params_txn);
     $debit_notes = $statement_debit_note -> fetchAll(PDO::FETCH_ASSOC);
 
