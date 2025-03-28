@@ -21,6 +21,7 @@ define('__TESTING__', 6);
 define('__DEMO__', 7);
 define('__PARTS_V2__', 8);
 define('__WASH_V2__', 9);
+define('__TEN_LEASING__', 10);
 
 /* Modes */
 define('WASH', 1);
@@ -40,6 +41,9 @@ if ($domain === 'localhost') {
         define('IS_LOCALHOST', true);
         define('DISABLE_EMAIL_ON_LOCALHOST', true);
     }
+} else if($domain === 'tenleasing.absyeg.store') {
+    $offset = __TEN_LEASING__;
+    $mode = PARTS;
 } else if ($domain === 'abs.company') {
     $offset = __ABS_COMPANY__;
     $mode = PARTS;
