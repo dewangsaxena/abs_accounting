@@ -19,13 +19,13 @@ class CustomerAgedSummary {
     private const CREATE_SUMMARY = <<<'EOS'
     INSERT INTO customer_aged_summary
     (
-        `summary`,
+        `statement`,
         `date`,
         `store_id`
     )
     VALUES
     (
-        :summary,
+        :statement,
         :date,
         :store_id
     );
@@ -558,7 +558,7 @@ class CustomerAgedSummary {
 
             // Add Statement to Database
             $values = [
-                ':summary' => json_encode($statement, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
+                ':statement' => json_encode($statement, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
                 ':date' => $for_date, 
                 ':store_id' => $store_id,
             ];
@@ -648,7 +648,7 @@ class CustomerAgedSummary {
 
             // Add Statement to Database
             $values = [
-                ':summary' => json_encode($statement, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
+                ':statement' => json_encode($statement, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
                 ':date' => $for_date, 
                 ':store_id' => $store_id,
             ];
@@ -703,6 +703,8 @@ class CustomerAgedSummary {
             $is_successful = $statement -> execute($values);
             if($is_successful !== true || $statement -> rowCount() < 1) throw new Exception('Unable to Create Customer Aged Statement.');
         }
+
+
 
         // Fetch Historical Statement
         $customer_aged_statements = self::fetch_customer_aged_summary_since($store_id, $txn_date, $db);
