@@ -51,16 +51,20 @@ const isParts: boolean = location.hostname.includes(DOMAINS_BASE_URLS["parts"])
 const isWash: boolean = location.hostname.includes(DOMAINS_BASE_URLS["wash"])
   ? true
   : false;
+const isTenLeasing: boolean = location.hostname.includes(DOMAINS_BASE_URLS["ten_leasing"]) ? true : false;
 
 /** Detault System Mode */
 const defaultSystemMode: number = MODE_PARTS;
 
 /* By Default, the System Config Mode is Parts */
-export const systemConfigMode: number | null = isWash
-  ? MODE_WASH
-  : isParts
-  ? MODE_PARTS
-  : defaultSystemMode;
+export const systemConfigMode: number | null = 
+  isWash
+    ? MODE_WASH
+  : 
+  isParts
+    ? MODE_PARTS
+  : 
+  isTenLeasing ? MODE_PARTS: defaultSystemMode;
 
 // System Config Mode Colors
 export const systemConfigModeColors: string | undefined = {
@@ -160,7 +164,9 @@ export const APP_HOST = isParts
   ? "https://" + DOMAINS_BASE_URLS["parts"]
   : isWash
   ? "https://" + DOMAINS_BASE_URLS["wash"]
-  : "http://" + DOMAINS_BASE_URLS["localhost"];
+  : isTenLeasing ? 
+    "https://" + DOMAINS_BASE_URLS["ten_leasing"]
+  : "http://" + DOMAINS_BASE_URLS["localhost"]
 
 /** Min Length before fetching */
 export const AUTO_SUGGEST_MIN_INPUT_LENGTH: number = 1;
@@ -200,4 +206,4 @@ export const EHC_ITEMS_LIST: number[] = [
   31447, /* EHCAB02 */
   40057, /* EHCAB04 */
   40058, /* EHCAB06 */
-]
+];
