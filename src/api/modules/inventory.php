@@ -1633,8 +1633,9 @@ class Inventory {
      * @param details
      */
     public static function generate_inventory_list(int $store_id): void {
+        $list = PrepareDetails_Inventory::generate_inventory_list($store_id);
         GeneratePDF::generate_inventory_list(
-            PrepareDetails_Inventory::generate_inventory_list($store_id),
+            $list,
             $store_id,
         );
     }
