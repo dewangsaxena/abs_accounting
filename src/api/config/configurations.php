@@ -35,7 +35,7 @@ $mode = null;
 $domain = $_SERVER['SERVER_NAME'];
 if ($domain === 'localhost') {
     $offset = __LOCALHOST__;
-    $mode = WASH;
+    $mode = PARTS;
     if (!defined('IS_LOCALHOST')) {
         define('IS_LOCALHOST', true);
         define('DISABLE_EMAIL_ON_LOCALHOST', true);
