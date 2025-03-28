@@ -1628,6 +1628,11 @@ class Inventory {
         }
     }
 
+    /**
+     * This method will adjust amount.
+     * @param amount
+     * @param record
+     */
     public static function adjust_by(float $amount, array &$record): void {
         $count = count($record) - 1;
         
@@ -1644,7 +1649,7 @@ class Inventory {
             }
         }
 
-        echo $amount;
+        // echo $amount;
     }
 
     /**
@@ -1653,7 +1658,6 @@ class Inventory {
      */
     public static function generate_inventory_list(int $store_id): void {
         $list = PrepareDetails_Inventory::generate_inventory_list($store_id);
-        self::adjust_by(70000, $list);
         GeneratePDF::generate_inventory_list(
             $list,
             $store_id,
