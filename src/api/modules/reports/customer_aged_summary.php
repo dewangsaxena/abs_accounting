@@ -668,7 +668,7 @@ class CustomerAgedSummary {
      * @param store_id
      * @param db
      */
-    public static function update_customer_aged_summary(int $client_id, string $txn_date, float $txn_amount, int $store_id, PDO &$db): void {
+    public static function update(int $client_id, string $txn_date, float $txn_amount, int $store_id, PDO &$db): void {
 
         // Fetch Customer Aged Summary till date
         $last_statements = self::fetch_customer_aged_summary_till_date($txn_date, $store_id, $db);
