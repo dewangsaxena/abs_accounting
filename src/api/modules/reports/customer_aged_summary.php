@@ -594,6 +594,47 @@ class CustomerAgedSummary {
     }
 
     /**
+     * This method will create a new statement
+     * @param store_id
+     * @param db
+     * @return void
+     */
+    public static function create_statement(string $txn_date, int $store_id, PDO | null &$db=null): void {
+
+        // Create Date from TimeStamp
+        $for_date = date_create($txn_date);
+
+        // Convert to Format
+        $for_date = date_format($for_date, 'Y-m-d');
+
+        // Check for Presence of Statement.
+        if(self::check_statement_exists($store_id, $for_date, $db) === false) {
+
+            // Fetch Statement
+            $statement = self::fetch_customer_aged_summary($store_id, '0000-00-00', $for_date, 0);
+
+            // Delete Keys such as Client Name, and Phone number.
+            // These details will be set when data is fetched to ensure latest details are provided.
+            self::delete_keys($statement);
+            
+            // Set Client Id as Key
+            self::set_client_id_as_key($statement);
+
+            // Add Statement to Database
+            $values = [
+                ':summary' => json_encode($statement, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
+                ':date' => $for_date, 
+                ':store_id' => $store_id,
+            ];
+
+            // Insert into DB
+            $statement = $db -> prepare(self::CREATE_SUMMARY);
+            $is_successful = $statement -> execute($values);
+            if($is_successful !== true || $statement -> rowCount() < 1) throw new Exception('Unable to Save Last Customer Aged Statement.');
+        }
+    }
+
+    /**
      * This method will update customer aged summary.
      * @param client_id
      * @param txn_date

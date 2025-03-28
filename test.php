@@ -1951,4 +1951,7 @@ function format_client_name(array $data): array {
 }
 // $client_list = format_client_name($file);
 // generate_client_aged_detail(StoreDetails::NISKU, '2025-03-01', $client_list);
+
+$db = get_db_instance();
+CustomerAgedSummary::create_statement('2025-01-08', StoreDetails::EDMONTON, $db);
 ?>  
