@@ -36,6 +36,7 @@ export class Stores {
 const DOMAINS_BASE_URLS: AttributeType = {
   parts: "parts.absyeg.store",
   wash: "wash.absyeg.store",
+  ten_leasing: "tenleasing.absyeg.store",
   localhost: "localhost",
 };
 
