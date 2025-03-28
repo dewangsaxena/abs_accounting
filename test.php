@@ -1842,7 +1842,7 @@ function generate_report(array &$data, PDO $db, string $report_date, int $store_
         if($total_outstanding_per_client != 0) {
             $total_outstanding += $total_outstanding_per_client;
             $total_outstanding_per_client_formatted = Utils::number_format($total_outstanding_per_client);
-            $temp_code .= "<tr><td colspan='7'><b>Total Outstanding: $total_outstanding_per_client_formatted</b></td></tr>";
+            $temp_code .= "<tr><td colspan='7'><b>Total Outstanding: $total_outstanding_per_client_formatted</b></td></tr><br><br>";
             
             if(isset($client_data[$client_name]) === false) {
                 $error_list[]= $client_name;
@@ -1859,9 +1859,10 @@ function generate_report(array &$data, PDO $db, string $report_date, int $store_
         }
     }
 
+    $total_outstanding = Utils::number_format($total_outstanding);
     $code .= <<<EOS
     <br><br>
-    <p>$total_outstanding</p>
+    <p><b>Total Receivables: $total_outstanding<b/></p>
     </tbody>
     </table>
     </body>
@@ -1870,10 +1871,10 @@ function generate_report(array &$data, PDO $db, string $report_date, int $store_
 
     echo $code;
 
-    echo '<br><br>';
-    foreach($error_list as $e) {
-        echo $e.'<br>';
-    }
+    // echo '<br><br>';
+    // foreach($error_list as $e) {
+    //     echo $e.'<br>';
+    // }
 
 }
 
