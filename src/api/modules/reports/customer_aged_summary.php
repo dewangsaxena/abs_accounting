@@ -693,7 +693,7 @@ class CustomerAgedSummary {
             // Create new Statement
             // Add Statement to Database
             $values = [
-                ':summary' => json_encode($base_statement, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
+                ':statement' => json_encode($base_statement, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
                 ':date' => $txn_date, 
                 ':store_id' => $store_id,
             ];
