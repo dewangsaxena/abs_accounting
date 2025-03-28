@@ -594,12 +594,13 @@ class CustomerAgedSummary {
     }
 
     /**
-     * This method will create a new statement
+     * This method will create a new statement if not already present.
+     * @param txn_date
      * @param store_id
      * @param db
      * @return void
      */
-    public static function create_statement(string $txn_date, int $store_id, PDO | null &$db=null): void {
+    private static function create_statement_if_not_exists(string $txn_date, int $store_id, PDO &$db): void {
 
         // Create Date from TimeStamp
         $for_date = date_create($txn_date);
@@ -643,6 +644,10 @@ class CustomerAgedSummary {
      * @param db
      */
     public static function update_customer_aged_summary(int $client_id, string $txn_date, float $txn_amount, int $store_id, PDO &$db): void {
+
+        // Create Statement
+        self::create_statement_if_not_exists($txn_date, $store_id, $db);
+
         // Fetch Historical Statement
         $customer_aged_statements = self::fetch_customer_aged_summary_since($store_id, $txn_date, $db);
 
