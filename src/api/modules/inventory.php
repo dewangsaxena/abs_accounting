@@ -1632,8 +1632,9 @@ class Inventory {
      * This method will adjust amount.
      * @param amount
      * @param record
+     * @param do_print_remaining_amount
      */
-    public static function adjust_by(float $amount, array &$record): void {
+    private static function adjust_by(float $amount, array &$record, bool $do_print_remaining_amount = false): void {
         $count = count($record) - 1;
         
         $initial_amount = $amount;
@@ -1649,7 +1650,7 @@ class Inventory {
             }
         }
 
-        // echo $amount;
+        if($do_print_remaining_amount) echo $amount;
     }
 
     /**
