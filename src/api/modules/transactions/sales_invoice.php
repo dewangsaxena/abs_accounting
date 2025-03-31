@@ -685,14 +685,16 @@ class SalesInvoice {
             // Update Last Sold Date
             Inventory::update_last_sold_for_items($details, $date, $store_id, $db);
 
-            // Update Customer Aged Summary
-            CustomerAgedSummary::update(
-                $client_id,
-                $date,
-                $sum_total,
-                $store_id,
-                $db,
-            );
+            if($payment_method === PaymentMethod::PAY_LATER) {
+                // Update Customer Aged Summary
+                CustomerAgedSummary::update(
+                    $client_id,
+                    $date,
+                    $sum_total,
+                    $store_id,
+                    $db,
+                );
+            }
 
             /* CHECK FOR ANY ERROR */
             assert_success();
@@ -820,7 +822,8 @@ class SalesInvoice {
                 $is_affected_accounts, 
                 $data, 
                 $statement_adjust_inventory, 
-                $store_id
+                $store_id,
+                $db,
             );
 
             // Update Balance Sheet
@@ -1154,8 +1157,9 @@ class SalesInvoice {
      * @param details
      * @param statement_adjust_inventory
      * @param store_id
+     * @param db
      */
-    private static function revert_old_transaction(array &$bs_affected_accounts, array &$is_affected_accounts, array $details, PDOStatement &$statement_adjust_inventory, int $store_id) : void {
+    private static function revert_old_transaction(array &$bs_affected_accounts, array &$is_affected_accounts, array $details, PDOStatement &$statement_adjust_inventory, int $store_id, PDO &$db) : void {
         
         // Offsets
         $affected_accounts = [];
@@ -1242,6 +1246,18 @@ class SalesInvoice {
                     $is_affected_accounts,
                     $old_payment_method_account,
                     $old_sum_total
+                );
+            }
+
+            if($details['initial']['paymentMethod'] === PaymentMethod::PAY_LATER) {
+
+                // Reverse Customer Aged Summary.
+                CustomerAgedSummary::update(
+                    $details['initial']['clientDetails']['id'],
+                    $details['initial']['txnDate'],
+                    $old_sum_total,
+                    $store_id,
+                    $db,
                 );
             }
         }

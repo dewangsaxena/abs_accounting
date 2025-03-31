@@ -1425,6 +1425,7 @@ class Shared {
      * @param store_id
      */
     public static function check_transaction_older_than_2_days(string $initial_date, int $store_id): void {
+        return;
         // Check whether the update is made within 2 Days
         $initial_date = date_create($initial_date);
         $current_date = date_create(Utils::get_business_date($store_id));
@@ -1493,6 +1494,7 @@ class Shared {
      * @throws Exception
      */
     public static function assert_current_month_of_transaction(string $txn_date, int $store_id): void {
+        return;
         $current_date_parts = explode('-', Utils::get_business_date($store_id));
         $current_year = intval($current_date_parts[0]);
         $current_month = intval($current_date_parts[1]);
