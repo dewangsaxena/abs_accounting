@@ -696,7 +696,14 @@ class CustomerAgedSummary {
             }
         }
 
-        if(is_null($base_statement) || $statement_found === false) {
+        // Flag
+        $insert_record = is_null($base_statement) || $statement_found === false;
+
+        // Use Empty array
+        if(is_null($base_statement)) $base_statement = [];
+
+        // Insert Record
+        if($insert_record) {
 
             // Create new Statement
             // Add Statement to Database
@@ -712,7 +719,7 @@ class CustomerAgedSummary {
             if($is_successful !== true || $statement -> rowCount() < 1) throw new Exception('Unable to Create Customer Aged Statement.');
         }
 
-        throw new Exception('sd');
+        return;
         
         // Fetch Historical Statement
         $customer_aged_statements = self::fetch_customer_aged_summary_since($txn_date, $store_id, $db);
