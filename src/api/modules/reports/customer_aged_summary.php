@@ -670,7 +670,6 @@ class CustomerAgedSummary {
      */
     public static function transform_for_date(array $statement, string $statement_date, string $txn_date, int $store_id): array {
         $diff = Utils::get_difference_between_dates($txn_date, $statement_date, $store_id);
-        print_r($diff);
         $new_statement = [
             'total' => 0,
             'current' => 0,
@@ -738,12 +737,9 @@ class CustomerAgedSummary {
                 $last_statements[0]['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR
             );
 
-            $adjusted_statement = self::transform_for_date($base_statement[$client_id], $last_statements[0]['date'], $txn_date, $store_id);
+            $base_statement[$client_id] = self::transform_for_date($base_statement[$client_id], $last_statements[0]['date'], $txn_date, $store_id);
         }
-
-        echo '<br><br>';
-        print_r($adjusted_statement);
-        throw new Exception('<br><br>EXCEPTION');
+        
         // Flag
         $insert_record = is_null($base_statement) || $statement_found === false;
 
