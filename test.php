@@ -1957,7 +1957,7 @@ try {
     $db -> beginTransaction();
     CustomerAgedSummary::update(
         10000,
-        '2025-03-05',
+        '2025-02-01',
         100,
         StoreDetails::EDMONTON,
         $db,
