@@ -682,21 +682,21 @@ class CustomerAgedSummary {
             $new_statement['91+'] = $statement['current'] + $statement['31-60'] + $statement['61-90'] + $statement['91+'];
         }
         else if($diff['m'] === 0 && $diff['d'] >= 0) {
-            $new_statement['current'] += $statement['current'];
-            $new_statement['31-60'] += $statement['31-60'];
-            $new_statement['61-90'] += $statement['61-90'];
-            $new_statement['91+'] += $statement['91+'];
+            $new_statement['current'] = $statement['current'];
+            $new_statement['31-60'] = $statement['31-60'];
+            $new_statement['61-90'] = $statement['61-90'];
+            $new_statement['91+'] = $statement['91+'];
         }
         else {
             if($diff['m'] > 0) {
                 if($diff['m'] === 1) {
-                    $new_statement['31-60'] += $statement['current'];
-                    $new_statement['61-90'] += $statement['31-60'];
-                    $new_statement['91+'] += ($statement['61-90'] + $statement['91+']);
+                    $new_statement['31-60'] = $statement['current'];
+                    $new_statement['61-90'] = $statement['31-60'];
+                    $new_statement['91+'] = $statement['61-90'] + $statement['91+'];
                 }
                 else if($diff['m'] === 2) {
-                    $new_statement['61-90'] = ($statement['current'] + $statement['31-60']);
-                    $new_statement['91+'] += ($statement['61-90'] + $statement['91+']);
+                    $new_statement['61-90'] = $statement['current'] + $statement['31-60'];
+                    $new_statement['91+'] = $statement['61-90'] + $statement['91+'];
                 }
                 else if($diff['m'] > 2) {
                     $new_statement['91+'] = $statement['current'] + $statement['31-60'] + $statement['61-90'] + $statement['91+'];
@@ -738,9 +738,11 @@ class CustomerAgedSummary {
                 $last_statements[0]['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR
             );
 
-            self::transform_for_date($base_statement, $last_statements[0]['date'], $txn_date, $store_id);
+            $adjusted_statement = self::transform_for_date($base_statement[$client_id], $last_statements[0]['date'], $txn_date, $store_id);
         }
 
+        echo '<br><br>';
+        print_r($adjusted_statement);
         throw new Exception('<br><br>EXCEPTION');
         // Flag
         $insert_record = is_null($base_statement) || $statement_found === false;
