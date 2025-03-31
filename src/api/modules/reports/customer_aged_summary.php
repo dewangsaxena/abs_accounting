@@ -675,24 +675,28 @@ class CustomerAgedSummary {
 
         // Base Statement
         $base_statement = null;
+
+        // Flag
+        $statement_found = false;
         
         // Check whether the last statement is of the current date.
         if(isset($last_statements[0])) {
 
             // Check whether the last statement is of the txn date.
             // If yes, use that as the base statement.
-            if($last_statements[0]['date'] === $txn_date) $base_statement = json_decode(
-                $last_statements[0]['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR
-            );
+            if($last_statements[0]['date'] === $txn_date) {
+                $statement_found = true;
+                $base_statement = json_decode(
+                    $last_statements[0]['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR
+                );
+            }
             else {
-                throw new Exception('sds');
-                // Use the Last Available Statement available.
-                // This could be of prior date to the txn date.
-                $base_statement = $last_statements[1]['statement'] ?? [];
+                $index = isset($last_statements[1]) ? 1 : 0;
+                $base_statement = json_decode($last_statements[$index]['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
             }
         }
-        
-        if(is_null($base_statement)) {
+
+        if(is_null($base_statement) || $statement_found === false) {
 
             // Create new Statement
             // Add Statement to Database
@@ -707,6 +711,8 @@ class CustomerAgedSummary {
             $is_successful = $statement -> execute($values);
             if($is_successful !== true || $statement -> rowCount() < 1) throw new Exception('Unable to Create Customer Aged Statement.');
         }
+
+        throw new Exception('sd');
         
         // Fetch Historical Statement
         $customer_aged_statements = self::fetch_customer_aged_summary_since($txn_date, $store_id, $db);

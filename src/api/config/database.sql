@@ -547,6 +547,7 @@ CREATE TABLE customer_aged_summary(
     CONSTRAINT FK_cs_store_id FOREIGN KEY(store_id) REFERENCES store_details(id)
 );
 CREATE INDEX idx_customer_aged_summary_date ON customer_aged_summary(`date`);
+ALTER TABLE customer_aged_summary AUTO_INCREMENT=10000;
 
 /*
  * Receipts.
