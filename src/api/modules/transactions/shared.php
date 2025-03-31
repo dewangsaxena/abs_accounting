@@ -1280,6 +1280,7 @@ class Shared {
         }
 
         // Prior Month(s)
+        // Considering every month to be approx. 30 days.
         else if($difference['m'] > 0) {
             if($difference['m'] === 1) {
                 $aged_amounts['31-60'] += $amount;
