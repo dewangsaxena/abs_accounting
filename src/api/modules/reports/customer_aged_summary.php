@@ -661,6 +661,19 @@ class CustomerAgedSummary {
     }
 
     /**
+     * This method will transform customer aged summary with regard to the date of the statement.
+     * @param statement
+     * @param statement_date
+     * @param txn_date
+     * @param store_id
+     * @return array
+     */
+    public static function transform_for_date(array $statement, string $statement_date, string $txn_date, int $store_id): array {
+        $diff = Utils::get_difference_between_dates($txn_date, $statement_date, $store_id);
+        return [];
+    }
+
+    /**
      * This method will update customer aged summary.
      * @param client_id
      * @param txn_date
@@ -739,7 +752,8 @@ class CustomerAgedSummary {
             );
 
             // echo $txn_date. ' '. $customer_aged_statement['date'];
-            // print_r($result);throw new Exception('1');
+            // print_r($result);
+            // echo '<br>';
 
             // Statement
             $statement = json_decode($customer_aged_statement['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
@@ -771,6 +785,8 @@ class CustomerAgedSummary {
             
             if($is_successful !== true || $update_statement -> rowCount() < 1) throw new Exception('Unable to Update Customer Aged Summary.');
         }
+
+        // throw new Exception('1');
     }
 }
 ?>

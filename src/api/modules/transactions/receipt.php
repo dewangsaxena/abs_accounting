@@ -653,7 +653,7 @@ class Receipt {
      * @return float
      */
     private static function calculate_discount_available($date, $amount_eligible_for_receipt_discount, $early_payment_discount, $early_payment_paid_within_days, $store_id) : float {
-        $date_diff = Utils::get_difference_from_current_date($date, Utils::get_business_date($store_id), $store_id);
+        $date_diff = Utils::get_difference_between_dates($date, Utils::get_business_date($store_id), $store_id);
         $diff = ($date_diff['y'] * 365) + ($date_diff['m'] * 30) + $date_diff['d'];
         $discount_available = 0;
         if($diff < $early_payment_paid_within_days) {

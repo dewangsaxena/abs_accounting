@@ -883,7 +883,7 @@ class Inventory {
                         $current_date = Utils::convert_date_to_human_readable(Utils::get_business_date($store_id));
                         if($current_date === $date) $date = 'Today';
                         else {
-                            $diff = Utils::get_difference_from_current_date($current_date, $local_timestamp, $store_id);
+                            $diff = Utils::get_difference_between_dates($current_date, $local_timestamp, $store_id);
                             if($diff['d'] <= 1 && $diff['m'] === 0 and $diff['y'] === 0) $date = 'Yesterday';
                         }
                     }
@@ -1852,7 +1852,7 @@ class Inventory {
         foreach($results as $result) {
             $last_sold = json_decode($result['last_sold'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
             if(isset($last_sold[$store_id]) === false) continue;
-            $date_diff = Utils::get_difference_from_current_date(
+            $date_diff = Utils::get_difference_between_dates(
                 $last_sold[$store_id],
                 Utils::get_business_date($store_id),
                 $store_id,

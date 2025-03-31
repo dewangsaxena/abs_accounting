@@ -278,7 +278,7 @@ class PrepareDetails_CustomerStatement {
             $amount_due += $txn[$i]['balance'];
 
             // Calculate Date difference
-            $date_diff = Utils::get_difference_from_current_date(
+            $date_diff = Utils::get_difference_between_dates(
                 $txn[$i]['txn_date'],
                 $current_date,
                 intval($_SESSION['store_id'])

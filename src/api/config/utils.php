@@ -274,16 +274,16 @@ class Utils {
      * @param store_id
      * @return array
      */
-    public static function get_difference_from_current_date(string $txn_date, String|DateTime $current_date, int $store_id): array {
+    public static function get_difference_between_dates(string $date_1, String|DateTime $date_2, int $store_id): array {
         $txn_date = date_create(
-            $txn_date, 
+            $date_1, 
             new DateTimeZone(StoreDetails::STORE_DETAILS[$store_id]['timezone'])
         );
-        if(gettype($current_date) === 'string') $current_date = date_create(
-            $current_date, 
+        if(gettype($date_2) === 'string') $date_2 = date_create(
+            $date_2, 
             new DateTimeZone(StoreDetails::STORE_DETAILS[$store_id]['timezone'])
         ); 
-        $result = date_diff($current_date, $txn_date);
+        $result = date_diff($date_2, $txn_date);
         return [
             'y' => $result -> y,
             'm' => $result -> m,

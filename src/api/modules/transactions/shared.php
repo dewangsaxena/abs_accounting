@@ -1263,7 +1263,7 @@ class Shared {
         // Calculate the date difference 
         // The date is as per Business Timezone.
         // The time picked up from the browser.
-        $difference = Utils::get_difference_from_current_date(
+        $difference = Utils::get_difference_between_dates(
             $txn_date,
             $till_date,
             $store_id,
