@@ -35,9 +35,6 @@ class DebitNote {
 
             // Store ID
             $store_id = $ret['store_id'];
-
-            // Save Last Statement
-            CustomerAgedSummary::save_last_statement($store_id, $db);
             
             // Txn date
             $date = $ret['txn_date'];

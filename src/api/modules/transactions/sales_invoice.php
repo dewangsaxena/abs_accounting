@@ -421,9 +421,6 @@ class SalesInvoice {
             // Store ID
             $store_id = $validated_details['store_id'];
 
-            // Save Last Statement
-            CustomerAgedSummary::save_last_statement($store_id, $db);
-
             // Client Id 
             $client_id = $validated_details['client_id'];
 
