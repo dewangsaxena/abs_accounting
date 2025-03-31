@@ -744,6 +744,9 @@ class CustomerAgedSummary {
                 $store_id
             );
 
+            // echo $txn_date. ' '. $customer_aged_statement['date'];
+            // print_r($result);throw new Exception('1');
+
             // Statement
             $statement = json_decode($customer_aged_statement['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
 
