@@ -685,9 +685,10 @@ class CustomerAgedSummary {
                 $last_statements[0]['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR
             );
             else {
+                throw new Exception('sds');
                 // Use the Last Available Statement available.
                 // This could be of prior date to the txn date.
-                $base_statement = $last_statements[1]['statement'] ?? [1];
+                $base_statement = $last_statements[1]['statement'] ?? [];
             }
         }
         
