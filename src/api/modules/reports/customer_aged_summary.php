@@ -739,7 +739,7 @@ class CustomerAgedSummary {
 
             $base_statement[$client_id] = self::transform_for_date($base_statement[$client_id], $last_statements[0]['date'], $txn_date, $store_id);
         }
-        
+
         // Flag
         $insert_record = is_null($base_statement) || $statement_found === false;
 
@@ -788,10 +788,6 @@ class CustomerAgedSummary {
                 $store_id
             );
 
-            // echo $txn_date. ' '. $customer_aged_statement['date'];
-            // print_r($result);
-            // echo '<br>';
-
             // Statement
             $statement = json_decode($customer_aged_statement['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
 
@@ -822,8 +818,6 @@ class CustomerAgedSummary {
             
             if($is_successful !== true || $update_statement -> rowCount() < 1) throw new Exception('Unable to Update Customer Aged Summary.');
         }
-
-        // throw new Exception('1');
     }
 }
 ?>
