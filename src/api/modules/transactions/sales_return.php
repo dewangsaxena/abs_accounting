@@ -831,6 +831,17 @@ class SalesReturn {
                 ':restocking_fees' => $validated_details['restocking_fees'],
             ];
 
+            if($is_pay_later) {
+                // Customer Aged Summary
+                CustomerAgedSummary::update(
+                    $client_id,
+                    $date,
+                    $sum_total,
+                    $store_id,
+                    $db,
+                );
+            }
+
             /* CHECK FOR ANY ERROR */
             assert_success();
 
