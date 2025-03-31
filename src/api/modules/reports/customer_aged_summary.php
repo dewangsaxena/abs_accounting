@@ -684,16 +684,10 @@ class CustomerAgedSummary {
 
             // Check whether the last statement is of the txn date.
             // If yes, use that as the base statement.
-            if($last_statements[0]['date'] === $txn_date) {
-                $statement_found = true;
-                $base_statement = json_decode(
-                    $last_statements[0]['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR
-                );
-            }
-            else {
-                $index = isset($last_statements[1]) ? 1 : 0;
-                $base_statement = json_decode($last_statements[$index]['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
-            }
+            $statement_found = $last_statements[0]['date'] === $txn_date;
+            $base_statement = json_decode(
+                $last_statements[0]['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR
+            );
         }
 
         // Flag
