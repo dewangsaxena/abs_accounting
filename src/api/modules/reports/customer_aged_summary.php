@@ -703,9 +703,7 @@ class CustomerAgedSummary {
             $is_successful = $statement -> execute($values);
             if($is_successful !== true || $statement -> rowCount() < 1) throw new Exception('Unable to Create Customer Aged Statement.');
         }
-
-
-
+        
         // Fetch Historical Statement
         $customer_aged_statements = self::fetch_customer_aged_summary_since($store_id, $txn_date, $db);
 
