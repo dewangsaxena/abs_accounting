@@ -444,7 +444,7 @@ class Inventory {
      * @param db
      * @return array 
      */
-    public static function fetch(array|null $params, int $store_id, bool $set_id_as_index = false, PDO &$db = null): array {
+    public static function fetch(array|null $params, int $store_id, bool $set_id_as_index = false, PDO | null &$db = null): array {
         try {
             // Get DB Instance
             if (is_null($db)) $db = get_db_instance();

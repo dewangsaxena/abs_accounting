@@ -531,6 +531,9 @@ class CustomerAgedSummary {
      */
     public static function save_last_statement(int $store_id, PDO | null &$db=null): void {
 
+        // Deprecated
+        return;
+
         // Current Date
         $current_date = Utils::get_business_date($store_id);
 
