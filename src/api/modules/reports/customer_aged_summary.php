@@ -810,6 +810,7 @@ class CustomerAgedSummary {
             // Update Statement
             $statement = json_encode($statement, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
 
+            // Status
             $is_successful = $update_statement -> execute([
                 ':statement' => $statement,
                 ':id' => $customer_aged_statement['id'],
