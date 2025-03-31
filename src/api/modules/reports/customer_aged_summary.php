@@ -670,7 +670,22 @@ class CustomerAgedSummary {
      */
     public static function transform_for_date(array $statement, string $statement_date, string $txn_date, int $store_id): array {
         $diff = Utils::get_difference_between_dates($txn_date, $statement_date, $store_id);
-        return [];
+        print_r($diff);
+        $new_statement = [
+            'total' => 0,
+            'current' => 0,
+            '31-60' => 0,
+            '61-90' => 0,
+            '91+' => 0,
+        ];
+        if($diff['y'] > 0) {
+            $new_statement['91+'] = $statement['current'] + $statement['31-60'] + $statement['61-90'] + $statement['91+'];
+            $new_statement['total'] = $new_statement['91+'];
+        }
+        else if($diff['m'] === 0 && $diff['d'] >= 0) {
+            $new_statement['current'] += $statement['current'];
+        }
+        return $new_statement;
     }
 
     /**
@@ -701,8 +716,11 @@ class CustomerAgedSummary {
             $base_statement = json_decode(
                 $last_statements[0]['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR
             );
+
+            self::transform_for_date($base_statement, $last_statements[0]['date'], $txn_date, $store_id);
         }
 
+        throw new Exception('EXCEPTION');
         // Flag
         $insert_record = is_null($base_statement) || $statement_found === false;
 
