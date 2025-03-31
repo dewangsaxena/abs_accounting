@@ -703,7 +703,7 @@ class CustomerAgedSummary {
             $is_successful = $statement -> execute($values);
             if($is_successful !== true || $statement -> rowCount() < 1) throw new Exception('Unable to Create Customer Aged Statement.');
         }
-        
+
         // Fetch Historical Statement
         $customer_aged_statements = self::fetch_customer_aged_summary_since($store_id, $txn_date, $db);
 
@@ -714,7 +714,9 @@ class CustomerAgedSummary {
         SET 
             statement = :statement
         WHERE
-            id = :id;
+            id = :id
+        AND
+            modified = :modified;
         EOS);
 
         foreach($customer_aged_statements as $customer_aged_statement) {
@@ -742,7 +744,8 @@ class CustomerAgedSummary {
 
             $is_successful = $update_statement -> execute([
                 ':statement' => $statement,
-                ':id' => $customer_aged_statement['id']
+                ':id' => $customer_aged_statement['id'],
+                ':modified' => $customer_aged_statement['modified'],
             ]);
             
             if($is_successful !== true || $update_statement -> rowCount() < 1) throw new Exception('Unable to Update Customer Aged Summary.');
