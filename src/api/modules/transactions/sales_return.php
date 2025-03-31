@@ -836,7 +836,7 @@ class SalesReturn {
                 CustomerAgedSummary::update(
                     $client_id,
                     $date,
-                    $sum_total,
+                    -$sum_total,
                     $store_id,
                     $db,
                 );
