@@ -8,7 +8,7 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_aged_
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/suppressions.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/flyer.php";
 
-Inventory::generate_inventory_list(StoreDetails::SLAVE_LAKE);die;
+// Inventory::generate_inventory_list(StoreDetails::SLAVE_LAKE);die;
 
 // Inventory::fetch_low_stock(StoreDetails::EDMONTON);
 function generate_list(int $store_id, bool $do_print=true) : float {
@@ -1957,7 +1957,7 @@ try {
     $db -> beginTransaction();
     CustomerAgedSummary::update(
         10000,
-        '2025-01-01',
+        '2025-01-05',
         100,
         StoreDetails::EDMONTON,
         $db,

@@ -674,22 +674,25 @@ class CustomerAgedSummary {
         $last_statements = self::fetch_customer_aged_summary_till_date($txn_date, $store_id, $db);
 
         // Base Statement
-        $base_statement = [];
+        $base_statement = null;
         
         // Check whether the last statement is of the current date.
         if(isset($last_statements[0])) {
 
             // Check whether the last statement is of the txn date.
             // If yes, use that as the base statement.
-            if($last_statements[0]['date'] === $txn_date) $base_statement = $last_statements[0]['statement'];
+            if($last_statements[0]['date'] === $txn_date) $base_statement = json_decode(
+                $last_statements[0]['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR
+            );
             else {
                 // Use the Last Available Statement available.
                 // This could be of prior date to the txn date.
-                $base_statement = $last_statements[1]['statement'] ?? [];
+                $base_statement = $last_statements[1]['statement'] ?? [1];
             }
         }
         
-        if(count($base_statement) === 0) {
+        if(is_null($base_statement)) {
+
             // Create new Statement
             // Add Statement to Database
             $values = [
@@ -703,9 +706,9 @@ class CustomerAgedSummary {
             $is_successful = $statement -> execute($values);
             if($is_successful !== true || $statement -> rowCount() < 1) throw new Exception('Unable to Create Customer Aged Statement.');
         }
-
+        
         // Fetch Historical Statement
-        $customer_aged_statements = self::fetch_customer_aged_summary_since($store_id, $txn_date, $db);
+        $customer_aged_statements = self::fetch_customer_aged_summary_since($txn_date, $store_id, $db);
 
         // Cache
         $update_statement = $db -> prepare(<<<'EOS'
@@ -731,6 +734,15 @@ class CustomerAgedSummary {
 
             // Statement
             $statement = json_decode($customer_aged_statement['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+
+            // Insert Record
+            if(isset($statement[$client_id]) === false) {
+                $statement[$client_id]['total'] = 0;
+                $statement[$client_id]['current'] = 0;
+                $statement[$client_id]['31-60'] = 0;
+                $statement[$client_id]['61-90'] = 0;
+                $statement[$client_id]['91+'] = 0;
+            }
 
             // Adjust in statement
             $statement[$client_id]['total'] += $result['total'];
