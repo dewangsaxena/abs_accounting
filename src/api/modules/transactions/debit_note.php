@@ -236,6 +236,9 @@ class DebitNote {
             // Validate Details.
             $ret = Shared::validate_details_for_credit_and_debit_note($data, txn_type: 'debit_note');
 
+            // Is Transaction Details Changed
+            $is_transaction_detail_changed = $ret['is_transaction_detail_changed'];
+
             // Client Id 
             $client_id = $ret['client_id'];
 
@@ -312,12 +315,8 @@ class DebitNote {
             // Update Balance Sheet
             BalanceSheetActions::update_from($bs_affected_accounts, $date, $store_id, $db);
 
-            // Check for Changes in Details.
-            $initial_details_json = hash('sha256', json_encode($data['initial']['details']), JSON_THROW_ON_ERROR);
-            $new_details_json = hash('sha256', json_encode($data['details']), JSON_THROW_ON_ERROR);
-
             // Check for Any Changes in Details. If yes, add to versions
-            if($initial_details_json !== $new_details_json) {
+            if($is_transaction_detail_changed) {
                 if(is_null($versions)) $versions = [];
                 $versions[Utils::get_utc_unix_timestamp_from_utc_str_timestamp($data['lastModifiedTimestamp'])] = $data['initial']['details'];
             }
