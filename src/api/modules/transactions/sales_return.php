@@ -1021,6 +1021,9 @@ class SalesReturn {
             // Set Initial Details
             Shared::set_initial_client_details($data['initial'], $initial_details);
             
+            // Txn Details
+            $details = $data['details'];
+
             // Remove Item Tag
             Shared::remove_item_tag_from_txn_details($details);
 
@@ -1073,9 +1076,6 @@ class SalesReturn {
                 $db, 
                 $sales_return_id
             );
-
-            // Txn Details
-            $details = $data['details'];
 
             // Amount Eligible For Receipt Discount
             if($sales_invoice_payment_method === PaymentMethod::MODES_OF_PAYMENT['Pay Later']) {
