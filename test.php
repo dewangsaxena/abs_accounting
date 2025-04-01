@@ -1674,42 +1674,7 @@ function transfer_account(int $store_id): void {
 //     StoreDetails::EDMONTON,
 // ));
 
-function process_transaction(array &$transactions, array &$data, int $txn_type): void {
-    foreach($transactions as $txn) {
-        $client_id = $txn['client_id'];
-        if(isset($data[$client_id]) === false) $data[$client_id] = [
-            SALES_INVOICE => [],
-            SALES_RETURN => [],
-            CREDIT_NOTE => [],
-            DEBIT_NOTE => [],
-            RECEIPT => [],
-        ];
 
-        $is_credit_txn = $txn_type === CREDIT_NOTE || $txn_type === SALES_RETURN;
-
-        $temp = [
-            'txn_id' => $txn['id'],
-            'date' => $txn['date'],
-            'txn_type' => TRANSACTION_NAMES[$txn_type],
-            'sum_total' => $is_credit_txn ? -$txn['sum_total'] : $txn['sum_total'],
-            'txn_type_id' => $txn_type,
-        ];
-        if(isset($txn['credit_amount'])) {
-            $temp['credit_amount'] = $is_credit_txn ? -$txn['credit_amount']: $txn['credit_amount'];
-
-            // Already Paid on time of purchase.
-            if($temp['credit_amount'] == 0 && $txn['payment_method'] !== PaymentMethod::PAY_LATER) {
-                $temp['payment_method'] = PaymentMethod::MODES_OF_PAYMENT[intval($txn['payment_method'])];
-            }
-            
-        }
-        $data[$client_id][$txn_type][$txn['id']] = ['unpaid' => $temp, 'paid' => null];
-        if(isset($temp['payment_method'])) {
-            if($is_credit_txn === false) $temp['sum_total'] = -$temp['sum_total'];
-            $data[$client_id][$txn_type][$txn['id']]['paid'] = $temp;
-        }
-    }
-}
 
 function reverse_receipts(array &$receipts, array &$data): void {
     foreach($receipts as $receipt) {
@@ -1778,6 +1743,42 @@ function get_row_code(array $txn, string $txn_date, string $report_date, int $st
     return $code;
 }
 
+function process_transaction(array &$transactions, array &$data, int $txn_type): void {
+    foreach($transactions as $txn) {
+        $client_id = $txn['client_id'];
+        if(isset($data[$client_id]) === false) $data[$client_id] = [
+            SALES_INVOICE => [],
+            SALES_RETURN => [],
+            CREDIT_NOTE => [],
+            DEBIT_NOTE => [],
+            RECEIPT => [],
+        ];
+
+        $is_credit_txn = $txn_type === CREDIT_NOTE || $txn_type === SALES_RETURN;
+
+        $temp = [
+            'txn_id' => $txn['id'],
+            'date' => $txn['date'],
+            'txn_type' => TRANSACTION_NAMES[$txn_type],
+            'sum_total' => $is_credit_txn ? -$txn['sum_total'] : $txn['sum_total'],
+            'txn_type_id' => $txn_type,
+        ];
+        if(isset($txn['credit_amount'])) {
+            $temp['credit_amount'] = $is_credit_txn ? -$txn['credit_amount']: $txn['credit_amount'];
+
+            // Already Paid on time of purchase.
+            if($temp['credit_amount'] == 0 && $txn['payment_method'] !== PaymentMethod::PAY_LATER) {
+                $temp['payment_method'] = PaymentMethod::MODES_OF_PAYMENT[intval($txn['payment_method'])];
+            }
+            
+        }
+        $data[$client_id][$txn_type][$txn['id']] = ['unpaid' => $temp, 'paid' => null];
+        if(isset($temp['payment_method'])) {
+            if($is_credit_txn === false) $temp['sum_total'] = -$temp['sum_total'];
+            $data[$client_id][$txn_type][$txn['id']]['paid'] = $temp;
+        }
+    }
+}
 
 function generate_report(array &$data, PDO $db, string $report_date, int $store_id, array $client_data, bool $show_error_list = false): void {
     $client_list = array_keys($data);
