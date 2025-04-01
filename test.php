@@ -1952,20 +1952,20 @@ function format_client_name(array $data): array {
 // $client_list = format_client_name($file);
 // generate_client_aged_detail(StoreDetails::NISKU, '2025-03-01', $client_list);
 
-$db = get_db_instance();
-try {
-    $db -> beginTransaction();
-    CustomerAgedSummary::update(
-        10000,
-        '2025-01-01',
-        100,
-        StoreDetails::EDMONTON,
-        $db,
-    );
-    $db -> commit();
-}
-catch(Exception $e) {
-    if($db -> inTransaction()) $db -> rollBack();
-    echo $e -> getMessage();
-}
+// $db = get_db_instance();
+// try {
+//     $db -> beginTransaction();
+//     CustomerAgedSummary::update(
+//         10000,
+//         '2025-01-01',
+//         100,
+//         StoreDetails::EDMONTON,
+//         $db,
+//     );
+//     $db -> commit();
+// }
+// catch(Exception $e) {
+//     if($db -> inTransaction()) $db -> rollBack();
+//     echo $e -> getMessage();
+// }
 ?>  
