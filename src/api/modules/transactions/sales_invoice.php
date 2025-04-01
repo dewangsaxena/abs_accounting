@@ -430,6 +430,9 @@ class SalesInvoice {
             // Check for Fresh Copy of Client.
             Client::check_fresh_copy_of_client($client_id, $data['clientDetails']['lastModifiedTimestamp'], $db);
 
+            // Save Last Statement
+            CustomerAgedSummary::save_last_statement($store_id, $db);
+
             // Payment details
             $is_pay_later = $validated_details['is_pay_later'];
             $payment_method = $validated_details['payment_method'] ?? null;
@@ -685,16 +688,16 @@ class SalesInvoice {
             // Update Last Sold Date
             Inventory::update_last_sold_for_items($details, $date, $store_id, $db);
 
-            if($payment_method === PaymentMethod::PAY_LATER) {
-                // Update Customer Aged Summary
-                CustomerAgedSummary::update(
-                    $client_id,
-                    $date,
-                    $sum_total,
-                    $store_id,
-                    $db,
-                );
-            }
+            // if($payment_method === PaymentMethod::PAY_LATER) {
+            //     // Update Customer Aged Summary
+            //     CustomerAgedSummary::update(
+            //         $client_id,
+            //         $date,
+            //         $sum_total,
+            //         $store_id,
+            //         $db,
+            //     );
+            // }
 
             /* CHECK FOR ANY ERROR */
             assert_success();
