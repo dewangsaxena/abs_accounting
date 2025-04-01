@@ -1943,15 +1943,15 @@ function generate_client_aged_detail(int $store_id, string $receipt_exclude_date
     $statement_sales_return -> execute($params_txn);
     $sales_returns = $statement_sales_return -> fetchAll(PDO::FETCH_ASSOC);
 
-    // // Credit Note
-    // $statement_credit_note = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id  FROM credit_note WHERE store_id = :store_id AND `date` < :till_date;');
-    // $statement_credit_note -> execute($params_txn);
-    // $credit_notes = $statement_credit_note -> fetchAll(PDO::FETCH_ASSOC);
+    // Credit Note
+    $statement_credit_note = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id  FROM credit_note WHERE store_id = :store_id AND `date` < :till_date;');
+    $statement_credit_note -> execute($params_txn);
+    $credit_notes = $statement_credit_note -> fetchAll(PDO::FETCH_ASSOC);
 
-    // // Debit Note
-    // $statement_debit_note = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id  FROM debit_note WHERE store_id = :store_id AND `date` < :till_date;');
-    // $statement_debit_note -> execute($params_txn);
-    // $debit_notes = $statement_debit_note -> fetchAll(PDO::FETCH_ASSOC);
+    // Debit Note
+    $statement_debit_note = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id  FROM debit_note WHERE store_id = :store_id AND `date` < :till_date;');
+    $statement_debit_note -> execute($params_txn);
+    $debit_notes = $statement_debit_note -> fetchAll(PDO::FETCH_ASSOC);
 
     // // Receipts
     $statement_receipt = $db -> prepare('SELECT id, sum_total, `date`, `details`, client_id, payment_method FROM receipt WHERE store_id = :store_id AND do_conceal = 0 AND `date` >= :exclude_from;');
@@ -1961,11 +1961,11 @@ function generate_client_aged_detail(int $store_id, string $receipt_exclude_date
     // Reverse Receipts
     process_transaction($sales_invoices, $data, SALES_INVOICE);
     process_transaction($sales_returns, $data, SALES_RETURN);
-    // process_transaction($credit_notes, $data, CREDIT_NOTE);
-    // process_transaction($debit_notes, $data, DEBIT_NOTE);
+    process_transaction($credit_notes, $data, CREDIT_NOTE);
+    process_transaction($debit_notes, $data, DEBIT_NOTE);
 
-    // reverse_receipts($receipts, $data);
-    // add_receipt_payments($receipts, $data);
+    reverse_receipts($receipts, $data);
+    add_receipt_payments($receipts, $data);
     // eliminate_paid_transactions($data);
 
     // Create Date from TimeStamp
