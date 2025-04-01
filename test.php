@@ -1701,11 +1701,11 @@ function add_receipt_payments(array &$receipts, array &$data): void {
             // Check transaction exists
             if(isset($data[$client_id][$txn_type][$txn_id]) === false) continue;
 
-            if(isset($data[$client_id][$txn_type][$txn_id]['receipt_payments']) === false) {
-                $data[$client_id][$txn_type][$txn_id]['receipt_payments'] = [];
+            if(isset($data[$client_id][$txn_type][$txn_id]['unpaid']['receipt_payments']) === false) {
+                $data[$client_id][$txn_type][$txn_id]['unpaid']['receipt_payments'] = [];
             }
 
-            $data[$client_id][$txn_type][$txn_id]['receipt_payments'][$receipt_id] = [
+            $data[$client_id][$txn_type][$txn_id]['unpaid']['receipt_payments'][$receipt_id] = [
                 'txn_id' => $receipt_id,
                 'payment_method' => $receipt['payment_method'],
                 'date' => $receipt['date'],
