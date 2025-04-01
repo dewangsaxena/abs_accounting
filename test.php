@@ -1937,10 +1937,19 @@ function generate_client_aged_detail(int $store_id, string $receipt_exclude_date
     add_receipt_payments($receipts, $data);
     eliminate_paid_transactions($data);
 
-    generate_report($data, $db, '2025-02-28', $store_id, $client_list, false);
+    // Create Date from TimeStamp
+    $date_before = date_create($receipt_exclude_date);
+        
+    // Subtract Date
+    date_sub($date_before, date_interval_create_from_date_string('1 days'));
+
+    // Convert to Format
+    $date_before = date_format($date_before, 'Y-m-d');
+
+    generate_report($data, $db, $date_before, $store_id, $client_list, false);
 }
 
-$file = Utils::read_csv_file("{$_SERVER['DOCUMENT_ROOT']}/tmp/nisku_wash.csv");
+$file = Utils::read_csv_file("{$_SERVER['DOCUMENT_ROOT']}/tmp/edmonton.csv");
 
 function format_client_name(array $data): array {
     $clients = [];
@@ -1949,9 +1958,8 @@ function format_client_name(array $data): array {
     }
     return $clients;
 }
-// $client_list = format_client_name($file);
-// generate_client_aged_detail(StoreDetails::NISKU, '2025-03-01', $client_list);
-
+$client_list = format_client_name($file);
+generate_client_aged_detail(StoreDetails::NISKU, '2025-02-01', $client_list);die;
 // $db = get_db_instance();
 // try {
 //     $db -> beginTransaction();
