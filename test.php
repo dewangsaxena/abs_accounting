@@ -1946,8 +1946,6 @@ function generate_client_aged_detail(int $store_id, string $receipt_exclude_date
     // Convert to Format
     $date_before = date_format($date_before, 'Y-m-d');
 
-    // print_r($data);die;
-
     generate_report($data, $db, $date_before, $store_id, $client_list, false);
 }
 
