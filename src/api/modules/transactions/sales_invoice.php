@@ -357,7 +357,7 @@ class SalesInvoice {
             'account_number' => $account_number,
             'purchased_by' => $purchased_by,
             'notes' => $notes,
-            'are_transactions_details_changed' => $are_transaction_details_changed,
+            'is_transaction_detail_changed' => $is_transaction_detail_changed,
         ];
     }
 
@@ -768,7 +768,7 @@ class SalesInvoice {
             $details = self::validate_details($data);
             
             // Check for changed transactions
-            $are_transactions_details_changed = $details['are_transactions_details_changed'];
+            $is_transaction_detail_changed = $details['is_transaction_detail_changed'];
 
             // Check for Existing Sales Returns for This Invoice.
             $sales_returns = SalesReturn::fetch_sales_returns_by_sales_invoice_id($invoice_id, $db);
@@ -996,7 +996,7 @@ class SalesInvoice {
             );
 
             // Check for Any Changes in Details. If yes, add to versions
-            if($are_transactions_details_changed) {
+            if($is_transaction_detail_changed) {
                 if(is_null($versions)) $versions = [];
                 $versions[Utils::get_utc_unix_timestamp_from_utc_str_timestamp($data['lastModifiedTimestamp'])] = $data['initial']['details'];
             }
@@ -1268,17 +1268,17 @@ class SalesInvoice {
                 );
             }
 
-            if($details['initial']['paymentMethod'] === PaymentMethod::PAY_LATER) {
+            // if($details['initial']['paymentMethod'] === PaymentMethod::PAY_LATER) {
 
-                // Reverse Customer Aged Summary.
-                CustomerAgedSummary::update(
-                    $details['initial']['clientDetails']['id'],
-                    $details['initial']['txnDate'],
-                    $old_sum_total,
-                    $store_id,
-                    $db,
-                );
-            }
+            //     // Reverse Customer Aged Summary.
+            //     CustomerAgedSummary::update(
+            //         $details['initial']['clientDetails']['id'],
+            //         $details['initial']['txnDate'],
+            //         $old_sum_total,
+            //         $store_id,
+            //         $db,
+            //     );
+            // }
         }
     }
 
