@@ -1959,7 +1959,7 @@ function format_client_name(array $data): array {
     return $clients;
 }
 $client_list = format_client_name($file);
-generate_client_aged_detail(StoreDetails::NISKU, '2025-02-01', $client_list);die;
+generate_client_aged_detail(StoreDetails::EDMONTON, '2025-02-01', $client_list);die;
 // $db = get_db_instance();
 // try {
 //     $db -> beginTransaction();

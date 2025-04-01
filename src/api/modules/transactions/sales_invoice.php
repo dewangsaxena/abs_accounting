@@ -201,19 +201,39 @@ class SalesInvoice {
         );
         if($transaction_date === null) throw new Exception('Invalid Date.');
 
-        // Assert Current Month of Transaction
-        Shared::assert_current_month_of_transaction($transaction_date, $store_id);
+        // Change for Changed Transactions
+        $are_transaction_details_changed = false;
+        if(isset($data['initial'])) {
+            $are_transaction_details_changed = Shared::are_transactions_details_changed(
+                $data['initial']['details'],
+                $data['details'],
+            );
+        }
 
         // Validate New Date(if any)
         Shared::validate_new_date_of_transaction($data, $transaction_date);
 
-        // Check for transaction date
-        /* Make an Exception for J.LOEWEN MECHANICAL LTD */
-        if(SYSTEM_INIT_MODE === PARTS && $client_id !== 14376) {
-            if(isset($data['initial']['txnDate'])) Shared::check_transaction_older_than_2_days(
-                $data['initial']['txnDate'], 
-                $store_id,
-            );
+        // Is Update Transaction
+        $is_update_txn = isset($data['id']);
+
+        // Do validate date 
+        $do_validate_date = false;
+        if($is_update_txn === false) $do_validate_date = true;
+        else {
+            if($are_transaction_details_changed) $do_validate_date = true;
+        }
+
+        if($do_validate_date) {
+            /* Make an Exception for J.LOEWEN MECHANICAL LTD */
+            if(SYSTEM_INIT_MODE === PARTS && $client_id !== 14376) {
+                if(isset($data['initial']['txnDate'])) Shared::check_transaction_older_than_2_days(
+                    $data['initial']['txnDate'], 
+                    $store_id,
+                );
+            }
+
+            // Assert Current Month of Transaction
+            Shared::assert_current_month_of_transaction($transaction_date, $store_id);
         }
         
         // Disable Federal Taxes
@@ -341,6 +361,7 @@ class SalesInvoice {
             'account_number' => $account_number,
             'purchased_by' => $purchased_by,
             'notes' => $notes,
+            'are_transaction_details_changed' => $are_transaction_details_changed,
         ];
     }
 
@@ -747,6 +768,12 @@ class SalesInvoice {
             // Validate Details.
             $details = self::validate_details($data);
 
+            // Remove Item Tag
+            Shared::remove_item_tag_from_txn_details($data['details']);
+            
+            // Check for changed transactions
+            $are_transactions_details_changed = 
+
             // Check for Existing Sales Returns for This Invoice.
             $sales_returns = SalesReturn::fetch_sales_returns_by_sales_invoice_id($invoice_id, $db);
             if(count($sales_returns) > 0) throw new Exception('Sales Returns have been made for this invoice.');
@@ -972,15 +999,8 @@ class SalesInvoice {
                 $db,
             );
 
-            // Remove Item Tag
-            Shared::remove_item_tag_from_txn_details($data['details']);
-
-            // Check for Changes in Details.
-            $initial_details_json = hash('sha256', json_encode($data['initial']['details']), JSON_THROW_ON_ERROR);
-            $new_details_json = hash('sha256', json_encode($data['details']), JSON_THROW_ON_ERROR);
-
             // Check for Any Changes in Details. If yes, add to versions
-            if($initial_details_json !== $new_details_json) {
+            if($are_transactions_details_changed) {
                 if(is_null($versions)) $versions = [];
                 $versions[Utils::get_utc_unix_timestamp_from_utc_str_timestamp($data['lastModifiedTimestamp'])] = $data['initial']['details'];
             }
