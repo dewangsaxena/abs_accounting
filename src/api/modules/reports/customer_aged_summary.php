@@ -464,7 +464,7 @@ class CustomerAgedSummary {
             if(isset($record[0]) === false) $summary = [];
             else {
                 // Summary
-                $summary = json_decode($record[0]['summary'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+                $summary = json_decode($record[0]['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
 
                 // Fetch Client List
                 $client_ids = [];
