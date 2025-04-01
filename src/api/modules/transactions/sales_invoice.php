@@ -761,11 +761,11 @@ class SalesInvoice {
             // Set Initial Details
             Shared::set_initial_client_details($data['initial'], $initial_details);
 
-            // Validate Details.
-            $details = self::validate_details($data);
-
             // Remove Item Tag
             Shared::remove_item_tag_from_txn_details($data['details']);
+
+            // Validate Details.
+            $details = self::validate_details($data);
             
             // Check for changed transactions
             $are_transactions_details_changed = 
