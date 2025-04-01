@@ -101,6 +101,9 @@ class UserManagement {
     /** Root User ID */
     private const ROOT_USER_ID = 8;
 
+    /* Boss */ 
+    private const BOSS_USER_ID = 10005;
+
     /* Password Hashing Options */ 
     private const HASH_OPTIONS = ['cost' => 10,];
 
@@ -539,25 +542,43 @@ class UserManagement {
             users
         WHERE 
             __STATEMENT__
-            id != :root_user_id;
+            id NOT IN (:placeholder)
+            __SEWAK_ACCESS__;      
         EOS;
 
-        // Values
-        // HARD CODE MYSELF OUT :)
-        $values = [':root_user_id' => self::ROOT_USER_ID];
+        $results = Utils::mysql_in_placeholder_pdo_substitute([
+                // HARD CODE MYSELF OUT :)
+                self::ROOT_USER_ID,
+                self::BOSS_USER_ID,
+            ],
+            $query,
+        );
+
+        $query = $results['query'];
+        $values = $results['values'];
+
+        // Store Id
+        $store_id = intval($_SESSION['store_id']);
 
         // Fetch for Specific Store 
         if(isset($params['store_id'])) {
             $query = str_replace('__STATEMENT__', ' (store_id = :store_id OR access_level = 2) AND ', $query);
-            $values[':store_id'] = $_SESSION['store_id'];
+            $values[':store_id'] = $store_id;
         }
         // Fetch Specific Type
         else if (isset($params['type']) && is_numeric($params['type'])) {
             $query = str_replace('__STATEMENT__', ' access_level = :access_level AND store_id = :store_id AND ', $query);
             $values[':access_level'] = $params['type'];
-            $values[':store_id'] = $_SESSION['store_id'];
+            $values[':store_id'] = $store_id;
         } 
         else $query = str_replace('__STATEMENT__', '', $query);
+
+        // Show Sewak in Edmonton Store Only.
+        $query = str_replace(
+            '__SEWAK_ACCESS__',
+            $store_id === StoreDetails::EDMONTON ? ' OR id = 10013': '',
+            $query,
+        );
 
         // Prepare 
         $statement = $db -> prepare($query);
