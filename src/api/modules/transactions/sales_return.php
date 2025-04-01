@@ -1021,8 +1021,14 @@ class SalesReturn {
             // Set Initial Details
             Shared::set_initial_client_details($data['initial'], $initial_details);
             
+            // Remove Item Tag
+            Shared::remove_item_tag_from_txn_details($details);
+
             // Validate Details.
             $validated_details = self::validate_details($data);
+
+            // Is Transaction Detail changed
+            $is_transaction_detail_changed = $validated_details['is_transaction_detail_changed'];
 
             // Client Id
             $client_id = $validated_details['client_id'];
@@ -1212,15 +1218,8 @@ class SalesReturn {
                 $db,
             );
 
-            // Remove Item Tag
-            Shared::remove_item_tag_from_txn_details($details);
-
-            // Check for Changes in Details.
-            $initial_details_json = hash('sha256', json_encode($data['initial']['details']), JSON_THROW_ON_ERROR);
-            $new_details_json = hash('sha256', json_encode($details), JSON_THROW_ON_ERROR);
-
             // Check for Any Changes in Details. If yes, add to versions
-            if($initial_details_json !== $new_details_json) {
+            if($is_transaction_detail_changed) {
                 if(is_null($versions)) $versions = [];
                 $versions[Utils::get_utc_unix_timestamp_from_utc_str_timestamp($data['lastModifiedTimestamp'])] = $data['initial']['details'];
             }
