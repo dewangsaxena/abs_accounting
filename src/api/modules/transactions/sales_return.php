@@ -374,19 +374,35 @@ class SalesReturn {
         );
         if($transaction_date === null) throw new Exception('Invalid Date.');
 
-        // Assert Current Month of Transaction
-        Shared::assert_current_month_of_transaction($transaction_date, $store_id);
-
         // Validate New Date(if any)
         Shared::validate_new_date_of_transaction($data, $transaction_date);
 
-        // Check for transaction date
-        /* Make an Exception for J.LOEWEN MECHANICAL LTD */
-        if($client_id !== 14376) {
-            if(isset($data['initial']['txnDate'])) Shared::check_transaction_older_than_2_days(
-                $data['initial']['txnDate'], 
-                $store_id,
+        // Change for Changed Transactions
+        $are_transaction_details_changed = false;
+        if(isset($data['initial'])) {
+            $are_transaction_details_changed = Shared::are_transactions_details_changed(
+                $data['initial']['details'],
+                $data['details'],
             );
+        }
+
+        // Is Update Transaction
+        $is_update_txn = isset($data['id']);
+
+        // Do validate date 
+        $do_validate_date = $is_update_txn === false || $are_transaction_details_changed === true;
+
+        if($do_validate_date) {
+            /* Make an Exception for J.LOEWEN MECHANICAL LTD */
+            if(SYSTEM_INIT_MODE === PARTS && $client_id !== 14376) {
+                if(isset($data['initial']['txnDate'])) Shared::check_transaction_older_than_2_days(
+                    $data['initial']['txnDate'], 
+                    $store_id,
+                );
+            }
+
+            // Assert Current Month of Transaction
+            Shared::assert_current_month_of_transaction($transaction_date, $store_id);
         }
 
         // Disable Federal Taxes

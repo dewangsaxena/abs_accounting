@@ -201,6 +201,9 @@ class SalesInvoice {
         );
         if($transaction_date === null) throw new Exception('Invalid Date.');
 
+        // Validate New Date(if any)
+        Shared::validate_new_date_of_transaction($data, $transaction_date);
+
         // Change for Changed Transactions
         $are_transaction_details_changed = false;
         if(isset($data['initial'])) {
@@ -209,9 +212,6 @@ class SalesInvoice {
                 $data['details'],
             );
         }
-
-        // Validate New Date(if any)
-        Shared::validate_new_date_of_transaction($data, $transaction_date);
 
         // Is Update Transaction
         $is_update_txn = isset($data['id']);
