@@ -582,6 +582,9 @@ class SalesReturn {
             // Store ID
             $store_id = $validated_details['store_id'];
 
+            // Save Last Statement
+            CustomerAgedSummary::save_last_statement($store_id, $db);
+
             // Txn date
             $date = $validated_details['txn_date'];
 
@@ -831,16 +834,16 @@ class SalesReturn {
                 ':restocking_fees' => $validated_details['restocking_fees'],
             ];
 
-            if($is_pay_later) {
-                // Customer Aged Summary
-                CustomerAgedSummary::update(
-                    $client_id,
-                    $date,
-                    -$sum_total,
-                    $store_id,
-                    $db,
-                );
-            }
+            // if($is_pay_later) {
+            //     // Customer Aged Summary
+            //     CustomerAgedSummary::update(
+            //         $client_id,
+            //         $date,
+            //         -$sum_total,
+            //         $store_id,
+            //         $db,
+            //     );
+            // }
 
             /* CHECK FOR ANY ERROR */
             assert_success();
