@@ -1694,8 +1694,20 @@ function process_transaction(array &$transactions, array &$data, int $txn_type):
             'sum_total' => $is_credit_txn ? -$txn['sum_total'] : $txn['sum_total'],
             'txn_type_id' => $txn_type,
         ];
-        if(isset($txn['credit_amount'])) $temp['credit_amount'] = $is_credit_txn ? -$txn['credit_amount']: $txn['credit_amount'];
-        $data[$client_id][$txn_type][$txn['id']] = $temp;
+        if(isset($txn['credit_amount'])) {
+            $temp['credit_amount'] = $is_credit_txn ? -$txn['credit_amount']: $txn['credit_amount'];
+
+            // Already Paid on time of purchase.
+            if($temp['credit_amount'] == 0 && $txn['payment_method'] !== PaymentMethod::PAY_LATER) {
+                $temp['payment_method'] = PaymentMethod::MODES_OF_PAYMENT[intval($txn['payment_method'])];
+            }
+            
+        }
+        $data[$client_id][$txn_type][$txn['id']] = ['unpaid' => $temp, 'paid' => null];
+        if(isset($temp['payment_method'])) {
+            if($is_credit_txn === false) $temp['sum_total'] = -$temp['sum_total'];
+            $data[$client_id][$txn_type][$txn['id']]['paid'] = $temp;
+        }
     }
 }
 
@@ -1752,7 +1764,8 @@ function display_txn(array &$data) {
 }
 
 function get_row_code(array $txn, string $txn_date, string $report_date, int $store_id): string {
-    $diff = Shared::get_txn_age($txn_date, $report_date, $txn['credit_amount'], $store_id);
+    $amount = $txn['credit_amount'] == 0 ? $txn['sum_total']: $txn['credit_amount'];
+    $diff = Shared::get_txn_age($txn_date, $report_date, $amount, $store_id);
     $code = '';
     $code .= '<td>'.$txn['txn_id'].'</td>';
     $code .= '<td>'.$txn['date'].'</td>';
@@ -1819,23 +1832,28 @@ function generate_report(array &$data, PDO $db, string $report_date, int $store_
         $client_transactions_types = $data[$client_id];
         foreach($client_transactions_types as $txn_records) {
             $temp_code .= '<tr>';
-            foreach($txn_records as $txn) {
+            foreach($txn_records as $txn_record) {
                 
-                $total_outstanding_per_client += $txn['credit_amount'];
+                foreach($txn_record as $txn) {
+
+                    // Paid Entry not exists
+                    if(is_null($txn)) continue;
+                    $total_outstanding_per_client += $txn['credit_amount'];
                 
-                $temp_code .= get_row_code($txn, $txn['date'], $report_date, $store_id);
-                $temp_code .= '</tr>';
-                if(isset($txn['receipt_payments'])) {
-                    $receipt_payments = $txn['receipt_payments'];
-    
-                    // Show Receipt Payments
-                    foreach($receipt_payments as $rp) {
-                        if($rp['date'] > $report_date) continue;
-                        $temp_code .= '<tr>';
-                        $total_outstanding_per_client -= $rp['sum_total'];
-                        $rp['sum_total'] = -$rp['sum_total'];
-                        $temp_code .= get_row_code($rp, $rp['date'], $report_date, $store_id);
-                        $temp_code .= '</tr>';
+                    $temp_code .= get_row_code($txn, $txn['date'], $report_date, $store_id);
+                    $temp_code .= '</tr>';
+                    if(isset($txn['receipt_payments'])) {
+                        $receipt_payments = $txn['receipt_payments'];
+        
+                        // Show Receipt Payments
+                        foreach($receipt_payments as $rp) {
+                            if($rp['date'] > $report_date) continue;
+                            $temp_code .= '<tr>';
+                            $total_outstanding_per_client -= $rp['sum_total'];
+                            $rp['sum_total'] = -$rp['sum_total'];
+                            $temp_code .= get_row_code($rp, $rp['date'], $report_date, $store_id);
+                            $temp_code .= '</tr>';
+                        }
                     }
                 }
             }
@@ -1903,39 +1921,40 @@ function generate_client_aged_detail(int $store_id, string $receipt_exclude_date
     $data = [];
 
     // Select Invoices
-    $statement_invoices = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id FROM sales_invoice WHERE store_id = :store_id AND payment_method = 0 AND `date` < :till_date;');
+    // $statement_invoices = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id, payment_method FROM sales_invoice WHERE store_id = :store_id AND payment_method = 0 AND `date` < :till_date;');
+    $statement_invoices = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id, payment_method FROM sales_invoice WHERE store_id = :store_id AND `date` < :till_date;');
     $statement_invoices -> execute($params_txn);
     $sales_invoices = $statement_invoices -> fetchAll(PDO::FETCH_ASSOC);
 
-    // Sales Returns
-    $statement_sales_return = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id FROM sales_return WHERE store_id = :store_id AND payment_method = 0 AND `date` < :till_date;');
-    $statement_sales_return -> execute($params_txn);
-    $sales_returns = $statement_sales_return -> fetchAll(PDO::FETCH_ASSOC);
+    // // Sales Returns
+    // $statement_sales_return = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id FROM sales_return WHERE store_id = :store_id AND payment_method = 0 AND `date` < :till_date;');
+    // $statement_sales_return -> execute($params_txn);
+    // $sales_returns = $statement_sales_return -> fetchAll(PDO::FETCH_ASSOC);
 
-    // Credit Note
-    $statement_credit_note = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id  FROM credit_note WHERE store_id = :store_id AND `date` < :till_date;');
-    $statement_credit_note -> execute($params_txn);
-    $credit_notes = $statement_credit_note -> fetchAll(PDO::FETCH_ASSOC);
+    // // Credit Note
+    // $statement_credit_note = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id  FROM credit_note WHERE store_id = :store_id AND `date` < :till_date;');
+    // $statement_credit_note -> execute($params_txn);
+    // $credit_notes = $statement_credit_note -> fetchAll(PDO::FETCH_ASSOC);
 
-    // Debit Note
-    $statement_debit_note = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id  FROM debit_note WHERE store_id = :store_id AND `date` < :till_date;');
-    $statement_debit_note -> execute($params_txn);
-    $debit_notes = $statement_debit_note -> fetchAll(PDO::FETCH_ASSOC);
+    // // Debit Note
+    // $statement_debit_note = $db -> prepare('SELECT id, sum_total, credit_amount, `date`, client_id  FROM debit_note WHERE store_id = :store_id AND `date` < :till_date;');
+    // $statement_debit_note -> execute($params_txn);
+    // $debit_notes = $statement_debit_note -> fetchAll(PDO::FETCH_ASSOC);
 
-    // Receipts
+    // // Receipts
     $statement_receipt = $db -> prepare('SELECT id, sum_total, `date`, `details`, client_id, payment_method FROM receipt WHERE store_id = :store_id AND do_conceal = 0 AND `date` >= :exclude_from;');
     $statement_receipt -> execute($params_receipt);
     $receipts = $statement_receipt -> fetchAll(PDO::FETCH_ASSOC);
 
     // Reverse Receipts
     process_transaction($sales_invoices, $data, SALES_INVOICE);
-    process_transaction($sales_returns, $data, SALES_RETURN);
-    process_transaction($credit_notes, $data, CREDIT_NOTE);
-    process_transaction($debit_notes, $data, DEBIT_NOTE);
+    // process_transaction($sales_returns, $data, SALES_RETURN);
+    // process_transaction($credit_notes, $data, CREDIT_NOTE);
+    // process_transaction($debit_notes, $data, DEBIT_NOTE);
 
-    reverse_receipts($receipts, $data);
-    add_receipt_payments($receipts, $data);
-    eliminate_paid_transactions($data);
+    // reverse_receipts($receipts, $data);
+    // add_receipt_payments($receipts, $data);
+    // eliminate_paid_transactions($data);
 
     // Create Date from TimeStamp
     $date_before = date_create($receipt_exclude_date);
