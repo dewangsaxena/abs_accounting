@@ -378,9 +378,9 @@ class SalesReturn {
         Shared::validate_new_date_of_transaction($data, $transaction_date);
 
         // Change for Changed Transactions
-        $are_transaction_details_changed = false;
+        $is_transaction_detail_changed = false;
         if(isset($data['initial'])) {
-            $are_transaction_details_changed = Shared::are_transactions_details_changed(
+            $is_transaction_detail_changed = Shared::is_transaction_detail_changed(
                 $data['initial']['details'],
                 $data['details'],
             );
@@ -390,7 +390,7 @@ class SalesReturn {
         $is_update_txn = isset($data['id']);
 
         // Do validate date 
-        $do_validate_date = $is_update_txn === false || $are_transaction_details_changed === true;
+        $do_validate_date = $is_update_txn === false || $is_transaction_detail_changed === true;
 
         if($do_validate_date) {
             /* Make an Exception for J.LOEWEN MECHANICAL LTD */
@@ -485,6 +485,7 @@ class SalesReturn {
             'vin' => trim($data['vin'] ?? ''),
             'notes' => $notes,
             'restocking_fees' => $restocking_fees,
+            'is_transaction_detail_changed' => $is_transaction_detail_changed,
         ];
     }
 

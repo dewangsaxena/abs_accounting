@@ -437,9 +437,9 @@ class Shared {
         Shared::validate_new_date_of_transaction($data, $transaction_date);
 
         // Change for Changed Transactions
-        $are_transaction_details_changed = false;
+        $is_transaction_detail_changed = false;
         if(isset($data['initial'])) {
-            $are_transaction_details_changed = Shared::are_transactions_details_changed(
+            $is_transaction_detail_changed = Shared::is_transaction_detail_changed(
                 $data['initial']['details'],
                 $data['details'],
             );
@@ -449,7 +449,7 @@ class Shared {
         $is_update_txn = isset($data['id']);
 
         // Do validate date 
-        $do_validate_date = $is_update_txn === false || $are_transaction_details_changed === true;
+        $do_validate_date = $is_update_txn === false || $is_transaction_detail_changed === true;
 
         if($do_validate_date) {
             /* Make an Exception for J.LOEWEN MECHANICAL LTD */
@@ -531,6 +531,7 @@ class Shared {
             'gst_hst_tax' => $gst_hst_tax,
             'txn_discount' => $txn_discount,
             'notes' => $notes,
+            'is_transaction_detail_changed' => $is_transaction_detail_changed,
         ];
     }
 
@@ -1530,7 +1531,7 @@ class Shared {
      * @param details
      * @return bool
      */
-    public static function are_transactions_details_changed(array &$initial_details, array &$details): bool {
+    public static function is_transaction_detail_changed(array &$initial_details, array &$details): bool {
         $initial_details_json_hash = hash('sha256', json_encode($initial_details), JSON_THROW_ON_ERROR);
         $details_json_hash = hash('sha256', json_encode($details), JSON_THROW_ON_ERROR);
         return $initial_details_json_hash !== $details_json_hash;

@@ -205,9 +205,9 @@ class SalesInvoice {
         Shared::validate_new_date_of_transaction($data, $transaction_date);
 
         // Change for Changed Transactions
-        $are_transaction_details_changed = false;
+        $is_transaction_detail_changed = false;
         if(isset($data['initial'])) {
-            $are_transaction_details_changed = Shared::are_transactions_details_changed(
+            $is_transaction_detail_changed = Shared::is_transaction_detail_changed(
                 $data['initial']['details'],
                 $data['details'],
             );
@@ -217,7 +217,7 @@ class SalesInvoice {
         $is_update_txn = isset($data['id']);
 
         // Do validate date 
-        $do_validate_date = $is_update_txn === false || $are_transaction_details_changed === true;
+        $do_validate_date = $is_update_txn === false || $is_transaction_detail_changed === true;
 
         if($do_validate_date) {
             /* Make an Exception for J.LOEWEN MECHANICAL LTD */
@@ -357,7 +357,7 @@ class SalesInvoice {
             'account_number' => $account_number,
             'purchased_by' => $purchased_by,
             'notes' => $notes,
-            'are_transaction_details_changed' => $are_transaction_details_changed,
+            'are_transactions_details_changed' => $are_transaction_details_changed,
         ];
     }
 
@@ -768,7 +768,7 @@ class SalesInvoice {
             $details = self::validate_details($data);
             
             // Check for changed transactions
-            $are_transactions_details_changed = 
+            $are_transactions_details_changed = $details['are_transactions_details_changed'];
 
             // Check for Existing Sales Returns for This Invoice.
             $sales_returns = SalesReturn::fetch_sales_returns_by_sales_invoice_id($invoice_id, $db);
