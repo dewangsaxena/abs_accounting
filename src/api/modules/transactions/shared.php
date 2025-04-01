@@ -1517,8 +1517,6 @@ class Shared {
     public static function are_transactions_details_changed(array &$initial_details, array &$details): bool {
         $initial_details_json_hash = hash('sha256', json_encode($initial_details), JSON_THROW_ON_ERROR);
         $details_json_hash = hash('sha256', json_encode($details), JSON_THROW_ON_ERROR);
-
-        echo $initial_details_json_hash. '  |  '. $details_json_hash;
         return $initial_details_json_hash !== $details_json_hash;
     }
 }

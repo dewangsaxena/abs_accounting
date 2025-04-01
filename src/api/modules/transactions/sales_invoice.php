@@ -217,9 +217,7 @@ class SalesInvoice {
         $is_update_txn = isset($data['id']);
 
         // Do validate date 
-        $do_validate_date = false;
-        if($is_update_txn === false) $do_validate_date = true;
-        else if($are_transaction_details_changed) $do_validate_date = true;
+        $do_validate_date = $is_update_txn === false || $are_transaction_details_changed === true;
 
         if($do_validate_date) {
             /* Make an Exception for J.LOEWEN MECHANICAL LTD */
