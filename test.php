@@ -1797,7 +1797,7 @@ function generate_report(array &$data, PDO $db, string $report_date, int $store_
         <tr>
             <th>Source</th>
             <th>Date</th>
-            <th>thansaction Type</th>
+            <th>Transaction Type</th>
             <th>Total</th>
             <th>Current</th>
             <th>31 - 60</th>
@@ -1945,6 +1945,8 @@ function generate_client_aged_detail(int $store_id, string $receipt_exclude_date
 
     // Convert to Format
     $date_before = date_format($date_before, 'Y-m-d');
+
+    // print_r($data);die;
 
     generate_report($data, $db, $date_before, $store_id, $client_list, false);
 }
