@@ -39,6 +39,9 @@ class CreditNote {
             // Check for Balance Due
             Shared::allow_balance_due_check_for_client($client_id, $store_id);
 
+            // Save Last Statement
+            CustomerAgedSummary::save_last_statement($store_id, $db);
+
             // Txn date
             $date = $validated_details['txn_date'];
 
