@@ -546,11 +546,17 @@ class UserManagement {
             __SEWAK_ACCESS__;      
         EOS;
 
-        $results = Utils::mysql_in_placeholder_pdo_substitute([
-                // HARD CODE MYSELF OUT :)
-                self::ROOT_USER_ID,
-                self::BOSS_USER_ID,
-            ],
+        // Excluded Users
+        $excluded_users = [
+            // HARD CODE MYSELF OUT :)
+            self::ROOT_USER_ID,
+        ];
+
+        // Parts
+        if(SYSTEM_INIT_MODE === PARTS) $excluded_users[]= self::BOSS_USER_ID;
+
+        $results = Utils::mysql_in_placeholder_pdo_substitute(
+            $excluded_users,
             $query,
         );
 
@@ -573,12 +579,28 @@ class UserManagement {
         } 
         else $query = str_replace('__STATEMENT__', '', $query);
 
-        // Show Sewak in Edmonton Store Only.
-        $query = str_replace(
-            '__SEWAK_ACCESS__',
-            $store_id === StoreDetails::EDMONTON ? ' OR id = 10013': '',
-            $query,
-        );
+        if(SYSTEM_INIT_HOST === TENLEASING_HOST) {
+            $query = str_replace(
+                '__SEWAK_ACCESS__',
+                ' OR id IN (10000)',
+                $query,
+            );
+        }
+        else if(SYSTEM_INIT_HOST === PARTS_HOST) {
+            // Show Sewak in Edmonton Store Only.
+            $query = str_replace(
+                '__SEWAK_ACCESS__',
+                $store_id === StoreDetails::EDMONTON ? ' OR id IN (10013)': '',
+                $query,
+            );
+        }
+        else {
+            $query = str_replace(
+                '__SEWAK_ACCESS__',
+                '',
+                $query,
+            );
+        } 
 
         // Prepare 
         $statement = $db -> prepare($query);

@@ -23,6 +23,11 @@ define('__PARTS_V2__', 8);
 define('__WASH_V2__', 9);
 define('__TEN_LEASING__', 10);
 
+/* Hosting Mode */
+define('PARTS_HOST', __PARTS_V2__);
+define('WASH_HOST', __WASH_V2__);
+define('TENLEASING_HOST', __TEN_LEASING__);
+
 /* Modes */
 define('WASH', 1);
 define('PARTS', 2);
@@ -83,6 +88,7 @@ if ($domain === 'localhost') {
 
 /* Business Specific Configuration. */
 define('SYSTEM_INIT_MODE', $mode);
+define('SYSTEM_INIT_HOST', __TEN_LEASING__);
 
 // Credentials
 // This should always be loaded after the Domain is selected.
