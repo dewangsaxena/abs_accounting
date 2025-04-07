@@ -88,7 +88,7 @@ if ($domain === 'localhost') {
 
 /* Business Specific Configuration. */
 define('SYSTEM_INIT_MODE', $mode);
-define('SYSTEM_INIT_HOST', __TEN_LEASING__);
+define('SYSTEM_INIT_HOST', $offset);
 
 // Credentials
 // This should always be loaded after the Domain is selected.
