@@ -1989,8 +1989,8 @@ function format_client_name(array $data): array {
     }
     return $clients;
 }
-$client_list = format_client_name($file);
-generate_client_aged_detail(StoreDetails::EDMONTON, '2025-02-01', $client_list);die;
+// $client_list = format_client_name($file);
+// generate_client_aged_detail(StoreDetails::EDMONTON, '2025-02-01', $client_list);die;
 // $db = get_db_instance();
 // try {
 //     $db -> beginTransaction();
@@ -2007,4 +2007,42 @@ generate_client_aged_detail(StoreDetails::EDMONTON, '2025-02-01', $client_list);
 //     if($db -> inTransaction()) $db -> rollBack();
 //     echo $e -> getMessage();
 // }
+
+function tenleasing(int $store_id): void {
+    $db = get_db_instance();
+    try {
+        $db -> beginTransaction();
+
+        // Read CSV File
+        $data = Utils::read_csv_file("{$_SERVER['DOCUMENT_ROOT']}/tmp/calgary_inventory.csv");
+        $statement_find_item = $db -> prepare('SELECT * FROM items WHERE identifier = :identifier');
+
+        $errorred_items = [];
+        foreach($data as $d) {
+            $statement_find_item -> execute([':identifier' => trim($d[1])]);
+            $result = $statement_find_item -> fetchAll(PDO::FETCH_ASSOC);
+            $count = count($result);
+            if($count !== 1) {
+                $errorred_items[]= $d[1];
+                continue;
+            }
+
+            $prices = json_decode($result['prices'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+            if(!isset($prices[$store_id])) {
+                $prices[$store_id]['storeId'] = $store_id;
+                $prices[$store_id]['buyingCost'] = Utils::round($d[4], 4);
+                $markup = (($prices[$store_id]['buyingCost'] * 25) / 100);
+                $prices[$store_id]['sellingPrice'] = $prices[$store_id]['buyingCost'] + $markup;
+                $prices[$store_id]['preferredPrice'] = 0;
+            }
+        }
+        $db -> commit();
+    }
+    catch(Exception $e) {
+        if($db -> inTransaction()) $db -> rollBack();
+        echo $e -> getMessage();
+    }
+}
+
+tenleasing(StoreDetails::CALGARY);
 ?>  
