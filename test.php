@@ -2027,6 +2027,38 @@ function tenleasing(int $store_id): void {
             modified = :modified;
         EOS);
 
+        $statement_insert_inventory = $db -> prepare(<<<'EOS'
+        INSERT INTO inventory 
+        (
+            `item_id`,
+            `quantity`,
+            `store_id`
+        )
+        VALUES
+        (
+            :item_id,
+            :quantity,
+            :store_id
+        );
+        EOS);
+
+        // Statement Find Inventory
+        $statement_find_inventory = $db -> prepare('SELECT id FROM inventory WHERE item_id = :item_id AND store_id = :store_id;');
+        
+        // Statement Update Inventory 
+        $statement_update_inventory = $db -> prepare(<<<'EOS'
+        UPDATE
+            inventory 
+        SET 
+            quantity = quantity + :quantity
+        WHERE
+            item_id = :item_id
+        AND 
+            store_id = :store_id;
+        EOS);
+
+        $total_value = 0;
+
         $errorred_items = [];
         foreach($data as $d) {
             $identifier = trim($d[1]);
@@ -2059,22 +2091,58 @@ function tenleasing(int $store_id): void {
 
             // Update Prices
             $is_successful = $statement_update_item -> execute([
-                ':prices' => json_encode($prices),
+                ':prices' => json_encode($prices, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
                 ':id' => $result['id'],
                 ':modified' => $result['modified'],
             ]);
 
-            if($is_successful !== true || $statement_update_item -> rowCount() < 1) {
-                throw new Exception('Unable to Update Item: '. $d[1]);
+            if($is_successful !== true && $statement_update_item -> rowCount() < 1) {
+                throw new Exception('Unable to Update Item: '. $identifier);
+            }
+
+            // Item id
+            $item_id = $result['id'];
+
+            // Find Inventory 
+            $statement_find_inventory -> execute([':item_id' => $item_id, ':store_id' => $store_id]);
+            $inv = $statement_find_inventory -> fetchAll(PDO::FETCH_ASSOC);
+
+            $quantity = floatval($d[0]);
+
+            $inv_params = [
+                ':item_id' => $item_id,
+                ':quantity' => $quantity,
+                ':store_id' => $store_id,
+            ];
+
+            $total_value += ($prices[$store_id]['buyingCost'] * $quantity);
+
+            if(count($inv) > 0) {
+                $is_successful = $statement_update_inventory -> execute($inv_params);
+                if($is_successful !== true && $statement_update_inventory -> rowCount() < 1) {
+                    throw new Exception('Cannot Update Inventory for Item: '. $identifier);
+                }
+            }
+            else {
+                // Insert 
+                $is_successful = $statement_insert_inventory -> execute($inv_params);
+
+                if($is_successful !== true && $statement_insert_inventory -> rowCount() < 1) {
+                    throw new Exception('Cannot Add Inventory for Item: '. $identifier);
+                }
             }
         }
-        $db -> commit();
 
-        echo '<br><br>';
-        foreach($errorred_items as $err) {
-            echo $err.'<br>';
-        }
-        echo 'Updated Items';
+        $bs = [AccountsConfig::INVENTORY_A => $total_value];
+        $date = Utils::get_business_date($store_id);
+        BalanceSheetActions::update_from($bs, $date, $store_id, $db);
+
+        assert_success();
+        $db -> commit();
+        $error_count = count($errorred_items);
+        if($error_count > 0) echo 'Errorred Items: '. $error_count.'<br><br>';
+        foreach($errorred_items as $err) echo $err.'<br>';
+        echo '<br><br>Updated Items';
     }
     catch(Exception $e) {
         if($db -> inTransaction()) $db -> rollBack();
