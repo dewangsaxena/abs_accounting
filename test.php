@@ -2015,28 +2015,66 @@ function tenleasing(int $store_id): void {
 
         // Read CSV File
         $data = Utils::read_csv_file("{$_SERVER['DOCUMENT_ROOT']}/tmp/calgary_inventory.csv");
-        $statement_find_item = $db -> prepare('SELECT * FROM items WHERE identifier = :identifier');
+        $statement_find_item = $db -> prepare('SELECT * FROM items WHERE identifier = :identifier;');
+        $statement_update_item = $db -> prepare(<<<'EOS'
+        UPDATE 
+            items 
+        SET 
+            prices = :prices
+        WHERE 
+            id = :id
+        AND 
+            modified = :modified;
+        EOS);
 
         $errorred_items = [];
         foreach($data as $d) {
-            $statement_find_item -> execute([':identifier' => trim($d[1])]);
+            $identifier = trim($d[1]);
+            $statement_find_item -> execute([':identifier' => $identifier]);
             $result = $statement_find_item -> fetchAll(PDO::FETCH_ASSOC);
             $count = count($result);
             if($count !== 1) {
-                $errorred_items[]= $d[1];
+                $errorred_items[]= $identifier;
                 continue;
             }
 
+            // Set 
+            $result = $result[0];
+
             $prices = json_decode($result['prices'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
-            if(!isset($prices[$store_id])) {
-                $prices[$store_id]['storeId'] = $store_id;
-                $prices[$store_id]['buyingCost'] = Utils::round($d[4], 4);
-                $markup = (($prices[$store_id]['buyingCost'] * 25) / 100);
-                $prices[$store_id]['sellingPrice'] = $prices[$store_id]['buyingCost'] + $markup;
-                $prices[$store_id]['preferredPrice'] = 0;
+            if(isset($prices[$store_id]) === false) {
+                $prices[$store_id] = [
+                    'storeId' => $store_id,
+                    'buyingCost' => 0,
+                    'sellingPrice' => 0,
+                    'preferredPrice' => 0,
+                ];
+            }
+
+            // Set Prices
+            $prices[$store_id]['storeId'] = $store_id;
+            $prices[$store_id]['buyingCost'] = Utils::round($d[4], 4);
+            $markup = (($prices[$store_id]['buyingCost'] * 25) / 100);
+            $prices[$store_id]['sellingPrice'] = $prices[$store_id]['buyingCost'] + $markup;
+
+            // Update Prices
+            $is_successful = $statement_update_item -> execute([
+                ':prices' => json_encode($prices),
+                ':id' => $result['id'],
+                ':modified' => $result['modified'],
+            ]);
+
+            if($is_successful !== true || $statement_update_item -> rowCount() < 1) {
+                throw new Exception('Unable to Update Item: '. $d[1]);
             }
         }
         $db -> commit();
+
+        echo '<br><br>';
+        foreach($errorred_items as $err) {
+            echo $err.'<br>';
+        }
+        echo 'Updated Items';
     }
     catch(Exception $e) {
         if($db -> inTransaction()) $db -> rollBack();
