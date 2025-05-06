@@ -2150,5 +2150,61 @@ function tenleasing(int $store_id): void {
     }
 }
 
-tenleasing(StoreDetails::CALGARY);
+// tenleasing(StoreDetails::CALGARY);
+
+function client_sales_report(int $client_id, string $start_date, string $end_date) : void {
+    $db = get_db_instance();
+
+    $statement = $db -> prepare('SELECT * FROM sales_invoice WHERE client_id = :client_id AND `date` >= :start_date AND `date` <= :end_date;');
+    $statement -> execute([':client_id' => $client_id, ':start_date' => $start_date, ':end_date' => $end_date]);
+    $sales_invoices = $statement -> fetchAll(PDO::FETCH_ASSOC);
+
+    $item_details = [];
+    
+    foreach($sales_invoices as $si) {
+        $details = json_decode($si['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+        foreach($details as $detail) {
+            $item_id = $detail['itemId'];
+            if(isset($item_details[$item_id]) === false) {
+                $item_details[$item_id] = [
+                    'identifier' => '',
+                    'quantity' => 0,
+                    'buyingCost' => 0,
+                    'sellingPrice' => 0,
+                ];
+            }
+
+            $item_details[$item_id]['quantity'] += $detail['quantity'];
+            $item_details[$item_id]['buyingCost'] += ($detail['buyingCost'] * $detail['quantity']);
+            $item_details[$item_id]['sellingPrice'] += $detail['amountPerItem'];
+        }
+    }
+
+    $item_ids = array_keys($item_details);
+    $query = 'SELECT id, identifier FROM items WHERE id IN (:placeholder);';
+    $results = Utils::mysql_in_placeholder_pdo_substitute($item_ids, $query);
+    $query = $results['query'];
+    $values = $results['values'];
+
+    $statement = $db -> prepare($query);
+    $statement -> execute($values);
+    $item_identifiers = $statement -> fetchAll(PDO::FETCH_ASSOC);
+    foreach($item_identifiers as $i) {
+        $item_id = $i['id'];
+        $identifier = $i['identifier'];
+        $item_details[$item_id]['identifier'] = $identifier;
+    }
+
+    foreach($item_details as $i) {
+        $identifier = $i['identifier'];
+        $quantity = $i['quantity'];
+        $buying_cost = Utils::round($i['buyingCost'] / $quantity, 2);
+        $selling_price = Utils::round($i['sellingPrice'] / $quantity, 2);
+
+        echo "$identifier ~~ $quantity ~~ $buying_cost ~~ $selling_price<br>";
+    }
+}
+
+
+client_sales_report(18503, '2025-01-01', '2025-12-31');
 ?>  
