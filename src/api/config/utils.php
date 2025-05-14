@@ -325,7 +325,7 @@ class Utils {
      */
     public static function build_store_address(int $store_id) : array {
         return [
-            'company_name' => StoreDetails::BUSINESS_NAME,
+            'company_name' => StoreDetails::STORE_DETAILS[$store_id]['address']['name'],
             'company_address_line_1' => StoreDetails::STORE_DETAILS[$store_id]['address']['street1'],
             'company_address_line_2' => StoreDetails::STORE_DETAILS[$store_id]['address']['city'].', '. StoreDetails::STORE_DETAILS[$store_id]['address']['province']. ', '. StoreDetails::STORE_DETAILS[$store_id]['address']['postal_code'],
             'company_address_line_3' => StoreDetails::STORE_DETAILS[$store_id]['address']['country'],

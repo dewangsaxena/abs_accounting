@@ -82,7 +82,7 @@ function generate_list(int $store_id, bool $do_print=true) : float {
     return $total_value;
 }
 
-// echo generate_list(StoreDetails::SLAVE_LAKE, false);die;
+echo generate_list(StoreDetails::REGINA, true);die;
 
 function fetch_inventory(int $store_id): void {
     $db = get_db_instance();
@@ -2171,6 +2171,7 @@ function client_sales_report(int $client_id, string $start_date, string $end_dat
                     'quantity' => 0,
                     'buyingCost' => 0,
                     'sellingPrice' => 0,
+                    'retailPrice' => 0,
                 ];
             }
 
@@ -2181,7 +2182,7 @@ function client_sales_report(int $client_id, string $start_date, string $end_dat
     }
 
     $item_ids = array_keys($item_details);
-    $query = 'SELECT id, identifier FROM items WHERE id IN (:placeholder);';
+    $query = 'SELECT id, identifier, prices FROM items WHERE id IN (:placeholder);';
     $results = Utils::mysql_in_placeholder_pdo_substitute($item_ids, $query);
     $query = $results['query'];
     $values = $results['values'];
@@ -2193,15 +2194,21 @@ function client_sales_report(int $client_id, string $start_date, string $end_dat
         $item_id = $i['id'];
         $identifier = $i['identifier'];
         $item_details[$item_id]['identifier'] = $identifier;
+        $prices = json_decode($i['prices'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+        $item_details[$item_id]['retailPrice'] = $prices[StoreDetails::CALGARY]['sellingPrice'];
     }
 
+    $fhandle = fopen('maccosham.csv', 'w');
+    fputcsv($fhandle, ['Identifier', 'Quantity Sold', 'Buying Cost', 'Selling Price', 'Profit Margin', 'Retail Price']);
     foreach($item_details as $i) {
         $identifier = $i['identifier'];
         $quantity = $i['quantity'];
         $buying_cost = Utils::round($i['buyingCost'] / $quantity, 2);
         $selling_price = Utils::round($i['sellingPrice'] / $quantity, 2);
+        $profit_margin = Utils::calculateProfitMargin($selling_price, $buying_cost);
+        $retail_price = $i['retailPrice'];
 
-        echo "$identifier ~~ $quantity ~~ $buying_cost ~~ $selling_price<br>";
+        fputcsv($fhandle, [$identifier, $quantity, $buying_cost, $selling_price, $profit_margin, $retail_price]);
     }
 }
 
