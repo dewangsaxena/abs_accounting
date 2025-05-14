@@ -220,8 +220,8 @@ class SalesInvoice {
         $do_validate_date = $is_update_txn === false || $is_transaction_detail_changed === true;
 
         if($do_validate_date) {
-            /* Make an Exception for J.LOEWEN MECHANICAL LTD */
-            if(SYSTEM_INIT_MODE === PARTS && $client_id !== 14376) {
+            /* Make an Exception for J.LOEWEN MECHANICAL LTD, DriftPile */
+            if(SYSTEM_INIT_MODE === PARTS && ($client_id !== 14376 && $client_id !== 18520) ) {
                 if(isset($data['initial']['txnDate'])) Shared::check_transaction_older_than_2_days(
                     $data['initial']['txnDate'], 
                     $store_id,
