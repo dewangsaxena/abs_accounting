@@ -374,6 +374,9 @@ class SalesReturn {
         );
         if($transaction_date === null) throw new Exception('Invalid Date.');
 
+        // Assert Current Month of Transaction
+        Shared::assert_current_month_of_transaction($transaction_date, $store_id);
+
         // Validate New Date(if any)
         Shared::validate_new_date_of_transaction($data, $transaction_date);
 
@@ -400,9 +403,6 @@ class SalesReturn {
                     $store_id,
                 );
             }
-
-            // Assert Current Month of Transaction
-            Shared::assert_current_month_of_transaction($transaction_date, $store_id);
         }
 
         // Disable Federal Taxes
