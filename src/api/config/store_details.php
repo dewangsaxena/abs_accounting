@@ -348,16 +348,16 @@ class StoreDetails {
             'hst_tax_rate' => 0,
             'use_hst' => false,
             'business_number' => [
-                PARTS => '',
+                PARTS => '700635212RC0001',
                 WASH => null,
             ],
             'pst_number' => [
-                PARTS => '',
+                PARTS => '8040305',
                 WASH => null,
             ],
             'address' => [
-                'name' => 'ABS TRUCK AND TRAILER PARTS LTD.',
-                'street1' => '3710 MILLAR AVE',
+                'name' => 'ABS TRUCK AND TRAILER PARTS SK LTD.',
+                'street1' => '30-3710 MILLAR AVE',
                 'city' => 'SASKATOON',
                 'province' => 'SASKATCHEWAN',
                 'postal_code' => 'S7P 0B1',
@@ -368,7 +368,7 @@ class StoreDetails {
             'email' => [
                 'from_name' => [
                     WASH => '', 
-                    PARTS => 'No reply from ABS Truck & Trailer Parts Ltd.'
+                    PARTS => 'No reply from ABS Truck & Trailer Parts SK Ltd.'
                 ],
                 'bcc' => [
                     PARTS => 'abstruckparts.sask@gmail.com', 
