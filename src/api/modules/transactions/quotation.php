@@ -32,6 +32,10 @@ class Quotations {
         // Validate Item Count
         if(count($items) < 1) return ['status' => false, 'message' => 'Invalid Items Count.'];
 
+        // Store Tax Rate
+        $federal_tax_rate = $disable_federal_taxes === 1 ? 0 : GST_HST_TAX_RATE;
+        $provincial_tax_rate = $disable_provincial_taxes === 1 ? 0 : StoreDetails::STORE_DETAILS[$_SESSION['store_id']]['pst_tax_rate'];
+
         // Validate Item fields
         foreach($items as $item) {
 
@@ -50,13 +54,35 @@ class Quotations {
             if(SYSTEM_INIT_MODE === PARTS) $keys []= 'buyingCost';
             foreach($keys as $key) if(floatval($item[$key]) <= 0) return ['status' => false, 'message' => "$key less than or equal to 0 for $identifier."];
 
-            // Check for GST/HST Tax Rate
-            if(in_array($item['itemId'], Inventory::EHC_ITEMS) === false && $disable_federal_taxes === 0 && $item['gstHSTTaxRate'] <= 0) return ['status' => false, 'message' => "GSTHSTTaxRate less than or equal to 0 for $identifier."];
+            // Flags
+            $federal_tax_status_invalid = false;
+            $provincial_tax_status_invalid = false;
 
-            // Check for PST if applicable
-            if(in_array($item['itemId'], Inventory::EHC_ITEMS) === false && $disable_provincial_taxes === 0 && (StoreDetails::STORE_DETAILS[$_SESSION['store_id']]['pst_tax_rate'] > 0) && floatval($item['pstTaxRate']) < 0) {
-                return ['status' => false, 'message' => 'PST Tax Invalid.'];
+            // Tax rate of individual item.
+            $gst_hst_tax_rate_of_item = floatval($item['gstHSTTaxRate']);
+            $pst_tax_rate_of_item = floatval($item['pstTaxRate']);
+
+            // Check for Valid Tax Rate
+            $federal_tax_status_invalid = $federal_tax_rate !== $gst_hst_tax_rate_of_item;
+            $provincial_tax_status_invalid = $provincial_tax_rate !== $pst_tax_rate_of_item;
+
+            if (SYSTEM_INIT_HOST === PARTS_HOST) {
+                if(in_array($item['itemId'], Inventory::EHC_ITEMS) === true) {
+                    // Item is EHC 
+                    $federal_tax_status_invalid = $provincial_tax_status_invalid = false;
+                }
             }
+
+            if($federal_tax_status_invalid) return ['status' => false, 'message' => "GST/HST Tax Rate invalid for $identifier."];
+            else if($provincial_tax_status_invalid) return ['status' => false, 'message' => "PST Tax Rate invalid for $identifier."];
+
+            // // Check for GST/HST Tax Rate
+            // if(in_array($item['itemId'], Inventory::EHC_ITEMS) === false && $disable_federal_taxes === 0 && $item['gstHSTTaxRate'] <= 0) return ['status' => false, 'message' => "GSTHSTTaxRate less than or equal to 0 for $identifier."];
+
+            // // Check for PST if applicable
+            // if(in_array($item['itemId'], Inventory::EHC_ITEMS) === false && $disable_provincial_taxes === 0 && (StoreDetails::STORE_DETAILS[$_SESSION['store_id']]['pst_tax_rate'] > 0) && floatval($item['pstTaxRate']) < 0) {
+            //     return ['status' => false, 'message' => 'PST Tax Invalid.'];
+            // }
 
             // Check for Valid Selling Price
             // Check for Price > than Base Price

@@ -301,6 +301,10 @@ class Shared {
         // Validate Item Count
         if(count($items) < 1) return ['status' => false, 'message' => 'Invalid Items Count.'];
 
+        // Store Tax Rate
+        $federal_tax_rate = $disable_federal_taxes === 1 ? 0 : GST_HST_TAX_RATE;
+        $provincial_tax_rate = $disable_provincial_taxes === 1 ? 0 : StoreDetails::STORE_DETAILS[$_SESSION['store_id']]['pst_tax_rate'];
+
         // Validate Item fields
         foreach($items as $item) {
 
@@ -318,13 +322,28 @@ class Shared {
             $keys = ['quantity', 'basePrice', 'amountPerItem'];
             foreach($keys as $key) if(floatval($item[$key]) <= 0) return ['status' => false, 'message' => "$key less than or equal to 0 for $identifier."];
 
-            // Check for GST/HST Tax Rate
-            if($disable_federal_taxes === 0 && $item['gstHSTTaxRate'] <= 0) return ['status' => false, 'message' => "GSTHSTTaxRate less than or equal to 0 for $identifier."];
+            // // Check for GST/HST Tax Rate
+            // if($disable_federal_taxes === 0 && $item['gstHSTTaxRate'] <= 0) return ['status' => false, 'message' => "GSTHSTTaxRate less than or equal to 0 for $identifier."];
 
-            // Check for PST if applicable
-            if($disable_provincial_taxes === 0 && (StoreDetails::STORE_DETAILS[$_SESSION['store_id']]['pst_tax_rate'] > 0) && floatval($item['pstTaxRate']) < 0) {
-                return ['status' => false, 'message' => 'PST Tax Invalid.'];
-            }
+            // // Check for PST if applicable
+            // if($disable_provincial_taxes === 0 && (StoreDetails::STORE_DETAILS[$_SESSION['store_id']]['pst_tax_rate'] > 0) && floatval($item['pstTaxRate']) < 0) {
+            //     return ['status' => false, 'message' => 'PST Tax Invalid.'];
+            // }
+
+            // Flags
+            $federal_tax_status_invalid = false;
+            $provincial_tax_status_invalid = false;
+
+            // Tax rate of individual item.
+            $gst_hst_tax_rate_of_item = floatval($item['gstHSTTaxRate']);
+            $pst_tax_rate_of_item = floatval($item['pstTaxRate']);
+
+            // Check for Valid Tax Rate
+            $federal_tax_status_invalid = $federal_tax_rate !== $gst_hst_tax_rate_of_item;
+            $provincial_tax_status_invalid = $provincial_tax_rate !== $pst_tax_rate_of_item;
+
+            if($federal_tax_status_invalid) return ['status' => false, 'message' => "GST/HST Tax Rate invalid for $identifier."];
+            else if($provincial_tax_status_invalid) return ['status' => false, 'message' => "PST Tax Rate invalid for $identifier."];
         }
         return ['status' => true];
     }
@@ -484,9 +503,6 @@ class Shared {
             $disable_provincial_taxes,
         );
         if($valid_ret_value['status'] === false) throw new Exception($valid_ret_value['message']);
-
-        // Check tax rate of items
-        Shared::check_tax_rate_of_items($data['details']);
 
         // Calculate Amounts
         $calculated_amount = self::calculate_amount(
@@ -1538,26 +1554,5 @@ class Shared {
         $initial_details_json_hash = hash('sha256', json_encode($initial_details), JSON_THROW_ON_ERROR);
         $details_json_hash = hash('sha256', json_encode($details), JSON_THROW_ON_ERROR);
         return $initial_details_json_hash !== $details_json_hash;
-    }
-
-    /**
-     * This method will check for consistence of tax rate of all items.
-     * @param items
-     * @throws Exception
-     */
-    public static function check_tax_rate_of_items(array &$items): void {
-
-        // Set Default Tax Rate
-        $tax_rates = [
-            'gstHSTTaxRate' => $items[0]['gstHSTTaxRate'], 
-            'pstTaxRate' => $items[0]['pstTaxRate']
-        ];
-        foreach($items as $item) {
-            $gst_tax_rate = $item['gstHSTTaxRate'];
-            $pst_tax_rate = $item['pstTaxRate'];
-
-            if($tax_rates['gstHSTTaxRate'] != $gst_tax_rate) throw new Exception('GST Tax Inconsistent.');
-            else if($tax_rates['pstTaxRate'] != $pst_tax_rate) throw new Exception('PST Tax Inconsistent.');
-        }
     }
 }
