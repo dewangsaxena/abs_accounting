@@ -26,8 +26,8 @@ class StoreDetails {
             'name' => 'Edmonton',
             'location_code' => 'E',
             'timezone' => 'America/Edmonton',
-            'pst_tax_rate' => 0,
-            'hst_tax_rate' => 0,
+            'pst_tax_rate' => 0.00,
+            'hst_tax_rate' => 0.00,
             'use_hst' => false,
             'business_number' => [
                 PARTS => '727752099RT0001', 
@@ -71,8 +71,8 @@ class StoreDetails {
             'name' => 'Calgary',
             'location_code' => 'C',
             'timezone' => 'America/Edmonton',
-            'pst_tax_rate' => 0,
-            'hst_tax_rate' => 0,
+            'pst_tax_rate' => 0.00,
+            'hst_tax_rate' => 0.00,
             'use_hst' => false,
             'business_number' => [
                 PARTS => '727752099RT0002', 
@@ -116,8 +116,8 @@ class StoreDetails {
             'name' => 'Nisku',
             'location_code' => 'N',
             'timezone' => 'America/Edmonton',
-            'pst_tax_rate' => 0,
-            'hst_tax_rate' => 0,
+            'pst_tax_rate' => 0.00,
+            'hst_tax_rate' => 0.00,
             'use_hst' => false,
             'business_number' => [
                 PARTS => '727752099RT0003', 
@@ -162,7 +162,7 @@ class StoreDetails {
             'location_code' => 'V',
             'timezone' => 'America/Vancouver',
             'pst_tax_rate' => 7.00,
-            'hst_tax_rate' => 0,
+            'hst_tax_rate' => 0.00,
             'use_hst' => false,
             'business_number' => [
                 PARTS => '727752099RT0004', 
@@ -206,8 +206,8 @@ class StoreDetails {
             'name' => 'Slave Lake',
             'location_code' => 'SL',
             'timezone' => 'America/Edmonton',
-            'pst_tax_rate' => 0,
-            'hst_tax_rate' => 0,
+            'pst_tax_rate' => 0.00,
+            'hst_tax_rate' => 0.00,
             'use_hst' => false,
             'business_number' => [
                 PARTS => '727752099RT0005', 
@@ -252,7 +252,7 @@ class StoreDetails {
             'location_code' => 'D',
             'timezone' => 'America/Vancouver',
             'pst_tax_rate' => 7.00,
-            'hst_tax_rate' => 0,
+            'hst_tax_rate' => 0.00,
             'use_hst' => false,
             'business_number' => [
                 PARTS => '707291019RT0001', 
@@ -299,7 +299,7 @@ class StoreDetails {
             'location_code' => 'R',
             'timezone' => 'America/Regina',
             'pst_tax_rate' => 6.00,
-            'hst_tax_rate' => 0,
+            'hst_tax_rate' => 0.00,
             'use_hst' => false,
             'business_number' => [
                 PARTS => '700635212RC0001',
@@ -345,7 +345,7 @@ class StoreDetails {
             'location_code' => 'S',
             'timezone' => 'America/Regina',
             'pst_tax_rate' => 6.00,
-            'hst_tax_rate' => 0,
+            'hst_tax_rate' => 0.00,
             'use_hst' => false,
             'business_number' => [
                 PARTS => '700635212RC0001',

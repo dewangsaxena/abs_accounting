@@ -44,8 +44,8 @@ class SalesReturn {
         if(count($items) < 1) return ['status' => false, 'message' => 'Invalid Items Count.'];
 
         // Store Tax Rate
-        $federal_tax_rate = $disable_federal_taxes === 1 ? 0 : GST_HST_TAX_RATE;
-        $provincial_tax_rate = $disable_provincial_taxes === 1 ? 0 : StoreDetails::STORE_DETAILS[$_SESSION['store_id']]['pst_tax_rate'];
+        $federal_tax_rate = $disable_federal_taxes === 1 ? 0.00 : GST_HST_TAX_RATE;
+        $provincial_tax_rate = $disable_provincial_taxes === 1 ? 0.00 : StoreDetails::STORE_DETAILS[$_SESSION['store_id']]['pst_tax_rate'];
 
         // Validate Item fields
         foreach($items as $item) {
