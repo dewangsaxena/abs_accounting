@@ -88,16 +88,6 @@ class SalesInvoice {
             $federal_tax_status_invalid = $federal_tax_rate !== $gst_hst_tax_rate_of_item;
             $provincial_tax_status_invalid = $provincial_tax_rate !== $pst_tax_rate_of_item;
 
-            // Check for GST/HST Tax Rate
-            // if($disable_federal_taxes === 0 && $gst_hst_tax_rate_of_item <= 0) $federal_tax_status_invalid = true;
-            // else if($disable_federal_taxes === 1 && $gst_hst_tax_rate_of_item != 0) $federal_tax_status_invalid = true;
-
-            // // Check for PST if applicable
-            // if($disable_provincial_taxes === 0 && (StoreDetails::STORE_DETAILS[$_SESSION['store_id']]['pst_tax_rate'] > 0) && $pst_tax_rate_of_item <= 0) {
-            //     $provincial_tax_status_invalid = true;
-            // }
-            // else if($disable_provincial_taxes === 1 && $pst_tax_rate_of_item !== 0) $provincial_tax_status_invalid = true; 
-
             if (SYSTEM_INIT_HOST === PARTS_HOST) {
                 if(in_array($item['itemId'], Inventory::EHC_ITEMS) === true) {
                     // Item is EHC 
