@@ -72,6 +72,10 @@ VALUES
 (
     8,
     'Regina'
+),
+(
+    9,
+    'Saskatoon',
 );
 
 /* User Information */ 

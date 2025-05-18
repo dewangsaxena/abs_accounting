@@ -1,7 +1,7 @@
 /**
  * Configurations used the application.
  */
-export const CLIENT_APP_VERSION = "2.2.34";
+export const CLIENT_APP_VERSION = "2.2.35";
 
 // Stores
 export class Stores {
@@ -17,6 +17,7 @@ export class Stores {
     6: "Slave Lake",
     7: "Delta",
     8: "Regina",
+    9: "Saskatoon"
   };
 
   // Inactive Stores

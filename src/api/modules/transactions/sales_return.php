@@ -425,6 +425,9 @@ class SalesReturn {
             $disable_provincial_taxes,
         );
         if($valid_ret_value['status'] === false) throw new Exception($valid_ret_value['message']);
+
+        // Check tax rate of items
+        Shared::check_tax_rate_of_items($data['details']);
         
         // Calculate Amounts
         $calculated_amount = self::calculate_amount(

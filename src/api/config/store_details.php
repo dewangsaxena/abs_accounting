@@ -13,6 +13,7 @@ class StoreDetails {
     public const SLAVE_LAKE = 6;
     public const DELTA = 7;
     public const REGINA = 8;
+    public const SASKATOON = 9;
 
     // Business Name
     public const BUSINESS_NAME = [WASH => 'ABS TRUCK WASH AND LUBE LTD.', PARTS =>'ABS TRUCK & TRAILER PARTS LTD.'][SYSTEM_INIT_MODE];
@@ -336,6 +337,52 @@ class StoreDetails {
                 ],
             ],
             'cipher_key' => 'Ewk"tuZ2<$tqwnF2tc3X%5r(d?/:|9JU',
+        ],
+
+        self::SASKATOON => [
+            'id' => self::SASKATOON, 
+            'name' => 'Saskatoon',
+            'location_code' => 'S',
+            'timezone' => 'America/Regina',
+            'pst_tax_rate' => 6.00,
+            'hst_tax_rate' => 0,
+            'use_hst' => false,
+            'business_number' => [
+                PARTS => '',
+                WASH => null,
+            ],
+            'pst_number' => [
+                PARTS => '',
+                WASH => null,
+            ],
+            'address' => [
+                'name' => 'ABS TRUCK AND TRAILER PARTS LTD.',
+                'street1' => '3710 MILLAR AVE',
+                'city' => 'SASKATOON',
+                'province' => 'SASKATCHEWAN',
+                'postal_code' => 'S7P 0B1',
+                'country' => 'CANADA',
+                'tel' => '+1 (306) 668-8881',
+                'fax' => ''
+            ],
+            'email' => [
+                'from_name' => [
+                    WASH => '', 
+                    PARTS => 'No reply from ABS Truck & Trailer Parts Ltd.'
+                ],
+                'bcc' => [
+                    PARTS => 'abstruckparts.sask@gmail.com', 
+                    WASH => '',
+                ],
+            ],
+            'payment_details' => [
+                'email_id' => 'abstruckparts.sask@gmail.com',
+                'checks' => [
+                    'payable_to' => '',
+                    'address' => '',
+                ],
+            ],
+            'cipher_key' => '=yyS]q=)NYpy+{p$i[;gT`/|7Uho^x`9',
         ],
     ];
 }

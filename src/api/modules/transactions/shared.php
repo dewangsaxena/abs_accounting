@@ -485,6 +485,9 @@ class Shared {
         );
         if($valid_ret_value['status'] === false) throw new Exception($valid_ret_value['message']);
 
+        // Check tax rate of items
+        Shared::check_tax_rate_of_items($data['details']);
+
         // Calculate Amounts
         $calculated_amount = self::calculate_amount(
             $data['details'], 
@@ -1535,5 +1538,26 @@ class Shared {
         $initial_details_json_hash = hash('sha256', json_encode($initial_details), JSON_THROW_ON_ERROR);
         $details_json_hash = hash('sha256', json_encode($details), JSON_THROW_ON_ERROR);
         return $initial_details_json_hash !== $details_json_hash;
+    }
+
+    /**
+     * This method will check for consistence of tax rate of all items.
+     * @param items
+     * @throws Exception
+     */
+    public static function check_tax_rate_of_items(array &$items): void {
+
+        // Set Default Tax Rate
+        $tax_rates = [
+            'gstHSTTaxRate' => $items[0]['gstHSTTaxRate'], 
+            'pstTaxRate' => $items[0]['pstTaxRate']
+        ];
+        foreach($items as $item) {
+            $gst_tax_rate = $item['gstHSTTaxRate'];
+            $pst_tax_rate = $item['pstTaxRate'];
+
+            if($tax_rates['gstHSTTaxRate'] != $gst_tax_rate) throw new Exception('GST Tax Inconsistent.');
+            else if($tax_rates['pstTaxRate'] != $pst_tax_rate) throw new Exception('PST Tax Inconsistent.');
+        }
     }
 }
