@@ -11,7 +11,7 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/flyer.php";
 // Inventory::generate_inventory_list(StoreDetails::SLAVE_LAKE);die;
 
 // Inventory::fetch_low_stock(StoreDetails::EDMONTON);
-function generate_list(int $store_id, bool $do_print=true) : float {
+function generate_list(int $store_id, bool $do_print=true) {
     $db = get_db_instance();
     $query = <<<'EOS'
     SELECT 
@@ -78,11 +78,10 @@ function generate_list(int $store_id, bool $do_print=true) : float {
         $code .= "</table><br><br>Total Inventory Value: &nbsp;&nbsp;&nbsp;&nbsp;<label style='letter-spacing: 2px;font-weight:bold;'>\$ $total_value</label>";
         echo $code;
     }
-
-    return $total_value;
+    else return $total_value;
 }
 
-echo generate_list(StoreDetails::REGINA, true);die;
+// echo generate_list(StoreDetails::SASKATOON, true);die;
 
 function fetch_inventory(int $store_id): void {
     $db = get_db_instance();
@@ -1563,7 +1562,7 @@ function fix_inventory_value(int $store_id): void {
     }
 }
 // fix_balance_sheet();
-// fix_inventory_value(StoreDetails::SLAVE_LAKE);
+fix_inventory_value(StoreDetails::REGINA);
 
 function update_last_sold_for_items(int $store_id): void {
     $db = get_db_instance();
