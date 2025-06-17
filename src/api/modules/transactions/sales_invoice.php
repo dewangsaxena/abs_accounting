@@ -723,17 +723,6 @@ class SalesInvoice {
             // Update Last Sold Date
             Inventory::update_last_sold_for_items($details, $date, $store_id, $db);
 
-            // if($payment_method === PaymentMethod::PAY_LATER) {
-            //     // Update Customer Aged Summary
-            //     CustomerAgedSummary::update(
-            //         $client_id,
-            //         $date,
-            //         $sum_total,
-            //         $store_id,
-            //         $db,
-            //     );
-            // }
-
             /* CHECK FOR ANY ERROR */
             assert_success();
 
