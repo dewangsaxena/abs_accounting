@@ -1035,12 +1035,9 @@ class SalesReturn {
 
             // Set Initial Details
             Shared::set_initial_client_details($data['initial'], $initial_details);
-            
-            // Txn Details
-            $details = $data['details'];
 
             // Remove Item Tag
-            Shared::remove_item_tag_from_txn_details($details);
+            Shared::remove_item_tag_from_txn_details($data['details']);
 
             // Validate Details.
             $validated_details = self::validate_details($data);
@@ -1094,7 +1091,7 @@ class SalesReturn {
 
             // Amount Eligible For Receipt Discount
             if($sales_invoice_payment_method === PaymentMethod::MODES_OF_PAYMENT['Pay Later']) {
-                $amount_eligible_for_receipt_discount = Shared::calculate_amount_eligible_for_receipt_discount($details, is_sales_return: true);
+                $amount_eligible_for_receipt_discount = Shared::calculate_amount_eligible_for_receipt_discount($data['details'], is_sales_return: true);
             }
             else $amount_eligible_for_receipt_discount = 0;
 
@@ -1140,7 +1137,7 @@ class SalesReturn {
 
             // Now Process Inventory
             self::adjust_inventory(
-                details: $details, 
+                details: $data['details'], 
                 statement_adjust_inventory: $statement_adjust_inventory,
                 store_id: $store_id,
                 op: 'add',
@@ -1294,7 +1291,7 @@ class SalesReturn {
                 ':txn_discount' => $txn_discount,
                 ':cogr' => $cogr,
                 ':payment_method' => $payment_method,
-                ':details' => json_encode($details, JSON_THROW_ON_ERROR),
+                ':details' => json_encode($data['details'], JSON_THROW_ON_ERROR),
                 ':notes' => $validated_details['notes'],
                 ':amount_eligible_for_receipt_discount' => $amount_eligible_for_receipt_discount,
                 ':early_payment_discount' => $data['earlyPaymentDiscount'],
