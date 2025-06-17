@@ -746,7 +746,7 @@ class SalesInvoice {
             if($sales_invoice_id === false) throw new Exception('Unable to create Sales Invoice.');
 
             /* COMMIT */
-            if($is_new_connection && $db -> inTransaction() ) $db -> commit();
+            if($is_new_connection && $db -> inTransaction()) $db -> commit();
             return ['status' => true, 'data' => $sales_invoice_id];
         }
         catch(Exception $e) {
