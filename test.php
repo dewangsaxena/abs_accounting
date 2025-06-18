@@ -2230,7 +2230,10 @@ function check_tax(int $store_id): void {
             }
             
             if(in_array($detail['itemId'], Inventory::EHC_ITEMS) === false && ($gst_tax_rate != $detail['gstHSTTaxRate'] || $pst_tax_rate != $detail['pstTaxRate'])) {
+                $disable_gst = $record['disable_federal_taxes'];
+                $disable_pst = $record['disable_provincial_taxes'];
                 echo $detail['identifier'].'<br>';
+                echo "$disable_gst | $disable_pst<br>";
                 echo 'Payment Method: '. $record['payment_method'].'<br><br>';
                 echo('Record# '.$record['id']).'<br>';
                 echo "$gst_tax_rate : ". $detail['gstHSTTaxRate']. ' | '. "$pst_tax_rate | ". $detail['pstTaxRate'].'<br><br><br>';
