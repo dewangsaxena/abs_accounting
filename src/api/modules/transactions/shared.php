@@ -465,7 +465,7 @@ class Shared {
         if($do_validate_date) {
             /* Make an Exception for J.LOEWEN MECHANICAL LTD */
             if(SYSTEM_INIT_MODE === PARTS && $client_id !== 14376) {
-                if(isset($data['initial']['txnDate'])) Shared::check_transaction_older_than_2_days(
+                if(isset($data['initial']['txnDate'])) Shared::check_transaction_older_than_n_days(
                     $data['initial']['txnDate'], 
                     $store_id,
                 );
@@ -1448,17 +1448,17 @@ class Shared {
     }
 
     /**
-     * This method will check transaction older than 2 days.
+     * This method will check transaction older than N days.
      * @param initial_date
      * @param store_id
      */
-    public static function check_transaction_older_than_2_days(string $initial_date, int $store_id): void {
+    public static function check_transaction_older_than_n_days(string $initial_date, int $store_id): void {
 
-        // Check whether the update is made within 2 Days
+        // Check whether the update is made within (n) Days
         $initial_date = date_create($initial_date);
         $current_date = date_create(Utils::get_business_date($store_id));
         $difference = date_diff($initial_date, $current_date);
-        if($difference -> d > 2) throw new Exception('Cannot Update Transaction after 2 days.');
+        if($difference -> d > CHECK_TRANSACTION_DATE) throw new Exception('Cannot Update Transaction after '. CHECK_TRANSACTION_DATE. ' days.');
     }
 
     /**

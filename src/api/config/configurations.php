@@ -241,3 +241,7 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/special_exceptions.php"
 
 // Default Profit Margin Key
 define('DEFAULT_PROFIT_MARGIN_KEY', 'DEFAULT');
+
+// Check Transaction Date
+define('CHECK_TRANSACTION_DATE', SYSTEM_INIT_HOST === __TEN_LEASING__ ? 5 : 2);
+?>
