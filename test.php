@@ -1562,7 +1562,7 @@ function fix_inventory_value(int $store_id): void {
     }
 }
 // fix_balance_sheet();
-fix_inventory_value(StoreDetails::REGINA);
+// fix_inventory_value(StoreDetails::REGINA);
 
 function update_last_sold_for_items(int $store_id): void {
     $db = get_db_instance();
@@ -2211,6 +2211,36 @@ function client_sales_report(int $client_id, string $start_date, string $end_dat
     }
 }
 
+function check_tax(int $store_id): void {
+    $db = get_db_instance();
+    $statement = $db -> prepare('SELECT * FROM sales_invoice WHERE store_id = :store_id;');
+    $statement -> execute([':store_id' => $store_id]);
+    $records = $statement -> fetchAll(PDO::FETCH_ASSOC);
+    $gst_tax_rate = null;
+    $pst_tax_rate = null;
+    $counter = 0;
+    foreach($records as $record) {
+        $gst_tax_rate = null;
+        $pst_tax_rate = null;
+        $details = json_decode($record['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+        foreach($details as $detail) {
+            if(is_null($gst_tax_rate) || is_null($pst_tax_rate)) {
+                $gst_tax_rate = $detail['gstHSTTaxRate'];
+                $pst_tax_rate = $detail['pstTaxRate'];
+            }
+            
+            if(in_array($detail['itemId'], Inventory::EHC_ITEMS) === false && ($gst_tax_rate != $detail['gstHSTTaxRate'] || $pst_tax_rate != $detail['pstTaxRate'])) {
+                echo $detail['identifier'].'<br>';
+                echo 'Payment Method: '. $record['payment_method'].'<br><br>';
+                echo('Record# '.$record['id']).'<br>';
+                echo "$gst_tax_rate : ". $detail['gstHSTTaxRate']. ' | '. "$pst_tax_rate | ". $detail['pstTaxRate'].'<br><br><br>';
+                $counter += 1;
+            }
+        }
+    }
 
-client_sales_report(18503, '2025-01-01', '2025-12-31');
+    // echo $counter;
+}
+check_tax(StoreDetails::DELTA);
+// client_sales_report(18503, '2025-01-01', '2025-12-31');
 ?>  
