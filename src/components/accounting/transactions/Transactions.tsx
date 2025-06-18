@@ -796,6 +796,10 @@ const ItemFieldRow = memo(
         // Set Old Client
         setOldClient(clientDetails);
 
+        // Update Tax Status when client changes.
+        if(clientDetails.disableFederalTaxes) details[rowIndex].gstHSTTaxRate = 0;
+        if(clientDetails.disableProvincialTaxes) details[rowIndex].pstTaxRate = 0;
+
         // Set Selected Item
         setSelectedItem(
           details[rowIndex].itemId !== null
@@ -1293,8 +1297,10 @@ const ItemFieldRow = memo(
               if (
                 type === TRANSACTION_TYPES["SI"] ||
                 type === TRANSACTION_TYPES["QT"]
-              )
+              ){
                 loadOptionsForItem(value);
+              }
+                
               else if (type === TRANSACTION_TYPES["CN"]) {
                 loadOptionsForCreditNote(value);
               } else if (type === TRANSACTION_TYPES["DN"]) {
