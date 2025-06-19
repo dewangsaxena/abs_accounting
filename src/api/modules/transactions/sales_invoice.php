@@ -47,9 +47,12 @@ class SalesInvoice {
         // Validate Item Count
         if(count($items) < 1) return ['status' => false, 'message' => 'Invalid Items Count.'];
 
+        // Store Id
+        $store_id = $_SESSION['store_id'];
+
         // Store Tax Rate
-        $federal_tax_rate = $disable_federal_taxes === 1 ? 0.00 : GST_HST_TAX_RATE;
-        $provincial_tax_rate = $disable_provincial_taxes === 1 ? 0.00 : StoreDetails::STORE_DETAILS[$_SESSION['store_id']]['pst_tax_rate'];
+        $federal_tax_rate = $disable_federal_taxes === 1 ? 0.00 : StoreDetails::STORE_DETAILS[$store_id]['gst_hst_tax_rate'];
+        $provincial_tax_rate = $disable_provincial_taxes === 1 ? 0.00 : StoreDetails::STORE_DETAILS[$store_id]['pst_tax_rate'];
 
         // Validate Item fields
         foreach($items as $item) {
@@ -126,7 +129,7 @@ class SalesInvoice {
         $cogs = 0;
 
         // Select Tax Rate
-        $federal_tax_rate = $disable_federal_taxes ? 0 : GST_HST_TAX_RATE;
+        $federal_tax_rate = $disable_federal_taxes ? 0 : StoreDetails::STORE_DETAILS[$store_id]['gst_hst_tax_rate'];
         $provincial_tax_rate = $disable_provincial_taxes ? 0 : StoreDetails::STORE_DETAILS[$store_id]['pst_tax_rate'];
         foreach($items as $item) { 
 

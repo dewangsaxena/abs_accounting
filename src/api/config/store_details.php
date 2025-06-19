@@ -28,6 +28,7 @@ class StoreDetails {
             'timezone' => 'America/Edmonton',
             'pst_tax_rate' => 0.00,
             'hst_tax_rate' => 0.00,
+            'gst_hst_tax_rate' => FEDERAL_TAX_RATE,
             'use_hst' => false,
             'business_number' => [
                 PARTS => '727752099RT0001', 
@@ -73,6 +74,7 @@ class StoreDetails {
             'timezone' => 'America/Edmonton',
             'pst_tax_rate' => 0.00,
             'hst_tax_rate' => 0.00,
+            'gst_hst_tax_rate' => FEDERAL_TAX_RATE,
             'use_hst' => false,
             'business_number' => [
                 PARTS => '727752099RT0002', 
@@ -118,6 +120,7 @@ class StoreDetails {
             'timezone' => 'America/Edmonton',
             'pst_tax_rate' => 0.00,
             'hst_tax_rate' => 0.00,
+            'gst_hst_tax_rate' => FEDERAL_TAX_RATE,
             'use_hst' => false,
             'business_number' => [
                 PARTS => '727752099RT0003', 
@@ -163,6 +166,7 @@ class StoreDetails {
             'timezone' => 'America/Vancouver',
             'pst_tax_rate' => 7.00,
             'hst_tax_rate' => 0.00,
+            'gst_hst_tax_rate' => FEDERAL_TAX_RATE,
             'use_hst' => false,
             'business_number' => [
                 PARTS => '727752099RT0004', 
@@ -208,6 +212,7 @@ class StoreDetails {
             'timezone' => 'America/Edmonton',
             'pst_tax_rate' => 0.00,
             'hst_tax_rate' => 0.00,
+            'gst_hst_tax_rate' => FEDERAL_TAX_RATE,
             'use_hst' => false,
             'business_number' => [
                 PARTS => '727752099RT0005', 
@@ -253,6 +258,7 @@ class StoreDetails {
             'timezone' => 'America/Vancouver',
             'pst_tax_rate' => 7.00,
             'hst_tax_rate' => 0.00,
+            'gst_hst_tax_rate' => FEDERAL_TAX_RATE,
             'use_hst' => false,
             'business_number' => [
                 PARTS => '707291019RT0001', 
@@ -300,6 +306,7 @@ class StoreDetails {
             'timezone' => 'America/Regina',
             'pst_tax_rate' => 6.00,
             'hst_tax_rate' => 0.00,
+            'gst_hst_tax_rate' => FEDERAL_TAX_RATE,
             'use_hst' => false,
             'business_number' => [
                 PARTS => '700635212RC0001',
@@ -346,6 +353,7 @@ class StoreDetails {
             'timezone' => 'America/Regina',
             'pst_tax_rate' => 6.00,
             'hst_tax_rate' => 0.00,
+            'gst_hst_tax_rate' => FEDERAL_TAX_RATE,
             'use_hst' => false,
             'business_number' => [
                 PARTS => '700635212RC0001',
