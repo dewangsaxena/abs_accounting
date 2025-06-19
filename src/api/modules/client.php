@@ -638,6 +638,9 @@ class Client {
     public static function process(array $data): array {
         try {
             $db = get_db_instance();
+
+            // Insert into DB 
+            $db -> beginTransaction();
             
             // Sanitize Values 
             $data = Utils::sanitize_values($data);
@@ -707,9 +710,6 @@ class Client {
                 // We might store multiple addresses later on.
                 ':shipping_addresses' => json_encode([$data['shippingAddresses']], JSON_THROW_ON_ERROR),
             ];
-
-            // Insert into DB 
-            $db -> beginTransaction();
 
             // Select Action
             if($data['action'] === 'client_add') {

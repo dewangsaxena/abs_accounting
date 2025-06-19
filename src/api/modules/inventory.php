@@ -658,6 +658,9 @@ class Inventory {
     public static function update_profit_margins(array $data): array {
         $db = get_db_instance();
         try {
+            // Begin transaction
+            $db->beginTransaction();
+
             // Profit Margins
             $profit_margins = $data['profitMargins'] ?? [];
 
@@ -673,9 +676,6 @@ class Inventory {
 
             // Check for Default Key
             if (isset($profit_margins[DEFAULT_PROFIT_MARGIN_KEY]) === false) throw new Exception('"' . DEFAULT_PROFIT_MARGIN_KEY . '" key is required.');
-
-            // Begin transaction
-            $db->beginTransaction();
 
             // Prepare statement
             $statement = $db->prepare(<<<'EOS'
@@ -1030,7 +1030,7 @@ class Inventory {
      * @param db
      * @return array 
      */
-    public static function adjust_inventory(array|null $details, int $store_id, PDO &$db = null): array {
+    public static function adjust_inventory(array|null $details, int $store_id, PDO|null &$db = null): array {
         // Check for Wash
         if (SYSTEM_INIT_MODE === WASH) return ['status' => true];
 
