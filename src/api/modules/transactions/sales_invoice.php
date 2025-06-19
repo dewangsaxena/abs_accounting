@@ -559,22 +559,19 @@ class SalesInvoice {
             
             /* ADD TO PAYMENT METHOD ACCOUNT */
             $payment_method_account = AccountsConfig::get_account_code_by_payment_method($payment_method);
-            if($payment_method_account !== null) {
-                BalanceSheetActions::update_account_value(
-                    $bs_affected_accounts,
-                    $payment_method_account,
-                    $sum_total,
-                );
+            BalanceSheetActions::update_account_value(
+                $bs_affected_accounts,
+                $payment_method_account,
+                $sum_total,
+            );
 
-                if(self::$is_self_client === false) {
-                    IncomeStatementActions::update_account_values(
-                        $is_affected_accounts,
-                        $payment_method_account,
-                        $sum_total
-                    );
-                }
+            if(self::$is_self_client === false) {
+                IncomeStatementActions::update_account_values(
+                    $is_affected_accounts,
+                    $payment_method_account,
+                    $sum_total
+                );
             }
-            else throw new Exception('Invalid Payment Method Account.');
 
             /* UPDATE PST TAX ACCOUNT */ 
             BalanceSheetActions::update_account_value(
