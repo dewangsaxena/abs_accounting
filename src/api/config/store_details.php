@@ -1,4 +1,8 @@
 <?php
+
+// Federal Tax Rate
+define('FEDERAL_TAX_RATE',  5.00);
+
 /**
  * Store Details
  */
@@ -397,19 +401,4 @@ class StoreDetails {
 
 // No. of Stores
 define('NO_OF_STORES', count(StoreDetails::STORE_DETAILS));
-
-// Federal Tax Rate
-define('FEDERAL_TAX_RATE',  5.00);
-
-// Provincial Tax Rate
-define('PROVINCIAL_TAX_RATE', is_numeric($_SESSION['store_id'] ?? null) ? StoreDetails::STORE_DETAILS[$_SESSION['store_id']]['pst_tax_rate'] : null);
-
-// Harmonized Sales Tax
-define('HARMONIZED_SALES_TAX', is_numeric($_SESSION['store_id'] ?? null) ? StoreDetails::STORE_DETAILS[$_SESSION['store_id']]['hst_tax_rate'] : null);
-
-// Use HST For Store
-define('USE_HST_FOR_STORE', is_numeric($_SESSION['store_id'] ?? null) ? StoreDetails::STORE_DETAILS[$_SESSION['store_id']]['use_hst'] : null);
-
-// GST/HST Tax Rate *
-define('GST_HST_TAX_RATE', USE_HST_FOR_STORE ? HARMONIZED_SALES_TAX : FEDERAL_TAX_RATE);
 ?>
