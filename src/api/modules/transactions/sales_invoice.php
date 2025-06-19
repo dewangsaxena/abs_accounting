@@ -471,7 +471,7 @@ class SalesInvoice {
             Client::check_fresh_copy_of_client($client_id, $data['clientDetails']['lastModifiedTimestamp'], $db);
 
             // Save Last Statement
-            // CustomerAgedSummary::save_last_statement($store_id, $db);
+            CustomerAgedSummary::save_last_statement($store_id, $db);
 
             // Payment details
             $is_pay_later = $validated_details['is_pay_later'];
