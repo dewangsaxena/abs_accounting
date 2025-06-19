@@ -120,8 +120,7 @@ const COUNTRY = [
 define('ONE_TIME_CUSTOMER_ID', 8);
 
 // Payment Methods
-class PaymentMethod
-{
+class PaymentMethod {
     public const PAY_LATER = 0;
     public const CASH = 1;
     public const CHEQUE = 2;

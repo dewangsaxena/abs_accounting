@@ -112,9 +112,10 @@ class SalesInvoice {
      * @param items
      * @param disable_federal_taxes
      * @param disable_provincial_tax
+     * @param store_id
      * @return array
      */
-    public static function calculate_amount(array $items, int $disable_federal_taxes, int $disable_provincial_taxes) : array {
+    public static function calculate_amount(array $items, int $disable_federal_taxes, int $disable_provincial_taxes, int $store_id) : array {
 
         // Calculate Amounts 
         $total = 0;
@@ -126,7 +127,7 @@ class SalesInvoice {
 
         // Select Tax Rate
         $federal_tax_rate = $disable_federal_taxes ? 0 : GST_HST_TAX_RATE;
-        $provincial_tax_rate = $disable_provincial_taxes ? 0 : PROVINCIAL_TAX_RATE;
+        $provincial_tax_rate = $disable_provincial_taxes ? 0 : StoreDetails::STORE_DETAILS[$store_id]['pst_tax_rate'];
         foreach($items as $item) { 
 
             // Skip Back Order

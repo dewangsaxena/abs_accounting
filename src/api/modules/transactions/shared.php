@@ -346,15 +346,16 @@ class Shared {
      * @param items
      * @param disable_federal_taxes
      * @param disable_provincial_taxes
+     * @param store_id
      * @return array
      */
-    public static function calculate_amount_by_transaction_type(int $transaction_type, array $items, int $disable_federal_taxes, int $disable_provincial_taxes): array {
+    public static function calculate_amount_by_transaction_type(int $transaction_type, array $items, int $disable_federal_taxes, int $disable_provincial_taxes, int $store_id): array {
         switch($transaction_type) {
-            case CREDIT_NOTE: return self::calculate_amount($items, $disable_federal_taxes, $disable_provincial_taxes);
-            case DEBIT_NOTE: return self::calculate_amount($items, $disable_federal_taxes, $disable_provincial_taxes);
-            case SALES_INVOICE: return SalesInvoice::calculate_amount($items, $disable_federal_taxes, $disable_provincial_taxes);
-            case SALES_RETURN: return SalesReturn::calculate_amount($items, $disable_federal_taxes, $disable_provincial_taxes);
-            case QUOTATION: return Quotations::calculate_amount($items, $disable_federal_taxes, $disable_provincial_taxes);
+            case CREDIT_NOTE: return self::calculate_amount($items, $disable_federal_taxes, $disable_provincial_taxes, $store_id);
+            case DEBIT_NOTE: return self::calculate_amount($items, $disable_federal_taxes, $disable_provincial_taxes, $store_id);
+            case SALES_INVOICE: return SalesInvoice::calculate_amount($items, $disable_federal_taxes, $disable_provincial_taxes, $store_id);
+            case SALES_RETURN: return SalesReturn::calculate_amount($items, $disable_federal_taxes, $disable_provincial_taxes, $store_id);
+            case QUOTATION: return Quotations::calculate_amount($items, $disable_federal_taxes, $disable_provincial_taxes, $store_id);
             default: return [];
         }
     }
@@ -364,9 +365,10 @@ class Shared {
      * @param items
      * @param disable_federal_taxes
      * @param disable_provincial_tax
+     * @param store_id
      * @return array
      */
-    public static function calculate_amount(array $items, int $disable_federal_taxes, int $disable_provincial_taxes) : array {
+    public static function calculate_amount(array $items, int $disable_federal_taxes, int $disable_provincial_taxes, int $store_id) : array {
 
         // Calculate Amounts 
         $total = 0;
@@ -377,7 +379,7 @@ class Shared {
 
         // Select Tax Rate
         $federal_tax_rate = $disable_federal_taxes ? 0 : GST_HST_TAX_RATE;
-        $provincial_tax_rate = $disable_provincial_taxes ? 0 : PROVINCIAL_TAX_RATE;
+        $provincial_tax_rate = $disable_provincial_taxes ? 0 : StoreDetails::STORE_DETAILS[$store_id]['pst_tax_rate'];
         foreach($items as $item) { 
             $total += $item['amountPerItem'];
             $pst_tax += (($item['amountPerItem'] * $provincial_tax_rate) / 100);
@@ -501,6 +503,7 @@ class Shared {
             $data['details'], 
             $disable_federal_taxes,
             $disable_provincial_taxes,
+            $store_id,
         );
         $sum_total = $calculated_amount['sumTotal'];
         $sub_total = $calculated_amount['subTotal'];
@@ -978,6 +981,7 @@ class Shared {
                     $existing_versions[$version],
                     $transaction['disable_federal_taxes'],
                     $transaction['disable_provincial_taxes'],
+                    $transaction['store_id']
                 );
 
                 // Deduct Restocking Fees from Sales Return
