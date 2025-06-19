@@ -611,21 +611,22 @@ class BalanceSheetActions {
 
         // Fetch the Balance sheet from the given unique date by store.
         $statement = $db -> prepare(self::FETCH_BALANCE_SHEET_FROM_DATE);
-        $statement -> execute([':date' => $date, ':store_id' => $store_id]);
+        $params = [':date' => $date, ':store_id' => $store_id];
+        $statement -> execute($params);
         $balance_sheet_statements = $statement -> fetchAll(PDO::FETCH_ASSOC);
         $record_count = count($balance_sheet_statements);
 
         // Flags 
         // By Default this will be true
         $create_new_record = true;
-        $is_record_matching_unique_id = false;
+        // $is_record_matching_unique_id = false;
 
         $debug = '';
         if($record_count > 0) {
             $debug .= '0';
             // Check whether balance sheet exists for the current date.
             if($balance_sheet_statements[0]['date'] === $date) {
-                $is_record_matching_unique_id = true;
+                // $is_record_matching_unique_id = true;
                 $create_new_record = false;
             }
         }
@@ -675,18 +676,17 @@ class BalanceSheetActions {
             }
 
             // Convert it back into an array 
-            $base_balance_sheet = json_decode($base_balance_sheet, true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+            // $base_balance_sheet = json_decode($base_balance_sheet, true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
         }
 
         // Check for Record matching unique id 
-        else if($is_record_matching_unique_id) {
-            $base_balance_sheet = json_decode($balance_sheet_statements[0]['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
-        }
+        // else if($is_record_matching_unique_id) {
+        //     $base_balance_sheet = json_decode($balance_sheet_statements[0]['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+        // }
 
         // Fetch Balance Sheet Records Again
         $statement_fetch = $db -> prepare(self::FETCH_BALANCE_SHEET_FROM_DATE);
-        $statement_fetch -> execute([':date' => $date, ':store_id' => $store_id]);
-        $balance_sheet_statements = $statement_fetch -> fetchAll(PDO::FETCH_ASSOC);
+        $statement_fetch -> execute($params);
 
         // Account Keys
         $account_keys = array_keys($account_details);   
