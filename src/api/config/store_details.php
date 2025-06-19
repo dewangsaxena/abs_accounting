@@ -404,8 +404,4 @@ define('USE_HST_FOR_STORE', is_numeric($_SESSION['store_id'] ?? null) ? StoreDet
 
 // GST/HST Tax Rate *
 define('GST_HST_TAX_RATE', USE_HST_FOR_STORE ? HARMONIZED_SALES_TAX : FEDERAL_TAX_RATE);
-
-// Total Tax Rate 
-define('TOTAL_TAX_RATE', USE_HST_FOR_STORE ? HARMONIZED_SALES_TAX : FEDERAL_TAX_RATE + PROVINCIAL_TAX_RATE);
-
 ?>

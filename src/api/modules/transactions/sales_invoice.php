@@ -278,6 +278,7 @@ class SalesInvoice {
             $data['details'], 
             $disable_federal_taxes,
             $disable_provincial_taxes,
+            $store_id
         );
         $sum_total = $calculated_amount['sumTotal'];
         $sub_total = $calculated_amount['subTotal'];
@@ -296,7 +297,7 @@ class SalesInvoice {
 
         // PST Taxes 
         if(!is_numeric($pst_tax)) throw new Exception('PST Tax should be numeric.');
-        if($data['clientDetails']['disableProvincialTaxes'] === 0 && PROVINCIAL_TAX_RATE > 0 && $pst_tax <= 0) throw new Exception('PST Tax cannot be zero or negative.');
+        if($data['clientDetails']['disableProvincialTaxes'] === 0 && StoreDetails::STORE_DETAILS[$store_id]['pst_tax_rate'] > 0 && $pst_tax <= 0) throw new Exception('PST Tax cannot be zero or negative.');
 
         // GST/HST Taxes
         if(!is_numeric($gst_hst_tax)) throw new Exception('GST/HST Tax should be numeric.');
