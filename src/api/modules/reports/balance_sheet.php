@@ -687,6 +687,7 @@ class BalanceSheetActions {
         // Fetch Balance Sheet Records Again
         $statement_fetch = $db -> prepare(self::FETCH_BALANCE_SHEET_FROM_DATE);
         $statement_fetch -> execute($params);
+        $balance_sheet_statements = $statement_fetch -> fetchAll(PDO::FETCH_ASSOC);
 
         // Account Keys
         $account_keys = array_keys($account_details);   
