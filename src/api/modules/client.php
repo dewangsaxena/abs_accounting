@@ -1047,8 +1047,7 @@ class Client {
                     'lastPurchaseDate' => is_string($last_purchase_date) ? Utils::format_to_human_readable_date($last_purchase_date) : 'N/A',
                 ];
 
-                // Fetch Invoices for Client
-                // TODO
+                // Fetch Invoices for Client [DEPRECATED]
                 // if($params['fetch_sales_invoices'] ?? 0) {
                 //     $sales_invoices = SalesInvoice::fetch_sales_invoices_for_client($record['id'], is_descending: true);
                 //     if($sales_invoices['status'] === false) throw new Exception($sales_invoices['message']);
