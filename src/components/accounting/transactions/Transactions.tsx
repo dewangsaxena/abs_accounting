@@ -1875,7 +1875,7 @@ const TransactionHeaderDetails = ({
   // Load Clients
   const loadOptionsForClient = (searchTerm: string) => {
     /* Hide Inactive Client */
-    fetchClient(searchTerm, true, type === TRANSACTION_TYPES["SR"])
+    fetchClient(searchTerm, true)
       .then((res: any) => {
         let response: APIResponse<ClientDetails[]> = res.data;
         if (response.status === true)
