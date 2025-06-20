@@ -332,9 +332,6 @@ export const clientStore = create<ClientStore>((set, get) => ({
     let payload = {
       term: searchTerm,
       exclude_inactive: excludeInactive ? 1 : 0,
-
-      // DEPRECATED
-      // fetch_sales_invoices: fetchInvoices ? 1 : 0,
     };
     return await httpService.fetch<ClientDetails[]>(payload, "client_fetch");
   },
