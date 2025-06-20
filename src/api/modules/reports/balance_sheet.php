@@ -631,6 +631,9 @@ class BalanceSheetActions {
             }
         }
 
+        // Date Year
+        $date_year = intval(explode('-', $date)[0]);
+
         // Base Record 
         // Check for unassigned base record 
         // Assign it a default value
@@ -643,8 +646,6 @@ class BalanceSheetActions {
             if(count($records) > 0) {
                 $base_balance_sheet = $records[0]['statement'];
                 $statement_date = $records[0]['date'];
-
-                $date_year = intval(explode('-', $date)[0]);
                 $statement_year = intval(explode('-', $statement_date)[0]);
 
                 if($date_year > $statement_year) {
@@ -674,15 +675,7 @@ class BalanceSheetActions {
             if($pkey === false) {
                 throw new Exception('Cannot create New/Carry forward Balance sheet statement.');
             }
-
-            // Convert it back into an array 
-            // $base_balance_sheet = json_decode($base_balance_sheet, true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
         }
-
-        // Check for Record matching unique id 
-        // else if($is_record_matching_unique_id) {
-        //     $base_balance_sheet = json_decode($balance_sheet_statements[0]['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
-        // }
 
         // Fetch Balance Sheet Records Again
         $statement_fetch = $db -> prepare(self::FETCH_BALANCE_SHEET_FROM_DATE);
@@ -698,15 +691,21 @@ class BalanceSheetActions {
         // Update
         foreach($balance_sheet_statements as $balance_sheet) {
             $statement = json_decode($balance_sheet['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+            $statement_year = intval(explode('-', $balance_sheet['date'])[0]);
+            if($statement_year > $date_year) {
+                // Carry Forward only Account Receivables 
+                $statement[AccountsConfig::ACCOUNTS_RECEIVABLE] += $account_details[AccountsConfig::ACCOUNTS_RECEIVABLE];
+            }
+            else {
+                // Apply Changes
+                foreach($account_keys as $key) {
+                
+                    // Add key if not exists
+                    if(!array_key_exists($key, $statement)) $statement[$key] = 0.0;
 
-            // Apply Changes
-            foreach($account_keys as $key) {
-            
-                // Add key if not exists
-                if(!array_key_exists($key, $statement)) $statement[$key] = 0.0;
-
-                // Adjust key
-                $statement[$key] += $account_details[$key];
+                    // Adjust key
+                    $statement[$key] += $account_details[$key];
+                }
             }
 
             // Update 
