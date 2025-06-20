@@ -1048,14 +1048,15 @@ class Client {
                 ];
 
                 // Fetch Invoices for Client
-                if($params['fetch_sales_invoices'] ?? 0) {
-                    $sales_invoices = SalesInvoice::fetch_sales_invoices_for_client($record['id'], is_descending: true);
-                    if($sales_invoices['status'] === false) throw new Exception($sales_invoices['message']);
-                    else $sales_invoices = $sales_invoices['data'];
+                // TODO
+                // if($params['fetch_sales_invoices'] ?? 0) {
+                //     $sales_invoices = SalesInvoice::fetch_sales_invoices_for_client($record['id'], is_descending: true);
+                //     if($sales_invoices['status'] === false) throw new Exception($sales_invoices['message']);
+                //     else $sales_invoices = $sales_invoices['data'];
 
-                    // Add Sales Invoices.
-                    $data['salesInvoices'] = $sales_invoices;
-                }
+                //     // Add Sales Invoices.
+                //     $data['salesInvoices'] = $sales_invoices;
+                // }
                 $formatted_records []= $data;
             }
             return ['status' => true, 'data' => $formatted_records];
