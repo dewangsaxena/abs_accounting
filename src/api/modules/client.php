@@ -35,7 +35,7 @@ class Client {
             /* ABS Trucking Ltd. */
             14506 => StoreDetails::EDMONTON, 
 
-            /* ABS Truck & Trailer Parts Ltds. */ 
+            /* ABS Truck & Trailer Parts Ltd. */ 
             15260 => StoreDetails::EDMONTON,
 
             /* ABS TRUCK PARTS NISKU */ 
