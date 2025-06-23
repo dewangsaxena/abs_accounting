@@ -2250,6 +2250,7 @@ function check_tax(int $store_id): void {
 function fetch_sales_by_payment_method(int $store_id, int $payment_method, string $start_date, string $end_date, PDO &$db): float {
     $statement = $db -> prepare(<<<'EOS'
     SELECT 
+        1 AS txn_type,
         SUM(sum_total) AS sum_total
     FROM 
         sales_invoice 
@@ -2260,7 +2261,37 @@ function fetch_sales_by_payment_method(int $store_id, int $payment_method, strin
     AND
         `date` <= :end_date
     AND 
-        payment_method = :payment_method;
+        payment_method = :payment_method
+    UNION ALL
+    SELECT 
+        2 AS txn_type,
+        SUM(sum_total) AS sum_total
+    FROM 
+        sales_return 
+    WHERE 
+        store_id = :store_id
+    AND 
+        `date` >= :start_date
+    AND
+        `date` <= :end_date
+    AND 
+        payment_method = :payment_method
+    UNION ALL
+    SELECT 
+        3 AS txn_type,
+        SUM(sum_total) AS sum_total
+    FROM 
+        receipt 
+    WHERE 
+        store_id = :store_id
+    AND 
+        `date` >= :start_date
+    AND
+        `date` <= :end_date
+    AND 
+        payment_method = :payment_method
+    AND
+        do_conceal = 0;
     EOS);
     $statement -> execute([
         ':store_id' => $store_id,
@@ -2268,9 +2299,17 @@ function fetch_sales_by_payment_method(int $store_id, int $payment_method, strin
         ':end_date' => $end_date,
         ':payment_method' => $payment_method,
     ]);
-
+    
     $records = $statement -> fetchAll(PDO::FETCH_ASSOC);
-    if(count($records) > 0) return $records[0]['sum_total'];
+    if(count($records) > 0) {
+        $total = 0;
+        foreach($records as $record) {
+            if($record['txn_type'] == 1) $total += $record['sum_total'];
+            else if($record['txn_type'] == 2) $total -= $record['sum_total'];
+            else if($record['txn_type'] == 3) $total += $record['sum_total'];
+        }
+        return $total;
+    }
     return 0.0;
 }
 function adjust_balance_sheet(int $store_id): void {
@@ -2289,17 +2328,81 @@ function adjust_balance_sheet(int $store_id): void {
         foreach($details as $d) {
             $accounts_receivables += $d['total'];
         }
+
         $db -> beginTransaction();
 
-        $payment_method_amount = fetch_sales_by_payment_method(
-            $store_id,
-            PaymentMethod::VISA,
-            '2025-01-01',
-            '2025-12-31',
-            $db,
-        );
+        $sum_by_payment_methods = [
+            PaymentMethod::CASH => 0,
+            PaymentMethod::CHEQUE => 0,
+            PaymentMethod::AMERICAN_EXPRESS => 0,
+            PaymentMethod::VISA => 0,
+            PaymentMethod::MASTERCARD => 0, 
+            PaymentMethod::DEBIT => 0,
+        ];
 
-        echo $payment_method_amount;
+        // Fetch Latest Balance Sheet
+        $statement_fetch_bs = $db -> prepare(<<<'EOS'
+        SELECT 
+            id,
+            `statement` 
+        FROM 
+            balance_sheet 
+        WHERE
+            store_id = :store_id 
+        ORDER BY 
+            `date` DESC 
+        LIMIT 1;
+        EOS);
+        $statement_fetch_bs -> execute([':store_id' => $store_id]);
+        $bs_id = null;
+        $balance_sheet = $statement_fetch_bs -> fetchAll(PDO::FETCH_ASSOC);
+        if(count($balance_sheet) > 0) {
+            $bs_id = $balance_sheet[0]['id'];
+            $balance_sheet = json_decode(
+                $balance_sheet[0]['statement'],
+                true, 
+                flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR
+            );
+        }
+
+        $payment_methods = array_keys($sum_by_payment_methods);
+        foreach($payment_methods as $pm) {
+            $payment_method_amount = fetch_sales_by_payment_method(
+                $store_id,
+                $pm,
+                '2025-01-01',
+                '2025-12-31',
+                $db,
+            );
+            
+            // Fetch Account ID
+            if($pm === PaymentMethod::CASH || $pm === PaymentMethod::DEBIT) {
+                $account_id = AccountsConfig::CHEQUING_BANK_ACCOUNT;
+            }
+            else $account_id = AccountsConfig::get_account_code_by_payment_method($pm);
+
+            $balance_sheet[$account_id] = $payment_method_amount;
+        }
+
+        // Update Account Receivables
+        $balance_sheet[AccountsConfig::ACCOUNTS_RECEIVABLE] = $accounts_receivables;
+        
+        // Update Balance Sheet
+        $statement_update_bs = $db -> prepare(<<<'EOS'
+        UPDATE 
+            balance_sheet 
+        SET 
+            `statement` = :_statement,
+        WHERE 
+            id = :id;
+        EOS
+        );
+        $is_successful = $statement_update_bs -> execute([
+            ':_statement' => json_encode($balance_sheet, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
+            ':id' => $bs_id,
+        ]);
+
+        if($is_successful !== true || $statement_update_bs -> rowCount() < 1) throw new Exception('Unable to Update Balance Sheet');
 
         $db -> commit();
         echo '<br><br>Done';

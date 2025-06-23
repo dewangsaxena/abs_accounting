@@ -438,7 +438,8 @@ class AccountsConfig {
             case PaymentMethod::MODES_OF_PAYMENT['Pay Later']:
                 return AccountsConfig::ACCOUNTS_RECEIVABLE;
             case PaymentMethod::MODES_OF_PAYMENT['Cash']:
-                return AccountsConfig::CASH_TO_BE_DEPOSITED;
+                /* Earlier Used to be CASH_TO_BE_DEPOSITED */
+                return AccountsConfig::CHEQUING_BANK_ACCOUNT;
             case PaymentMethod::MODES_OF_PAYMENT['Cheque']:
                 return AccountsConfig::CHEQUE_RECEIVABLES;
             case PaymentMethod::MODES_OF_PAYMENT['PAD']:
@@ -448,7 +449,7 @@ class AccountsConfig {
             case PaymentMethod::MODES_OF_PAYMENT['Mastercard']: 
                 return AccountsConfig::MASTERCARD_RECEIVABLE;
             case PaymentMethod::MODES_OF_PAYMENT['Visa']: 
-                return AccountsConfig::VISA_RECEIVABLE; 
+                return AccountsConfig::VISA_RECEIVABLE;
             case PaymentMethod::MODES_OF_PAYMENT['Online Payment']: 
                 throw new Exception('Payment Method "Online Payment" not supported.');
             case PaymentMethod::MODES_OF_PAYMENT['Debit']: 
