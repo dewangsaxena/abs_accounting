@@ -162,3 +162,8 @@ SELECT SUM(sum_total) FROM credit_note WHERE store_id = 6 AND `date` >= '2025-01
 
 
 delete from balance_sheet where store_id = 6 and `date` >= '2025-03-01';
+
+SELECT SUM(gst_hst_tax), SUM(pst_tax) FROM sales_invoice WHERE store_id = 2 AND `date` >= '2025-01-01';
+SELECT SUM(gst_hst_tax), SUM(pst_tax) FROM sales_return WHERE store_id = 2 AND `date` >= '2025-01-01';
+SELECT SUM(gst_hst_tax), SUM(pst_tax) FROM credit_note WHERE store_id = 2 AND `date` >= '2025-01-01' ;
+SELECT SUM(gst_hst_tax), SUM(pst_tax) FROM debit_note WHERE store_id = 2 AND `date` >= '2025-01-01';
