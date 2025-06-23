@@ -237,7 +237,8 @@ class CustomerAgedSummary {
     private static function exclude_self_companies(array &$summary): array {
         $new_summary = [];
         foreach($summary as $s) {
-            if(Client::is_self_client($s['client_id']) === false) $new_summary[]= $s;
+            if(Client::is_exception_made_for_self_client($s['client_id'])) $new_summary[]= $s;
+            else if(Client::is_self_client($s['client_id']) === false) $new_summary[]= $s;
         }
         return $new_summary;
     }
@@ -401,8 +402,20 @@ class CustomerAgedSummary {
      * @param exclude_self
      * @param exclude_clients
      * @param omit_credit_records
+     * @param do_return
+     * @return mixed
      */
-    public static function generate(int $store_id, ?string $from_date, string $till_date, int $sort, int $is_csv = 0, int $exclude_self=0, int $exclude_clients=0, int $omit_credit_records=0): void {
+    public static function generate(
+        int $store_id, 
+        ?string $from_date, 
+        string $till_date, 
+        int $sort, 
+        int $is_csv = 0, 
+        int $exclude_self = 0, 
+        int $exclude_clients = 0, 
+        int $omit_credit_records = 0,
+        int $do_return = 0,
+        ): mixed {
         $customer_aged_summary = self::fetch_customer_aged_summary(
             $store_id, 
             $from_date, 
@@ -419,11 +432,16 @@ class CustomerAgedSummary {
             'store_id' => $store_id,
         ];
 
+        // Do return
+        if($do_return) return $customer_aged_summary;
+
         if($is_csv === 1) {
             // Force User to Dowload File
             Utils::user_download(self::generate_csv($details));
         }
         else GeneratePDF::customer_aged_summary($details);
+
+        return null;
     }
 
     /**

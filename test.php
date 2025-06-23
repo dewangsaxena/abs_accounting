@@ -2244,6 +2244,71 @@ function check_tax(int $store_id): void {
 
     // echo $counter;
 }
-check_tax(StoreDetails::DELTA);
+// check_tax(StoreDetails::DELTA);
 // client_sales_report(18503, '2025-01-01', '2025-12-31');
+
+function fetch_sales_by_payment_method(int $store_id, int $payment_method, string $start_date, string $end_date, PDO &$db): float {
+    $statement = $db -> prepare(<<<'EOS'
+    SELECT 
+        SUM(sum_total) AS sum_total
+    FROM 
+        sales_invoice 
+    WHERE 
+        store_id = :store_id
+    AND 
+        `date` >= :start_date
+    AND
+        `date` <= :end_date
+    AND 
+        payment_method = :payment_method;
+    EOS);
+    $statement -> execute([
+        ':store_id' => $store_id,
+        ':start_date' => $start_date,
+        ':end_date' => $end_date,
+        ':payment_method' => $payment_method,
+    ]);
+
+    $records = $statement -> fetchAll(PDO::FETCH_ASSOC);
+    if(count($records) > 0) return $records[0]['sum_total'];
+    return 0.0;
+}
+function adjust_balance_sheet(int $store_id): void {
+    $db = get_db_instance();
+    try {
+        $details = CustomerAgedSummary::generate(
+            StoreDetails::EDMONTON, 
+            '0000-00-00',
+            '2025-12-31',
+            0, 
+            0,
+            1,
+            do_return: 1,
+        );
+        $accounts_receivables = 0;
+        foreach($details as $d) {
+            $accounts_receivables += $d['total'];
+        }
+        $db -> beginTransaction();
+
+        $payment_method_amount = fetch_sales_by_payment_method(
+            $store_id,
+            PaymentMethod::VISA,
+            '2025-01-01',
+            '2025-12-31',
+            $db,
+        );
+
+        echo $payment_method_amount;
+
+        $db -> commit();
+        echo '<br><br>Done';
+    }
+    catch(Exception $e) {
+        $db -> rollBack();
+        print_r($e -> getMessage());
+    }
+
+}
+adjust_balance_sheet(StoreDetails::EDMONTON);
 ?>  

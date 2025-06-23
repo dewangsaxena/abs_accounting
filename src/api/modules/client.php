@@ -63,6 +63,17 @@ class Client {
     ];
 
     /**
+     * Self Client Exceptions.
+     */
+    public const SELF_CLIENT_EXCEPTIONS = [
+        PARTS => [
+            /* ABS Truck & Trailer Parts Slave Lake */ 
+            17671 => StoreDetails::SLAVE_LAKE,
+        ],
+        WASH => [],
+    ];
+
+    /**
      * Inter stores.
      */
     private const INTER_STORES = [
@@ -822,6 +833,15 @@ class Client {
      */
     public static function is_self_client(int $client_id): bool {
         return isset(self::SELF_CLIENT_WHITELIST[SYSTEM_INIT_MODE][$client_id]);
+    }
+
+    /**
+     * This method will check whether the client is on self client exceptions list.
+     * @param client_id
+     * @return bool
+     */
+    public static function is_exception_made_for_self_client(int $client_id): bool {
+        return isset(self::SELF_CLIENT_EXCEPTIONS[SYSTEM_INIT_MODE][$client_id]);
     }
 
     /**
