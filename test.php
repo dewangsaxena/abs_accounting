@@ -2331,13 +2331,13 @@ function adjust_balance_sheet(int $store_id): void {
 
         $db -> beginTransaction();
 
-        $sum_by_payment_methods = [
-            PaymentMethod::CASH => 0,
-            PaymentMethod::CHEQUE => 0,
-            PaymentMethod::AMERICAN_EXPRESS => 0,
-            PaymentMethod::VISA => 0,
-            PaymentMethod::MASTERCARD => 0, 
-            PaymentMethod::DEBIT => 0,
+        $payment_methods = [
+            PaymentMethod::CASH,
+            PaymentMethod::CHEQUE,
+            PaymentMethod::AMERICAN_EXPRESS,
+            PaymentMethod::VISA,
+            PaymentMethod::MASTERCARD, 
+            PaymentMethod::DEBIT,
         ];
 
         // Fetch Latest Balance Sheet
@@ -2365,7 +2365,7 @@ function adjust_balance_sheet(int $store_id): void {
             );
         }
 
-        $payment_methods = array_keys($sum_by_payment_methods);
+        $cash_amount = 0;
         foreach($payment_methods as $pm) {
             $payment_method_amount = fetch_sales_by_payment_method(
                 $store_id,
@@ -2377,12 +2377,16 @@ function adjust_balance_sheet(int $store_id): void {
             
             // Fetch Account ID
             if($pm === PaymentMethod::CASH || $pm === PaymentMethod::DEBIT) {
-                $account_id = AccountsConfig::CHEQUING_BANK_ACCOUNT;
+                $cash_amount += $payment_method_amount;
             }
-            else $account_id = AccountsConfig::get_account_code_by_payment_method($pm);
-
-            $balance_sheet[$account_id] = $payment_method_amount;
+            else {
+                $account_id = AccountsConfig::get_account_code_by_payment_method($pm);
+                $balance_sheet[$account_id] = $payment_method_amount;
+            }
         }
+
+        // Cash Amount
+        $balance_sheet[AccountsConfig::CHEQUING_BANK_ACCOUNT] = $cash_amount;
 
         // Update Account Receivables
         $balance_sheet[AccountsConfig::ACCOUNTS_RECEIVABLE] = $accounts_receivables;
@@ -2392,7 +2396,7 @@ function adjust_balance_sheet(int $store_id): void {
         UPDATE 
             balance_sheet 
         SET 
-            `statement` = :_statement,
+            `statement` = :_statement
         WHERE 
             id = :id;
         EOS
@@ -2402,7 +2406,9 @@ function adjust_balance_sheet(int $store_id): void {
             ':id' => $bs_id,
         ]);
 
-        if($is_successful !== true || $statement_update_bs -> rowCount() < 1) throw new Exception('Unable to Update Balance Sheet');
+        if($is_successful !== true && $statement_update_bs -> rowCount() < 1) throw new Exception('Unable to Update Balance Sheet');
+
+        assert_success();
 
         $db -> commit();
         echo '<br><br>Done';
