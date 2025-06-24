@@ -940,13 +940,23 @@ class SalesInvoice {
             // Adjust Inventory And Revenue Accounts
             $accounts = array_keys($affected_accounts);
             foreach($accounts as $account) {
-                BalanceSheetActions::update_account_value(
-                    $bs_affected_accounts,
-                    $account,
-                    $affected_accounts[$account]
-                );
-                
+
+                if($account === AccountsConfig::INVENTORY_A) {
+                    BalanceSheetActions::update_account_value(
+                        $bs_affected_accounts,
+                        $account,
+                        $affected_accounts[$account],
+                    );
+                    continue;
+                }
+
                 if(self::$is_self_client === false) {
+                    BalanceSheetActions::update_account_value(
+                        $bs_affected_accounts,
+                        $account,
+                        $affected_accounts[$account]
+                    );
+
                     IncomeStatementActions::update_account_values(
                         $is_affected_accounts,
                         $account,
@@ -958,13 +968,14 @@ class SalesInvoice {
             // ADD TO PAYMENT METHOD ACCOUNT
             $payment_method_account = AccountsConfig::get_account_code_by_payment_method($details['payment_method']);
             if($payment_method_account !== null) {
-                BalanceSheetActions::update_account_value(
-                    $bs_affected_accounts,
-                    $payment_method_account,
-                    $details['sum_total'],
-                );
 
                 if(self::$is_self_client === false) {
+                    BalanceSheetActions::update_account_value(
+                        $bs_affected_accounts,
+                        $payment_method_account,
+                        $details['sum_total'],
+                    );
+
                     IncomeStatementActions::update_account_values(
                         $is_affected_accounts,
                         $payment_method_account,
@@ -974,29 +985,29 @@ class SalesInvoice {
             }
             else throw new Exception('Invalid Payment Method Account.');
 
-            // UPDATE GST/HST TAX ACCOUNT 
-            BalanceSheetActions::update_account_value(
-                $bs_affected_accounts,
-                AccountsConfig::GST_HST_CHARGED_ON_SALE,
-                $details['gst_hst_tax'],
-            );
-
-            // UPDATE PST TAX ACCOUNT
-            BalanceSheetActions::update_account_value(
-                $bs_affected_accounts,
-                AccountsConfig::PST_CHARGED_ON_SALE,
-                $details['pst_tax']
-            );
-            
-            // ADJUST DISCOUNT ACCOUNT
             if(self::$is_self_client === false) {
+                // UPDATE GST/HST TAX ACCOUNT 
+                BalanceSheetActions::update_account_value(
+                    $bs_affected_accounts,
+                    AccountsConfig::GST_HST_CHARGED_ON_SALE,
+                    $details['gst_hst_tax'],
+                );
+
+                // UPDATE PST TAX ACCOUNT
+                BalanceSheetActions::update_account_value(
+                    $bs_affected_accounts,
+                    AccountsConfig::PST_CHARGED_ON_SALE,
+                    $details['pst_tax']
+                );
+
+                // ADJUST DISCOUNT ACCOUNT
                 IncomeStatementActions::update_account_values(
                     $is_affected_accounts,
                     AccountsConfig::TOTAL_DISCOUNT,
                     $details['txn_discount']
                 );
             }
-            
+
             // COMMIT UPDATES TO BALANCE SHEET
             BalanceSheetActions::update_from(
                 $bs_affected_accounts,
@@ -1241,9 +1252,9 @@ class SalesInvoice {
             }
         }
 
-        /* !! Discount */
-        // Update Income Statement
         if(self::$is_self_client === false) {
+            /* !! Discount */
+            /* Adjust Income Statement */
             IncomeStatementActions::update_account_values(
                 $is_affected_accounts, 
                 AccountsConfig::TOTAL_DISCOUNT,
