@@ -702,11 +702,13 @@ class SalesReturn {
                         $affected_accounts[$account],
                     );
 
-                    IncomeStatementActions::update_account_values(
+                    if($account !== AccountsConfig::SALES_INVENTORY_A) {
+                        IncomeStatementActions::update_account_values(
                         $is_affected_accounts,
                         $account,
                         $affected_accounts[$account],
-                    );
+                        );
+                    }
                 }
             }
 
@@ -949,11 +951,13 @@ class SalesReturn {
                     $affected_accounts[$account]
                 );
 
-                IncomeStatementActions::update_account_values(
-                    $is_affected_accounts,
-                    $account,
-                    $affected_accounts[$account]
-                );
+                if($account !== AccountsConfig::SALES_INVENTORY_A) {
+                    IncomeStatementActions::update_account_values(
+                        $is_affected_accounts,
+                        $account,
+                        $affected_accounts[$account]
+                    );
+                }
             }
         }
 
@@ -1158,14 +1162,24 @@ class SalesReturn {
             // Adjust Inventory And Revenue Accounts
             $accounts = array_keys($affected_accounts);
             foreach($accounts as $account) {
-                BalanceSheetActions::update_account_value(
-                    $bs_affected_accounts,
-                    $account,
-                    $affected_accounts[$account]
-                );
-                
-                if($account !== AccountsConfig::SALES_INVENTORY_A) {
-                    if(self::$is_self_client === false) {
+
+                if($account === AccountsConfig::INVENTORY_A) {
+                    BalanceSheetActions::update_account_value(
+                        $bs_affected_accounts,
+                        $account,
+                        $affected_accounts[$account]
+                    );
+                    continue;
+                }
+
+                if(self::$is_self_client === false) {
+                    BalanceSheetActions::update_account_value(
+                        $bs_affected_accounts,
+                        $account,
+                        $affected_accounts[$account]
+                    );
+
+                    if($account !== AccountsConfig::SALES_INVENTORY_A) {
                         IncomeStatementActions::update_account_values(
                             $is_affected_accounts,
                             $account,
@@ -1179,45 +1193,44 @@ class SalesReturn {
             $payment_method_account = self::get_account_number_from_payment_method($payment_method);
             $temp = -$sum_total;
 
-            // Adjust Payment Method Account
-            BalanceSheetActions::update_account_value(
-                $bs_affected_accounts,
-                $payment_method_account,
-                $temp,
-            );
-
             /* Adjust Sales Return Account */
             if(self::$is_self_client === false) {
+
+                // Adjust Payment Method Account
+                BalanceSheetActions::update_account_value(
+                    $bs_affected_accounts,
+                    $payment_method_account,
+                    $temp,
+                );
+
                 IncomeStatementActions::update_account_values(
                     $is_affected_accounts, 
                     AccountsConfig::SALES_RETURN,
                     $sub_total,
                 );
-            }
 
-            // Add Restocking Fees
-            BalanceSheetActions::update_account_value(
-                $bs_affected_accounts,
-                $payment_method_account,
-                $restocking_fees,
-            );
+                // Add Restocking Fees
+                BalanceSheetActions::update_account_value(
+                    $bs_affected_accounts,
+                    $payment_method_account,
+                    $restocking_fees,
+                );
 
-            // UPDATE GST/HST TAX ACCOUNT 
-            BalanceSheetActions::update_account_value(
-                $bs_affected_accounts,
-                AccountsConfig::GST_HST_CHARGED_ON_SALE,
-                -$gst_hst_tax,
-            );
+                // UPDATE GST/HST TAX ACCOUNT 
+                BalanceSheetActions::update_account_value(
+                    $bs_affected_accounts,
+                    AccountsConfig::GST_HST_CHARGED_ON_SALE,
+                    -$gst_hst_tax,
+                );
 
-            // UPDATE PST TAX ACCOUNT
-            BalanceSheetActions::update_account_value(
-                $bs_affected_accounts,
-                AccountsConfig::PST_CHARGED_ON_SALE,
-                -$pst_tax,
-            );
-            
-            // ADJUST DISCOUNT ACCOUNT
-            if(self::$is_self_client === false) {
+                // UPDATE PST TAX ACCOUNT
+                BalanceSheetActions::update_account_value(
+                    $bs_affected_accounts,
+                    AccountsConfig::PST_CHARGED_ON_SALE,
+                    -$pst_tax,
+                );
+
+                // ADJUST DISCOUNT ACCOUNT
                 IncomeStatementActions::update_account_values(
                     $is_affected_accounts,
                     AccountsConfig::TOTAL_DISCOUNT,
