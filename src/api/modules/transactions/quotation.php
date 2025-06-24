@@ -525,8 +525,6 @@ class Quotations {
                 c.early_payment_paid_within_days,
                 c.net_amount_due_within_days,
                 c.shipping_addresses,
-                c.disable_federal_taxes,
-                c.disable_provincial_taxes,
                 c.disable_credit_transactions,
                 c.modified as client_last_modified_timestamp,
                 c.name,
@@ -564,6 +562,7 @@ class Quotations {
             $records = $statement -> fetchAll(PDO::FETCH_ASSOC);
             $formatted_record = [];
             foreach($records as $record) {
+
                 // Details
                 $record['details'] = json_decode($record['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
 
@@ -579,12 +578,10 @@ class Quotations {
                 $record['net_amount_due_within_days'] = $net_amount_due_within_days[$store_id] ?? 0;
 
                 // Disable Federal Taxes
-                $disable_federal_taxes = json_decode($record['disable_federal_taxes'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
-                $record['disable_federal_taxes'] = $disable_federal_taxes[$store_id] ?? 0;
+                $record['disable_federal_taxes'] = is_numeric($record['disable_federal_taxes']) ? intval($record['disable_federal_taxes']) : 0;
 
                 // Disable Provincial Taxes
-                $disable_provincial_taxes = json_decode($record['disable_provincial_taxes'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
-                $record['disable_provincial_taxes'] = $disable_provincial_taxes[$store_id] ?? 0;
+                $record['disable_provincial_taxes'] = is_numeric($record['disable_provincial_taxes']) ? intval($record['disable_provincial_taxes']) : 0;
 
                 // Add Primary Details
                 $record['primary_details'] = Client::pack_primary_details($record);
