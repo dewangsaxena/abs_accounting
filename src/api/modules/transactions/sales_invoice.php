@@ -180,8 +180,10 @@ class SalesInvoice {
             throw new Exception('Cannot Process Sales Invoice for Invalid Customer.');
         }
 
-        // Disable Self Client 
-        if(Client::is_self_client($client_id)) throw new Exception('Transactions disabled for Self Client.');
+        // Disable Self Client allowing exceptions.
+        if(Client::is_self_client($client_id) && Client::is_exception_made_for_self_client($client_id) === false) {
+            throw new Exception('Transactions disabled for Self Client.');
+        }
 
         // Sales Rep Id
         if($data['salesRepId'] === 0) throw new Exception('Please select Sales Representative.');
@@ -542,13 +544,22 @@ class SalesInvoice {
             // Adjust Inventory And Revenue Accounts
             $accounts = array_keys($affected_accounts);
             foreach($accounts as $account) {
-                BalanceSheetActions::update_account_value(
-                    $bs_affected_accounts,
-                    $account,
-                    $affected_accounts[$account],
-                );
 
+                if($account === AccountsConfig::INVENTORY_A) {
+                    BalanceSheetActions::update_account_value(
+                        $bs_affected_accounts,
+                        $account,
+                        $affected_accounts[$account],
+                    );
+                    continue;
+                }
+            
                 if(self::$is_self_client === false) {
+                    BalanceSheetActions::update_account_value(
+                        $bs_affected_accounts,
+                        $account,
+                        $affected_accounts[$account],
+                    );
                     IncomeStatementActions::update_account_values(
                         $is_affected_accounts,
                         $account,
@@ -559,36 +570,34 @@ class SalesInvoice {
             
             /* ADD TO PAYMENT METHOD ACCOUNT */
             $payment_method_account = AccountsConfig::get_account_code_by_payment_method($payment_method);
-            BalanceSheetActions::update_account_value(
-                $bs_affected_accounts,
-                $payment_method_account,
-                $sum_total,
-            );
-
             if(self::$is_self_client === false) {
+                BalanceSheetActions::update_account_value(
+                    $bs_affected_accounts,
+                    $payment_method_account,
+                    $sum_total,
+                );
+
                 IncomeStatementActions::update_account_values(
                     $is_affected_accounts,
                     $payment_method_account,
                     $sum_total
                 );
-            }
 
-            /* UPDATE PST TAX ACCOUNT */ 
-            BalanceSheetActions::update_account_value(
-                $bs_affected_accounts,
-                AccountsConfig::PST_CHARGED_ON_SALE,
-                $pst_tax
-            );
+                /* UPDATE PST TAX ACCOUNT */ 
+                BalanceSheetActions::update_account_value(
+                    $bs_affected_accounts,
+                    AccountsConfig::PST_CHARGED_ON_SALE,
+                    $pst_tax
+                );
 
-            /* UPDATE GST/HST TAX ACCOUNT */ 
-            BalanceSheetActions::update_account_value(
-                $bs_affected_accounts,
-                AccountsConfig::GST_HST_CHARGED_ON_SALE,
-                $gst_hst_tax
-            );
+                /* UPDATE GST/HST TAX ACCOUNT */ 
+                BalanceSheetActions::update_account_value(
+                    $bs_affected_accounts,
+                    AccountsConfig::GST_HST_CHARGED_ON_SALE,
+                    $gst_hst_tax
+                );
 
-            /* ADJUST DISCOUNT ACCOUNT */
-            if(self::$is_self_client === false) {
+                /* ADJUST DISCOUNT ACCOUNT */
                 IncomeStatementActions::update_account_values(
                     $is_affected_accounts,
                     AccountsConfig::TOTAL_DISCOUNT,
@@ -1205,14 +1214,24 @@ class SalesInvoice {
         $accounts = array_keys($affected_accounts);
         foreach($accounts as $account) {
 
-            // Adjust COGS in Balance Sheet
-            BalanceSheetActions::update_account_value(
-                $bs_affected_accounts,
-                $account,
-                $affected_accounts[$account]
-            );
+            if($account === AccountsConfig::INVENTORY_A) {
+                BalanceSheetActions::update_account_value(
+                    $bs_affected_accounts,
+                    $account,
+                    $affected_accounts[$account],
+                );
+                continue;
+            }
 
             if(self::$is_self_client === false) {
+
+                // Adjust COGS in Balance Sheet
+                BalanceSheetActions::update_account_value(
+                    $bs_affected_accounts,
+                    $account,
+                    $affected_accounts[$account]
+                );
+
                 // Adjust COGS From Income Statement
                 IncomeStatementActions::update_account_values(
                     $is_affected_accounts,
@@ -1230,23 +1249,23 @@ class SalesInvoice {
                 AccountsConfig::TOTAL_DISCOUNT,
                 -$details['initial']['txnDiscount']
             );
+
+            /* !! GST/HST TAX */ 
+            /* Adjust Balance Sheet */
+            BalanceSheetActions::update_account_value(
+                $bs_affected_accounts,
+                AccountsConfig::GST_HST_CHARGED_ON_SALE,
+                -$details['initial']['gstHSTTax']
+            );
+
+            /* !! PST TAX */ 
+            /* Adjust Balance Sheet */
+            BalanceSheetActions::update_account_value(
+                $bs_affected_accounts,
+                AccountsConfig::PST_CHARGED_ON_SALE,
+                -$details['initial']['pstTax']
+            );
         }
-
-        /* !! GST/HST TAX */ 
-        /* Adjust Balance Sheet */
-        BalanceSheetActions::update_account_value(
-            $bs_affected_accounts,
-            AccountsConfig::GST_HST_CHARGED_ON_SALE,
-            -$details['initial']['gstHSTTax']
-        );
-
-        /* !! PST TAX */ 
-        /* Adjust Balance Sheet */
-        BalanceSheetActions::update_account_value(
-            $bs_affected_accounts,
-            AccountsConfig::PST_CHARGED_ON_SALE,
-            -$details['initial']['pstTax']
-        );
 
         /* !! Payment Method */
         if(!array_key_exists($details['initial']['paymentMethod'] ?? null, PaymentMethod::MODES_OF_PAYMENT)) throw new Exception('Invalid Old Payment Method.');
@@ -1261,14 +1280,15 @@ class SalesInvoice {
             // Negate
             $old_sum_total = -$old_sum_total;
 
-            // Update Balance Sheet
-            BalanceSheetActions::update_account_value(
-                $bs_affected_accounts,
-                $old_payment_method_account,
-                $old_sum_total
-            );
-
             if(self::$is_self_client === false) {
+
+                // Update Balance Sheet
+                BalanceSheetActions::update_account_value(
+                    $bs_affected_accounts,
+                    $old_payment_method_account,
+                    $old_sum_total
+                );
+
                 // Update Income Statement
                 IncomeStatementActions::update_account_values(
                     $is_affected_accounts,

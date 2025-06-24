@@ -33,7 +33,7 @@ class Client {
             13735 => StoreDetails::EDMONTON,
 
             /* ABS Trucking Ltd. */
-            14506 => StoreDetails::EDMONTON, 
+            14506 => StoreDetails::EDMONTON,
 
             /* ABS Truck & Trailer Parts Ltd. */ 
             15260 => StoreDetails::EDMONTON,
@@ -67,8 +67,25 @@ class Client {
      */
     public const SELF_CLIENT_EXCEPTIONS = [
         PARTS => [
-            /* ABS Truck & Trailer Parts Slave Lake */ 
-            17671 => StoreDetails::SLAVE_LAKE,
+            /* ABS Trucking Ltd. */
+            14506 => StoreDetails::EDMONTON,
+
+            /* 1721534 AB LTD */
+            16630 => StoreDetails::EDMONTON,
+        ],
+        WASH => [],
+    ];
+
+    /**
+     * Clients Excluded from IS Reporting.
+     */
+    public const CLIENTS_EXCLUDED_FROM_IS_REPORTING = [
+        PARTS => [
+            /* ABS Trucking Ltd. */
+            14506 => StoreDetails::EDMONTON,
+
+            /* 1721534 AB LTD */
+            16630 => StoreDetails::EDMONTON,
         ],
         WASH => [],
     ];

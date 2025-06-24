@@ -151,7 +151,9 @@ class Quotations {
         }
 
         // Disable Self Client
-        if(Client::is_self_client($client_id)) throw new Exception('Transactions disabled for Self Client.');
+        if(Client::is_self_client($client_id) && Client::is_exception_made_for_self_client($client_id) === false) {
+            throw new Exception('Transactions disabled for Self Client.');
+        }
 
         // Validate Store
         $store_id = intval($_SESSION['store_id']);
