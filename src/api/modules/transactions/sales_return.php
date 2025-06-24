@@ -364,7 +364,8 @@ class SalesReturn {
         }
 
         // Disable self client
-        if(Client::is_self_client($client_id) && Client::is_exception_made_for_self_client($client_id) === false) {
+        $is_self_client = Client::is_self_client($client_id);
+        if($is_self_client && Client::is_exception_made_for_self_client($client_id) === false) {
             throw new Exception('Transactions disabled for Self Client.');
         }
 
@@ -460,7 +461,8 @@ class SalesReturn {
         $gst_hst_tax = $calculated_amount['gstHSTTax'];
         $txn_discount = $calculated_amount['txnDiscount'];
         $cogr = $calculated_amount['cogr'];
-        $restocking_fees = $calculated_amount['restockingFees'];
+        // Restcking Fees will be 0 for self client.
+        $restocking_fees = $is_self_client ? 0 : $calculated_amount['restockingFees'];
 
         // Restocking Fees
         if(is_numeric($restocking_fees) === false) throw new Exception('Invalid Restocking Fees.');
@@ -683,20 +685,28 @@ class SalesReturn {
             // Adjust Inventory And Revenue Accounts
             $accounts = array_keys($affected_accounts);
             foreach($accounts as $account) {
-                BalanceSheetActions::update_account_value(
-                    $bs_affected_accounts,
-                    $account,
-                    $affected_accounts[$account],
-                );
 
-                if($account !== AccountsConfig::SALES_INVENTORY_A) {
-                    if(self::$is_self_client === false) {
-                        IncomeStatementActions::update_account_values(
-                            $is_affected_accounts,
-                            $account,
-                            $affected_accounts[$account],
-                        );
-                    } 
+                if($account === AccountsConfig::INVENTORY_A) {
+                    BalanceSheetActions::update_account_value(
+                        $bs_affected_accounts,
+                        $account,
+                        $affected_accounts[$account],
+                    );
+                    continue;
+                }
+
+                if(self::$is_self_client === false) {
+                    BalanceSheetActions::update_account_value(
+                        $bs_affected_accounts,
+                        $account,
+                        $affected_accounts[$account],
+                    );
+
+                    IncomeStatementActions::update_account_values(
+                        $is_affected_accounts,
+                        $account,
+                        $affected_accounts[$account],
+                    );
                 }
             }
 
@@ -704,53 +714,49 @@ class SalesReturn {
             $payment_method_account = self::get_account_number_from_payment_method($payment_method);
             $temp = -$sum_total;
 
-            // Adjust Payment Method Account
-            BalanceSheetActions::update_account_value(
-                $bs_affected_accounts,
-                $payment_method_account,
-                $temp,
-            );
-            $offset_amounts[$payment_method_account] = $temp;
-
-            /* Add Restocking Fees */
-            BalanceSheetActions::update_account_value(
-                $bs_affected_accounts,
-                $payment_method_account,
-                $restocking_fees,
-            );
-            
-            /* UPDATE PST TAX ACCOUNT */ 
-            BalanceSheetActions::update_account_value(
-                $bs_affected_accounts,
-                AccountsConfig::PST_CHARGED_ON_SALE,
-                -$pst_tax
-            );
-
-            /* UPDATE GST/HST TAX ACCOUNT */ 
-            BalanceSheetActions::update_account_value(
-                $bs_affected_accounts,
-                AccountsConfig::GST_HST_CHARGED_ON_SALE,
-                -$gst_hst_tax
-            );
-
-            /* ADJUST DISCOUNT ACCOUNT */
             if(self::$is_self_client === false) {
+                /* Payment Method */
+                 BalanceSheetActions::update_account_value(
+                    $bs_affected_accounts,
+                    $payment_method_account,
+                    $temp,
+                );
+
+                /* Add Restocking Fees */
+                BalanceSheetActions::update_account_value(
+                    $bs_affected_accounts,
+                    $payment_method_account,
+                    $restocking_fees,
+                );
+
+                /* UPDATE PST TAX ACCOUNT */ 
+                BalanceSheetActions::update_account_value(
+                    $bs_affected_accounts,
+                    AccountsConfig::PST_CHARGED_ON_SALE,
+                    -$pst_tax
+                );
+
+                /* UPDATE GST/HST TAX ACCOUNT */ 
+                BalanceSheetActions::update_account_value(
+                    $bs_affected_accounts,
+                    AccountsConfig::GST_HST_CHARGED_ON_SALE,
+                    -$gst_hst_tax
+                );
+
+                /* ADJUST DISCOUNT ACCOUNT */
                 IncomeStatementActions::update_account_values(
                     $is_affected_accounts,
                     AccountsConfig::TOTAL_DISCOUNT,
                     -$txn_discount
                 );
-            }
 
-            /* Adjust Sales Return Account */
-            if(self::$is_self_client === false) {
+                /* Adjust Sales Return Account */
                 IncomeStatementActions::update_account_values(
                     $is_affected_accounts, 
                     AccountsConfig::SALES_RETURN,
                     $sub_total,
                 );
             }
-            
 
             /* COMMIT UPDATES TO BALANCE SHEET */ 
             BalanceSheetActions::update_from(
@@ -873,17 +879,6 @@ class SalesReturn {
                 ':restocking_fees' => $validated_details['restocking_fees'],
             ];
 
-            // if($is_pay_later) {
-            //     // Customer Aged Summary
-            //     CustomerAgedSummary::update(
-            //         $client_id,
-            //         $date,
-            //         -$sum_total,
-            //         $store_id,
-            //         $db,
-            //     );
-            // }
-
             /* CHECK FOR ANY ERROR */
             assert_success();
 
@@ -936,60 +931,67 @@ class SalesReturn {
         $accounts = array_keys($affected_accounts);
         foreach($accounts as $account) {
 
-            // Adjust COGS in Balance Sheet
-            BalanceSheetActions::update_account_value(
-                $bs_affected_accounts,
-                $account,
-                $affected_accounts[$account]
-            );
-
-            if($account !== AccountsConfig::SALES_INVENTORY_A) {
-                // Adjust COGS From Income Statement
-                if(self::$is_self_client === false) {
-                    IncomeStatementActions::update_account_values(
-                        $is_affected_accounts,
-                        $account,
-                        $affected_accounts[$account]
-                    );
-                }
+            if($account === AccountsConfig::INVENTORY_A) {
+                // Adjust COGS in Balance Sheet
+                BalanceSheetActions::update_account_value(
+                    $bs_affected_accounts,
+                    $account,
+                    $affected_accounts[$account]
+                );
+                continue;
             }
-        }
 
-        /* !! Sales Return */
-        if(self::$is_self_client === false) {
-            IncomeStatementActions::update_account_values(
-                $is_affected_accounts, 
-                AccountsConfig::SALES_RETURN,
-                -($details['initial']['subTotal'] + $details['initial']['restockingFees']),
-            );
+            if(self::$is_self_client) {
+                // Adjust Balance Sheet
+                BalanceSheetActions::update_account_value(
+                    $bs_affected_accounts,
+                    $account,
+                    $affected_accounts[$account]
+                );
+
+                IncomeStatementActions::update_account_values(
+                    $is_affected_accounts,
+                    $account,
+                    $affected_accounts[$account]
+                );
+            }
         }
 
         /* !! Discount */
         // Update Income Statement
         if(self::$is_self_client === false) {
+
+            /* !! Sales Return */
+            IncomeStatementActions::update_account_values(
+                $is_affected_accounts, 
+                AccountsConfig::SALES_RETURN,
+                -($details['initial']['subTotal'] + $details['initial']['restockingFees']),
+            );
+
+            /* !! Total Discount */
             IncomeStatementActions::update_account_values(
                 $is_affected_accounts, 
                 AccountsConfig::TOTAL_DISCOUNT,
                 $details['initial']['txnDiscount']
             );
+
+            /* !! GST/HST TAX */ 
+            /* Adjust Balance Sheet */
+            BalanceSheetActions::update_account_value(
+                $bs_affected_accounts,
+                AccountsConfig::GST_HST_CHARGED_ON_SALE,
+                $details['initial']['gstHSTTax']
+            );
+
+            /* !! PST TAX */ 
+            /* Adjust Balance Sheet */
+            BalanceSheetActions::update_account_value(
+                $bs_affected_accounts,
+                AccountsConfig::PST_CHARGED_ON_SALE,
+                $details['initial']['pstTax']
+            );
         }
         
-        /* !! GST/HST TAX */ 
-        /* Adjust Balance Sheet */
-        BalanceSheetActions::update_account_value(
-            $bs_affected_accounts,
-            AccountsConfig::GST_HST_CHARGED_ON_SALE,
-            $details['initial']['gstHSTTax']
-        );
-
-        /* !! PST TAX */ 
-        /* Adjust Balance Sheet */
-        BalanceSheetActions::update_account_value(
-            $bs_affected_accounts,
-            AccountsConfig::PST_CHARGED_ON_SALE,
-            $details['initial']['pstTax']
-        );
-
         /* !! Payment Method */
         if(!array_key_exists($details['initial']['paymentMethod'] ?? null, PaymentMethod::MODES_OF_PAYMENT)) throw new Exception('Invalid Old Payment Method.');
         $old_payment_method_account = self::get_account_number_from_payment_method(
@@ -1002,19 +1004,21 @@ class SalesReturn {
             $old_sum_total = $details['initial']['sumTotal'] ?? null;
             if(!is_numeric($old_sum_total) || $old_sum_total <= 0) throw new Exception('Invalid Old Sum Total.');
 
-            // Update Balance Sheet
-            BalanceSheetActions::update_account_value(
-                $bs_affected_accounts,
-                $old_payment_method_account,
-                ($old_sum_total + $details['initial']['restockingFees'])
-            );
+            if(self::$is_self_client === false) {
+                // Update Balance Sheet
+                BalanceSheetActions::update_account_value(
+                    $bs_affected_accounts,
+                    $old_payment_method_account,
+                    ($old_sum_total + $details['initial']['restockingFees'])
+                );
 
-            // Deduct Restocking Fees
-            BalanceSheetActions::update_account_value(
-                $bs_affected_accounts,
-                $old_payment_method_account,
-                -$details['initial']['restockingFees']
-            );
+                // Deduct Restocking Fees
+                BalanceSheetActions::update_account_value(
+                    $bs_affected_accounts,
+                    $old_payment_method_account,
+                    -$details['initial']['restockingFees']
+                );
+            }
         }
     }
 
