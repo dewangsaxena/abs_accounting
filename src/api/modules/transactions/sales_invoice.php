@@ -544,27 +544,27 @@ class SalesInvoice {
             // Adjust Inventory And Revenue Accounts
             $accounts = array_keys($affected_accounts);
             foreach($accounts as $account) {
-
-                if($account === AccountsConfig::INVENTORY_A) {
-                    BalanceSheetActions::update_account_value(
-                        $bs_affected_accounts,
-                        $account,
-                        $affected_accounts[$account],
-                    );
-                    continue;
-                }
-            
                 if(self::$is_self_client === false) {
                     BalanceSheetActions::update_account_value(
                         $bs_affected_accounts,
                         $account,
                         $affected_accounts[$account],
                     );
+
                     IncomeStatementActions::update_account_values(
                         $is_affected_accounts,
                         $account,
                         $affected_accounts[$account],
-                    );
+                    ); 
+                }
+                else {
+                    if($account === AccountsConfig::INVENTORY_A) {
+                        BalanceSheetActions::update_account_value(
+                            $bs_affected_accounts,
+                            $account,
+                            $affected_accounts[$account],
+                        );
+                    }
                 }
             }
             
@@ -941,15 +941,6 @@ class SalesInvoice {
             $accounts = array_keys($affected_accounts);
             foreach($accounts as $account) {
 
-                if($account === AccountsConfig::INVENTORY_A) {
-                    BalanceSheetActions::update_account_value(
-                        $bs_affected_accounts,
-                        $account,
-                        $affected_accounts[$account],
-                    );
-                    continue;
-                }
-
                 if(self::$is_self_client === false) {
                     BalanceSheetActions::update_account_value(
                         $bs_affected_accounts,
@@ -962,6 +953,15 @@ class SalesInvoice {
                         $account,
                         $affected_accounts[$account]
                     );
+                }
+                else {
+                    if($account === AccountsConfig::INVENTORY_A) {
+                        BalanceSheetActions::update_account_value(
+                            $bs_affected_accounts,
+                            $account,
+                            $affected_accounts[$account],
+                        );
+                    }
                 }
             }
 
@@ -1225,15 +1225,6 @@ class SalesInvoice {
         $accounts = array_keys($affected_accounts);
         foreach($accounts as $account) {
 
-            if($account === AccountsConfig::INVENTORY_A) {
-                BalanceSheetActions::update_account_value(
-                    $bs_affected_accounts,
-                    $account,
-                    $affected_accounts[$account],
-                );
-                continue;
-            }
-
             if(self::$is_self_client === false) {
 
                 // Adjust COGS in Balance Sheet
@@ -1249,6 +1240,15 @@ class SalesInvoice {
                     $account,
                     $affected_accounts[$account]
                 );
+            }
+            else {
+                if($account === AccountsConfig::INVENTORY_A) {
+                    BalanceSheetActions::update_account_value(
+                        $bs_affected_accounts,
+                        $account,
+                        $affected_accounts[$account],
+                    );
+                }
             }
         }
 
@@ -1307,18 +1307,6 @@ class SalesInvoice {
                     $old_sum_total
                 );
             }
-
-            // if($details['initial']['paymentMethod'] === PaymentMethod::PAY_LATER) {
-
-            //     // Reverse Customer Aged Summary.
-            //     CustomerAgedSummary::update(
-            //         $details['initial']['clientDetails']['id'],
-            //         $details['initial']['txnDate'],
-            //         $old_sum_total,
-            //         $store_id,
-            //         $db,
-            //     );
-            // }
         }
     }
 

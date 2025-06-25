@@ -77,20 +77,6 @@ class Client {
     ];
 
     /**
-     * Clients Excluded from IS Reporting.
-     */
-    public const CLIENTS_EXCLUDED_FROM_IS_REPORTING = [
-        PARTS => [
-            /* ABS Trucking Ltd. */
-            14506 => StoreDetails::EDMONTON,
-
-            /* 1721534 AB LTD */
-            16630 => StoreDetails::EDMONTON,
-        ],
-        WASH => [],
-    ];
-
-    /**
      * Inter stores.
      */
     private const INTER_STORES = [
