@@ -928,7 +928,7 @@ class SalesInvoice {
             else $items_information = $items_information['data'];
 
             // Now Process Inventory
-            self::adjust_inventory(
+            $cogs = self::adjust_inventory(
                 details: $data['details'], 
                 items_information: $items_information,
                 statement_adjust_inventory: $statement_adjust_inventory,
@@ -1078,7 +1078,7 @@ class SalesInvoice {
                 ':pst_tax' => $details['pst_tax'],
                 ':gst_hst_tax' => $details['gst_hst_tax'],
                 ':txn_discount' => $details['txn_discount'],
-                ':cogs' => $details['cogs'],
+                ':cogs' => $cogs,
                 ':payment_method' => $details['payment_method'],
                 ':details' => json_encode($data['details'], JSON_THROW_ON_ERROR),
                 ':po' => $details['po'],
