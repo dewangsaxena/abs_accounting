@@ -53,7 +53,8 @@ export interface InventoryResponseObject {
   aisle: string;
   shelf: string;
   column: string;
-  readonly lastModifiedTimestamp: string;
+  readonly itemLastModifiedTimestamp: string;
+  readonly inventoryLastModifiedTimestamp: string;
   readonly identifier: string;
   readonly description: string;
   readonly unit: string;
@@ -78,7 +79,8 @@ interface RowProps {
  * @returns
  */
 const Row = memo(({ isDisabled, _key, invDetails }: RowProps) => {
-  const [lastModifiedTimestamp, setLastModifiedTimestamp] = useState<string>("");
+  const [inventoryLastModifiedTimestamp, setInventoryLastModifiedTimestamp] = useState<string>("");
+  const [itemLastModifiedTimestamp, setItemLastModifiedTimestamp] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [unit, setUnit] = useState<string>("");
   const [buyingCost, setBuyingCost] = useState<number>(0);
@@ -114,7 +116,8 @@ const Row = memo(({ isDisabled, _key, invDetails }: RowProps) => {
   };
 
   const setItemDetails = (response: InventoryResponseObject) => {
-    setLastModifiedTimestamp(response.lastModifiedTimestamp);
+    setItemLastModifiedTimestamp(response.itemLastModifiedTimestamp);
+    setInventoryLastModifiedTimestamp(response.inventoryLastModifiedTimestamp);
     setUnit(response.unit);
     setDescription(response.description);
     setBuyingCost(response.buyingCost);
@@ -134,7 +137,8 @@ const Row = memo(({ isDisabled, _key, invDetails }: RowProps) => {
       identifier: response.identifier,
       description: response.description,
       unit: response.unit,
-      lastModifiedTimestamp: response.lastModifiedTimestamp,
+      itemLastModifiedTimestamp: response.itemLastModifiedTimestamp,
+      inventoryLastModifiedTimestamp: response.inventoryLastModifiedTimestamp,
     };
   };
 
@@ -148,7 +152,8 @@ const Row = memo(({ isDisabled, _key, invDetails }: RowProps) => {
     setQuantity(0);
     setAmount(0);
     setExistingQuantity(0);
-    setLastModifiedTimestamp("");
+    setItemLastModifiedTimestamp("");
+    setInventoryLastModifiedTimestamp("");
     delete invDetails[_key];
   };
 
@@ -192,9 +197,9 @@ const Row = memo(({ isDisabled, _key, invDetails }: RowProps) => {
             highlightFirstSuggestion={true}
           ></AutoSuggest>
         </Box>
-        {/* Last Modified Timestamp */}
+        {/* Inventory Last Modified Timestamp */}
         <Box width="8%" paddingLeft={1} >
-          <_Label fontSize="0.8em" fontFamily={numberFont} letterSpacing={2}>{lastModifiedTimestamp}</_Label>
+          <_Label fontSize="0.8em" fontFamily={numberFont} letterSpacing={2}>{inventoryLastModifiedTimestamp}</_Label>
         </Box>
         {/* Inventory Quantity  */}
         <Box transform={"translateY(-6px);"} width="8%">

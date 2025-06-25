@@ -790,7 +790,8 @@ class Inventory {
                 it.unit,
                 it.prices,
                 it.account_assets,
-                it.is_inactive
+                it.is_inactive,
+                it.modified AS item_last_modified_timestamp
             FROM 
                 items AS it
             WHERE 
@@ -833,6 +834,7 @@ class Inventory {
                     'aisle' => '',
                     'shelf' => '',
                     'column' => '',
+                    'itemLastModifiedTimestamp' => $record['item_last_modified_timestamp'],
                 ];
             }
 
@@ -888,7 +890,7 @@ class Inventory {
                         }
                     }
                     else $date = '';
-                    $response[$item_id]['lastModifiedTimestamp'] = "$date @ $time";
+                    $response[$item_id]['inventoryLastModifiedTimestamp'] = "$date @ $time";
                 }
 
                 // Format Resonse
