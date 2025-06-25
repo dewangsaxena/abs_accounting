@@ -81,7 +81,7 @@ function generate_list(int $store_id, bool $do_print=true) {
     else return $total_value;
 }
 
-echo generate_list(StoreDetails::EDMONTON, true);die;
+// echo generate_list(StoreDetails::EDMONTON, true);die;
 
 function fetch_inventory(int $store_id): void {
     $db = get_db_instance();
@@ -2419,4 +2419,55 @@ function adjust_balance_sheet(int $store_id): void {
     }
 }
 // adjust_balance_sheet(StoreDetails::EDMONTON);
+
+function delete_inventory(int $store_id): void {
+    $db = get_db_instance();
+    try {
+        // Fetch Existing Inventory 
+        $statement = $db -> prepare(<<<'EOS'
+        SELECT 
+            i.`identifier`,
+            i.prices AS prices,
+            inv.quantity
+        FROM 
+            items AS i
+        LEFT JOIN
+            inventory AS inv
+        ON 
+            i.id = inv.item_id
+        WHERE 
+            inv.store_id = :store_id;
+        AND
+            inv.quantity > 0;
+        EOS);
+        $statement -> execute([':store_id' => $store_id]);
+        $records = $statement -> fetchAll(PDO::FETCH_ASSOC);
+
+        $inv_value = 2587057.1188;
+        $value_2 = 0;
+        foreach($records as $record) {
+            // Prices
+            $prices = json_decode($record['prices'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+
+            // Buying Cost
+            $buying_cost = $prices[$store_id]['buyingCost'];
+
+            // Quantity
+            $quantity = $record['quantity'];
+
+            // Value
+            $value = $buying_cost * $quantity;
+
+            $value_2 += $value;
+
+            $inv_value -= $value;
+        }
+        echo $inv_value . ' | '. $value_2;
+    }
+    catch(Exception $e) {
+        echo $e -> getMessage();
+    }
+}
+
+delete_inventory(StoreDetails::EDMONTON);
 ?>  
