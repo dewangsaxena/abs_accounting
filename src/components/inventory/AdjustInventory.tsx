@@ -80,7 +80,6 @@ interface RowProps {
  */
 const Row = memo(({ isDisabled, _key, invDetails }: RowProps) => {
   const [inventoryLastModifiedTimestamp, setInventoryLastModifiedTimestamp] = useState<string>("");
-  const [itemLastModifiedTimestamp, setItemLastModifiedTimestamp] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [unit, setUnit] = useState<string>("");
   const [buyingCost, setBuyingCost] = useState<number>(0);
@@ -116,7 +115,6 @@ const Row = memo(({ isDisabled, _key, invDetails }: RowProps) => {
   };
 
   const setItemDetails = (response: InventoryResponseObject) => {
-    setItemLastModifiedTimestamp(response.itemLastModifiedTimestamp);
     setInventoryLastModifiedTimestamp(response.inventoryLastModifiedTimestamp);
     setUnit(response.unit);
     setDescription(response.description);
@@ -152,7 +150,6 @@ const Row = memo(({ isDisabled, _key, invDetails }: RowProps) => {
     setQuantity(0);
     setAmount(0);
     setExistingQuantity(0);
-    setItemLastModifiedTimestamp("");
     setInventoryLastModifiedTimestamp("");
     delete invDetails[_key];
   };

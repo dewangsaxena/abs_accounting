@@ -790,8 +790,7 @@ class Inventory {
                 it.unit,
                 it.prices,
                 it.account_assets,
-                it.is_inactive,
-                it.modified AS item_last_modified_timestamp
+                it.is_inactive
             FROM 
                 items AS it
             WHERE 
@@ -834,7 +833,6 @@ class Inventory {
                     'aisle' => '',
                     'shelf' => '',
                     'column' => '',
-                    'itemLastModifiedTimestamp' => $record['item_last_modified_timestamp'],
                 ];
             }
 
@@ -1122,11 +1120,10 @@ class Inventory {
             UPDATE
                 items 
             SET 
-                prices = :prices 
+                prices = :prices
+                /*,modified = CURRENT_TIMESTAMP*/
             WHERE 
-                id = :item_id
-            AND
-                modified = :modified;
+                id = :item_id;
             EOS);
 
             // Profit Margins
@@ -1189,9 +1186,6 @@ class Inventory {
                         ];
                     }
 
-                    // Existing Prices Modified Timestamp
-                    $existing_prices_modified_timestamp = $item_record['modified'];
-
                     // Existing Inventory Details
                     $existing_inv_quantity = $item_record['quantity'];
                     $existing_inv_value = $existing_inv_quantity * $existing_prices[$store_id]['buyingCost'];
@@ -1251,7 +1245,6 @@ class Inventory {
                         $is_successful = $statement_update_prices->execute([
                             ':item_id' => $item_id,
                             ':prices' => json_encode($new_prices, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
-                            ':modified' => $existing_prices_modified_timestamp,
                         ]);
                         if ($is_successful !== true && $statement_update_prices->rowCount() < 1) throw new Exception('Unable to Update Price for ' . $identifier);
                     }
@@ -1324,9 +1317,6 @@ class Inventory {
                             ];
                         }
 
-                        // Existing Prices Modified Timestamp
-                        $existing_prices_modified_timestamp = $item_record['modified'];
-
                         // Calculate Selling Price
                         $existing_prices = self::calculate_selling_price($store_id, $existing_prices, $profit_margins, $buying_cost, $item_record['identifier']);
 
@@ -1338,7 +1328,6 @@ class Inventory {
                         $is_successful = $statement_update_prices->execute([
                             ':item_id' => $item_id,
                             ':prices' => json_encode($existing_prices, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
-                            ':modified' => $existing_prices_modified_timestamp,
                         ]);
 
                         if ($is_successful !== true && $statement_update_prices->rowCount() < 1) throw new Exception('Unable to Update Price for ' . $identifier);
