@@ -2443,7 +2443,7 @@ function delete_inventory(int $store_id): void {
         $statement -> execute([':store_id' => $store_id]);
         $records = $statement -> fetchAll(PDO::FETCH_ASSOC);
 
-        $inv_value = 2587057.1188;
+        $inv_value = 2587372.98;
         $value_2 = 0;
         foreach($records as $record) {
             // Prices
