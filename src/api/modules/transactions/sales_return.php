@@ -685,16 +685,6 @@ class SalesReturn {
             // Adjust Inventory And Revenue Accounts
             $accounts = array_keys($affected_accounts);
             foreach($accounts as $account) {
-
-                if($account === AccountsConfig::INVENTORY_A) {
-                    BalanceSheetActions::update_account_value(
-                        $bs_affected_accounts,
-                        $account,
-                        $affected_accounts[$account],
-                    );
-                    continue;
-                }
-
                 if(self::$is_self_client === false) {
                     BalanceSheetActions::update_account_value(
                         $bs_affected_accounts,
@@ -705,6 +695,15 @@ class SalesReturn {
                     if($account !== AccountsConfig::SALES_INVENTORY_A) {
                         IncomeStatementActions::update_account_values(
                             $is_affected_accounts,
+                            $account,
+                            $affected_accounts[$account],
+                        );
+                    }
+                }
+                else {
+                    if($account === AccountsConfig::INVENTORY_A) {
+                        BalanceSheetActions::update_account_value(
+                            $bs_affected_accounts,
                             $account,
                             $affected_accounts[$account],
                         );
@@ -932,17 +931,6 @@ class SalesReturn {
 
         $accounts = array_keys($affected_accounts);
         foreach($accounts as $account) {
-
-            if($account === AccountsConfig::INVENTORY_A) {
-                // Adjust COGS in Balance Sheet
-                BalanceSheetActions::update_account_value(
-                    $bs_affected_accounts,
-                    $account,
-                    $affected_accounts[$account]
-                );
-                continue;
-            }
-
             if(self::$is_self_client) {
                 // Adjust Balance Sheet
                 BalanceSheetActions::update_account_value(
@@ -954,6 +942,16 @@ class SalesReturn {
                 if($account !== AccountsConfig::SALES_INVENTORY_A) {
                     IncomeStatementActions::update_account_values(
                         $is_affected_accounts,
+                        $account,
+                        $affected_accounts[$account]
+                    );
+                }
+            }
+            else {
+                if($account === AccountsConfig::INVENTORY_A) {
+                    // Adjust COGS in Balance Sheet
+                    BalanceSheetActions::update_account_value(
+                        $bs_affected_accounts,
                         $account,
                         $affected_accounts[$account]
                     );
@@ -1162,16 +1160,6 @@ class SalesReturn {
             // Adjust Inventory And Revenue Accounts
             $accounts = array_keys($affected_accounts);
             foreach($accounts as $account) {
-
-                if($account === AccountsConfig::INVENTORY_A) {
-                    BalanceSheetActions::update_account_value(
-                        $bs_affected_accounts,
-                        $account,
-                        $affected_accounts[$account]
-                    );
-                    continue;
-                }
-
                 if(self::$is_self_client === false) {
                     BalanceSheetActions::update_account_value(
                         $bs_affected_accounts,
@@ -1182,6 +1170,15 @@ class SalesReturn {
                     if($account !== AccountsConfig::SALES_INVENTORY_A) {
                         IncomeStatementActions::update_account_values(
                             $is_affected_accounts,
+                            $account,
+                            $affected_accounts[$account]
+                        );
+                    }
+                }
+                else {
+                     if($account === AccountsConfig::INVENTORY_A) {
+                        BalanceSheetActions::update_account_value(
+                            $bs_affected_accounts,
                             $account,
                             $affected_accounts[$account]
                         );
