@@ -1054,8 +1054,7 @@ class Inventory {
             SELECT 
                 id,
                 identifier,
-                prices,
-                modified
+                prices
             FROM 
                 items 
             WHERE 
@@ -1124,7 +1123,7 @@ class Inventory {
                 prices = :prices 
             WHERE 
                 id = :item_id
-             AND
+            AND
                 modified = :modified;
             EOS);
 
