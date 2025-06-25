@@ -1246,7 +1246,9 @@ class Inventory {
                             ':item_id' => $item_id,
                             ':prices' => json_encode($new_prices, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
                         ]);
-                        if ($is_successful !== true && $statement_update_prices->rowCount() < 1) throw new Exception('Unable to Update Price for ' . $identifier);
+                        if ($is_successful !== true && $statement_update_prices->rowCount() < 1) {
+                            throw new Exception("Unable to Update Price for $identifier. Please try readding and try again.");
+                        }
                     }
                     /* DEDUCTING FROM INVENTORY */ 
                     else {
@@ -1330,7 +1332,9 @@ class Inventory {
                             ':prices' => json_encode($existing_prices, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
                         ]);
 
-                        if ($is_successful !== true && $statement_update_prices->rowCount() < 1) throw new Exception('Unable to Update Price for ' . $identifier);
+                        if ($is_successful !== true && $statement_update_prices->rowCount() < 1) {
+                            throw new Exception("Unable to Update Price for $identifier. Please try readding and try again.");
+                        }
                     } else throw new Exception('Item does not exists in Inventory: ' . $identifier);
                 }
             }
