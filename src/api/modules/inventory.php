@@ -1120,8 +1120,8 @@ class Inventory {
             UPDATE
                 items 
             SET 
-                prices = :prices
-                /*,modified = CURRENT_TIMESTAMP*/
+                prices = :prices,
+                modified = CURRENT_TIMESTAMP
             WHERE 
                 id = :item_id;
             EOS);
