@@ -523,10 +523,11 @@ class SalesReturn {
      * @param op
      * @param affected_accounts
      * @throws Exception
-     * @return void
+     * @return float
      */
-    private static function adjust_inventory(array $details, PDOStatement &$statement_adjust_inventory, int $store_id, string $op, array &$affected_accounts) : void {
+    private static function adjust_inventory(array $details, PDOStatement &$statement_adjust_inventory, int $store_id, string $op, array &$affected_accounts) : float {
 
+        $total_cogr = 0;
         $details_count = count($details);
         for($index = 0; $index < $details_count; ++$index) {
             
@@ -550,11 +551,14 @@ class SalesReturn {
                 $our_buying_cost = $details[$index]['buyingCost'];
 
                 // Cost of Goods Sold
-                $cogs = Utils::round($our_buying_cost * $quantity);
+                $cogr = Utils::round($our_buying_cost * $quantity);
+
+                // Add to total return
+                $total_cogr += $cogr;
 
                 // Deduct From Inventory when Creating/Updating Fresh Items in Sales Return.
                 if($op === 'deduct') {
-                    $cogs = -$cogs;
+                    $cogr = -$cogr;
                     $quantity = -$quantity;
                 }
 
@@ -573,7 +577,7 @@ class SalesReturn {
 
                 // Check for Key
                 if(!array_key_exists($account_asset, $affected_accounts)) $affected_accounts[$account_asset] = 0;
-                $affected_accounts[$account_asset] += $cogs;
+                $affected_accounts[$account_asset] += $cogr;
             }
 
             // Update Revenue Account
@@ -581,6 +585,7 @@ class SalesReturn {
             if($op === 'add') $revenue = -$revenue;
             $affected_accounts[$account_revenue] += $revenue;
         }
+        return $total_cogr;
     }
 
     /**
@@ -635,7 +640,6 @@ class SalesReturn {
             $pst_tax = $validated_details['pst_tax'];
             $gst_hst_tax = $validated_details['gst_hst_tax'];
             $txn_discount = $validated_details['txn_discount'];
-            $cogr = $validated_details['cogr'];
             $restocking_fees = $validated_details['restocking_fees'];
 
             // Payment details
@@ -674,7 +678,7 @@ class SalesReturn {
             $affected_accounts = [];
 
             // Adjust Inventory
-            self::adjust_inventory(
+            $cogr = self::adjust_inventory(
                 $details,
                 $statement_adjust_inventory,
                 $store_id,
@@ -1079,7 +1083,6 @@ class SalesReturn {
             $pst_tax = $validated_details['pst_tax'];
             $gst_hst_tax = $validated_details['gst_hst_tax'];
             $txn_discount = $validated_details['txn_discount'];
-            $cogr = $validated_details['cogr'];
             $restocking_fees = $validated_details['restocking_fees'];
 
             // Payment details
@@ -1149,7 +1152,7 @@ class SalesReturn {
             $bs_affected_accounts = AccountsConfig::ACCOUNTS;
 
             // Now Process Inventory
-            self::adjust_inventory(
+            $cogr = self::adjust_inventory(
                 details: $data['details'], 
                 statement_adjust_inventory: $statement_adjust_inventory,
                 store_id: $store_id,
