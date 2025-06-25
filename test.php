@@ -81,7 +81,7 @@ function generate_list(int $store_id, bool $do_print=true) {
     else return $total_value;
 }
 
-// echo generate_list(StoreDetails::SASKATOON, true);die;
+echo generate_list(StoreDetails::EDMONTON, true);die;
 
 function fetch_inventory(int $store_id): void {
     $db = get_db_instance();
