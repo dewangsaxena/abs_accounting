@@ -1134,7 +1134,7 @@ class SalesInvoice {
      * @throws Exception
      * @return float
      */
-    private static function adjust_inventory(array $details, array $items_information, PDOStatement &$statement_adjust_inventory, int $store_id, string $op, array &$affected_accounts) : float {
+    private static function adjust_inventory(array &$details, array $items_information, PDOStatement &$statement_adjust_inventory, int $store_id, string $op, array &$affected_accounts) : float {
 
         $details_count = count($details);
         $total_cogs = 0;
@@ -1159,7 +1159,10 @@ class SalesInvoice {
                 // Our Buying Cost 
                 // Take the Latest Buying Cost.
                 // Update Buying cost
-                if ($op === 'deduct') $our_buying_cost = $item_information['prices'][$store_id]['buyingCost'];
+                if ($op === 'deduct') {
+                    $our_buying_cost = $item_information['prices'][$store_id]['buyingCost'];
+                    $details[$index]['buyingCost'] = $our_buying_cost;
+                }
                 else $our_buying_cost = $details[$index]['buyingCost'];
 
                 // Cost of Goods Sold
