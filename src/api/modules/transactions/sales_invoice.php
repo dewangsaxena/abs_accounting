@@ -491,7 +491,7 @@ class SalesInvoice {
             $pst_tax = $validated_details['pst_tax'];
             $gst_hst_tax = $validated_details['gst_hst_tax'];
             $txn_discount = $validated_details['txn_discount'];
-            $cogs = $validated_details['cogs'];
+            // $cogs = $validated_details['cogs'];
 
             // Txn Details
             $details = $data['details'];
@@ -532,7 +532,7 @@ class SalesInvoice {
             $affected_accounts = [];
 
             // Adjust Inventory and get total COGS
-            self::adjust_inventory(
+            $cogs = self::adjust_inventory(
                 $details,
                 $items_information,
                 $statement_adjust_inventory,
@@ -1132,11 +1132,12 @@ class SalesInvoice {
      * @param op
      * @param affected_accounts
      * @throws Exception
-     * @return void
+     * @return float
      */
-    private static function adjust_inventory(array $details, array $items_information, PDOStatement &$statement_adjust_inventory, int $store_id, string $op, array &$affected_accounts) : void {
+    private static function adjust_inventory(array $details, array $items_information, PDOStatement &$statement_adjust_inventory, int $store_id, string $op, array &$affected_accounts) : float {
 
         $details_count = count($details);
+        $total_cogs = 0;
         for($index = 0; $index < $details_count; ++$index) {
             
             // Item Id
@@ -1163,6 +1164,9 @@ class SalesInvoice {
 
                 // Cost of Goods Sold
                 $cogs = Utils::round($our_buying_cost * $details[$index]['quantity']);
+
+                // Total COGS
+                $total_cogs += $cogs;
 
                 // Quantity
                 $quantity = $details[$index]['quantity'];
@@ -1196,6 +1200,7 @@ class SalesInvoice {
             if($op === 'add') $revenue = -$revenue;
             $affected_accounts[$account_revenue] += $revenue;
         }
+        return $total_cogs;
     }
 
     /**
