@@ -704,9 +704,9 @@ class SalesReturn {
 
                     if($account !== AccountsConfig::SALES_INVENTORY_A) {
                         IncomeStatementActions::update_account_values(
-                        $is_affected_accounts,
-                        $account,
-                        $affected_accounts[$account],
+                            $is_affected_accounts,
+                            $account,
+                            $affected_accounts[$account],
                         );
                     }
                 }
