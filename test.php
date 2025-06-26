@@ -2418,7 +2418,7 @@ function adjust_balance_sheet(int $store_id): void {
         print_r($e -> getMessage());
     }
 }
-adjust_balance_sheet(StoreDetails::EDMONTON);die;
+// adjust_balance_sheet(StoreDetails::EDMONTON);die;
 
 function delete_inventory(int $store_id): void {
     $db = get_db_instance();
@@ -2443,7 +2443,7 @@ function delete_inventory(int $store_id): void {
         $statement -> execute([':store_id' => $store_id]);
         $records = $statement -> fetchAll(PDO::FETCH_ASSOC);
 
-        $inv_value = 2587372.98;
+        $inv_value = 2604394.11;
         $value_2 = 0;
         foreach($records as $record) {
             // Prices
@@ -2469,5 +2469,5 @@ function delete_inventory(int $store_id): void {
     }
 }
 
-// delete_inventory(StoreDetails::EDMONTON);
+delete_inventory(StoreDetails::EDMONTON);
 ?>  
