@@ -2469,5 +2469,5 @@ function delete_inventory(int $store_id): void {
     }
 }
 
-delete_inventory(StoreDetails::EDMONTON);
+// delete_inventory(StoreDetails::EDMONTON);
 ?>  
