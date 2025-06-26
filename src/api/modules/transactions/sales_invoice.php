@@ -1134,7 +1134,7 @@ class SalesInvoice {
      * @throws Exception
      * @return float
      */
-    private static function adjust_inventory(array &$details, array $items_information, PDOStatement &$statement_adjust_inventory, int $store_id, string $op, array &$affected_accounts) : float {
+    private static function adjust_inventory(array &$details, array &$items_information, PDOStatement &$statement_adjust_inventory, int $store_id, string $op, array &$affected_accounts) : float {
 
         $details_count = count($details);
         $total_cogs = 0;
@@ -1144,7 +1144,7 @@ class SalesInvoice {
             $item_id = $details[$index]['itemId'];
 
             // Cache
-            if($op === 'deduct') $item_information = $items_information[$item_id];
+            $item_information = $items_information[$item_id];
 
             // Revenue
             $revenue = $details[$index]['amountPerItem'];
@@ -1156,14 +1156,13 @@ class SalesInvoice {
                 // Skip Back Order.
                 if($details[$index]['isBackOrder'] === 1) continue;
 
+                // Always take the appreciated value
+                $our_buying_cost = $item_information['prices'][$store_id]['buyingCost'];
+                
                 // Our Buying Cost 
                 // Take the Latest Buying Cost.
                 // Update Buying cost
-                if ($op === 'deduct') {
-                    $our_buying_cost = $item_information['prices'][$store_id]['buyingCost'];
-                    $details[$index]['buyingCost'] = $our_buying_cost;
-                }
-                else $our_buying_cost = $details[$index]['buyingCost'];
+                $details[$index]['buyingCost'] = $our_buying_cost;
 
                 // Cost of Goods Sold
                 $cogs = Utils::round($our_buying_cost * $details[$index]['quantity']);
@@ -1216,14 +1215,31 @@ class SalesInvoice {
      * @param db
      */
     private static function revert_old_transaction(array &$bs_affected_accounts, array &$is_affected_accounts, array $details, PDOStatement &$statement_adjust_inventory, int $store_id, PDO &$db) : void {
-        
+
+        // Item Details
+        $item_details = $details['details'];
+
+        // No of items
+        $no_of_items = count($item_details);
+
+        // Fetch Item Properties
+        $ids = [];
+        for($index = 0; $index < $no_of_items; ++$index) {
+            if(!in_array($item_details[$index]['itemId'], $ids)) $ids[]= $item_details[$index]['itemId'];
+        }
+
+        // Fetch Item Information
+        $items_information = Inventory::fetch(['item_ids' => $ids], $store_id, set_id_as_index: true, db: $db);
+        if($items_information['status'] === false) throw new Exception($items_information['message']);
+        else $items_information = $items_information['data'];
+
         // Offsets
         $affected_accounts = [];
 
         // Adjust Inventory
         self::adjust_inventory(
             $details['initial']['details'],
-            [],
+            $items_information,
             $statement_adjust_inventory,
             $store_id,
             'add',
