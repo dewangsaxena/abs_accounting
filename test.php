@@ -2418,7 +2418,7 @@ function adjust_balance_sheet(int $store_id): void {
         print_r($e -> getMessage());
     }
 }
-// adjust_balance_sheet(StoreDetails::EDMONTON);
+adjust_balance_sheet(StoreDetails::EDMONTON);
 
 function delete_inventory(int $store_id): void {
     $db = get_db_instance();
