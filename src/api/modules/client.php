@@ -77,6 +77,17 @@ class Client {
     ];
 
     /**
+     * Self Client to be included in customer aged summary report.
+     */
+    public const SELF_CLIENT_INCLUDED_IN_CUSTOMER_AGED_SUMMARY_REPORTING = [
+        PARTS => [
+            /* ABS Truck & Trailer Parts Slave Lake */ 
+            17671 => StoreDetails::SLAVE_LAKE,
+        ],
+        WASH => [],
+    ];
+
+    /**
      * Inter stores.
      */
     private const INTER_STORES = [
@@ -845,6 +856,15 @@ class Client {
      */
     public static function is_exception_made_for_self_client(int $client_id): bool {
         return isset(self::SELF_CLIENT_EXCEPTIONS[SYSTEM_INIT_MODE][$client_id]);
+    }
+
+    /**
+     * This method will include self client in customer aged summary reports.
+     * @param client_id
+     * @return bool
+     */
+    public static function include_self_client_in_customer_aged_summary_report(int $client_id): bool {
+        return isset(self::SELF_CLIENT_INCLUDED_IN_CUSTOMER_AGED_SUMMARY_REPORTING[SYSTEM_INIT_MODE][$client_id]);
     }
 
     /**

@@ -237,9 +237,9 @@ class CustomerAgedSummary {
     private static function exclude_self_companies(array &$summary): array {
         $new_summary = [];
         foreach($summary as $s) {
-            // if(Client::is_exception_made_for_self_client($s['client_id'])) $new_summary[]= $s;
-            // else if(Client::is_self_client($s['client_id']) === false) $new_summary[]= $s;
-            if(Client::is_self_client($s['client_id']) === false) $new_summary[]= $s;
+            $is_self_client = Client::is_self_client($s['client_id']);
+            if($is_self_client && Client::include_self_client_in_customer_aged_summary_report($s['client_id'])) $new_summary[]= $s;
+            else if($is_self_client === false) $new_summary[]= $s;
         }
         return $new_summary;
     }
