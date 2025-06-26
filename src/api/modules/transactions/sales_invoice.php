@@ -514,19 +514,8 @@ class SalesInvoice {
             // Remove Keys
             Shared::remove_keys($details, Shared::KEYS_TO_REMOVE_SI_CN_DN_QT);
 
-            // No of items
-            $no_of_items = count($details);
-
-            // Fetch Item Properties
-            $ids = [];
-            for($index = 0; $index < $no_of_items; ++$index) {
-                if(!in_array($details[$index]['itemId'], $ids)) $ids[]= $details[$index]['itemId'];
-            }
-
-            // Fetch Item Information
-            $items_information = Inventory::fetch(['item_ids' => $ids], $store_id, set_id_as_index: true, db: $db);
-            if($items_information['status'] === false) throw new Exception($items_information['message']);
-            else $items_information = $items_information['data'];
+            // Fetch Items Information
+            $items_information = Shared::fetch_items_information($details, $store_id, $db);
 
             // Affected Accounts
             $affected_accounts = [];
@@ -1216,22 +1205,8 @@ class SalesInvoice {
      */
     private static function revert_old_transaction(array &$bs_affected_accounts, array &$is_affected_accounts, array $details, PDOStatement &$statement_adjust_inventory, int $store_id, PDO &$db) : void {
 
-        // Item Details
-        $item_details = $details['details'];
-
-        // No of items
-        $no_of_items = count($item_details);
-
-        // Fetch Item Properties
-        $ids = [];
-        for($index = 0; $index < $no_of_items; ++$index) {
-            if(!in_array($item_details[$index]['itemId'], $ids)) $ids[]= $item_details[$index]['itemId'];
-        }
-
-        // Fetch Item Information
-        $items_information = Inventory::fetch(['item_ids' => $ids], $store_id, set_id_as_index: true, db: $db);
-        if($items_information['status'] === false) throw new Exception($items_information['message']);
-        else $items_information = $items_information['data'];
+        // Items Information
+        $items_information = Shared::fetch_items_information($details['details'], $store_id, $db);
 
         // Offsets
         $affected_accounts = [];

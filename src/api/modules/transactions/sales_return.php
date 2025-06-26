@@ -525,7 +525,7 @@ class SalesReturn {
      * @throws Exception
      * @return float
      */
-    private static function adjust_inventory(array $details, PDOStatement &$statement_adjust_inventory, int $store_id, string $op, array &$affected_accounts) : float {
+    private static function adjust_inventory(array $details, array &$items_information, PDOStatement &$statement_adjust_inventory, int $store_id, string $op, array &$affected_accounts) : float {
 
         $total_cogr = 0;
         $details_count = count($details);
@@ -538,6 +538,9 @@ class SalesReturn {
             $revenue = $details[$index]['amountPerItem'];
             $account_revenue = $details[$index]['account']['revenue'];
 
+            // Items Information
+            $item_information = $items_information[$item_id];
+
             // Inventory
             if(intval($details[$index]['category']) === CATEGORY_INVENTORY) {
 
@@ -547,8 +550,8 @@ class SalesReturn {
                 // Nothing to return.
                 if(is_null($quantity)) continue;
 
-                // Get our buying cost
-                $our_buying_cost = $details[$index]['buyingCost'];
+                // Always Use the updated(appreciated) price
+                $our_buying_cost = $item_information['prices'][$store_id]['buyingCost'];
 
                 // Cost of Goods Sold
                 $cogr = Utils::round($our_buying_cost * $quantity);
@@ -677,9 +680,13 @@ class SalesReturn {
             // Affected Accounts
             $affected_accounts = [];
 
+            // Fetch Items Information
+            $items_information = Shared::fetch_items_information($details, $store_id, $db);
+
             // Adjust Inventory
             $cogr = self::adjust_inventory(
                 $details,
+                $items_information,
                 $statement_adjust_inventory,
                 $store_id,
                 'add',
@@ -919,14 +926,19 @@ class SalesReturn {
         array $details, 
         PDOStatement &$statement_adjust_inventory, 
         int $store_id,
+        PDO &$db,
     ) : void {
 
         // Offsets
         $affected_accounts = [];
 
+        // Items Information
+        $items_information = Shared::fetch_items_information($details['initial']['details'], $store_id, $db);
+
         // Adjust Inventory
         self::adjust_inventory(
             $details['initial']['details'],
+            $items_information,
             $statement_adjust_inventory,
             $store_id,
             'deduct',
@@ -1125,6 +1137,7 @@ class SalesReturn {
                 $data,
                 $statement_adjust_inventory,
                 $store_id,
+                $db,
             );
 
             // Update Balance Sheet
@@ -1151,9 +1164,13 @@ class SalesReturn {
             $is_affected_accounts = AccountsConfig::ACCOUNTS;
             $bs_affected_accounts = AccountsConfig::ACCOUNTS;
 
+            // Items Information
+            $items_information = Shared::fetch_items_information($data['details'], $store_id, $db);
+
             // Now Process Inventory
             $cogr = self::adjust_inventory(
                 details: $data['details'], 
+                items_information: $items_information,
                 statement_adjust_inventory: $statement_adjust_inventory,
                 store_id: $store_id,
                 op: 'add',

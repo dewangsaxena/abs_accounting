@@ -1554,4 +1554,27 @@ class Shared {
         $details_json_hash = hash('sha256', json_encode($details), JSON_THROW_ON_ERROR);
         return $initial_details_json_hash !== $details_json_hash;
     }
+
+    /**
+     * This method will fetch items information.
+     * @param item_details
+     * @param store_id
+     * @param db
+     * @return array
+     */
+    public static function fetch_items_information(array &$item_details, int $store_id, PDO &$db): array {
+        // No of items
+        $no_of_items = count($item_details);
+
+        // Fetch Item Properties
+        $ids = [];
+        for($index = 0; $index < $no_of_items; ++$index) {
+            if(!in_array($item_details[$index]['itemId'], $ids)) $ids[]= $item_details[$index]['itemId'];
+        }
+
+        // Fetch Item Information
+        $items_information = Inventory::fetch(['item_ids' => $ids], $store_id, set_id_as_index: true, db: $db);
+        if($items_information['status'] === false) throw new Exception($items_information['message']);
+        return $items_information['data'];
+    }
 }
