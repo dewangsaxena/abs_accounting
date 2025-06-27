@@ -84,41 +84,6 @@ class Utils {
     }
 
     /**
-     * This method converts Sage50 date format into MySQL equivalent.
-     * @param date Sage50 date 
-     * @return string Returns the date in "YYYY-MM-DD" format. If unsuccessful it will return null.
-     */
-    public static function convert_from_sage50_date_format(string $date): ?string {
-
-        $parts = explode(' ', $date);
-
-        // Incorrect format
-        if (count($parts) !== 3) return null;
-
-        // Day
-        if(!Validate::is_numeric($parts[0])) return null;
-        else {
-            $day = trim($parts[0]);
-
-            // Append a leading 0
-            if (!isset($day[1])) $day = "0$day";
-        }
-
-        // Month
-        // Remove the trailing ,
-        $month = trim($parts[1], ',');
-        if (!array_key_exists($month, self::MONTHS_INDEX)) return null;
-        else $month = self::MONTHS_INDEX[$month];
-
-        // Year
-        if(!Validate::is_numeric($parts[2])) return null;
-        else $year = $parts[2];
-
-        // Return formatted Value for MySQL
-        return "$year-$month-$day";
-    }
-
-    /**
      * This method will format the phone number and return the same.
      * @param phone_no Unformatted phone number.
      * @return Formatted phone number
@@ -219,29 +184,6 @@ class Utils {
         $date_time -> setTimezone(new DateTimeZone(StoreDetails::STORE_DETAILS[$store_id]['timezone']));
         $format = $use_24_hour_format ? 'Y-m-d H:i:s T' : 'Y-m-d h:i:s A T';
         return $date_time -> format($format);
-    }
-
-    /**
-     * This method will return UTC ISO 8601 timestamp.
-     * @param timestamp
-     * @param store_id
-     * @return string
-     */
-    public static function get_utc_iso8601_timestamp(string $timestamp, int $store_id) : string {
-        $date_time = new DateTime(date($timestamp), new DateTimeZone(StoreDetails::STORE_DETAILS[$store_id]['timezone']));
-        $date_time -> setTimezone(new DateTimeZone('UTC'));
-        return $date_time -> format('c');
-    }
-
-    /**
-     * This method will return the ISO8601 Timestamp.
-     * @param timestamp
-     * @param store_id
-     * @return string
-     */
-    public static function get_iso8601_timeatamp(string $timestamp, int $store_id): string {
-        $date_time = new DateTime(date($timestamp), new DateTimeZone(StoreDetails::STORE_DETAILS[$store_id]['timezone']));
-        return $date_time -> format('c');
     }
 
     /**
