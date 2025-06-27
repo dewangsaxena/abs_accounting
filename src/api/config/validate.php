@@ -13,10 +13,6 @@ class Validate {
     // RegEx expression for Validating Email
     private const REGEX_EMAIL_EXPR = '/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,})+$/i';
 
-    public static function is_float(string $var): bool {
-        return filter_var($var, FILTER_VALIDATE_FLOAT);
-    }
-
     public static function is_numeric(?string $var): bool {
         return is_numeric($var);
     }
@@ -25,27 +21,8 @@ class Validate {
         return preg_match(self::REGEX_EMAIL_EXPR, trim($email)); 
     }
 
-    public static function is_url(string $url) : bool {
-        return filter_var($url, FILTER_VALIDATE_URL);
-    }
-
-    public static function is_alpha(string $text): bool {
-        return ctype_alpha($text);
-    }
-
-    public static function is_alnum(string $text) : bool {
-        return ctype_alnum($text);
-    }
-
     public static function is_name(string $name): bool {
         return preg_match(self::REGEX_NAME_EXPR, $name);
-    }
-
-    public static function is_address(string $address): bool {
-        // For now just check for presence of few characters
-        // Maybe improvise this express later
-        // ^[a-zA-Z\d\s\\\-\,\.\#]+$
-        return isset($address[0]);
     }
 
     /**
