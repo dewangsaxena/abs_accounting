@@ -145,7 +145,7 @@ export interface TransactionStore extends TransactionStoreFields {
   addRow: () => void;
   updateAmounts: () => void;
   process: () => Promise<any>;
-  fetchInvoicesByClientForSalesReturns: (invoiceId: string) => any;
+  fetchInvoicesByClientForSalesReturns: (invoiceId?: string) => any;
   fetchTransaction: (
     transactionType: number,
     transactionId: number | string | null
@@ -359,7 +359,7 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
       return httpService.update<void>(payload, "update_txn");
     }
   },
-  fetchInvoicesByClientForSalesReturns: async (invoiceId: string) => {
+  fetchInvoicesByClientForSalesReturns: async (invoiceId?: string) => {
     let payload: { [key: string]: any } = {
       client_id: get().clientDetails?.id,
       invoice_id: invoiceId,

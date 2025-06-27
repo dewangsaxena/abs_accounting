@@ -1944,7 +1944,7 @@ const TransactionHeaderDetails = ({
    * This method will Load Invoices By Client Id for Sales Returns.
    */
   const loadInvoicesByClientForSalesReturns = (
-    invoiceId: string,
+    invoiceId: string | undefined,
     callback: (args: any) => void
   ) => {
     fetchInvoicesByClientForSalesReturns(invoiceId)
@@ -2015,16 +2015,35 @@ const TransactionHeaderDetails = ({
       clientDetails.disableCreditTransactions
     );
 
-    // Fetch All Invoices by Client for Sales Returns
-    if (type === TRANSACTION_TYPES["SR"]) {
-      setAllInvoicesForSelectedClient(
-        buildSearchListForShowingInvoices(clientDetails.salesInvoices)
-      );
-    }
+    // Fetch All Invoices by Client for Sales Returns [DEPRECATED]
+    // if (type === TRANSACTION_TYPES["SR"]) {
+    //   setAllInvoicesForSelectedClient(
+    //     buildSearchListForShowingInvoices(clientDetails.salesInvoices)
+    //   );
+    // }
 
     // Set Successful client change status
     setIsClientChangedSuccessfully(true);
   };
+
+  useEffect(() => {
+    // Fetch Sales Invoice only when client is selected or changed.
+    if(clientDetails) {
+      fetchInvoicesByClientForSalesReturns()
+      .then((res: any) => {
+        let response: APIResponse<any> = res.data;
+        if (response.status === true) {
+          let invoices: { [id: number]: any } = response.data;
+          if (Object.keys(invoices).length === 0) invoices = {};
+          setAllInvoicesForSelectedClient(buildSearchListForShowingInvoices(invoices));
+        } else
+          showToast(toast, false, response.message || UNKNOWN_SERVER_ERROR_MSG);
+      })
+      .catch((err: any) => {
+        showToast(toast, false, err.message);
+      });
+    }
+  }, [clientDetails]);
 
   return (
     <>
