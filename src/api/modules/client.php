@@ -1089,16 +1089,6 @@ class Client {
                     'customSellingPriceForItems' => $custom_selling_price_for_items,
                     'lastPurchaseDate' => is_string($last_purchase_date) ? Utils::format_to_human_readable_date($last_purchase_date) : 'N/A',
                 ];
-
-                // Fetch Invoices for Client [DEPRECATED]
-                // if($params['fetch_sales_invoices'] ?? 0) {
-                //     $sales_invoices = SalesInvoice::fetch_sales_invoices_for_client($record['id'], is_descending: true);
-                //     if($sales_invoices['status'] === false) throw new Exception($sales_invoices['message']);
-                //     else $sales_invoices = $sales_invoices['data'];
-
-                //     // Add Sales Invoices.
-                //     $data['salesInvoices'] = $sales_invoices;
-                // }
                 $formatted_records []= $data;
             }
             return ['status' => true, 'data' => $formatted_records];
