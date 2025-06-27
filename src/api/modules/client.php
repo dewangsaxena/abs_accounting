@@ -1134,11 +1134,14 @@ class Client {
     public static function update_amount_owing_of_client(int $client_id, float $credit_amount, PDO &$db): void {
 
         // Fetch Amount Owing
-        $statement = $db -> prepare('SELECT amount_owing FROM clients WHERE id = :id;');
+        $statement = $db -> prepare('SELECT amount_owing, modified FROM clients WHERE id = :id;');
         $statement -> execute([':id' => $client_id]);
-        $amount_owing = $statement -> fetchAll(PDO::FETCH_ASSOC);
-        if(!isset($amount_owing[0])) throw new Exception('Unable to Fetch Amount Owing.');
-        else $amount_owing = json_decode($amount_owing[0]['amount_owing'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+        $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
+        if(!isset($result[0])) throw new Exception('Unable to Fetch Amount Owing.');
+        else $amount_owing = json_decode($result[0]['amount_owing'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+
+        // Modified
+        $modified = $result[0]['modified'];
 
         // Store Id 
         $store_id = intval($_SESSION['store_id']);
@@ -1159,11 +1162,17 @@ class Client {
         SET 
             amount_owing = :amount_owing 
         WHERE
-            id = :client_id;
+            id = :client_id
+        AND
+            modified = :modified;
         EOS;
         
         $statement = $db -> prepare($query);
-        $is_successful = $statement -> execute([':amount_owing' => $amount_owing, ':client_id' => $client_id]);
+        $is_successful = $statement -> execute([
+            ':amount_owing' => $amount_owing, 
+            ':client_id' => $client_id,
+            ':modified' => $modified,
+        ]);
         if($is_successful !== true && $statement -> rowCount () < 1) throw new Exception('Unable to update amount owing for client.');
         assert_success();
     }
