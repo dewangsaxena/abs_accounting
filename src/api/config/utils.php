@@ -106,7 +106,7 @@ class Utils {
      * @param combine_with
      * @return string formatted date.
      */
-    public static function convert_date_to_human_readable(string $date, string $combine_with=null): string {
+    public static function convert_date_to_human_readable(string $date, string | null $combine_with = null): string {
         if($combine_with !== null) return date('d'.$combine_with.'M'.$combine_with.'Y', strtotime($date));
         else return date('d M, Y', strtotime($date));
     }
