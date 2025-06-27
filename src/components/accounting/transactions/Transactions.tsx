@@ -2026,9 +2026,15 @@ const TransactionHeaderDetails = ({
     setIsClientChangedSuccessfully(true);
   };
 
+  // Sales Invoice Loading Status
+  const [areSalesInvoiceLoaded, setAreSalesInvoiceLoaded] = useState<boolean>(false);
+  const [fetchingSalesInvoice, setFetchingSalesInvoice] = useState<boolean>(false);
+
   useEffect(() => {
     // Fetch Sales Invoice only when client is selected or changed.
     if(clientDetails) {
+      setAreSalesInvoiceLoaded(false);
+      setFetchingSalesInvoice(true);
       fetchInvoicesByClientForSalesReturns()
       .then((res: any) => {
         let response: APIResponse<any> = res.data;
@@ -2036,11 +2042,15 @@ const TransactionHeaderDetails = ({
           let invoices: { [id: number]: any } = response.data;
           if (Object.keys(invoices).length === 0) invoices = {};
           setAllInvoicesForSelectedClient(buildSearchListForShowingInvoices(invoices));
+          setAreSalesInvoiceLoaded(true);
         } else
           showToast(toast, false, response.message || UNKNOWN_SERVER_ERROR_MSG);
       })
       .catch((err: any) => {
+        setAreSalesInvoiceLoaded(false);
         showToast(toast, false, err.message);
+      }).finally(() => {
+        setFetchingSalesInvoice(false);
       });
     }
   }, [clientDetails]);
@@ -2306,7 +2316,13 @@ const TransactionHeaderDetails = ({
                   </Box>
                   {type === TRANSACTION_TYPES["SR"] && (
                       <Box width="90%" marginLeft={8}>
-                        <AsyncSelect
+                        {fetchingSalesInvoice && <Box marginLeft={"50%"}>
+                          <VStack>
+                            <Spinner thickness='2px' color="white" speed="0.62s" emptyColor="purple" size={"xl"}/>
+                            <_Label fontSize="0.8em">Loading Sales Invoices...</_Label>
+                          </VStack>
+                        </Box>}
+                        {areSalesInvoiceLoaded && <AsyncSelect
                           tabSelectsValue={true}
                           isDisabled={
                             clientDetails === null ||
@@ -2357,7 +2373,7 @@ const TransactionHeaderDetails = ({
                               );
                             }
                           }}
-                        />
+                        />}
                       </Box>
                   )}
                   {/* RESTOCKING FEES */}
