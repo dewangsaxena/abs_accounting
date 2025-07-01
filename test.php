@@ -2316,7 +2316,7 @@ function adjust_balance_sheet(int $store_id): void {
     $db = get_db_instance();
     try {
         $details = CustomerAgedSummary::generate(
-            StoreDetails::EDMONTON, 
+            $store_id, 
             '0000-00-00',
             '2025-12-31',
             0, 
@@ -2468,6 +2468,4 @@ function delete_inventory(int $store_id): void {
         echo $e -> getMessage();
     }
 }
-
-delete_inventory(StoreDetails::EDMONTON);
 ?>  
