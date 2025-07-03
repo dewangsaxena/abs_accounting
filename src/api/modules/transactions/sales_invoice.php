@@ -1206,7 +1206,7 @@ class SalesInvoice {
     private static function revert_old_transaction(array &$bs_affected_accounts, array &$is_affected_accounts, array $details, PDOStatement &$statement_adjust_inventory, int $store_id, PDO &$db) : void {
 
         // Items Information
-        $items_information = Shared::fetch_items_information($details['details'], $store_id, $db);
+        $items_information = Shared::fetch_items_information($details['initial']['details'], $store_id, $db);
 
         // Offsets
         $affected_accounts = [];
