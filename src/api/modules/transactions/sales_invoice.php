@@ -1087,6 +1087,9 @@ class SalesInvoice {
                 ':versions' => is_array($versions) ? json_encode($versions, JSON_THROW_ON_ERROR) : null,
             ];
 
+            // TODO
+            throw new Exception('SUCCESS_EXCEPTION');
+
             $statement = $db -> prepare($query);
             $is_successful = $statement -> execute($params);
 
@@ -1211,6 +1214,9 @@ class SalesInvoice {
         // Offsets
         $affected_accounts = [];
 
+        // Calculate C.O.G.S
+        $old_cogs = Shared::calculate_cogs_of_items($details['initial']['details']);
+
         // Adjust Inventory
         self::adjust_inventory(
             $details['initial']['details'],
@@ -1275,6 +1281,11 @@ class SalesInvoice {
                 AccountsConfig::PST_CHARGED_ON_SALE,
                 -$details['initial']['pstTax']
             );
+        }
+
+        if(self::$is_self_client === false) {
+            // C.O.G.S for Income Statement will be the old C.O.G.S
+            $is_affected_accounts[AccountsConfig::INVENTORY_A] = -$old_cogs;
         }
 
         /* !! Payment Method */

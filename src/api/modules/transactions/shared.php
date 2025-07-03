@@ -1577,4 +1577,17 @@ class Shared {
         if($items_information['status'] === false) throw new Exception($items_information['message']);
         return $items_information['data'];
     }
+
+    /**
+     * This method will calculate C.O.G.S.
+     * @param item_details
+     * @return float
+     */
+    public static function calculate_cogs_of_items(array &$item_details): float {
+        $total_cogs = 0;
+        foreach($item_details as $item) {
+            $total_cogs += ($item['buyingCost'] * $item['quantity']);
+        }
+        return $total_cogs;
+    }
 }
