@@ -2506,5 +2506,28 @@ function extract_inventory(int $store_id): void {
     file_put_contents('july_1_2025.csv', json_encode($items));
 }
 
-extract_inventory(StoreDetails::EDMONTON);
+// COmpare inventory
+function compare_inventory(): void {
+    $june = json_decode(file_get_contents('june_30_2025.csv'), true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+    $july = json_decode(file_get_contents('july_1_2025.csv'), true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+    // print_r($june);die;
+    $june_keys = array_keys($june);
+    $july_keys = array_keys($july);
+
+    foreach($july as $i) {
+        $identifier = $i['identifier'];
+        if(isset($june[$identifier])) {
+            $june_value = $june[$identifier]['buyingCost'];
+            $july_value = $july[$identifier]['buyingCost'];
+            if($june_value !== $july_value) {
+                print_r($june[$identifier]);
+                echo ' | ';
+                print_r($july[$identifier]);
+                echo '<br>';
+            }
+        }
+    }
+}
+
+compare_inventory();
 ?>  
