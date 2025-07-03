@@ -2503,7 +2503,7 @@ function extract_inventory(int $store_id): void {
         ];
     }
 
-    file_put_contents('june_30_2025.csv', json_encode($items));
+    file_put_contents('july_1_2025.csv', json_encode($items));
 }
 
 extract_inventory(StoreDetails::EDMONTON);
