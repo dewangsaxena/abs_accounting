@@ -28,3 +28,6 @@ src/api/config/credentials.php
 
 # Proxy File
 proxy.js
+
+# .csv
+*.csv
