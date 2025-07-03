@@ -477,7 +477,7 @@ class Shared {
             }
 
             // Assert Current Month of Transaction
-            Shared::assert_current_month_of_transaction($transaction_date, $store_id);
+            Shared::assert_current_month_of_transaction($transaction_date, $store_id, $is_transaction_detail_changed);
         }
 
         // Disable Federal Taxes
@@ -1528,7 +1528,7 @@ class Shared {
      * @param store_id
      * @throws Exception
      */
-    public static function assert_current_month_of_transaction(string $txn_date, int $store_id): void {
+    public static function assert_current_month_of_transaction(string $txn_date, int $store_id, bool $is_transaction_detail_changed): void {
 
         $current_date_parts = explode('-', Utils::get_business_date($store_id));
         $current_year = intval($current_date_parts[0]);
@@ -1538,7 +1538,7 @@ class Shared {
         $txn_year = intval($txn_date_parts[0]);
         $txn_month = intval($txn_date_parts[1]);
 
-        if(($txn_year === $current_year && $txn_month === $current_month) === false) throw new Exception(
+        if($is_transaction_detail_changed && ($txn_year === $current_year && $txn_month === $current_month) === false) throw new Exception(
             'Cannot Create or Update Transaction in Different Month/Year. Please create new Transaction on current date.'
         );
     }

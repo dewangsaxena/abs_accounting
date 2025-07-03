@@ -225,12 +225,6 @@ class SalesInvoice {
         );
         if($transaction_date === null) throw new Exception('Invalid Date.');
 
-        // Assert Current Month of Transaction
-        Shared::assert_current_month_of_transaction($transaction_date, $store_id);
-
-        // Validate New Date(if any)
-        Shared::validate_new_date_of_transaction($data, $transaction_date);
-
         // Change for Changed Transactions
         $is_transaction_detail_changed = false;
         if(isset($data['initial'])) {
@@ -239,6 +233,12 @@ class SalesInvoice {
                 $data['details'],
             );
         }
+
+        // Assert Current Month of Transaction
+        Shared::assert_current_month_of_transaction($transaction_date, $store_id, $is_transaction_detail_changed);
+
+        // Validate New Date(if any)
+        Shared::validate_new_date_of_transaction($data, $transaction_date);
 
         // Is Update Transaction
         $is_update_txn = isset($data['id']);
