@@ -72,6 +72,9 @@ class Client {
 
             /* 1721534 AB LTD */
             16630 => StoreDetails::EDMONTON,
+
+            /* ABS Truck Wash And Lube */
+            13735 => StoreDetails::EDMONTON,
         ],
         WASH => [],
     ];
