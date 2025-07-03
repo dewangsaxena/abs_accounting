@@ -2468,4 +2468,43 @@ function delete_inventory(int $store_id): void {
         echo $e -> getMessage();
     }
 }
+
+function extract_inventory(int $store_id): void {
+    $db = get_db_instance();
+
+    $query = <<<'EOS'
+    SELECT 
+        i.identifier,
+        i.prices,
+        inv.quantity
+    FROM 
+        items AS i
+    LEFT JOIN
+        inventory AS inv
+    ON 
+        i.id = inv.item_id
+    WHERE 
+        inv.store_id = :store_id;
+    EOS;
+
+    $statement = $db -> prepare($query);
+    $statement -> execute([':store_id' => $store_id]);
+    $results = $statement -> fetchAll(PDO::FETCH_ASSOC);
+    $items = [];
+    foreach($results as $i) {
+        $prices = json_decode($i['prices'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+        $buying_cost = $prices[$store_id]['buyingCost'] ?? 0;
+        $quantity = $i['quantity'];
+        $items[$i['identifier']] = [
+            'identifier' => $i['identifier'],
+            'quantity' => $quantity,
+            'buyingCost' => $buying_cost,
+            'value' => Utils::round($quantity * $buying_cost, 2),
+        ];
+    }
+
+    file_put_contents('june_30_2025.csv', json_encode($items));
+}
+
+extract_inventory(StoreDetails::EDMONTON);
 ?>  
