@@ -196,7 +196,7 @@ class Shared {
      * @param db
      * @return array
      */
-    public static function fetch_previous_and_next_transaction_id(int $store_id, int $client_id, int $transaction_type, int $transaction_id, PDO $db=null): array {
+    public static function fetch_previous_and_next_transaction_id(int $store_id, int $client_id, int $transaction_type, int $transaction_id, PDO | null $db = null): array {
         if($db === null) $db = get_db_instance();
 
         // Select Table
