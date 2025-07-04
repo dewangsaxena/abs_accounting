@@ -948,6 +948,9 @@ class SalesReturn {
         // Items Information
         $items_information = Shared::fetch_items_information($details['initial']['details'], $store_id, $db);
 
+        // Old COGR Amount
+        $old_cogr = Shared::calculate_cogs_of_items($details, is_sales_return: true);
+
         // Adjust Inventory
         self::adjust_inventory(
             $details['initial']['details'],
