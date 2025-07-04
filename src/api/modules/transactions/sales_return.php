@@ -686,11 +686,6 @@ class SalesReturn {
             // Fetch Items Information
             $items_information = Shared::fetch_items_information($details, $store_id, $db);
 
-            // Get Old COGR 
-            // This has to be done before adjusting inventory
-            // Because it might update the BuyingCost of the item being returned.
-            $old_cogr = Shared::calculate_cogs_of_items($details, is_sales_return: true);
-
             // Adjust Inventory
             $new_cogr = self::adjust_inventory(
                 $details,
@@ -728,11 +723,6 @@ class SalesReturn {
                         );
                     }
                 }
-            }
-            
-            if(self::$is_self_client === false) {
-                // Update COGR for income statement with value of old one.
-                $is_affected_accounts[AccountsConfig::INVENTORY_A] = $old_cogr;
             }
 
             /* ADD TO PAYMENT METHOD ACCOUNT */
