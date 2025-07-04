@@ -553,6 +553,9 @@ class SalesReturn {
                 // Always Use the updated(appreciated) price
                 $our_buying_cost = $item_information['prices'][$store_id]['buyingCost'];
 
+                // Update Buying Cost with latest values
+                $details[$index]['buyingCost'] = $our_buying_cost;
+
                 // Cost of Goods Sold
                 $cogr = Utils::round($our_buying_cost * $quantity);
 
@@ -683,6 +686,11 @@ class SalesReturn {
             // Fetch Items Information
             $items_information = Shared::fetch_items_information($details, $store_id, $db);
 
+            // Get Old COGR 
+            // This has to be done before adjusting inventory
+            // Because it might update the BuyingCost of the item being returned.
+            $old_cogr = Shared::calculate_cogs_of_items($details, is_sales_return: true);
+
             // Adjust Inventory
             $new_cogr = self::adjust_inventory(
                 $details,
@@ -692,9 +700,6 @@ class SalesReturn {
                 'add',
                 $affected_accounts,
             );
-
-            // Get Old COGR 
-            $old_cogr = Shared::calculate_cogs_of_items($details, is_sales_return: true);
             
             // Adjust Inventory And Revenue Accounts
             $accounts = array_keys($affected_accounts);
