@@ -778,8 +778,6 @@ class SalesReturn {
                 );
             }
 
-            // print_r($is_affected_accounts[AccountsConfig::INVENTORY_A]);
-
             /* COMMIT UPDATES TO BALANCE SHEET */ 
             BalanceSheetActions::update_from(
                 $bs_affected_accounts,
