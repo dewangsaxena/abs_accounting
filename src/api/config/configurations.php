@@ -243,4 +243,8 @@ define('DEFAULT_PROFIT_MARGIN_KEY', 'DEFAULT');
 
 // Check Transaction Date
 define('CHECK_TRANSACTION_DATE', SYSTEM_INIT_HOST === __TEN_LEASING__ ? 5 : 2);
+
+// Enable Date Edit By Root
+// This provides additional safeguard.
+define('ENABLE_DATE_EDIT_BY_ROOT', false);
 ?>

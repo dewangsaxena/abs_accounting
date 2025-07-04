@@ -656,5 +656,14 @@ class UserManagement {
         $ret = self::add($data);
         if($ret['status'] !== true) echo $ret['message'];
     }
+
+    /**
+     * This method will check whether the user is root.
+     * @return bool
+     */
+    public static function is_root_user(): bool {
+        if(isset($_SESSION['user_id'])) return intval($_SESSION['user_id']) === self::ROOT_USER_ID;
+        throw new Exception('Invalid Session. Please login again.');
+    }
 }
 ?>

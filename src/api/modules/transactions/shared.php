@@ -1465,7 +1465,9 @@ class Shared {
         $initial_date = date_create($initial_date);
         $current_date = date_create(Utils::get_business_date($store_id));
         $difference = date_diff($initial_date, $current_date);
-        if($difference -> d > CHECK_TRANSACTION_DATE) throw new Exception('Cannot Update Transaction after '. CHECK_TRANSACTION_DATE. ' days.');
+        if(!(UserManagement::is_root_user() && ENABLE_DATE_EDIT_BY_ROOT)) {
+            if($difference -> d > CHECK_TRANSACTION_DATE) throw new Exception('Cannot Update Transaction after '. CHECK_TRANSACTION_DATE. ' days.');
+        }
     }
 
     /**
@@ -1485,7 +1487,9 @@ class Shared {
             $old_month = intval($old_date['month']);
             $new_month = intval($new_date['month']);
             if($new_month === 0 || $old_month === 0) throw new Exception('Invalid Month.');
-            if($new_month !== $old_month) throw new Exception('Cannot Post Transaction in Other Month.');
+            if(!(UserManagement::is_root_user() && ENABLE_DATE_EDIT_BY_ROOT)) {
+                if($new_month !== $old_month) throw new Exception('Cannot Post Transaction in Other Month.');
+            }
             
             // Check for Year
             $transaction_year = intval($new_date['year']);
@@ -1538,9 +1542,13 @@ class Shared {
         $txn_year = intval($txn_date_parts[0]);
         $txn_month = intval($txn_date_parts[1]);
 
-        if($is_transaction_detail_changed && ($txn_year === $current_year && $txn_month === $current_month) === false) throw new Exception(
-            'Cannot Create or Update Transaction in Different Month/Year. Please create new Transaction on current date.'
-        );
+        if(!(UserManagement::is_root_user() && ENABLE_DATE_EDIT_BY_ROOT)) {
+            if($is_transaction_detail_changed && ($txn_year === $current_year && $txn_month === $current_month) === false) throw new Exception(
+                'Cannot Create or Update Transaction in Different Month/Year. Please create new Transaction on current date.'
+            );
+        }
+
+        
     }
 
     /**
