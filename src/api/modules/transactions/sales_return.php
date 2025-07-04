@@ -525,9 +525,9 @@ class SalesReturn {
      * @throws Exception
      * @return float
      */
-    private static function adjust_inventory(array $details, array &$items_information, PDOStatement &$statement_adjust_inventory, int $store_id, string $op, array &$affected_accounts) : float {
+    private static function adjust_inventory(array &$details, array &$items_information, PDOStatement &$statement_adjust_inventory, int $store_id, string $op, array &$affected_accounts) : float {
 
-        $total_cogr = 0;
+        $total_new_cogr = 0;
         $details_count = count($details);
         for($index = 0; $index < $details_count; ++$index) {
             
@@ -557,7 +557,7 @@ class SalesReturn {
                 $cogr = Utils::round($our_buying_cost * $quantity);
 
                 // Add to total return
-                $total_cogr += $cogr;
+                $total_new_cogr += $cogr;
 
                 // Deduct From Inventory when Creating/Updating Fresh Items in Sales Return.
                 if($op === 'deduct') {
@@ -588,7 +588,7 @@ class SalesReturn {
             if($op === 'add') $revenue = -$revenue;
             $affected_accounts[$account_revenue] += $revenue;
         }
-        return $total_cogr;
+        return $total_new_cogr;
     }
 
     /**
@@ -684,7 +684,7 @@ class SalesReturn {
             $items_information = Shared::fetch_items_information($details, $store_id, $db);
 
             // Adjust Inventory
-            $cogr = self::adjust_inventory(
+            $new_cogr = self::adjust_inventory(
                 $details,
                 $items_information,
                 $statement_adjust_inventory,
@@ -692,6 +692,9 @@ class SalesReturn {
                 'add',
                 $affected_accounts,
             );
+
+            // Get Old COGR 
+            $old_cogr = Shared::calculate_cogs_of_items($details, is_sales_return: true);
             
             // Adjust Inventory And Revenue Accounts
             $accounts = array_keys($affected_accounts);
@@ -720,6 +723,11 @@ class SalesReturn {
                         );
                     }
                 }
+            }
+            
+            if(self::$is_self_client === false) {
+                // Update COGR for income statement with value of old one.
+                $is_affected_accounts[AccountsConfig::INVENTORY_A] = $old_cogr;
             }
 
             /* ADD TO PAYMENT METHOD ACCOUNT */
@@ -769,6 +777,8 @@ class SalesReturn {
                     $sub_total,
                 );
             }
+
+            // print_r($is_affected_accounts[AccountsConfig::INVENTORY_A]);
 
             /* COMMIT UPDATES TO BALANCE SHEET */ 
             BalanceSheetActions::update_from(
@@ -872,7 +882,7 @@ class SalesReturn {
                 ':pst_tax' => $pst_tax,
                 ':gst_hst_tax' => $gst_hst_tax,
                 ':txn_discount' => $txn_discount,
-                ':cogr' => $cogr,
+                ':cogr' => $new_cogr,
                 ':payment_method' => $payment_method,
                 ':sales_invoice_payment_method' => $sales_invoice_payment_method,
                 ':details' => json_encode($details, JSON_THROW_ON_ERROR),

@@ -1581,12 +1581,14 @@ class Shared {
     /**
      * This method will calculate C.O.G.S.
      * @param item_details
+     * @param is_sales_return 
      * @return float
      */
-    public static function calculate_cogs_of_items(array &$item_details): float {
+    public static function calculate_cogs_of_items(array &$item_details, bool $is_sales_return = false): float {
         $total_cogs = 0;
+        $field_name = $is_sales_return ? 'returnQuantity' : 'quantity';
         foreach($item_details as $item) {
-            $total_cogs += ($item['buyingCost'] * $item['quantity']);
+            $total_cogs += ($item['buyingCost'] * $item[$field_name]);
         }
         return $total_cogs;
     }
