@@ -1547,8 +1547,6 @@ class Shared {
                 'Cannot Create or Update Transaction in Different Month/Year. Please create new Transaction on current date.'
             );
         }
-
-        
     }
 
     /**
