@@ -939,7 +939,7 @@ class SalesReturn {
         $items_information = Shared::fetch_items_information($details['initial']['details'], $store_id, $db);
 
         // Old COGR Amount
-        $old_cogr = Shared::calculate_cogs_of_items($details, is_sales_return: true);
+        $old_cogr = Shared::calculate_cogs_of_items($details['initial']['details'], is_sales_return: true);
 
         // Adjust Inventory
         self::adjust_inventory(
@@ -979,6 +979,11 @@ class SalesReturn {
                     );
                 }
             }
+        }
+        
+        if(self::$is_self_client === false) {
+            // Update 
+            $is_affected_accounts[AccountsConfig::INVENTORY_A] = -$old_cogr;
         }
 
         /* !! Discount */
