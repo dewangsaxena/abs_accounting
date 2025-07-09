@@ -1989,4 +1989,74 @@ class Inventory {
             GeneratePDF::generate_item_sold_quantity($item_details, $store_id, $year);
         }
     }
+
+    /**
+     * This method will generate report of items sold.
+     * @param from_date
+     * @param till_date
+     * @param store_id
+     * @return array
+     */
+    public static function generate_report_of_items_sold(string $from_date, string $till_date, int $store_id): array {
+        $db = get_db_instance();
+
+        // Query
+        $query = <<<'EOS'
+        SELECT 
+            `details` 
+        FROM 
+            __TABLE_NAME__ 
+        WHERE 
+            `date` >= :from_date 
+        AND 
+            `date` <= :till_date
+        AND 
+            `store_id` = :store_id;
+        EOS;
+
+        // Fetch Sales Invoices and Sales Return
+        $sales_invoices_statement = $db -> prepare(str_replace('__TABLE_NAME__', 'sales_invoice', $query));
+        $sales_returns_statement = $db -> prepare(str_replace('__TABLE_NAME__', 'sales_return', $query));
+
+        // Params
+        $params = [
+            ':from_date' => $from_date,
+            ':till_date' => $till_date,
+            ':store_id' => $store_id,
+        ];
+
+        // Execute 
+        $sales_invoices_statement -> execute($params);
+        $sales_returns_statement -> execute($params);
+
+        // Records
+        $sales_invoices = $sales_invoices_statement -> fetchAll(PDO::FETCH_ASSOC);
+        $sales_returns = $sales_invoices_statement -> fetchAll(PDO::FETCH_ASSOC);
+
+        // Items sold
+        $items_sold = [];
+
+        foreach($sales_invoices as $si) {
+            $item_details = json_decode($si['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+
+            foreach($item_details as $item) {
+                $item_id = $item['identifier'];
+                if(isset($items_sold[$item_id]) === false) {
+                    $items_sold[$item_id] = 0;
+                }
+
+                $items_sold[$item_id] += $item['quantity'];
+            }
+        }
+
+        foreach($sales_returns as $sr) {
+            $item_details = json_decode($sr['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+
+            foreach($item_details as $item) {
+                $item_id = $item['identifier'];
+                if(isset($items_sold[$item_id]) === false) continue;
+            }
+        }
+        return $items_sold;
+    }
 }

@@ -2529,5 +2529,9 @@ function compare_inventory(): void {
     }
 }
 
-compare_inventory();
+$report = Inventory::generate_report_of_items_sold('2025-07-09', '2025-07-09', StoreDetails::SLAVE_LAKE);
+$keys = array_keys($report);
+foreach($keys as $k) {
+    echo "$k ~~ {$report[$k]}<br>";
+}
 ?>  
