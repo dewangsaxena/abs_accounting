@@ -1379,7 +1379,7 @@ class SalesInvoice {
      * @param is_descending
      * @return array
      */
-    public static function fetch_sales_invoices_for_client(int $client_id, ?string $invoice_id=null, bool $is_descending=false): array {
+    public static function fetch_sales_invoices_for_client(int $client_id, ?string $invoice_id=null, bool $is_descending = true): array {
         $db = get_db_instance();
         try {
             $query = <<<'EOS'
