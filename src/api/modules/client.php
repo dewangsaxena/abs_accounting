@@ -1279,9 +1279,10 @@ class Client {
      * @param client_id
      * @param start_date
      * @param end_date
+     * @param is_csv
      * @return void
      */    
-    public static function generate_item_sold_reports(array $store_ids, int $client_id, string $start_date, string $end_date): void {
+    public static function generate_item_sold_reports(array $store_ids, int $client_id, string $start_date, string $end_date, bool $is_csv = false): void {
         $db = get_db_instance();
 
         $query = <<<'EOS'
@@ -1317,6 +1318,7 @@ class Client {
                 if(isset($items_sold[$item_id]) === false) {
                     $items_sold[$item_id] = [
                         'identifier' => $d['identifier'],
+                        'description' => $d['description'],
                         'quantity' => 0,
                     ];
                 }
@@ -1325,48 +1327,58 @@ class Client {
             }
         }
 
-        $heading = '<h1>Items Sold in ';
-        foreach($store_ids as $store_id) {
-            $heading .= StoreDetails::STORE_DETAILS[$store_id]['name'].', ';
-        } 
-
-        // Heading
-        $heading = rtrim($heading, ', ');
-        $heading .= " between $start_date and $end_date.</h1><br><br>";
-
-        $code = <<<EOS
-        <html>
-        <body>
-        $heading
-        <table>
-        EOS;
-
-        $keys = array_keys($items_sold);
-        $c = count($keys);
-        $break_outer = false;
-        for($i = 0; $break_outer === false && $i < $c; ) {
-            $code .= '<tr>';
-            for ($j = 0; $j < 4; ++$j) {
-                if(isset($keys[$i]) === false) {
-                    $break_outer = true;
-                    break;
-                }
-                $key = $keys[$i];
-                $identifier = $items_sold[$key]['identifier'];
-                $quantity = $items_sold[$key]['quantity'];
-                $i += 1;
-                $code .= "<td><b>$identifier</b></td>";
-                $code .= "<td>$quantity</td>";
+        if($is_csv) {
+            $fopen = fopen('dbi.csv', 'w');
+            fputcsv($fopen, ['Identifier', 'Description', 'Quantity']);
+            foreach($items_sold as $item) {
+                fputcsv($fopen, [$item['identifier'], $item['description'], $item['quantity']]);
             }
-            $code .= '</tr>';
         }
+        else {
+            $heading = '<h1>Items Sold in ';
+            foreach($store_ids as $store_id) {
+                $heading .= StoreDetails::STORE_DETAILS[$store_id]['name'].', ';
+            } 
 
-        echo $code;
-        $code = <<<EOS
-        $code
-        </table>
-        </body>
-        </html>
-        EOS;
+            // Heading
+            $heading = rtrim($heading, ', ');
+            $heading .= " between $start_date and $end_date.</h1><br><br>";
+
+
+            $code = <<<EOS
+            <html>
+            <body>
+            $heading
+            <table>
+            EOS;
+
+            $keys = array_keys($items_sold);
+            $c = count($keys);
+            $break_outer = false;
+            for($i = 0; $break_outer === false && $i < $c; ) {
+                $code .= '<tr>';
+                for ($j = 0; $j < 4; ++$j) {
+                    if(isset($keys[$i]) === false) {
+                        $break_outer = true;
+                        break;
+                    }
+                    $key = $keys[$i];
+                    $identifier = $items_sold[$key]['identifier'];
+                    $quantity = $items_sold[$key]['quantity'];
+                    $i += 1;
+                    $code .= "<td><b>$identifier</b></td>";
+                    $code .= "<td>$quantity</td>";
+                }
+                $code .= '</tr>';
+            }
+
+            echo $code;
+            $code = <<<EOS
+            $code
+            </table>
+            </body>
+            </html>
+            EOS;
+        }
     }
 }
