@@ -1271,4 +1271,9 @@ class Client {
             echo $e -> getMessage();
         }
     }
+
+    
+    public static function generate_item_sold_reports(int $store_id, int $client_id, string $start_date, string $end_date): void {
+        
+    }
 }
