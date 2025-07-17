@@ -1272,8 +1272,70 @@ class Client {
         }
     }
 
-    
-    public static function generate_item_sold_reports(int $store_id, int $client_id, string $start_date, string $end_date): void {
-        
+    /**
+     * This method will generate item sold for client within a date range.
+     * 
+     * @param store_ids
+     * @param client_id
+     * @param start_date
+     * @param end_date
+     * @return void
+     */    
+    public static function generate_item_sold_reports(array $store_ids, int $client_id, string $start_date, string $end_date): void {
+        $db = get_db_instance();
+
+        $query = <<<'EOS'
+        SELECT 
+            *
+        FROM
+            sales_invoice 
+        WHERE 
+            client_id = :client_id
+        AND
+            store_id IN (:placeholder)
+        AND
+            `date` >= :start_date
+        AND
+            `date` <= :end_date;
+        EOS;
+        $results = Utils::mysql_in_placeholder_pdo_substitute($store_ids, $query);
+        $statement = $db -> prepare($results['query']);
+        $statement -> execute([
+            ...$results['values'],
+            ':client_id' => $client_id,
+            ':start_date' => $start_date,
+            ':end_date' => $end_date,
+        ]);
+
+        $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
+
+        $items_sold = [];
+        foreach($result as $r) {
+            $details = json_decode($r['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+            foreach($details as $d) {
+                $item_id = $d['itemId'];
+                if(isset($items_sold[$item_id]) === false) {
+                    $items_sold[$item_id] = [
+                        'identifier' => $d['identifier'],
+                        'quantity' => 0,
+                    ];
+                }
+
+                $items_sold[$item_id]['quantity'] += $d['quantity'];
+            }
+        }
+
+        $heading = '<h1>Items Sold for ';
+        foreach($store_ids as $store_id) {
+            $heading .= StoreDetails::STORE_DETAILS[$store_id]['name'].', ';
+        } 
+
+        // Heading
+        $heading = rtrim($heading, ', ');
+        $heading .= " between $start_date and $end_date.</h1><br><br>";
+        echo $heading;
+        foreach($items_sold as $i) {
+            echo $i['identifier'] . '&nbsp;&nbsp;-&nbsp;&nbsp;'. $i['quantity'].'<br>';
+        }
     }
 }

@@ -2529,9 +2529,12 @@ function compare_inventory(): void {
     }
 }
 
-$report = Inventory::generate_report_of_items_sold('2025-07-09', '2025-07-09', StoreDetails::SLAVE_LAKE);
-$keys = array_keys($report);
-foreach($keys as $k) {
-    echo "$k ~~ {$report[$k]}<br>";
-}
+Client::generate_item_sold_reports([
+    StoreDetails::EDMONTON, 
+], 14505, '2025-01-01', '2025-12-31');
+// $report = Inventory::generate_report_of_items_sold('2025-07-09', '2025-07-09', StoreDetails::SLAVE_LAKE);
+// $keys = array_keys($report);
+// foreach($keys as $k) {
+//     echo "$k ~~ {$report[$k]}<br>";
+// }
 ?>  
