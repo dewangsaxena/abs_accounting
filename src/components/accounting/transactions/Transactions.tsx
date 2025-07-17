@@ -901,7 +901,7 @@ const ItemFieldRow = memo(
       details[rowIndex].originalSellingPrice =
         event.value.prices[storeId].sellingPrice;
 
-      if (clientDetails && clientDetails.isSelfClient) {
+      if (clientDetails && clientDetails.isSelfClient && clientDetails.enforceSelfClientPriceLock === 1) {
         // Selling Price
         sellingPrice =
           clientDetails && clientDetails.isSelfClient
@@ -1547,7 +1547,7 @@ const ItemFieldRow = memo(
               disableEditingItem ||
               isProcessed ||
               (clientDetails &&
-                clientDetails.isSelfClient &&
+                clientDetails.isSelfClient && clientDetails.enforceSelfClientPriceLock === 1 && 
                 (type === TRANSACTION_TYPES["SI"] ||
                   type === TRANSACTION_TYPES["QT"]))
             }

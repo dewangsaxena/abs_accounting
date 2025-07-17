@@ -74,6 +74,7 @@ export interface ClientDetails {
     [storeId: number]: { [itemId: number]: ItemDetailsForClient };
   };
   lastPurchaseDate: string;
+  enforceSelfClientPriceLock: number;
 }
 
 /**
@@ -151,6 +152,7 @@ export const clientStore = create<ClientStore>((set, get) => ({
   isSelfClient: 0,
   customSellingPriceForItems: {},
   lastPurchaseDate: "",
+  enforceSelfClientPriceLock: 1,
   setField: (detailName: string, value: any) => {
     if (detailName === "id") set({ id: value });
     /* Primary Details */ else if (detailName === "primaryClientName") {
@@ -324,6 +326,7 @@ export const clientStore = create<ClientStore>((set, get) => ({
     set({ isSelfClient: details.isSelfClient });
     set({ customSellingPriceForItems: details.customSellingPriceForItems });
     set({ lastPurchaseDate: details.lastPurchaseDate });
+    set({ enforceSelfClientPriceLock: details.enforceSelfClientPriceLock });
   },
   fetch: async (
     searchTerm: string,
@@ -401,5 +404,6 @@ export const clientStore = create<ClientStore>((set, get) => ({
     set({ lastModifiedTimestamp: "" });
     set({ isSelfClient: 0 });
     set({ customSellingPriceForItems: {} as any });
+    set({ enforceSelfClientPriceLock: 1});
   },
 }));
