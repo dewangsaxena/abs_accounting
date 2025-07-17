@@ -1325,7 +1325,7 @@ class Client {
             }
         }
 
-        $heading = '<h1>Items Sold for ';
+        $heading = '<h1>Items Sold in ';
         foreach($store_ids as $store_id) {
             $heading .= StoreDetails::STORE_DETAILS[$store_id]['name'].', ';
         } 
@@ -1333,9 +1333,40 @@ class Client {
         // Heading
         $heading = rtrim($heading, ', ');
         $heading .= " between $start_date and $end_date.</h1><br><br>";
-        echo $heading;
-        foreach($items_sold as $i) {
-            echo $i['identifier'] . '&nbsp;&nbsp;-&nbsp;&nbsp;'. $i['quantity'].'<br>';
+
+        $code = <<<EOS
+        <html>
+        <body>
+        $heading
+        <table>
+        EOS;
+
+        $keys = array_keys($items_sold);
+        $c = count($keys);
+        $break_outer = false;
+        for($i = 0; $break_outer === false && $i < $c; ) {
+            $code .= '<tr>';
+            for ($j = 0; $j < 4; ++$j) {
+                if(isset($keys[$i]) === false) {
+                    $break_outer = true;
+                    break;
+                }
+                $key = $keys[$i];
+                $identifier = $items_sold[$key]['identifier'];
+                $quantity = $items_sold[$key]['quantity'];
+                $i += 1;
+                $code .= "<td><b>$identifier</b></td>";
+                $code .= "<td>$quantity</td>";
+            }
+            $code .= '</tr>';
         }
+
+        echo $code;
+        $code = <<<EOS
+        $code
+        </table>
+        </body>
+        </html>
+        EOS;
     }
 }
