@@ -40,9 +40,10 @@ class SalesInvoice {
      * @param disable_federal_taxes
      * @param disable_provincial_taxes
      * @param is_self_client
+     * @param enforce_self_client_price_lock
      * @return array
      */
-    private static function validate_items_details(array $items, int $disable_federal_taxes, int $disable_provincial_taxes, bool $is_self_client = false) : array {
+    private static function validate_items_details(array $items, int $disable_federal_taxes, int $disable_provincial_taxes, bool $is_self_client = false, bool $enforce_self_client_price_lock = true) : array {
 
         // Validate Item Count
         if(count($items) < 1) return ['status' => false, 'message' => 'Invalid Items Count.'];
@@ -69,7 +70,7 @@ class SalesInvoice {
             }
 
             // Check for Same Base Price for Self Client.
-            if($is_self_client && $item['pricePerItem'] !== $item['buyingCost']) throw new Exception('Selling Price Has to be the same as Buying Price for Self Client.');
+            if($enforce_self_client_price_lock && $is_self_client && $item['pricePerItem'] !== $item['buyingCost']) throw new Exception('Selling Price Has to be the same as Buying Price for Self Client.');
 
             $keys = ['quantity', 'basePrice', 'amountPerItem'];
             if(SYSTEM_INIT_MODE === PARTS) {
@@ -275,6 +276,7 @@ class SalesInvoice {
             $disable_federal_taxes,
             $disable_provincial_taxes,
             $data['clientDetails']['isSelfClient'],
+            $data['clientDetails']['enforceSelfClientPriceLock'] ? true : false,
         );
         if($valid_ret_value['status'] === false) throw new Exception($valid_ret_value['message']);
 
