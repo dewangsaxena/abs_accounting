@@ -276,7 +276,7 @@ class SalesInvoice {
             $disable_federal_taxes,
             $disable_provincial_taxes,
             $data['clientDetails']['isSelfClient'],
-            $data['clientDetails']['enforceSelfClientPriceLock'] ? true : false,
+            ($data['clientDetails']['enforceSelfClientPriceLock'] ?? false) ? true : false,
         );
         if($valid_ret_value['status'] === false) throw new Exception($valid_ret_value['message']);
 
