@@ -330,6 +330,9 @@ class Receipt {
             // Remove Attributes 
             self::remove_attributes($details);
 
+            // Check for Valid Receipt Details
+            if(count($details) < 1) throw new Exception('Receipt Details are Invalid.');
+
             // Create Receipt.
             $query = <<<'EOS'
             INSERT INTO receipt
