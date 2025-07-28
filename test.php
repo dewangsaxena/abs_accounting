@@ -2586,6 +2586,4 @@ function find_qty_diff(): void {
         echo $item['identifier']. ' ~ <b>'. $item['available_quantity']. '</b> ~ <i>'. $item['quantity'].'</i><br>';
     }
 }
-
-find_qty_diff();
 ?>  
