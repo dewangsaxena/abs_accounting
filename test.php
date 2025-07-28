@@ -2537,4 +2537,55 @@ Client::generate_item_sold_reports([
 // foreach($keys as $k) {
 //     echo "$k ~~ {$report[$k]}<br>";
 // }
+
+function find_qty_diff(): void {
+    $db = get_db_instance();
+    $query = 'SELECT * FROM quotation WHERE id = :id;';
+    $statement = $db -> prepare($query);
+    $statement -> execute([':id' => 11770]);
+
+    $quote = $statement -> fetchAll(PDO::FETCH_ASSOC);
+    $details = json_decode($quote[0]['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+    $item_quantities = [];
+    foreach($details as $detail) {
+        $id = $detail['itemId'];
+        $identifier = $detail['identifier'];
+        if(isset($item_quantities[$id]) === false) {
+            $item_quantities[$id] = [
+                'identifier' => $identifier,
+                'quantity' => 0,
+                'available_quantity' => 0,
+            ];
+        }
+        $item_quantities[$id]['quantity'] += $detail['quantity'];
+    }
+
+    $query = 'SELECT item_id, quantity FROM inventory WHERE store_id = :store_id AND item_id IN (:placeholder);';
+    $results = Utils::mysql_in_placeholder_pdo_substitute(
+        array_keys($item_quantities),
+        $query,
+    );
+
+    $query = $results['query'];
+    $values = [
+        ':store_id' => StoreDetails::CALGARY,
+        ...$results['values']
+    ];
+
+    $statement = $db -> prepare($query);
+    $statement -> execute($values);
+    $results = $statement -> fetchAll(PDO::FETCH_ASSOC);
+    foreach($results as $result) {
+        $item_id = $result['item_id'];
+        $quantity = $result['quantity'];
+        $item_quantities[$item_id]['available_quantity'] = $result['quantity'];
+    }
+
+    echo 'Identifier ~ <b>Available Quantity</b> ~ <u>Quantity</u><br>';
+    foreach($item_quantities as $item) {
+        echo $item['identifier']. ' ~ <b>'. $item['available_quantity']. '</b> ~ <i>'. $item['quantity'].'</i><br>';
+    }
+}
+
+find_qty_diff();
 ?>  
