@@ -1491,6 +1491,12 @@ class __GeneratePDF_Receipt {
             }
         }
 
+        // Set Font Styling
+        self::$pdf -> SetFont(self::SPACE_MONO_REGULAR, '', 8);
+
+        // Add timestamp
+        self::$pdf -> Cell(100, 4, self::$details['created_timestamp'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, align:'L');
+
         // Add Amount
         self::$pdf -> Cell(0, 4, '$ '. Utils::number_format(self::$details['sum_total']), border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, align:'R');
     }

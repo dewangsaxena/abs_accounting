@@ -185,6 +185,10 @@ class PrepareDetails_Receipts {
             'client_name' => $details['name'],
             'receipt_items' => $receipt_items, 
             'receipt_items_og' => $items,
+            'created_timestamp' => Utils::convert_utc_str_timestamp_to_localtime(
+                $details['created'],
+                $store_id,
+            ),
         ];
         return array_merge($details, Utils::build_store_address($store_id));
     }
