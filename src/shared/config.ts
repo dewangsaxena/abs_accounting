@@ -24,11 +24,13 @@ export class Stores {
   private static readonly inactiveStores: Array<number> = [1, 5];
 
   // Get Active Stores.
-  static getActiveStores(): AttributeType {
+  static getActiveStores(includeAllStore: boolean = false): AttributeType {
     let activeStores: AttributeType = {};
     Object.assign(activeStores, Stores.names);
-    for (let i = 0; i < Stores.inactiveStores.length; ++i)
+    for (let i = 0; i < Stores.inactiveStores.length; ++i) {
+      if (includeAllStore && Stores.inactiveStores[i] == 1) continue;
       delete activeStores[Stores.inactiveStores[i]];
+    }
     return activeStores;
   }
 }

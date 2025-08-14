@@ -33,6 +33,7 @@ class SessionManagement {
         UserManagement::UPDATE_PASSWORD,
         UserManagement::UPDATE_STATUS,
         UserManagement::CHANGE_USER_ACCESS_LEVEL,
+        UserManagement::CHANGE_USER_STORE_ACCESS,
 
         /* Inventory */ 
         Inventory::ADD,
@@ -95,6 +96,7 @@ class UserManagement {
     public const UPDATE_PASSWORD = 'um_update_password';
     public const UPDATE_STATUS = 'um_update_status';
     public const CHANGE_USER_ACCESS_LEVEL = 'um_change_user_access_level';
+    public const CHANGE_USER_STORE_ACCESS = 'um_change_user_store_access';
     public const FETCH = 'um_fetch';
     public const LOGOUT = 'um_logout';
 
@@ -524,6 +526,58 @@ class UserManagement {
             // Execute
             $is_successful = $statement -> execute($params);
             if($is_successful !== true || $statement -> rowCount() < 1) throw new Exception('change_user_access_level > Cannot Update Access Level.');
+
+            assert_success();
+
+            // Commit
+            $db -> commit();
+
+            return ['status' => true];
+        }
+        catch(Throwable $th) {
+            if($db -> inTransaction()) $db -> rollBack();
+            return ['status' => false, 'message' => $th -> getMessage()];
+        }
+    }
+
+    /**
+     * This method will change user store access.
+     * @param data
+     * @return array
+     */
+    public static function change_user_store_access(array $data) : array {
+        try {
+            // Get DB Instance
+            $db = get_db_instance();
+
+            // Verify Root User
+            self::verify_root_user();
+
+            // Begin txn
+            $db -> beginTransaction();
+
+            // Prepare
+            $statement = $db -> prepare(<<<'EOS'
+            UPDATE
+                users 
+            SET 
+                store_id = :store_id
+            WHERE
+                id = :id
+            AND 
+                id != :root_user_id;
+            EOS);
+
+            // Params
+            $params = [
+                ':store_id' => $data['store_id'],
+                ':id' => $data['user_id'],
+                ':root_user_id' => self::ROOT_USER_ID,
+            ];
+
+            // Execute
+            $is_successful = $statement -> execute($params);
+            if($is_successful !== true || $statement -> rowCount() < 1) throw new Exception('um_change_user_store_access > Cannot Update Store Access.');
 
             assert_success();
 

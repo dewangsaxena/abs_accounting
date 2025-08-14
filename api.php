@@ -171,6 +171,9 @@ if (isset($_POST['action'])) {
         case UserManagement::CHANGE_USER_ACCESS_LEVEL:
             $response = UserManagement::change_user_access_level($data);
             break;
+        case UserManagement::CHANGE_USER_STORE_ACCESS:
+            $response = UserManagement::change_user_access_level($data);
+            break;
         case UserManagement::FETCH:
             $response = UserManagement::fetch($data);
             break;

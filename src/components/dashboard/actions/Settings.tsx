@@ -553,6 +553,76 @@ const AddUser = () => {
   );
 };
 
+/**
+ * This component will enable to change user store access.
+ * @param param0
+ * @returns 
+ */
+const SetStoreAccess = ({users}: {users: UserDataType}) => {
+  const userRef = useRef<HTMLSelectElement>();
+  const storeAccessRef = useRef<HTMLSelectElement>();
+  const [isLoading, setIsLoading] = useState(false);
+  const toast = useToast();
+  const stores = Stores.getActiveStores(true);
+  return (
+    <>
+      <VStack alignItems={"start"}>
+        <Stack direction={{ sm: "column", md: "column", lg: "row" }}>
+          <_Select
+            ref={userRef}
+            size="sm"
+            width="100%"
+            options={users}
+            fontSize="0.8em"
+          ></_Select>
+          <_Select
+            ref={storeAccessRef}
+            size="sm"
+            width={"100%"}
+            fontSize="0.8em"
+            options={stores}
+          ></_Select>
+        </Stack>
+        <_Button
+          isLoading={isLoading}
+          loadingText="Changing..."
+          icon={<SiOpenaccess color={iconColor} />}
+          height={8}
+          fontSize="1.2em"
+          size="sm"
+          width={{ sm: "100%", md: "100%", lg: "40%" }}
+          bgColor={navBgColor}
+          label="Change Store Access"
+          onClick={() => {
+            setIsLoading(true);
+
+            let payload = {
+              user_id: userRef?.current?.value,
+              store_access: storeAccessRef?.current?.value,
+            };
+
+            httpService
+              .update(payload, "um_change_user_store_access")
+              .then((res: any) => {
+                let response: APIResponse = res.data;
+                if (response.status === true) {
+                  showToast(toast, true, "Change User Store Access");
+                } else {
+                  showToast(
+                    toast,
+                    false,
+                    response.message || UNKNOWN_SERVER_ERROR_MSG
+                  );
+                }
+                setIsLoading(false);
+              });
+          }}
+        ></_Button>
+      </VStack>
+    </>
+  );
+}
+
 const ChangeUserAccessLevel = ({ users }: { users: UserDataType }) => {
   const userRef = useRef<HTMLSelectElement>();
   const accessLevelRef = useRef<HTMLSelectElement>();
@@ -692,6 +762,12 @@ const Settings = () => {
             isAdmin={true}
             label="Change User Access Level"
             children={<ChangeUserAccessLevel users={users} />}
+          ></Segment>
+          <Divider marginTop={[5, 5, 5]} marginBottom={[5, 5, 5]}></Divider>
+          <Segment
+            isAdmin={true}
+            label="Store Access"
+            children={<SetStoreAccess users={users}/>}
           ></Segment>
         </>
       )}
