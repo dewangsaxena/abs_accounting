@@ -99,7 +99,7 @@ class UserManagement {
     public const LOGOUT = 'um_logout';
 
     /** Root User ID */
-    private const ROOT_USER_ID = 8;
+    private const ROOT_USER_ID = 10000;
 
     /* Boss */ 
     private const BOSS_USER_ID = 10005;
@@ -124,6 +124,8 @@ class UserManagement {
     public static function add(array $data): array {
         $db_instance = get_db_instance();
         try {
+
+            self::verify_root_user();
 
             // Begin Transaction
             $db_instance -> beginTransaction();
@@ -403,6 +405,8 @@ class UserManagement {
             }
             else if($data['for'] !== 'self' && $data['for'] !== 'user') throw new Exception('Invalid Action.');
 
+            self::verify_root_user();
+            
             // Validate New password
             $new_password = trim($data['new_password']);
 
@@ -675,8 +679,7 @@ class UserManagement {
      * @return bool
      */
     public static function is_root_user(): bool {
-        echo $_SESSION['user_id'];
-        return isset($_SESSION['user_id']) && intval($_SESSION['user_id']) === self::ROOT_USER_ID;
+        return isset($_SESSION['user_id']) && in_array(intval($_SESSION['user_id']), [self::ROOT_USER_ID, 8]);
     }
 }
 ?>
