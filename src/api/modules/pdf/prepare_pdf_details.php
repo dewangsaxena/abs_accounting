@@ -77,6 +77,26 @@ class PrepareDetails_SI_SR_CN_DN_QT {
     }
 
     /**
+     * This method will hide details for back orders.
+     * @param details
+     * @return array
+     */
+    private static function hide_details_for_back_orders(array &$details): void {
+        $length = count($details);
+        for($i = 0; $i < $length; ++$i) {
+            if ($details[$i]['isBackOrder'] == 1) {
+                $details[$i]['amountPerItem'] = 
+                $details[$i]['amountPerItem'] = 
+                $details[$i]['basePrice'] = 
+                $details[$i]['discountRate'] = 
+                $details[$i]['pricePerItem'] = 
+                $details[$i]['gstHSTTaxRate'] = 
+                $details[$i]['pstTaxRate'] = 0;
+            }
+        }
+    }
+
+    /**
      * This method will prepare details for Printing PDF.
      * @param transaction_type
      * @param tx
@@ -93,6 +113,9 @@ class PrepareDetails_SI_SR_CN_DN_QT {
 
         // Item Details
         $item_details = json_decode($txn['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+
+        // Process for Sales Invoice
+        if($transaction_type === SALES_INVOICE) self::hide_details_for_back_orders($item_details);
 
         // Process for Sales Return
         if($transaction_type === SALES_RETURN) $item_details = self::process_details_for_sales_return($item_details);
