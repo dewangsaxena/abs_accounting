@@ -167,3 +167,13 @@ SELECT SUM(gst_hst_tax), SUM(pst_tax) FROM sales_invoice WHERE store_id = 2 AND 
 SELECT SUM(gst_hst_tax), SUM(pst_tax) FROM sales_return WHERE store_id = 2 AND `date` >= '2025-01-01';
 SELECT SUM(gst_hst_tax), SUM(pst_tax) FROM credit_note WHERE store_id = 2 AND `date` >= '2025-01-01' ;
 SELECT SUM(gst_hst_tax), SUM(pst_tax) FROM debit_note WHERE store_id = 2 AND `date` >= '2025-01-01';
+
+SET GLOBAL FOREIGN_KEY_CHECKS=0;
+update users set id = 8 where id = 10000;
+update sales_invoice set sales_rep_id = 8 where sales_rep_id = 10000;
+update sales_return set sales_rep_id = 8 where sales_rep_id = 10000;
+update credit_note set sales_rep_id = 8 where sales_rep_id = 10000;
+update debit_note set sales_rep_id = 8 where sales_rep_id = 10000;
+update receipt set sales_rep_id = 8 where sales_rep_id = 10000;
+update quotation set sales_rep_id = 8 where sales_rep_id = 10000;
+SET GLOBAL FOREIGN_KEY_CHECKS=1;
