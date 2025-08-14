@@ -701,7 +701,7 @@ class Client {
             $disable_credit_transactions = $data['disableCreditTransactions'];
 
             // Check for Special Exception for Edmonton
-            if($data['action'] === 'client_update' && $user_id !== UserManagement::ROOT) {
+            if($data['action'] === 'client_update' && $user_id !== UserManagement::ROOT_USER_ID) {
                 if($store_id === StoreDetails::EDMONTON && SYSTEM_INIT_MODE === PARTS) {
                     if(in_array($_SESSION['user_id'], SpecialExceptions::USERS_WITH_SPECIAL_ACCESS[$store_id]) === false) {
                         $disable_credit_transactions = $data['initial']['disableCreditTransactions'];
