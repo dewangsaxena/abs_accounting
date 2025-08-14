@@ -286,6 +286,7 @@ class UserManagement {
                 $user_detail = [
                     'id' => $user_record[0]['id'],
                     'name' => $user_record[0]['name'],
+                    'isDev' => (strtolower($username) == 'dewangs') ? 1: 0,
                     'accessLevel' => $user_record[0]['access_level'],
                     /* Check for Admin User */ 
                     'hasAccess' => $user_record[0]['has_access'],
@@ -378,6 +379,9 @@ class UserManagement {
      */
     public static function change_password(array $data): array {
         try {
+            // Get DB Instance
+            $db = get_db_instance();
+
             // User id
             $user_id = intval($data['user_id']);
 
@@ -386,9 +390,6 @@ class UserManagement {
 
             // Check for Self.
             if($data['for'] === 'self') {
-
-                // Get DB Instance
-                $db = get_db_instance();
 
                 // Validate Old Password
                 $old_password = trim($data['old_password']);
@@ -430,9 +431,11 @@ class UserManagement {
      */
     public static function update_access_status(array $data) : array {
         try {
-
             // Get DB Instance
             $db = get_db_instance();
+
+            // Verify Root User
+            self::verify_root_user();
 
             // Begin txn
             $db -> beginTransaction();
@@ -473,6 +476,13 @@ class UserManagement {
     }
 
     /**
+     * This method will verify root user.
+     */
+    private static function verify_root_user(): void {
+        if(self::is_root_user() === false) throw new Exception('Invalid Access');
+    }
+
+    /**
      * This method will change user access level.
      * @param data
      * @return array
@@ -481,6 +491,9 @@ class UserManagement {
         try {
             // Get DB Instance
             $db = get_db_instance();
+
+            // Verify Root User
+            self::verify_root_user();
 
             // Begin txn
             $db -> beginTransaction();
@@ -662,8 +675,8 @@ class UserManagement {
      * @return bool
      */
     public static function is_root_user(): bool {
-        if(isset($_SESSION['user_id'])) return intval($_SESSION['user_id']) === self::ROOT_USER_ID;
-        throw new Exception('Invalid Session. Please login again.');
+        echo $_SESSION['user_id'];
+        return isset($_SESSION['user_id']) && intval($_SESSION['user_id']) === self::ROOT_USER_ID;
     }
 }
 ?>
