@@ -230,7 +230,7 @@ function assert_success(): void {
 }
 
 /* CHANGE THIS TO INVALIDATE ALL EXISTING SESSIONS. */
-define('SESSION_TOKEN', 'A(eySY")+Ym`EU4cD%V+.uT!Dt.a@!&LLW?]j[[,f:Hu<"n^RSUK5:ZAPADPsYv|');
+define('SESSION_TOKEN', 'Jrz!&k)J#k_9c>=A&s(QV{/7f`WV@eTPvgk,Y"hc^[-UEX2o7gSjtD:q"V<a{^/U');
 
 /* CHECK USER ACCESS ON REQUEST */
 define('CHECK_USER_ACCESS_ON_REQUEST', false);
