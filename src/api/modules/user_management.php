@@ -733,8 +733,7 @@ class UserManagement {
      * @return bool
      */
     public static function is_root_user(): bool {
-        $root_user = SYSTEM_INIT_HOST == TENLEASING_HOST ? 8 : 10000;
-        return isset($_SESSION['user_id']) && intval($_SESSION['user_id']) == $root_user;
+        return isset($_SESSION['user_id']) && intval($_SESSION['user_id']) == self::ROOT_USER_ID;
     }
 }
 ?>
