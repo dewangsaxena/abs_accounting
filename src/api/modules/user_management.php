@@ -288,7 +288,7 @@ class UserManagement {
                 $user_detail = [
                     'id' => $user_record[0]['id'],
                     'name' => $user_record[0]['name'],
-                    'isDev' => (strtolower($username) == 'dewangs') ? 1: 0,
+                    'isDev' => $user_record[0]['id'] == self::ROOT_USER_ID ? 1: 0,
                     'accessLevel' => $user_record[0]['access_level'],
                     /* Check for Admin User */ 
                     'hasAccess' => $user_record[0]['has_access'],
