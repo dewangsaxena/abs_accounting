@@ -2586,4 +2586,56 @@ function find_qty_diff(): void {
         echo $item['identifier']. ' ~ <b>'. $item['available_quantity']. '</b> ~ <i>'. $item['quantity'].'</i><br>';
     }
 }
+
+function fetch_quantity_sold(int $store_id): void {
+    $db = get_db_instance();
+    $statement = $db -> prepare('SELECT id, identifier FROM items WHERE identifier LIKE :_identifier;');
+    $statement -> execute([':_identifier' => 'WF%']);
+
+    $items = [];
+    $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
+    foreach($result as $r) {
+        $id = $r['id'];
+        if(isset($items[$id]) === false) $items[$id] = [
+            'identifier' => $r['identifier'],
+            'quantity' => 0
+        ];
+    }
+
+    $total_sold = 0;
+
+    // Add from Sales Invoices
+    $statement = $db -> prepare('SELECT `details` FROM sales_invoice WHERE store_id = :store_id AND `date` >= "2025-01-01";');
+    $statement -> execute([':store_id' => $store_id]);
+    $records = $statement -> fetchAll(PDO::FETCH_ASSOC);
+    foreach($records as $record) {
+        $details = json_decode($record['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+        foreach($details as $item) {
+            $item_id = $item['itemId'];
+            if(isset($items[$item_id])) {
+                $items[$item_id]['quantity'] += $item['quantity'];
+                $total_sold += $item['quantity'];
+            }
+        }
+    }
+
+    // Deduct from Sales Return
+    $statement = $db -> prepare('SELECT `details` FROM sales_return WHERE store_id = :store_id AND `date` >= "2025-01-01";');
+    $statement -> execute([':store_id' => $store_id]);
+    $records = $statement -> fetchAll(PDO::FETCH_ASSOC);
+    foreach($records as $record) {
+        $details = json_decode($record['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+        foreach($details as $item) {
+            $item_id = $item['itemId'];
+            if(isset($items[$item_id])) {
+                $items[$item_id]['quantity'] -= $item['quantity'];
+                $total_sold -= $item['quantity'];
+            }
+        }
+    }
+
+    echo $total_sold;
+}
+
+fetch_quantity_sold(StoreDetails::EDMONTON);
 ?>  
