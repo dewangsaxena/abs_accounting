@@ -598,7 +598,7 @@ const SetStoreAccess = ({users}: {users: UserDataType}) => {
 
             let payload = {
               user_id: userRef?.current?.value,
-              store_access: storeAccessRef?.current?.value,
+              store_id: storeAccessRef?.current?.value,
             };
 
             httpService
