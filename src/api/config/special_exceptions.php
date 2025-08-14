@@ -9,9 +9,6 @@ class SpecialExceptions {
     /* Enable Special Access */ 
     const ENABLE_SPECIAL_ACCESS = true;
 
-    /* Root ID */ 
-    const ROOT = 10000;
-
     /* Users With Special Access */ 
     const USERS_WITH_SPECIAL_ACCESS = [
         StoreDetails::EDMONTON => [

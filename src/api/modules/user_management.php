@@ -99,7 +99,7 @@ class UserManagement {
     public const LOGOUT = 'um_logout';
 
     /** Root User ID */
-    private const ROOT_USER_ID = 10000;
+    public const ROOT_USER_ID = 8;
 
     /* Boss */ 
     private const BOSS_USER_ID = 10005;
