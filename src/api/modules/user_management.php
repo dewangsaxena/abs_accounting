@@ -406,7 +406,7 @@ class UserManagement {
             else if($data['for'] !== 'self' && $data['for'] !== 'user') throw new Exception('Invalid Action.');
 
             self::verify_root_user();
-            
+
             // Validate New password
             $new_password = trim($data['new_password']);
 
@@ -679,7 +679,8 @@ class UserManagement {
      * @return bool
      */
     public static function is_root_user(): bool {
-        return isset($_SESSION['user_id']) && in_array(intval($_SESSION['user_id']), [self::ROOT_USER_ID, 8]);
+        $root_user = SYSTEM_INIT_HOST == TENLEASING_HOST ? 8 : 10000;
+        return isset($_SESSION['user_id']) && intval($_SESSION['user_id']) == $root_user;
     }
 }
 ?>
