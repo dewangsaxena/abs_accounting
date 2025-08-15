@@ -378,6 +378,7 @@ const ProfitMarginsHandler = () => {
 
 const InventoryAndServices = () => {
     const [deadInventoryMonth, setDeadInventoryMonth] = useState<number>(3);
+    const [deadInventoryYear, setDeadInventoryYear] = useState<number>(0);
     const [reportYear, setReportYear] = useState<number>(new Date().getFullYear());
     return (
         <>
@@ -468,10 +469,21 @@ const InventoryAndServices = () => {
                         <Box>
                             <_Label fontSize="0.8em" textTransform={"uppercase"}>Fetch Dead Inventory Report</_Label>
                             <_Divider margin={2}/>
-                            <HStack>
-                                <_Select onChange={(event:any) => {
-                                    setDeadInventoryMonth(parseInt(event.target.value));
-                                }} options={{3: "3 Months", 6: "6 Months", 9: "9 Months", 12: "12 Months"}}></_Select>
+                            <HStack width="100%" >
+                                <VStack width="100%">
+                                    <_Select onChange={(event:any) => {
+                                        setDeadInventoryMonth(parseInt(event.target.value));
+                                    }} options={{0: "Select Month", 3: "3 Months", 6: "6 Months", 9: "9 Months", 12: "12 Months"}}></_Select>
+                                    <_Label>OR</_Label>
+                                    <_Input type="number" placeholder="Enter Year..." onBlur={(event: any) => {
+                                        if(event) {
+                                            let val = Number(event.target.value);
+                                            if(isNaN(val) === false) {
+                                                setDeadInventoryYear(event.target.value);
+                                            }
+                                        }
+                                    }}></_Input>
+                                </VStack>
                                 <_Button bgColor="black" fontSize={"1.2em"} icon={<IoStopCircleOutline color="#E3242B"/>}label="Fetch Dead Stock" onClick={() => {
                                     window.open(
                                         `${APP_HOST}/api.php?action=dead_inventory_report&month=${deadInventoryMonth}&storeId=${localStorage.getItem("storeId")}`, 
