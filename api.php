@@ -80,9 +80,11 @@ if (isset($_GET['action'])) {
         Client::fetch_clients_by_last_purchase_date($_GET['lastPurchaseBefore'], intval($_GET['storeId']));
         die;
     } 
-    else if($action === 'dead_inventory_report' && is_numeric($_GET['storeId'] ?? null) && is_numeric($_GET['month'] ?? null)) {
-        Inventory::generate_dead_inventory(intval($_GET['storeId']), intval($_GET['month']));
-        die;
+    else if($action === 'dead_inventory_report' && is_numeric($_GET['storeId'] ?? null)) {
+        if(is_numeric($_GET['month'] ?? null) || is_numeric($_GET['year'] ?? null)) {
+            Inventory::generate_dead_inventory(intval($_GET['storeId']), intval($_GET['month']), intval($_GET['year']));
+            die;
+        }
     }
     else if($action === 'fetch_item_sold_report' && is_numeric($_GET['storeId'] ?? null) && is_numeric($_GET['year'] ?? null)) {
         Inventory::fetch_quantity_sold_for_all_items(intval($_GET['storeId']), intval($_GET['year']));

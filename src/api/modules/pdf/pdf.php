@@ -3022,14 +3022,17 @@ class __GenerateInventory {
      * @param inventory_details
      * @param item_details
      * @param month
+     * @param year
      * @param store_id
      */
-    public static function generate_dead_inventory_list(array &$inventory_details, int $store_id, int $month): void {
+    public static function generate_dead_inventory_list(array &$inventory_details, int $store_id, int $month, int $year): void {
         $item_details = $inventory_details['dead_stock'];
         $total_dead_inventory_value = Utils::number_format($inventory_details['value'], 2);
+        if($year > 0) $date_text = "IN $year";
+        else $date_text = "$month MONTHS AGO";
         $store_details = 
         StoreDetails::STORE_DETAILS[$store_id]['name']. 
-        " ~ <u style='color:#800000;'>LAST SOLD $month MONTHS AGO</u>".
+        " ~ <u style='color:#800000;'>LAST SOLD $date_text</u>".
         ' ~ AS ON '. 
         Utils::format_to_human_readable_date(Utils::get_business_date($store_id));
 
@@ -3369,9 +3372,10 @@ class GeneratePDF {
      * @param inventory_details
      * @param store_id
      * @param month
+     * @param year
      */
-    public static function generate_dead_inventory_list(array &$inventory_details, int $store_id, int $month): void {
-        __GenerateInventory::generate_dead_inventory_list($inventory_details, $store_id, $month);
+    public static function generate_dead_inventory_list(array &$inventory_details, int $store_id, int $month, int $year): void {
+        __GenerateInventory::generate_dead_inventory_list($inventory_details, $store_id, $month, $year);
     }
 
     /**

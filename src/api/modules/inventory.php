@@ -1824,9 +1824,10 @@ class Inventory {
      * This method will generate dead stock report.
      * @param store_id
      * @param month
+     * @param year
      * @return array
      */
-    private static function get_dead_inventory(int $store_id, int $month): array {
+    private static function get_dead_inventory(int $store_id, int $month, int $year): array {
         $db = get_db_instance();
 
         $statement = $db -> prepare(<<<'EOS'
@@ -1854,18 +1855,27 @@ class Inventory {
 
         $dead_stock = [];
         $total_dead_inventory_value = 0;
+        $search_by_year = $year > 0;
         foreach($results as $result) {
             $last_sold = json_decode($result['last_sold'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
             if(isset($last_sold[$store_id]) === false) continue;
-            $date_diff = Utils::get_difference_between_dates(
-                $last_sold[$store_id],
-                Utils::get_business_date($store_id),
-                $store_id,
-            );
+            $flag = false;
 
-            if($month >= 12) $flag = $date_diff['y'] >= 1;
-            else if($date_diff['y'] >= 1 || $date_diff['m'] >= $month) $flag = true;
-            else $flag = false;
+            if($search_by_year) {
+                $last_purchase_year = explode('-', $last_sold[$store_id])[0];
+                if($year == $last_purchase_year) $flag = true;
+            }
+            else {
+                $date_diff = Utils::get_difference_between_dates(
+                    $last_sold[$store_id],
+                    Utils::get_business_date($store_id),
+                    $store_id,
+                );
+
+                if($month >= 12) $flag = $date_diff['y'] >= 1;
+                else if($date_diff['y'] >= 1 || $date_diff['m'] >= $month) $flag = true;
+                else $flag = false;
+            }
 
             if($flag) {
                 $prices = json_decode($result['prices'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
@@ -1892,13 +1902,15 @@ class Inventory {
      * This method will generate dead inventory stock.
      * @param store_id
      * @param month
+     * @param year
      */
-    public static function generate_dead_inventory(int $store_id, int $month): void {
-        $inventory_details = self::get_dead_inventory($store_id, $month);
+    public static function generate_dead_inventory(int $store_id, int $month=0, int $year=0): void {
+        $inventory_details = self::get_dead_inventory($store_id, $month, $year);
         GeneratePDF::generate_dead_inventory_list(
             $inventory_details, 
             $store_id, 
-            $month
+            $month,
+            $year,
         );
     }
 
