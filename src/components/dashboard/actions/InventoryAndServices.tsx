@@ -380,6 +380,8 @@ const InventoryAndServices = () => {
     const [deadInventoryMonth, setDeadInventoryMonth] = useState<number>(3);
     const [deadInventoryYear, setDeadInventoryYear] = useState<number>(0);
     const [reportYear, setReportYear] = useState<number>(new Date().getFullYear());
+    const [minAmount, setMinAmount] = useState<number>(0);
+    const [maxAmount, setMaxAmount] = useState<number>(0);
     return (
         <>
             <CanvasGrid>
@@ -523,6 +525,43 @@ const InventoryAndServices = () => {
                     </VStack>
                 </Box>
                 <_Divider/><_Divider/>
+                <Box paddingRight={2}>
+                    <VStack align="start">
+                        <_Label fontSize={"0.8em"}>FETCH PARTS BY PRICE</_Label>
+                        <_Divider margin={1}></_Divider>
+                        <HStack width="100%">
+                            <Box width="25%">
+                                <_Label fontSize={"0.7em"} color="blue">MIN $:</_Label>
+                            </Box>
+                            <Box width="75%">
+                                <_Input fontSize="0.8em" type="number" onBlur={(event: any) => {
+                                    let value = event.target.value;
+                                    if(isNaN(value) === false) {
+                                        setMinAmount(parseInt(value));
+                                    }
+                                    else setMinAmount(0);
+                                }}></_Input>
+                            </Box>
+                        </HStack>
+                        <HStack width="100%">
+                            <Box width="25%">
+                                <_Label fontSize={"0.7em"} color="blue">MAX $:</_Label>
+                            </Box>
+                            <Box width="75%">
+                                <_Input fontSize="0.8em" type="number" onBlur={(event: any) => {
+                                    let value = event.target.value;
+                                    if(isNaN(value) === false) {
+                                        setMaxAmount(parseInt(value));
+                                    }
+                                    else setMaxAmount(0);
+                                }}></_Input>
+                            </Box>
+                        </HStack>
+                        <_Button onClick={() => {
+                            
+                        }}></_Button>
+                    </VStack>
+                </Box>
                 <ProfitMarginsHandler />
             </CanvasGrid>
         </>
