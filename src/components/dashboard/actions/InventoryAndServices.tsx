@@ -485,8 +485,21 @@ const InventoryAndServices = () => {
                                     }}></_Input>
                                 </VStack>
                                 <_Button bgColor="black" fontSize={"1.2em"} icon={<IoStopCircleOutline color="#E3242B"/>}label="Fetch Dead Stock" onClick={() => {
+                                    if((isNaN(deadInventoryYear) || deadInventoryYear == 0) && deadInventoryMonth == 0) return;
+                                    const newURLParams = new URLSearchParams();
+                                    
+                                    if(deadInventoryYear != 0) {
+                                        newURLParams.append("year", deadInventoryYear.toString());
+                                    }
+                                    else newURLParams.append("month", deadInventoryMonth.toString());
+
+                                    // Append Store
+                                    newURLParams.append("storeId", localStorage.getItem("storeId")?.toString() || "");
+
+                                    // Query Params
+                                    const queryParams = newURLParams.toString();
                                     window.open(
-                                        `${APP_HOST}/api.php?action=dead_inventory_report&month=${deadInventoryMonth}&storeId=${localStorage.getItem("storeId")}`, 
+                                        `${APP_HOST}/api.php?action=dead_inventory_report&${queryParams}`, 
                                         "_blank"
                                     );
                                 }}></_Button>
