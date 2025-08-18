@@ -228,6 +228,7 @@ const Header = ({
     versionKeys,
     versionSelected,
     salesRepId,
+    salesRepHistory,
     setProperty,
   } = transactionStore(
     (state) => ({
@@ -238,6 +239,7 @@ const Header = ({
       versionKeys: state.versionKeys,
       versionSelected: state.versionSelected,
       salesRepId: state.salesRepId,
+      salesRepHistory: state.salesRepHistory,
       setProperty: state.setProperty,
     }),
     shallow
@@ -301,6 +303,18 @@ const Header = ({
     __paymentMethods[temp] = `${i + 1} ~ ` + paymentMethods[temp];
   }
 
+  // Get Sales Representative history
+  const [salesRepHistoryList, setSalesRepHistoryList] = useState<AttributeType<String>>({});
+  useEffect(() => {
+    if (isViewOrUpdate && salesRepHistory !== null) {
+      let temp: AttributeType<String> = {};
+      for(let i = 0; i < salesRepHistory.length; ++i) {
+        temp[i] = salesRepresentatives[salesRepHistory[i]];
+      }
+      setSalesRepHistoryList(temp);
+    }    
+  }, [Object.keys(salesRepresentatives).length])
+  
   return (
     <>
       <Box width="100%">
@@ -337,7 +351,7 @@ const Header = ({
               </Box>
             )}
           {isViewOrUpdate && (
-            <HStack spacing={6} width="70%">
+            <HStack spacing={6} width="60%">
               {/* Transaction ID  */}
               <Box>
                 <Badge
@@ -451,6 +465,14 @@ const Header = ({
               }}
             ></_Select>
           </Box>
+          {/* Sales Representative History */}
+          {isViewOrUpdate && Object.keys(salesRepHistoryList).length > 0 && <Box>
+            <_Select
+              isDisabled={false}
+              fontSize="0.7em"
+              options={salesRepHistoryList}
+            ></_Select>
+          </Box>}
           {type === TRANSACTION_TYPES["SI"] && <Box flex={1}>
             <HStack justifyContent={"right"}>
               <Box>

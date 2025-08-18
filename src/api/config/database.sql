@@ -264,6 +264,7 @@ CREATE TABLE IF NOT EXISTS sales_invoice(
     store_id SMALLINT UNSIGNED NOT NULL,
     notes TEXT DEFAULT NULL COMMENT 'Txn. Specific Notes.',
     sales_rep_id INT UNSIGNED NOT NULL, 
+    sales_rep_history JSON NOT NULL DEFAULT '[]',
     driver_name VARCHAR(64) DEFAULT NULL,
     odometer_reading VARCHAR(32)  DEFAULT NULL,
     trailer_number VARCHAR(32) DEFAULT NULL,
@@ -332,6 +333,7 @@ CREATE TABLE IF NOT EXISTS sales_return(
     store_id SMALLINT UNSIGNED NOT NULL,
     notes TEXT DEFAULT NULL COMMENT 'Txn. Specific Notes.',
     sales_rep_id INT UNSIGNED NOT NULL, 
+    sales_rep_history JSON NOT NULL DEFAULT '[]',
 
     -- Transaction Specific Details 
     po VARCHAR(32) DEFAULT NULL,
@@ -392,6 +394,7 @@ CREATE TABLE IF NOT EXISTS credit_note(
     store_id SMALLINT UNSIGNED NOT NULL,
     notes TEXT DEFAULT NULL COMMENT 'Txn. Specific Notes.',
     sales_rep_id INT UNSIGNED NOT NULL, 
+    sales_rep_history JSON NOT NULL DEFAULT '[]',
 
     /* Federal Taxes Status */ 
     disable_federal_taxes TINYINT NOT NULL DEFAULT 0, 
@@ -432,6 +435,7 @@ CREATE TABLE IF NOT EXISTS debit_note(
     store_id SMALLINT UNSIGNED NOT NULL,
     notes TEXT DEFAULT NULL COMMENT 'Txn. Specific Notes.',
     sales_rep_id INT UNSIGNED NOT NULL, 
+    sales_rep_history JSON NOT NULL DEFAULT '[]',
 
     /* Federal Taxes Status */ 
     disable_federal_taxes TINYINT NOT NULL DEFAULT 0, 
@@ -471,6 +475,7 @@ CREATE TABLE IF NOT EXISTS quotation(
     store_id SMALLINT UNSIGNED NOT NULL,
     notes TEXT DEFAULT NULL COMMENT 'Txn. Specific Notes.',
     sales_rep_id INT UNSIGNED NOT NULL, 
+    sales_rep_history JSON NOT NULL DEFAULT '[]',
 
     /* Account Number */
     account_number VARCHAR(32) DEFAULT NULL,

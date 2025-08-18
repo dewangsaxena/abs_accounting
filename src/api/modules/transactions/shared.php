@@ -128,6 +128,10 @@ class Shared {
             }
         }
 
+        // Sales Rep History
+        $sales_rep_history = json_decode($record['sales_rep_history'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+
+        // Fetch 
         $response = [
             'id' => $record['id'],
             'transactionType' => $transaction_type,
@@ -142,6 +146,7 @@ class Shared {
             'creditAmount' => $record['credit_amount'],
             'sumTotal' => $record['sum_total'],
             'salesRepId' => $record['sales_rep_id'],
+            'salesRepHistory' => $sales_rep_history,
             'storeId' => $record['store_id'],
             'notes' => $record['notes'],
             'disableFederalTaxes' => $record['disable_federal_taxes'],

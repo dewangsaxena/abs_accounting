@@ -111,6 +111,7 @@ export interface TransactionStoreFields {
   creditAmount: number;
   sumTotal: number;
   salesRepId: number;
+  salesRepHistory: number[] | null;
   storeId: number | null;
   notes: string;
   restockingFees?: number;
@@ -181,6 +182,7 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
   pstTax: 0,
   sumTotal: 0,
   salesRepId: 0,
+  salesRepHistory: null,
   storeId: parseInt(localStorage.getItem("storeId") || ""),
   notes: "",
   restockingFees: 0,
@@ -404,6 +406,7 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
     set({ pstTax: details.pstTax });
     set({ sumTotal: details.sumTotal });
     set({ salesRepId: details.salesRepId });
+    set({ salesRepHistory: details.salesRepHistory });
     set({ storeId: details.storeId });
     set({ notes: details.notes });
     set({ __lockCounter: details.__lockCounter });
