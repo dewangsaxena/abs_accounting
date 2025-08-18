@@ -82,8 +82,10 @@ class Shared {
      */
     private static function get_version_timestamps_from_versions(array $timestamps, int $store_id): array {
         $temp = [];
+        $counter = 1;
         foreach($timestamps as $timestamp) {
-            $temp[$timestamp] = Utils::convert_to_local_timestamp_from_utc_unix_timestamp($timestamp, $store_id);
+            $temp[$timestamp] = "$counter ~ ". Utils::convert_to_local_timestamp_from_utc_unix_timestamp($timestamp, $store_id);
+            ++$counter;
         }
         return $temp;
     }

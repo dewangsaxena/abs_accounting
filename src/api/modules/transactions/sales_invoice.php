@@ -1016,7 +1016,7 @@ class SalesInvoice {
             );
 
             // Sales Rep History
-            $sales_rep_history = $data['salesRepHistory'];
+            $sales_rep_history = $data['salesRepHistory'] ?? [];
 
             // Check for Any Changes in Details. If yes, add to versions
             if($is_transaction_detail_changed) {
