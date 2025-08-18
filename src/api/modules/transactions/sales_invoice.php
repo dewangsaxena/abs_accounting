@@ -1015,10 +1015,14 @@ class SalesInvoice {
                 $db,
             );
 
+            // Sales Rep History
+            $sales_rep_history = $data['salesRepHistory'];
+
             // Check for Any Changes in Details. If yes, add to versions
             if($is_transaction_detail_changed) {
                 if(is_null($versions)) $versions = [];
                 $versions[Utils::get_utc_unix_timestamp_from_utc_str_timestamp($data['lastModifiedTimestamp'])] = $data['initial']['details'];
+                $sales_rep_history[]= $data['salesRepId'];
             }
 
             // Update Sales Invoice
@@ -1051,6 +1055,7 @@ class SalesInvoice {
                 net_amount_due_within_days = :net_amount_due_within_days,
                 account_number = :account_number,
                 purchased_by = :purchased_by,
+                sales_rep_history = :sales_rep_history,
                 versions = :versions,
                 modified = CURRENT_TIMESTAMP 
             WHERE
@@ -1086,6 +1091,7 @@ class SalesInvoice {
                 ':id' => $invoice_id,
                 ':account_number' => $details['account_number'],
                 ':purchased_by' => $details['purchased_by'],
+                ':sales_rep_history' => json_encode($sales_rep_history, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
                 ':versions' => is_array($versions) ? json_encode($versions, JSON_THROW_ON_ERROR) : null,
             ];
 

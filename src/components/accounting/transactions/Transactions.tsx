@@ -309,7 +309,7 @@ const Header = ({
     if (isViewOrUpdate && salesRepHistory !== null) {
       let temp: AttributeType<String> = {};
       for(let i = 0; i < salesRepHistory.length; ++i) {
-        temp[i] = salesRepresentatives[salesRepHistory[i]];
+        temp[i] = `${i + 1} ~ ` + salesRepresentatives[salesRepHistory[i]];
       }
       setSalesRepHistoryList(temp);
     }    
@@ -456,7 +456,6 @@ const Header = ({
           {/* Sales Representative */}
           <Box>
             <_Select
-              isDisabled={isViewOrUpdate}
               value={salesRepId}
               fontSize="0.7em"
               options={salesRepresentatives}
