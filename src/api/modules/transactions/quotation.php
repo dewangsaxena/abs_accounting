@@ -407,10 +407,14 @@ class Quotations {
             $initial_details_json = hash('sha256', json_encode($data['initial']['details']), JSON_THROW_ON_ERROR);
             $new_details_json = hash('sha256', json_encode($details), JSON_THROW_ON_ERROR);
 
+            // Sales Rep History
+            $sales_rep_history = $data['salesRepHistory'] ?? [];
+
             // Check for Any Changes in Details. If yes, add to versions
             if($initial_details_json !== $new_details_json) {
                 if(is_null($versions)) $versions = [];
                 $versions[Utils::get_utc_unix_timestamp_from_utc_str_timestamp($data['lastModifiedTimestamp'])] = $data['initial']['details'];
+                $sales_rep_history[]= $data['salesRepId'];
             }
 
             // Remove Keys
@@ -431,6 +435,7 @@ class Quotations {
                 details = :details,
                 account_number = :account_number,
                 notes = :notes,
+                sales_rep_history = :sales_rep_history,
                 versions = :versions,
                 modified = CURRENT_TIMESTAMP 
             WHERE
@@ -448,6 +453,7 @@ class Quotations {
                 ':details' => json_encode($details, JSON_THROW_ON_ERROR),
                 ':account_number' => $validated_details['account_number'],
                 ':notes' => $validated_details['notes'],
+                ':sales_rep_history' => json_encode($sales_rep_history, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
                 ':versions' => is_array($versions) ? json_encode($versions, JSON_THROW_ON_ERROR) : null,
                 ':id' => $txn_id,
             ];

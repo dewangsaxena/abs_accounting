@@ -315,10 +315,14 @@ class DebitNote {
             // Update Balance Sheet
             BalanceSheetActions::update_from($bs_affected_accounts, $date, $store_id, $db);
 
+            // Sales Rep History
+            $sales_rep_history = $data['salesRepHistory'] ?? [];
+
             // Check for Any Changes in Details. If yes, add to versions
             if($is_transaction_detail_changed) {
                 if(is_null($versions)) $versions = [];
                 $versions[Utils::get_utc_unix_timestamp_from_utc_str_timestamp($data['lastModifiedTimestamp'])] = $data['initial']['details'];
+                $sales_rep_history[]= $data['salesRepId'];
             }
 
             // Update Debit Note
@@ -336,6 +340,7 @@ class DebitNote {
                 txn_discount = :txn_discount,
                 details = :details,
                 notes = :notes,
+                sales_rep_history = :sales_rep_history,
                 versions = :versions,
                 modified = CURRENT_TIMESTAMP 
             WHERE
@@ -353,6 +358,7 @@ class DebitNote {
                 ':txn_discount' => $txn_discount,
                 ':details' => json_encode($details, JSON_THROW_ON_ERROR),
                 ':notes' => isset($data['notes']) ? ucfirst(trim($data['notes'])): '',
+                ':sales_rep_history' => json_encode($sales_rep_history, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
                 ':versions' => is_array($versions) ? json_encode($versions, JSON_THROW_ON_ERROR) : null,
                 ':id' => $txn_id,
             ];
