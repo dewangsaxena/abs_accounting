@@ -2096,11 +2096,17 @@ class Inventory {
         ON 
             i.id = inv.item_id
         WHERE 
-            inv.store_id = :store_id;
+            inv.store_id = :store_id
+        AND
+            inv.quantity > 0;
         EOS;
 
         if($min_cost < 0) $min_cost = 0;
         if($max_cost < 0) $max_cost = 0;
+
+        // Round off.
+        $min_cost = Utils::round($min_cost);
+        $max_cost = Utils::round($max_cost);
 
         // Invalid Criteria
         if($min_cost == 0 && $max_cost == 0) return ['status' => false, 'message' => 'Invalid Criteria.'];
@@ -2112,6 +2118,7 @@ class Inventory {
         $statement -> execute($params);
         $results = $statement -> fetchAll(PDO::FETCH_ASSOC);
         $items = [];
+        $total_inventory_value = 0;
         foreach($results as $r) {
 
             // Item Id
@@ -2135,15 +2142,22 @@ class Inventory {
             else if($min_cost > 0 && $buying_cost >= $min_cost) $flag = true;
             else if($max_cost > 0 && $buying_cost <= $max_cost) $flag = true;
 
-            if($flag && isset($items[$id]) === false){
+            if($flag && isset($items[$id]) === false) {
+                $value_of_item = ($buying_cost * $r['quantity']);
+                $total_inventory_value += $value_of_item;
+                $quantity = $r['quantity'];
                 $items[$id] = [
                     'identifier' => $r['identifier'],
                     'description' => $r['description'],
-                    'prices' => $prices[$store_id] ?? 0,
-                    'quantity' => $r['quantity'],
+                    'buying_cost' => $buying_cost,
+                    'quantity' => $quantity,
+                    'total_value' => Utils::round($value_of_item),
                 ];
             }
         }
-        return ['status' => true, 'data' => $items];
+        return ['status' => true, 'data' => [
+            'records' => $items,
+            'total_inventory_value' => $total_inventory_value,
+        ]];
     }
 }

@@ -3387,6 +3387,67 @@ class GeneratePDF {
     }
 
     /**
+     * This method will filter items by price.
+     * @param store_id
+     * @param min_cost
+     * @param max_cost
+     * @return void
+     */
+    public static function filter_items_by_price(int $store_id, float $min_cost = 0, float $max_cost = 0): void {
+        $response = Inventory::filter_items_by_price($store_id, $min_cost, $max_cost);
+
+        // Error Message
+        if(count($response['data']['records']) === 0) die('No Items were found for the matching criteria.');
+
+        echo <<<'EOS'
+        <html>
+        <head>
+        </head>
+        <body>
+        <table>
+        <thead>
+        <tr>
+            <th>Identifier</th>
+            <th>Description</th>
+            <th>Buying Cost</th>
+            <th>Quantity</th>
+            <th>Total Value</th>
+        </tr>
+        <tbody>
+        EOS;
+
+        $items = $response['data']['records'];
+        $total_inventory_value = Utils::number_format($response['data']['total_inventory_value']);
+
+        foreach($items as $item) {
+            $identifier = $item['identifier'];
+            $description = $item['description'];
+            $price = Utils::number_format($item['buying_cost']);
+            $quantity = $item['quantity'];
+            $total_value = Utils::number_format($item['total_value']);
+
+            echo <<<EOS
+            <tr>
+                <td>$identifier</td>
+                <td>$description</td>
+                <td>$price</td>
+                <td>$quantity</td>
+                <td>$total_value</td>
+            </tr>
+            EOS;
+        }
+        echo <<<EOS
+        </tbody>
+        </table>
+
+        <br><br>
+        Total Inventory Value: $$total_inventory_value
+        </body>
+        </html>
+        EOS;
+    }
+
+    /**
      * This method will generate low stock items.
      * @param details
      */
