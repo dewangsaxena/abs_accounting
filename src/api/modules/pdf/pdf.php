@@ -3411,6 +3411,7 @@ class GeneratePDF {
             <th>Description</th>
             <th>Buying Cost</th>
             <th>Quantity</th>
+            <th>Last Sold</th>
             <th>Total Value</th>
         </tr>
         <tbody>
@@ -3424,6 +3425,7 @@ class GeneratePDF {
             $description = $item['description'];
             $price = Utils::number_format($item['buying_cost']);
             $quantity = $item['quantity'];
+            $last_sold = $item['last_sold'];
             $total_value = Utils::number_format($item['total_value']);
 
             echo <<<EOS
@@ -3432,6 +3434,7 @@ class GeneratePDF {
                 <td>$description</td>
                 <td>$price</td>
                 <td>$quantity</td>
+                <td>$last_sold</td>
                 <td>$total_value</td>
             </tr>
             EOS;

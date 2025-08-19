@@ -2638,5 +2638,5 @@ function fetch_quantity_sold(int $store_id): void {
 }
 
 // fetch_quantity_sold(StoreDetails::EDMONTON);
-print_r(GeneratePDF::filter_items_by_price(StoreDetails::EDMONTON, 12, 20));
+print_r(GeneratePDF::filter_items_by_price(StoreDetails::EDMONTON, 1000, 2000));
 ?>  

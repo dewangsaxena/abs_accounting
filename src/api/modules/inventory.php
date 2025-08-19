@@ -2130,6 +2130,11 @@ class Inventory {
             // Check for Store Validity
             if(isset($prices[$store_id]) === false) continue;
 
+            // Last Sold
+            $last_sold = json_decode($r['last_sold'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+            if(isset($last_sold[$store_id]) === false) $last_sold = null;
+            else $last_sold = $last_sold[$store_id];
+
             // Cache
             $buying_cost = $prices[$store_id]['buyingCost'];
 
@@ -2151,6 +2156,7 @@ class Inventory {
                     'description' => $r['description'],
                     'buying_cost' => $buying_cost,
                     'quantity' => $quantity,
+                    'last_sold' => $last_sold != null ? Utils::format_to_human_readable_date($last_sold) : 'N/A',
                     'total_value' => Utils::round($value_of_item),
                 ];
             }
