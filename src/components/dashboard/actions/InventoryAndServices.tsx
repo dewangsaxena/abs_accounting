@@ -381,8 +381,8 @@ const InventoryAndServices = () => {
     const [deadInventoryMonth, setDeadInventoryMonth] = useState<number>(3);
     const [deadInventoryYear, setDeadInventoryYear] = useState<number>(0);
     const [reportYear, setReportYear] = useState<number>(new Date().getFullYear());
-    const [minAmount, setMinAmount] = useState<number>(0);
-    const [maxAmount, setMaxAmount] = useState<number>(0);
+    const [minCost, setMinCost] = useState<number>(0);
+    const [maxCost, setMaxCost] = useState<number>(0);
     return (
         <>
             <CanvasGrid>
@@ -538,9 +538,9 @@ const InventoryAndServices = () => {
                                 <_Input fontSize="0.8em" type="number" onBlur={(event: any) => {
                                     let value = event.target.value;
                                     if(isNaN(value) === false) {
-                                        setMinAmount(parseInt(value));
+                                        setMinCost(parseInt(value));
                                     }
-                                    else setMinAmount(0);
+                                    else setMinCost(0);
                                 }}></_Input>
                             </Box>
                         </HStack>
@@ -552,14 +552,20 @@ const InventoryAndServices = () => {
                                 <_Input fontSize="0.8em" type="number" onBlur={(event: any) => {
                                     let value = event.target.value;
                                     if(isNaN(value) === false) {
-                                        setMaxAmount(parseInt(value));
+                                        setMaxCost(parseInt(value));
                                     }
-                                    else setMaxAmount(0);
+                                    else setMaxCost(0);
                                 }}></_Input>
                             </Box>
                         </HStack>
                         <_Button icon={<FcSearch/>} fontSize="1em" bgColor="black" color="white" label="Find Items" onClick={() => {
-                            console.log('asdsd');
+                            const newURLParams = new URLSearchParams();
+                            newURLParams.append("minCost", minCost.toString());
+                            newURLParams.append("maxCost", maxCost.toString());
+                            window.open(
+                                `${APP_HOST}/api.php?action=filter_items_by_price&storeId=${localStorage.getItem("storeId")}&minCost=${minCost}&maxCost=${maxCost}`, 
+                                "_blank"
+                            );
                         }}></_Button>
                     </VStack>
                 </Box>

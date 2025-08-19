@@ -90,6 +90,14 @@ if (isset($_GET['action'])) {
         Inventory::fetch_quantity_sold_for_all_items(intval($_GET['storeId']), intval($_GET['year']));
         die;
     }
+    else if($action === 'filter_items_by_price' && is_numeric($_GET['storeId'] ?? null)) {
+        GeneratePDF::filter_items_by_price(
+            intval($_GET['storeId']),
+            floatval($_GET['minCost'] ?? 0),
+            floatval($_GET['maxCost'] ?? 0),
+        );
+        die;
+    }
     else {
         require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/pdf/pdf.php";
         $transaction_type = intval($_GET['t'] ?? 0);
