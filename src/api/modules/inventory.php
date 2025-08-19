@@ -2071,4 +2071,79 @@ class Inventory {
         }
         return $items_sold;
     }
+
+    /**
+     * This method will filter items by price.
+     * @param store_id
+     * @param min_cost
+     * @param max_cost
+     * @return array
+     */
+    public static function filter_items_by_price(int $store_id, float $min_cost = 0, float $max_cost = 0): array {
+        $db = get_db_instance();
+        $query = <<<'EOS'
+        SELECT
+            i.id,
+            i.identifier,
+            i.description,
+            i.prices,
+            i.last_sold,
+            inv.quantity
+        FROM 
+            items AS i
+        LEFT JOIN
+            inventory AS inv
+        ON 
+            i.id = inv.item_id
+        WHERE 
+            inv.store_id = :store_id;
+        EOS;
+
+        if($min_cost < 0) $min_cost = 0;
+        if($max_cost < 0) $max_cost = 0;
+
+        // Invalid Criteria
+        if($min_cost == 0 && $max_cost == 0) return ['status' => false, 'message' => 'Invalid Criteria.'];
+
+        // Store Id
+        $store_id = $store_id;
+        $params = [':store_id' => $store_id,];
+        $statement = $db -> prepare($query);
+        $statement -> execute($params);
+        $results = $statement -> fetchAll(PDO::FETCH_ASSOC);
+        $items = [];
+        foreach($results as $r) {
+
+            // Item Id
+            $id = $r['id'];
+
+            // Decode Prices
+            $prices = json_decode($r['prices'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+
+            // Check for Store Validity
+            if(isset($prices[$store_id]) === false) continue;
+
+            // Cache
+            $buying_cost = $prices[$store_id]['buyingCost'];
+
+            // Reset
+            $flag = false;
+
+            if($min_cost > 0 && $max_cost > 0) {
+                if($buying_cost >= $min_cost && $buying_cost <= $max_cost) $flag = true;
+            }
+            else if($min_cost > 0 && $buying_cost >= $min_cost) $flag = true;
+            else if($max_cost > 0 && $buying_cost <= $max_cost) $flag = true;
+
+            if($flag && isset($items[$id]) === false){
+                $items[$id] = [
+                    'identifier' => $r['identifier'],
+                    'description' => $r['description'],
+                    'prices' => $prices[$store_id] ?? 0,
+                    'quantity' => $r['quantity'],
+                ];
+            }
+        }
+        return ['status' => true, 'data' => $items];
+    }
 }

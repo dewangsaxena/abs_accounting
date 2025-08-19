@@ -2637,5 +2637,6 @@ function fetch_quantity_sold(int $store_id): void {
     echo $total_sold;
 }
 
-fetch_quantity_sold(StoreDetails::EDMONTON);
+// fetch_quantity_sold(StoreDetails::EDMONTON);
+print_r(Inventory::filter_items_by_price(StoreDetails::EDMONTON, 0, 4));
 ?>  

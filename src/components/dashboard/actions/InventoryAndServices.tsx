@@ -56,6 +56,7 @@ import {
 } from "../../../shared/config";
 import { FcInfo } from "react-icons/fc";
 import { FcSalesPerformance } from "react-icons/fc";
+import { FcSearch } from "react-icons/fc";
 
 /** Price Margins */
 const ProfitMarginsHandler = () => {
@@ -557,8 +558,8 @@ const InventoryAndServices = () => {
                                 }}></_Input>
                             </Box>
                         </HStack>
-                        <_Button onClick={() => {
-                            
+                        <_Button icon={<FcSearch/>} fontSize="1em" bgColor="black" color="white" label="Find Items" onClick={() => {
+                            console.log('asdsd');
                         }}></_Button>
                     </VStack>
                 </Box>
