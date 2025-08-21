@@ -1,20 +1,4 @@
-<html>
-    <script>
-        let counter = 0;
-        let url = 'youtube.com/results?search_query=python';
-        function foo() {
-            if (counter > 0) url = 'youtube.com/results?search_query=python';
-            ++counter;
-            window.open(`https://${url}`, '_blank');
-        }
-    </script>
-    <body onClick="foo();">
-    Click me.
-    </body>
-</html>
-
 <?php 
-die;
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/utils.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/database.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_summary.php";
