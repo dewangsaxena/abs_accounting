@@ -36,13 +36,13 @@ class SpecialExceptions {
     /* Check Over 60+ Balance For Client For Credit Transaction */ 
     private const CHECK_OVER_60_PLUS_BALANCE_DUE_OF_CLIENT_FOR_CREDIT_TRANSACTION_PER_STORE = [
         PARTS => [
-            StoreDetails::EDMONTON => true,
-            StoreDetails::CALGARY => true,
-            StoreDetails::NISKU => true,
-            StoreDetails::SLAVE_LAKE => true,
-            StoreDetails::VANCOUVER => true,
-            StoreDetails::DELTA => true,
-            StoreDetails::REGINA => true,
+            StoreDetails::EDMONTON => false,
+            StoreDetails::CALGARY => false,
+            StoreDetails::NISKU => false,
+            StoreDetails::SLAVE_LAKE => false,
+            StoreDetails::VANCOUVER => false,
+            StoreDetails::DELTA => false,
+            StoreDetails::REGINA => false,
             StoreDetails::SASKATOON => true,
         ],
         WASH => [
