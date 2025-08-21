@@ -36,16 +36,17 @@ class SpecialExceptions {
     /* Check Over 60+ Balance For Client For Credit Transaction */ 
     private const CHECK_OVER_60_PLUS_BALANCE_DUE_OF_CLIENT_FOR_CREDIT_TRANSACTION_PER_STORE = [
         PARTS => [
-            StoreDetails::EDMONTON => false,
-            StoreDetails::CALGARY => false,
-            StoreDetails::NISKU => false,
-            StoreDetails::SLAVE_LAKE => false,
-            StoreDetails::VANCOUVER => false,
-            StoreDetails::DELTA => false,
-            StoreDetails::REGINA => false,
+            StoreDetails::EDMONTON => true,
+            StoreDetails::CALGARY => true,
+            StoreDetails::NISKU => true,
+            StoreDetails::SLAVE_LAKE => true,
+            StoreDetails::VANCOUVER => true,
+            StoreDetails::DELTA => true,
+            StoreDetails::REGINA => true,
+            StoreDetails::SASKATOON => true,
         ],
         WASH => [
-            StoreDetails::NISKU => false,
+            StoreDetails::NISKU => true,
         ],
     ][SYSTEM_INIT_MODE];
     
@@ -63,6 +64,9 @@ class SpecialExceptions {
                 18052, /* 2387544 AB LTD */ 
                 11548, /* MAAN TRANSPORT LTD */
             ],
+            StoreDetails::SASKATOON => [
+                12089,  /* SST TRUCKING LTD */
+            ]
         ],
     ][SYSTEM_INIT_MODE];
 

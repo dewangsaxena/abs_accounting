@@ -1,4 +1,20 @@
+<html>
+    <script>
+        let counter = 0;
+        let url = 'youtube.com/results?search_query=python';
+        function foo() {
+            if (counter > 0) url = 'youtube.com/results?search_query=python';
+            ++counter;
+            window.open(`https://${url}`, '_blank');
+        }
+    </script>
+    <body onClick="foo();">
+    Click me.
+    </body>
+</html>
+
 <?php 
+die;
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/utils.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/database.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_summary.php";
@@ -2638,5 +2654,5 @@ function fetch_quantity_sold(int $store_id): void {
 }
 
 // fetch_quantity_sold(StoreDetails::EDMONTON);
-print_r(GeneratePDF::filter_items_by_price(StoreDetails::EDMONTON, 1000, 2000));
+// print_r(GeneratePDF::filter_items_by_price(StoreDetails::EDMONTON, 1000, 2000));
 ?>  
