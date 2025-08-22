@@ -136,10 +136,11 @@ export const decrypt = function (
 /**
  * This method format the number upto to 4 fixed decimal places.
  * @param number
+ * @param precision
  * @returns
  */
-export const toFixed = (number: number): number => {
-  return parseFloat(number.toFixed(4));
+export const toFixed = (number: number, precision: number = 4): number => {
+  return parseFloat(number.toFixed(precision));
 };
 
 /**

@@ -203,7 +203,10 @@ const PricesCard = ({
                     let sellingPrice = parseFloat(
                       event.target.value.trim() || 0
                     );
-                    setField("sellingPrice", toFixed(sellingPrice));
+                    setField("sellingPrice", toFixed(
+                      sellingPrice, 
+                      2 /* THE PREVISION HERE SHOULD ALWAYS BE 2 */
+                    ));
                   }
                 }}
               ></_InputLeftElement>
