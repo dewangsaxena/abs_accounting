@@ -244,7 +244,10 @@ const PricesCard = ({
                     let preferredPrice = parseFloat(
                       event.target.value.trim() || 0
                     );
-                    setField("preferredPrice", toFixed(preferredPrice));
+                    setField("preferredPrice", toFixed(
+                      preferredPrice,
+                      2 /* THE PRECISION HERE SHOULD ALWAYS BE 2 */
+                    ));
                   }
                 }}
               ></_InputLeftElement>

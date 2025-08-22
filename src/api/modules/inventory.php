@@ -323,7 +323,10 @@ class Inventory {
                 $prices[$store]['sellingPrice'], 
                 2 /* THE PRECISION SHOULD ALWAYS BE 2 HERE */
             );
-            $prices[$store]['preferredPrice'] = Utils::round($prices[$store]['preferredPrice']);
+            $prices[$store]['preferredPrice'] = Utils::round(
+                $prices[$store]['preferredPrice'],
+                2 /* THE PRECISION SHOULD ALWAYS BE 2 HERE */
+            );
             $prices[$store]['buyingCost'] = Utils::round($prices[$store]['buyingCost']);
         }
         return true;
