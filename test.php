@@ -2637,6 +2637,53 @@ function fetch_quantity_sold(int $store_id): void {
     echo $total_sold;
 }
 
+function round_off_selling_prices_to_2_decimal_places(): void {
+    $db = get_db_instance();
+    try {
+        $db -> beginTransaction();
+        $statement = $db -> prepare('SELECT id, identifier, prices, modified FROM items;');
+        $statement -> execute();
+        $items = $statement -> fetchAll(PDO::FETCH_ASSOC);
+
+        $statement_update = $db -> prepare(<<<'EOS'
+        UPDATE 
+            items 
+        SET 
+            prices = :prices 
+        WHERE 
+            id = :id
+        AND
+            modified = :modified;
+        EOS);
+        foreach ($items as $item) {
+            $id = $item['id'];
+            $modified = $item['modified'];
+            $identifier = $item['identifier'];
+            $prices = json_decode($item['prices'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+            $stores = array_keys($prices);
+            foreach($stores as $store) {
+                $prices[$store]['sellingPrice'] = Utils::round($prices[$store]['sellingPrice'], 2);
+            }
+
+            $is_successful = $statement_update -> execute([
+                ':prices' => json_encode($prices, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
+                ':id' => $id,
+                ':modified' => $modified,
+            ]);
+
+            if($is_successful !== true && $statement_update -> rowCount() < 1) {
+                throw new Exception('Unable to Update: '. $identifier);
+            }
+        }
+        $db -> commit();
+        echo 'All Done';
+    }
+    catch(Exception $e) {
+        if ($db -> inTransaction()) $db -> rollBack();
+        print_r($e -> getMessage());
+    }
+}
+round_off_selling_prices_to_2_decimal_places();
 // fetch_quantity_sold(StoreDetails::EDMONTON);
 // print_r(GeneratePDF::filter_items_by_price(StoreDetails::EDMONTON, 1000, 2000));
 ?>  
