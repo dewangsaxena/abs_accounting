@@ -205,7 +205,7 @@ const PricesCard = ({
                     );
                     setField("sellingPrice", toFixed(
                       sellingPrice, 
-                      2 /* THE PRECISION HERE SHOULD ALWAYS BE 2 */
+                      // 2 /* THE PRECISION HERE SHOULD ALWAYS BE 2 */
                     ));
                   }
                 }}

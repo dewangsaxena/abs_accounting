@@ -968,15 +968,18 @@ class Inventory {
         $selling_price += (($buying_cost * $new_profit_margin) / 100);
 
         // Round off selling price
-        $selling_price = Utils::round(
-            $selling_price, 
-            2 /* THE PRECISION SHOULD ALWAYS BE 2 HERE */
-        );
+        $selling_price = Utils::round($selling_price);
 
         // Choose the higher value
         if ($existing_prices[$store_id]['sellingPrice'] < $selling_price) {
             $existing_prices[$store_id]['sellingPrice'] = $selling_price;
         }
+
+        // Round off selling Price
+        $existing_prices[$store_id]['sellingPrice'] = Utils::round(
+            $existing_prices[$store_id]['sellingPrice'], 
+            2  /* THE PRECISION SHOULD ALWAYS BE 2 */
+        );
 
         return $existing_prices;
     }
