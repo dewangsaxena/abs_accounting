@@ -169,7 +169,7 @@ class Utils {
      * @return float rounded amount
      */
     public static function round(float $amount, int $precision = 4): float {
-        return round($amount, $precision);
+        return round($amount, $precision, PHP_ROUND_HALF_UP);
     }
 
     /**
