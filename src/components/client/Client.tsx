@@ -71,7 +71,6 @@ import {
   getUUID,
   showToast,
   isSessionActive,
-  toFixed,
 } from "../../shared/functions";
 import { SingleDatepicker } from "chakra-dayzed-datepicker";
 import { ItemDetails, itemStore } from "../inventory/itemStore";
