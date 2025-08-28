@@ -878,7 +878,7 @@ const ClientOptions = memo(({ inputDisable }: SharedClientProps) => {
   useEffect(() => {
     setField("paymentCurrency", exchangeRateUSDToCAD > 0 ? 'USD' : 'CAD');
   }, [exchangeRateUSDToCAD]);
-  
+
   return (
     <>
       <Badge
@@ -1024,7 +1024,7 @@ const ClientOptions = memo(({ inputDisable }: SharedClientProps) => {
                     </HStack>
                     {paymentCurrency === "USD" && <HStack marginTop={5} spacing={20} width="100%">
                       <Box width="15%">
-                        <_Label fontSize="0.8em">USD Exchange Rate: </_Label>
+                        <_Label fontSize="0.8em">USD/CAD Exchange Rate: </_Label>
                       </Box>
                       <Box width="10%">
                         <_Input fontFamily={numberFont} type="number" defaultValue={exchangeRateUSDToCAD} fontSize="0.8em" onBlur={(event: any) => {
