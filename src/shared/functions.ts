@@ -369,6 +369,20 @@ export const calculateTaxByRate = (amount: number, taxRate:number) : number => {
   return temp / 100;
 }
 
+/**
+ * This method will convert CAD to USD.
+ * @param amount
+ * @returns 
+ */
 export const convertCADToUSD = (amount: number): number => {
   return toFixed(amount / USD_CAD_RATE, 2);
+}
+
+/**
+ * This method will convert USD to CAD.
+ * @param amount
+ * @returns 
+ */
+export const convertUSDToCAD = (amount: number): number => {
+  return toFixed(amount * USD_CAD_RATE, 2);
 }
