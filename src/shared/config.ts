@@ -210,8 +210,3 @@ export const EHC_ITEMS_LIST: number[] = [
   40057, /* EHCAB04 */
   40058, /* EHCAB06 */
 ];
-
-/**
- * USD CAD Rate
- */
-export const USD_CAD_RATE: number = 1.4500;

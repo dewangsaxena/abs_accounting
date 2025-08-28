@@ -4,7 +4,7 @@ import uuid from "react-native-uuid";
  * This module defines shared functions.
  */
 import { ProfitMarginIndex } from "../components/inventory/profitMarginStore";
-import { DEFAULT_PROFIT_MARGIN_KEY, USD_CAD_RATE } from "./config";
+import { DEFAULT_PROFIT_MARGIN_KEY } from "./config";
 import CryptoJS from "crypto-js";
 import { ItemDetailsForTransactions } from "../components/accounting/transactions/store";
 import { ItemDetails } from "../components/inventory/itemStore";
@@ -372,17 +372,19 @@ export const calculateTaxByRate = (amount: number, taxRate:number) : number => {
 /**
  * This method will convert CAD to USD.
  * @param amount
+ * @param usd_cad_exchange_rate
  * @returns 
  */
-export const convertCADToUSD = (amount: number): number => {
-  return toFixed(amount / USD_CAD_RATE, 2);
+export const convertCADToUSD = (amount: number, usd_cad_exchange_rate: number): number => {
+  return toFixed(amount / usd_cad_exchange_rate, 2);
 }
 
 /**
  * This method will convert USD to CAD.
  * @param amount
+ * @param usd_cad_exchange_rate
  * @returns 
  */
-export const convertUSDToCAD = (amount: number): number => {
-  return toFixed(amount * USD_CAD_RATE, 2);
+export const convertUSDToCAD = (amount: number, usd_cad_exchange_rate: number): number => {
+  return toFixed(amount * usd_cad_exchange_rate, 2);
 }

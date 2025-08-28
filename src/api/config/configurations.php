@@ -247,7 +247,4 @@ define('CHECK_TRANSACTION_DATE', SYSTEM_INIT_HOST === __TEN_LEASING__ ? 5 : 2);
 // Enable Date Edit By Root
 // This provides additional safeguard.
 define('ENABLE_DATE_EDIT_BY_ROOT', false);
-
-// USD CAD Rate
-define('USD_CAD_RATE', 1.4500);
 ?>
