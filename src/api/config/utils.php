@@ -486,5 +486,23 @@ class Utils {
         else http_response_code(404);
         exit;
     }
+
+    /**
+     * This method will convert CAD to USD.
+     * @param amount
+     * @return float
+     */
+    public static function convert_cad_to_usd(float $amount): float {
+        return Utils::round($amount / USD_CAD_RATE, 2);
+    }
+
+    /**
+     * This method will convert USD to CAD.
+     * @param amount
+     * @return float
+     */
+    public static function convert_usd_to_cad(float $amount): float {
+        return Utils::round($amount * USD_CAD_RATE, 2);
+    } 
 }
 ?>
