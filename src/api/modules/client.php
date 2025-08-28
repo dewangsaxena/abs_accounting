@@ -527,7 +527,7 @@ class Client {
             name_history = :name_history,
             is_inactive = :is_inactive,
             custom_selling_price_for_items = :custom_selling_price_for_items,
-            payment_currency = :payment_currency,
+            use_usd = :use_usd,
             usd_rate = :usd_rate,
             modified = CURRENT_TIMESTAMP
         WHERE
@@ -755,7 +755,7 @@ class Client {
                 // Store shipping address as an array.
                 // We might store multiple addresses later on.
                 ':shipping_addresses' => json_encode([$data['shippingAddresses']], JSON_THROW_ON_ERROR),
-                ':payment_currency' => $data['paymentCurrency'] === 'USD' ? 1 : 0,
+                ':use_usd' => $data['paymentCurrency'] === 'USD' ? 1 : 0,
                 ':usd_rate' => $data['exchangeRateCADToUSD'],
             ];
 
