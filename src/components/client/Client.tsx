@@ -17,7 +17,6 @@ import {
   RadioGroup,
   SimpleGrid,
   Image,
-  Text,
   Stack,
   Tab,
   TabList,
