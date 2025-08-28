@@ -871,6 +871,12 @@ const ClientOptions = memo(({ inputDisable }: SharedClientProps) => {
   const __receiptPaymentMethods: AttributeType = receiptPaymentMethods;
   delete __receiptPaymentMethods[10];
 
+  // Payment Currency 
+  const [paymentCurrency, setPaymentCurrency] = useState<string>('CAD');
+  const setPaymentCurrencyForClient = (currency: string) => {
+    setPaymentCurrency(currency);
+  }
+
   return (
     <>
       <Badge
@@ -996,7 +1002,7 @@ const ClientOptions = memo(({ inputDisable }: SharedClientProps) => {
           <HStack spacing={10} marginTop={5}>
             <Box width="100%">
               <HStack spacing={5} width="100%">
-                <RadioGroup width="100%" color="purple" >
+                <RadioGroup width="100%" color="purple" onChange={setPaymentCurrencyForClient} value={paymentCurrency}>
                   <HStack spacing={20} width="100%">
                     <Radio value='CAD' colorScheme="red">
                       <HStack>
