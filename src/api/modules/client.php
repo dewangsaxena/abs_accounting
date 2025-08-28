@@ -528,7 +528,7 @@ class Client {
             name_history = :name_history,
             is_inactive = :is_inactive,
             custom_selling_price_for_items = :custom_selling_price_for_items,
-            usd_rate = :usd_rate,
+            usd_cad_rate = :usd_cad_rate,
             modified = CURRENT_TIMESTAMP
         WHERE
             id = :id
@@ -755,7 +755,7 @@ class Client {
                 // Store shipping address as an array.
                 // We might store multiple addresses later on.
                 ':shipping_addresses' => json_encode([$data['shippingAddresses']], JSON_THROW_ON_ERROR),
-                ':usd_rate' => $data['exchangeRateCADToUSD'],
+                ':usd_cad_rate' => $data['exchangeRateCADToUSD'],
             ];
 
             // Select Action
