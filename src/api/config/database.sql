@@ -157,6 +157,12 @@ CREATE TABLE IF NOT EXISTS clients(
 
     /* Last Purchase Date */ 
     last_purchase_date JSON NOT NULL DEFAULT '{}',
+
+    /* Use USD Payment */
+    use_usd BOOLEAN NOT NULL DEFAULT 0 COMMENT 'Use USD instead of CAD?',
+
+    /* USD Rate: CAD -> USD */
+    usd_rate NUMERIC(5, 4) DEFAULT 1.4500 COMMENT 'Rate: 1.4500',
     
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modified TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
