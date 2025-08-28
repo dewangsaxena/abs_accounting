@@ -1009,13 +1009,13 @@ const ClientOptions = memo(({ inputDisable }: SharedClientProps) => {
                       <Radio value='CAD' colorScheme="red">
                         <HStack>
                           <_Label fontSize="0.9em">CAD $</_Label>
-                          <Image width="5vw" src={flag_CA}></Image>
+                          <Image width="3.5vw" src={flag_CA}></Image>
                         </HStack>
                       </Radio>
                       <Radio value='USD' colorScheme="blue">
                         <HStack width="100%">
                           <_Label fontSize="0.9em">USD $</_Label>
-                          <Image width="5vw" src={flag_US}></Image>
+                          <Image width="3.5vw" src={flag_US}></Image>
                         </HStack>
                       </Radio>
                     </HStack>
