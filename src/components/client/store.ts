@@ -413,5 +413,7 @@ export const clientStore = create<ClientStore>((set, get) => ({
     set({ isSelfClient: 0 });
     set({ customSellingPriceForItems: {} as any });
     set({ enforceSelfClientPriceLock: 1});
+    set({ paymentCurrency: "CAD" });
+    set({ exchangeRateCADToUSD: 0 });
   },
 }));
