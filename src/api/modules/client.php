@@ -311,7 +311,7 @@ class Client {
 
         // Validate Payment Currency
         $payment_currency = $details['paymentCurrency'] ?? 'CAD';
-        if($payment_currency !== 'CAD' || $payment_currency !== 'USD') throw new Exception('Invalid Payment Currency: '. $payment_currency);
+        if($payment_currency !== 'CAD' && $payment_currency !== 'USD') throw new Exception('Invalid Payment Currency: '. $payment_currency);
         if($payment_currency === 'USD') {
             
             // Only Ten Leasing and Localhost is Permitted to Use USD as selling Currency
@@ -755,7 +755,7 @@ class Client {
                 // Store shipping address as an array.
                 // We might store multiple addresses later on.
                 ':shipping_addresses' => json_encode([$data['shippingAddresses']], JSON_THROW_ON_ERROR),
-                ':payment_currency' => $data['paymentCurrency'],
+                ':payment_currency' => $data['paymentCurrency'] === 'USD' ? 1 : 0,
                 ':usd_rate' => $data['exchangeRateCADToUSD'],
             ];
 
