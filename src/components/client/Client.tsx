@@ -13,7 +13,11 @@ import {
   Checkbox,
   CreateToastFnReturn,
   HStack,
+  Radio,
+  RadioGroup,
   SimpleGrid,
+  Image,
+  Text,
   Stack,
   Tab,
   TabList,
@@ -77,6 +81,8 @@ import { IoIosAddCircle } from "react-icons/io";
 import { CiText } from "react-icons/ci";
 import AutoSuggest from "react-autosuggest";
 import { shallow } from "zustand/shallow";
+import flag_CA from "/images/flag_CA.svg";
+import flag_US from "/images/flag_US.svg";
 
 // Countries Supported
 const COUNTRIES_SUPPORTED = { 124: "Canada" };
@@ -977,6 +983,39 @@ const ClientOptions = memo(({ inputDisable }: SharedClientProps) => {
             </HStack>
           </Box>
         </Stack>
+        <Box width="100%">
+          <_Divider />
+          <Badge
+            fontSize={"0.8em"}
+            letterSpacing={5}
+            colorScheme={"teal"}
+            variant="outline"
+          >
+            Payment Currency
+          </Badge>
+          <HStack spacing={10} marginTop={5}>
+            <Box width="100%">
+              <HStack spacing={5} width="100%">
+                <RadioGroup width="100%" color="purple" >
+                  <HStack spacing={20} width="100%">
+                    <Radio value='CAD' colorScheme="red">
+                      <HStack>
+                        <Text>CAD $</Text>
+                        <Image width="5vw" src={flag_CA}></Image>
+                      </HStack>
+                    </Radio>
+                    <Radio value='USD' colorScheme="blue">
+                      <HStack >
+                        <Text>USD $</Text>
+                        <Image width="5vw" src={flag_US}></Image>
+                      </HStack>
+                    </Radio>
+                  </HStack>
+                </RadioGroup>
+              </HStack>
+            </Box>
+          </HStack>
+        </Box>
         <Box width="100%">
           <_Divider />
           <Badge
