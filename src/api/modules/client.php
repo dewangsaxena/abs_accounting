@@ -373,7 +373,8 @@ class Client {
             credit_limit,
             shipping_addresses,
             custom_selling_price_for_items,
-            last_purchase_date
+            last_purchase_date,
+            exchange_rate_usd_to_cad
         )
         VALUES(
             :name,
@@ -408,7 +409,8 @@ class Client {
             :credit_limit,
             :shipping_addresses,
             :custom_selling_price_for_items,
-            :last_purchase_date
+            :last_purchase_date,
+            :exchange_rate_usd_to_cad
         );
         EOS);
 
