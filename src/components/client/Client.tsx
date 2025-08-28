@@ -1023,7 +1023,7 @@ const ClientOptions = memo(({ inputDisable }: SharedClientProps) => {
                       </Radio>
                     </HStack>
                     {paymentCurrency === "USD" && <HStack marginTop={5} spacing={20} width="100%">
-                      <Box width="15%">
+                      <Box width="20%">
                         <_Label fontSize="0.8em">USD/CAD Exchange Rate: </_Label>
                       </Box>
                       <Box width="10%">
