@@ -310,8 +310,10 @@ class Client {
         }
 
         // Validate Payment Currency
+        $payment_currency = $details['paymentCurrency'] ?? 'CAD';
+        if($payment_currency !== 'USD' && $payment_currency !== 'CAD') throw new Exception('Invalid Payment Currency');
         $exchange_rate_cad_to_usd =  $details['exchangeRateCADToUSD'] ?? 0;
-        if((is_numeric($exchange_rate_cad_to_usd) && $exchange_rate_cad_to_usd > 0)) {
+        if(($payment_currency === 'USD' && is_numeric($exchange_rate_cad_to_usd) && $exchange_rate_cad_to_usd > 0)) {
             
             // Only Ten Leasing and Localhost is Permitted to Use USD as selling Currency
             if(IS_LOCALHOST === false && SYSTEM_INIT_HOST !== TENLEASING_HOST) throw new Exception('USD as currency payment is disabled.');

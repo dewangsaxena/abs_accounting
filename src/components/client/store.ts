@@ -75,6 +75,7 @@ export interface ClientDetails {
   };
   lastPurchaseDate: string;
   enforceSelfClientPriceLock: number;
+  paymentCurrency: string;
   exchangeRateCADToUSD: number;
 }
 
@@ -154,6 +155,7 @@ export const clientStore = create<ClientStore>((set, get) => ({
   customSellingPriceForItems: {},
   lastPurchaseDate: "",
   enforceSelfClientPriceLock: 1,
+  paymentCurrency: 'CAD',
   exchangeRateCADToUSD: 0,
   setField: (detailName: string, value: any) => {
     if (detailName === "id") set({ id: value });
@@ -275,6 +277,7 @@ export const clientStore = create<ClientStore>((set, get) => ({
     else if (detailName === "clientSince") set({ clientSince: value });
     else if (detailName === "isInactive") set({ isInactive: value });
     else if (detailName === "salesInvoices") set({ salesInvoices: value });
+    else if (detailName === "paymentCurrency") set({ paymentCurrency: value });
     else if (detailName === "exchangeRateCADToUSD") set({ exchangeRateCADToUSD: value });
     else if (detailName == "customSellingPriceForItems") {
       set({ customSellingPriceForItems: value });

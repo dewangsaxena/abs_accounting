@@ -839,6 +839,7 @@ const ClientOptions = memo(({ inputDisable }: SharedClientProps) => {
     disableProvincialTaxes,
     additionalEmailAddresses,
     disableCreditTransactions,
+    paymentCurrency,
     exchangeRateUSDToCAD,
     setField,
   } = clientStore(
@@ -857,6 +858,7 @@ const ClientOptions = memo(({ inputDisable }: SharedClientProps) => {
       disableProvincialTaxes: state.disableProvincialTaxes,
       additionalEmailAddresses: state.additionalEmailAddresses,
       disableCreditTransactions: state.disableCreditTransactions,
+      paymentCurrency: state.paymentCurrency,
       exchangeRateUSDToCAD: state.exchangeRateCADToUSD,
       setField: state.setField,
     }),
@@ -873,12 +875,10 @@ const ClientOptions = memo(({ inputDisable }: SharedClientProps) => {
   const __receiptPaymentMethods: AttributeType = receiptPaymentMethods;
   delete __receiptPaymentMethods[10];
 
-  // Payment Currency
-  const [paymentCurrency, setPaymentCurrency] = useState<string>(exchangeRateUSDToCAD > 0 ? 'USD': 'CAD');
-
   useEffect(() => {
-    setPaymentCurrency(exchangeRateUSDToCAD > 0 ? 'USD': 'CAD');
-  }, [exchangeRateUSDToCAD])
+    setField("paymentCurrency", exchangeRateUSDToCAD > 0 ? 'USD' : 'CAD');
+  }, [exchangeRateUSDToCAD]);
+  
   return (
     <>
       <Badge
@@ -1006,7 +1006,7 @@ const ClientOptions = memo(({ inputDisable }: SharedClientProps) => {
               <VStack align="start">
                 <HStack spacing={5} width="100%">
                   <RadioGroup width="100%" color="purple" onChange={(currency: any) => {
-                    setPaymentCurrency(currency);
+                    setField("paymentCurrency", currency);
                   }} value={paymentCurrency}>
                     <HStack spacing={20} width="100%">
                       <Radio value='CAD' colorScheme="red">
