@@ -4,7 +4,7 @@ import uuid from "react-native-uuid";
  * This module defines shared functions.
  */
 import { ProfitMarginIndex } from "../components/inventory/profitMarginStore";
-import { DEFAULT_PROFIT_MARGIN_KEY } from "./config";
+import { DEFAULT_PROFIT_MARGIN_KEY, USD_CAD_RATE } from "./config";
 import CryptoJS from "crypto-js";
 import { ItemDetailsForTransactions } from "../components/accounting/transactions/store";
 import { ItemDetails } from "../components/inventory/itemStore";
@@ -367,4 +367,8 @@ export const buildSearchListForClient = (
 export const calculateTaxByRate = (amount: number, taxRate:number) : number => {
   let temp: number = amount * taxRate;
   return temp / 100;
+}
+
+export const convertCADToUSD = (amount: number): number => {
+  return toFixed(amount / USD_CAD_RATE, 2);
 }
