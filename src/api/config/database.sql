@@ -162,7 +162,7 @@ CREATE TABLE IF NOT EXISTS clients(
     -- use_usd BOOLEAN NOT NULL DEFAULT 0 COMMENT 'Use USD instead of CAD?',
 
     /* USD Rate: CAD -> USD */
-    usd_cad_rate NUMERIC(5, 4) NOT NULL DEFAULT 0 COMMENT 'USD/CAD Exchange Rate',
+    exchange_rate_usd_to_cad NUMERIC(5, 4) NOT NULL DEFAULT 0 COMMENT 'USD/CAD Exchange Rate',
     
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modified TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
