@@ -756,7 +756,7 @@ class Client {
                 // We might store multiple addresses later on.
                 ':shipping_addresses' => json_encode([$data['shippingAddresses']], JSON_THROW_ON_ERROR),
                 ':use_usd' => $data['paymentCurrency'] === 'USD' ? 1 : 0,
-                ':usd_rate' => $data['exchangeRateCADToUSD'],
+                ':usd_rate' => $data['exchangeRateCADToUSD'] ?? 0,
             ];
 
             // Select Action
