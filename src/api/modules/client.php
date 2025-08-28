@@ -310,16 +310,11 @@ class Client {
         }
 
         // Validate Payment Currency
-        $payment_currency = $details['paymentCurrency'] ?? 'CAD';
-        if($payment_currency !== 'CAD' && $payment_currency !== 'USD') throw new Exception('Invalid Payment Currency: '. $payment_currency);
-        if($payment_currency === 'USD') {
+        $exchange_rate_cad_to_usd =  $details['exchangeRateCADToUSD'] ?? 0;
+        if((is_numeric($exchange_rate_cad_to_usd) && $exchange_rate_cad_to_usd > 0)) {
             
             // Only Ten Leasing and Localhost is Permitted to Use USD as selling Currency
             if(IS_LOCALHOST === false && SYSTEM_INIT_HOST !== TENLEASING_HOST) throw new Exception('USD as currency payment is disabled.');
-            $exchange_rate = $details['exchangeRateCADToUSD'] ?? 0;
-            if((is_numeric($exchange_rate) && $exchange_rate > 0) === false) {
-                throw new Exception('Invalid Exchange Rate');
-            }
 
             // Exchange Rate
             $details['exchangeRateCADToUSD'] = Utils::round($details['exchangeRateCADToUSD']);
@@ -1113,6 +1108,7 @@ class Client {
                     'customSellingPriceForItems' => $custom_selling_price_for_items,
                     'lastPurchaseDate' => is_string($last_purchase_date) ? Utils::format_to_human_readable_date($last_purchase_date) : 'N/A',
                     'enforceSelfClientPriceLock' => $store_id === StoreDetails::CALGARY ? 0 : 1,
+                    'exchangeRateCADToUSD' => $record['exchange_rate_usd_to_cad'],
                 ];
                 $formatted_records []= $data;
             }
