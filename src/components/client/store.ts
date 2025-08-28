@@ -349,6 +349,7 @@ export const clientStore = create<ClientStore>((set, get) => ({
     return await httpService.add(get(), "client_add");
   },
   update: async () => {
+    
     return await httpService.update(get(), "client_update");
   },
   reset: () => {
