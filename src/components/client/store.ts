@@ -75,6 +75,8 @@ export interface ClientDetails {
   };
   lastPurchaseDate: string;
   enforceSelfClientPriceLock: number;
+  paymentCurrency: string;
+  exchangeRateCADToUSD: number;
 }
 
 /**
@@ -153,6 +155,8 @@ export const clientStore = create<ClientStore>((set, get) => ({
   customSellingPriceForItems: {},
   lastPurchaseDate: "",
   enforceSelfClientPriceLock: 1,
+  paymentCurrency: "CAD",
+  exchangeRateCADToUSD: 0,
   setField: (detailName: string, value: any) => {
     if (detailName === "id") set({ id: value });
     /* Primary Details */ else if (detailName === "primaryClientName") {
@@ -273,6 +277,8 @@ export const clientStore = create<ClientStore>((set, get) => ({
     else if (detailName === "clientSince") set({ clientSince: value });
     else if (detailName === "isInactive") set({ isInactive: value });
     else if (detailName === "salesInvoices") set({ salesInvoices: value });
+    else if (detailName === "paymentCurrency") set({ paymentCurrency: value });
+    else if (detailName === "exchangeRateCADToUSD") set({ exchangeRateCADToUSD: value });
     else if (detailName == "customSellingPriceForItems") {
       set({ customSellingPriceForItems: value });
     } else if (detailName === "standardProfitMargin") {
@@ -327,6 +333,8 @@ export const clientStore = create<ClientStore>((set, get) => ({
     set({ customSellingPriceForItems: details.customSellingPriceForItems });
     set({ lastPurchaseDate: details.lastPurchaseDate });
     set({ enforceSelfClientPriceLock: details.enforceSelfClientPriceLock });
+    set({ paymentCurrency: details.paymentCurrency });
+    set({ exchangeRateCADToUSD: details.exchangeRateCADToUSD });
   },
   fetch: async (
     searchTerm: string,
