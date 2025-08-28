@@ -308,6 +308,22 @@ class Client {
                 else if($item['sellingPrice'] < $item['buyingCost']) throw new Exception('Selling Price cannot be less than buying price for: '. $item_identifier);
             }
         }
+
+        // Validate Payment Currency
+        $payment_currency = $details['paymentCurrency'] ?? 'CAD';
+        if($payment_currency !== 'CAD' || $payment_currency !== 'USD') throw new Exception('Invalid Payment Currency: '. $payment_currency);
+        if($payment_currency === 'USD') {
+            
+            // Only Ten Leasing and Localhost is Permitted to Use USD as selling Currency
+            if(IS_LOCALHOST === false && SYSTEM_INIT_HOST !== TENLEASING_HOST) throw new Exception('USD as currency payment is disabled.');
+            $exchange_rate = $details['exchangeRateCADToUSD'] ?? 0;
+            if((is_numeric($exchange_rate) && $exchange_rate > 0) === false) {
+                throw new Exception('Invalid Exchange Rate');
+            }
+
+            // Exchange Rate
+            $details['exchangeRateCADToUSD'] = Utils::round($details['exchangeRateCADToUSD']);
+        }
         return ['status' => true];
     }
 
@@ -511,6 +527,8 @@ class Client {
             name_history = :name_history,
             is_inactive = :is_inactive,
             custom_selling_price_for_items = :custom_selling_price_for_items,
+            payment_currency = :payment_currency,
+            usd_rate = :usd_rate,
             modified = CURRENT_TIMESTAMP
         WHERE
             id = :id
@@ -737,6 +755,8 @@ class Client {
                 // Store shipping address as an array.
                 // We might store multiple addresses later on.
                 ':shipping_addresses' => json_encode([$data['shippingAddresses']], JSON_THROW_ON_ERROR),
+                ':payment_currency' => $data['paymentCurrency'],
+                ':usd_rate' => $data['exchangeRateCADToUSD'],
             ];
 
             // Select Action
