@@ -158,9 +158,6 @@ CREATE TABLE IF NOT EXISTS clients(
     /* Last Purchase Date */ 
     last_purchase_date JSON NOT NULL DEFAULT '{}',
 
-    /* Use USD Payment */
-    -- use_usd BOOLEAN NOT NULL DEFAULT 0 COMMENT 'Use USD instead of CAD?',
-
     /* USD Rate: CAD -> USD */
     exchange_rate_usd_to_cad NUMERIC(5, 4) NOT NULL DEFAULT 0 COMMENT 'USD/CAD Exchange Rate',
     
@@ -371,6 +368,9 @@ CREATE TABLE IF NOT EXISTS sales_return(
 
     /* Lock Invoice. This is to prevent editing of invoice if any receipt is made. */ 
     __lock_counter SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+
+    /* Is Payment in USD */
+    is_payment_in_usd BOOLEAN NOT NULL DEFAULT 0 COMMENT 'Is the payment in USD?',
 
     /* Meta Data */
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
