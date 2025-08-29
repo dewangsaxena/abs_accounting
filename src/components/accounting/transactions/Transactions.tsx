@@ -2199,8 +2199,6 @@ const TransactionHeaderDetails = ({
                                           isProcessed,
                                         onChange: (_, { newValue }) => {
                                           setSelectedClient(newValue);
-                                          if (newValue.trim() === "") {
-                                          }
                                         },
                                       }}
                                       highlightFirstSuggestion={true}
