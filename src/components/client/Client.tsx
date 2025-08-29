@@ -1004,7 +1004,7 @@ const ClientOptions = memo(({ inputDisable }: SharedClientProps) => {
             <Box width="100%">
               <VStack align="start">
                 <HStack spacing={5} width="100%">
-                  <RadioGroup width="100%" color="purple" onChange={(currency: any) => {
+                  <RadioGroup isDisabled={inputDisable} width="100%" color="purple" onChange={(currency: any) => {
                     setField("paymentCurrency", currency);
                   }} value={paymentCurrency}>
                     <HStack spacing={20} width="100%">
@@ -1785,10 +1785,10 @@ const Client = memo(
                             return;
                           loadOptions(value);
                           setLoadingState(false);
-                          setInputDisable(false);
                         }}
                         onSuggestionSelected={(_: any, { suggestionIndex }) => {
                           onClientSelect(clientSuggestions[suggestionIndex]);
+                          setInputDisable(false);
                         }}
                         getSuggestionValue={(suggestion: any) => {
                           return `${suggestion.value.primaryDetails.name}`;
