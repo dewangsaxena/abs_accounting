@@ -990,7 +990,9 @@ const ClientOptions = memo(({ inputDisable }: SharedClientProps) => {
             </HStack>
           </Box>
         </Stack>
-        <Box width="100%">
+
+        {/* Payment Currency */}
+        {/* <Box width="100%">
           <_Divider />
           <Badge
             fontSize={"0.8em"}
@@ -1040,7 +1042,7 @@ const ClientOptions = memo(({ inputDisable }: SharedClientProps) => {
               </VStack>
             </Box>
           </HStack>
-        </Box>
+        </Box> */}
         <Box width="100%">
           <_Divider />
           <Badge

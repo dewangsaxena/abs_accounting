@@ -82,7 +82,6 @@ export interface ItemDetailsForTransactions {
   memo: string;
   additionalInformation: string;
   disableDiscount?: boolean;
-  exchangeRateCADToUSD?: number;
 }
 
 /**
@@ -137,7 +136,6 @@ export interface TransactionStoreFields {
   lastModifiedTimestamp?: string;
   selectedSalesInvoice?: number;
   selectedSalesInvoiceLastModifiedTimestamp?: string;
-  isPaymentInUSD: number;
 }
 
 /**
@@ -203,7 +201,6 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
   /* Initial Transaction Details */
   initial: {},
   itemDetailsForTransactions: null,
-  isPaymentInUSD: 0,
   setProperty: (detailName: string, value: any) => {
     if (detailName === "paymentMethod") set({ paymentMethod: value });
     else if (detailName === "txnDate") set({ txnDate: value });
@@ -242,7 +239,6 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
       set({ salesRepId: value });
     }
     else if(detailName === "restockingFees") set({restockingFees: value});
-    else if(detailName === "isPaymentInUSD") set({isPaymentInUSD: value});
   },
   addRow: () => {
     let txnDetails = get().details;
