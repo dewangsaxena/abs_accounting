@@ -183,3 +183,4 @@ ALTER TABLE sales_return ADD COLUMN sales_rep_history JSON NOT NULL DEFAULT '[]'
 ALTER TABLE credit_note ADD COLUMN sales_rep_history JSON NOT NULL DEFAULT '[]';
 ALTER TABLE debit_note ADD COLUMN sales_rep_history JSON NOT NULL DEFAULT '[]';
 ALTER TABLE quotation ADD COLUMN sales_rep_history JSON NOT NULL DEFAULT '[]';
+ALTER TABLE clients ADD COLUMN exchange_rate_usd_to_cad NUMERIC(5, 4) NOT NULL DEFAULT 0 COMMENT 'USD/CAD Exchange Rate';
