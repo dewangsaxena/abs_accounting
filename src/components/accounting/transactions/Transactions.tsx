@@ -1861,6 +1861,7 @@ const TransactionHeaderDetails = ({
     __lockCounter,
     txnDate,
     selectedSalesInvoice,
+    isPaymentInUSD,
     setProperty,
     fetchInvoicesByClientForSalesReturns,
   } = transactionStore(
@@ -1881,6 +1882,7 @@ const TransactionHeaderDetails = ({
       txnDate: state.txnDate,
       selectedSalesInvoice: state.selectedSalesInvoice,
       subTotal: state.subTotal,
+      isPaymentInUSD: state.isPaymentInUSD,
       setProperty: state.setProperty,
       fetchInvoicesByClientForSalesReturns: state.fetchInvoicesByClientForSalesReturns,
     }),
@@ -2036,12 +2038,10 @@ const TransactionHeaderDetails = ({
       clientDetails.disableCreditTransactions
     );
 
-    // Fetch All Invoices by Client for Sales Returns [DEPRECATED]
-    // if (type === TRANSACTION_TYPES["SR"]) {
-    //   setAllInvoicesForSelectedClient(
-    //     buildSearchListForShowingInvoices(clientDetails.salesInvoices)
-    //   );
-    // }
+    setProperty(
+      "isPaymentInUSD",
+      clientDetails.exchangeRateCADToUSD > 0 ? 1 : 0,
+    );
 
     // Set Successful client change status
     setIsClientChangedSuccessfully(true);

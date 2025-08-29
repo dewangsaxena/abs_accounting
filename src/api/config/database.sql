@@ -504,6 +504,9 @@ CREATE TABLE IF NOT EXISTS quotation(
     /* Versions */ 
     versions JSON DEFAULT NULL,
 
+    /* Is Payment in USD */
+    is_payment_in_usd BOOLEAN NOT NULL DEFAULT 0 COMMENT 'Is the payment in USD?',
+
     /* Meta Data */
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modified TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
