@@ -82,6 +82,7 @@ export interface ItemDetailsForTransactions {
   memo: string;
   additionalInformation: string;
   disableDiscount?: boolean;
+  exchangeRateCADToUSD?: number;
 }
 
 /**
