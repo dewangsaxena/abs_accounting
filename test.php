@@ -2590,7 +2590,7 @@ function find_qty_diff(): void {
 function fetch_quantity_sold(int $store_id): void {
     $db = get_db_instance();
     $statement = $db -> prepare('SELECT id, identifier FROM items WHERE identifier LIKE :_identifier;');
-    $statement -> execute([':_identifier' => 'WF%']);
+    $statement -> execute([':_identifier' => 'DON%']);
 
     $items = [];
     $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
@@ -2683,7 +2683,45 @@ function round_off_selling_prices_to_2_decimal_places(): void {
         print_r($e -> getMessage());
     }
 }
-round_off_selling_prices_to_2_decimal_places();
+
+function fetch_existing_quantity_and_buying_cost(int $store_id): void {
+    $db = get_db_instance();
+    $statement = $db -> prepare(<<<'EOS'
+    SELECT 
+        i.identifier,
+        i.prices,
+        inv.quantity
+    FROM 
+        inventory AS inv 
+    LEFT JOIN 
+        items AS i 
+    ON 
+        i.id = inv.item_id
+    WHERE 
+        i.identifier LIKE :id_tag
+    AND
+        inv.quantity > 0
+    AND
+        inv.store_id = :store_id;
+    EOS);
+
+    $total_inventory_value = 0;
+    $statement -> execute([':id_tag' => 'PIC%', ':store_id' => $store_id]);
+    $records = $statement -> fetchAll(PDO::FETCH_ASSOC);
+    foreach($records as $record) {
+        $identifier = $record['identifier'];
+        $prices = json_decode($record['prices'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+        $buying_cost = $prices[$store_id]['buyingCost'];
+        $quantity = $record['quantity'];
+
+        $total_inventory_value += ($quantity * $buying_cost);
+        echo "$identifier ~ $buying_cost ~ $quantity<br>";
+    }
+
+    echo '<br><br>'.Utils::round($total_inventory_value);
+}
+fetch_existing_quantity_and_buying_cost(StoreDetails::CALGARY);
+// round_off_selling_prices_to_2_decimal_places();
 // fetch_quantity_sold(StoreDetails::EDMONTON);
 // print_r(GeneratePDF::filter_items_by_price(StoreDetails::EDMONTON, 1000, 2000));
 ?>  
