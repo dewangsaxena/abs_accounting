@@ -2720,8 +2720,39 @@ function fetch_existing_quantity_and_buying_cost(int $store_id): void {
 
     echo '<br><br>'.Utils::round($total_inventory_value);
 }
-fetch_existing_quantity_and_buying_cost(StoreDetails::CALGARY);
+// fetch_existing_quantity_and_buying_cost(StoreDetails::CALGARY);
 // round_off_selling_prices_to_2_decimal_places();
 // fetch_quantity_sold(StoreDetails::EDMONTON);
 // print_r(GeneratePDF::filter_items_by_price(StoreDetails::EDMONTON, 1000, 2000));
+
+function fetch_items_more_than_quantity(int $store_id, int $quantity) : void {
+    $db = get_db_instance();
+    $statement = $db -> prepare(<<<'EOS'
+    SELECT 
+        i.`identifier`,
+        i.`description`,
+        inv.quantity
+    FROM 
+        items AS i
+    LEFT JOIN
+        inventory AS inv
+    ON
+        i.id = inv.item_id
+    WHERE
+        inv.quantity >= :quantity
+    AND
+        inv.store_id = :store_id;
+    EOS);
+
+    $statement -> execute([':store_id' => $store_id, ':quantity' => $quantity]);
+    $results = $statement -> fetchAll(PDO::FETCH_ASSOC);
+    foreach($results as $result) {
+        $identifier = $result['identifier'];
+        $description = $result['description'];
+        $quantity = $result['quantity'];
+        echo "$identifier ~ $description ~ $quantity<br>";
+    }
+}
+
+fetch_items_more_than_quantity(StoreDetails::EDMONTON, 200);
 ?>  
