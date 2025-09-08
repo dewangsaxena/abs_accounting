@@ -172,12 +172,12 @@ SET GLOBAL FOREIGN_KEY_CHECKS=0;
 update users set id = 8 where id = 10000;
 SET GLOBAL FOREIGN_KEY_CHECKS=1;
 SET GLOBAL FOREIGN_KEY_CHECKS=0;
-update sales_invoice set sales_rep_id = 8 where sales_rep_id = 10000;
-update sales_return set sales_rep_id = 8 where sales_rep_id = 10000;
-update credit_note set sales_rep_id = 8 where sales_rep_id = 10000;
-update debit_note set sales_rep_id = 8 where sales_rep_id = 10000;
-update receipt set sales_rep_id = 8 where sales_rep_id = 10000;
-update quotation set sales_rep_id = 8 where sales_rep_id = 10000;
+update sales_invoice set sales_rep_id = 8 where sales_rep_id = 8;
+update sales_return set sales_rep_id = 8 where sales_rep_id = 8;
+update credit_note set sales_rep_id = 8 where sales_rep_id = 8;
+update debit_note set sales_rep_id = 8 where sales_rep_id = 8;
+update receipt set sales_rep_id = 8 where sales_rep_id = 8;
+update quotation set sales_rep_id = 8 where sales_rep_id = 8;
 SET GLOBAL FOREIGN_KEY_CHECKS=1;
 
 ALTER TABLE sales_invoice ADD COLUMN sales_rep_history JSON NOT NULL DEFAULT '[]';
