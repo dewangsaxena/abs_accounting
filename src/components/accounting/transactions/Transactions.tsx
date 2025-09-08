@@ -1373,10 +1373,10 @@ const ItemFieldRow = memo(
             highlightFirstSuggestion={true}
           ></AutoSuggest>
         </Box>
-        {/* Inventory Quantity  */}
+        {/* Inventory Quantity */}
         {type == TRANSACTION_TYPES["SI"] && (
           <Box width="5%" textAlign={"center"}>
-            <_Label fontSize="0.75em" fontFamily={numberFont} letterSpacing={2}>
+            <_Label fontSize="0.75em" fontFamily={numberFont} letterSpacing={2} color={(itemDetails && itemDetails.quantity <= 2) ? "#DC143C": "black"}>
               {(itemDetails && itemDetails.quantity) || "0"}
             </_Label>
           </Box>
