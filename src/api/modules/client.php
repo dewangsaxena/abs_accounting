@@ -308,20 +308,6 @@ class Client {
                 else if($item['sellingPrice'] < $item['buyingCost']) throw new Exception('Selling Price cannot be less than buying price for: '. $item_identifier);
             }
         }
-
-        // Validate Payment Currency
-        $payment_currency = $details['paymentCurrency'] ?? 'CAD';
-        if($payment_currency !== 'USD' && $payment_currency !== 'CAD') throw new Exception('Invalid Payment Currency');
-        $exchange_rate_cad_to_usd =  $details['exchangeRateCADToUSD'] ?? 0;
-        if(($payment_currency === 'USD' && is_numeric($exchange_rate_cad_to_usd) && $exchange_rate_cad_to_usd > 0)) {
-            
-            // Only Ten Leasing and Localhost is Permitted to Use USD as selling Currency
-            if(IS_LOCALHOST === false && SYSTEM_INIT_HOST !== TENLEASING_HOST) throw new Exception('USD as currency payment is disabled.');
-
-            // Exchange Rate
-            $details['exchangeRateCADToUSD'] = Utils::round($details['exchangeRateCADToUSD']);
-        }
-        else $details['exchangeRateCADToUSD'] = 0; // Set 0 As Exchange Rate since the currency is not USD
         return ['status' => true];
     }
 
@@ -754,7 +740,6 @@ class Client {
                 // Store shipping address as an array.
                 // We might store multiple addresses later on.
                 ':shipping_addresses' => json_encode([$data['shippingAddresses']], JSON_THROW_ON_ERROR),
-                ':exchange_rate_usd_to_cad' => $data['exchangeRateCADToUSD'],
             ];
 
             // Select Action
@@ -1110,7 +1095,6 @@ class Client {
                     'customSellingPriceForItems' => $custom_selling_price_for_items,
                     'lastPurchaseDate' => is_string($last_purchase_date) ? Utils::format_to_human_readable_date($last_purchase_date) : 'N/A',
                     'enforceSelfClientPriceLock' => $store_id === StoreDetails::CALGARY ? 0 : 1,
-                    'exchangeRateCADToUSD' => $record['exchange_rate_usd_to_cad'],
                 ];
                 $formatted_records []= $data;
             }

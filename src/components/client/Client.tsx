@@ -13,10 +13,7 @@ import {
   Checkbox,
   CreateToastFnReturn,
   HStack,
-  Radio,
-  RadioGroup,
   SimpleGrid,
-  Image,
   Stack,
   Tab,
   TabList,
@@ -80,8 +77,6 @@ import { IoIosAddCircle } from "react-icons/io";
 import { CiText } from "react-icons/ci";
 import AutoSuggest from "react-autosuggest";
 import { shallow } from "zustand/shallow";
-import flag_CA from "/images/flag_CA.svg";
-import flag_US from "/images/flag_US.svg";
 
 // Countries Supported
 const COUNTRIES_SUPPORTED = { 124: "Canada" };
@@ -838,8 +833,6 @@ const ClientOptions = memo(({ inputDisable }: SharedClientProps) => {
     disableProvincialTaxes,
     additionalEmailAddresses,
     disableCreditTransactions,
-    paymentCurrency,
-    exchangeRateUSDToCAD,
     setField,
   } = clientStore(
     (state) => ({
@@ -857,8 +850,6 @@ const ClientOptions = memo(({ inputDisable }: SharedClientProps) => {
       disableProvincialTaxes: state.disableProvincialTaxes,
       additionalEmailAddresses: state.additionalEmailAddresses,
       disableCreditTransactions: state.disableCreditTransactions,
-      paymentCurrency: state.paymentCurrency,
-      exchangeRateUSDToCAD: state.exchangeRateCADToUSD,
       setField: state.setField,
     }),
     shallow
@@ -873,10 +864,6 @@ const ClientOptions = memo(({ inputDisable }: SharedClientProps) => {
   // Remove Forgiven from Payment Method
   const __receiptPaymentMethods: AttributeType = receiptPaymentMethods;
   delete __receiptPaymentMethods[10];
-
-  useEffect(() => {
-    setField("paymentCurrency", exchangeRateUSDToCAD > 0 ? 'USD' : 'CAD');
-  }, [exchangeRateUSDToCAD]);
 
   return (
     <>
@@ -990,59 +977,6 @@ const ClientOptions = memo(({ inputDisable }: SharedClientProps) => {
             </HStack>
           </Box>
         </Stack>
-
-        {/* Payment Currency */}
-        <Box width="100%" display={"none"}>
-          <_Divider />
-          <Badge
-            fontSize={"0.8em"}
-            letterSpacing={5}
-            colorScheme={"teal"}
-            variant="outline"
-          >
-            Payment Currency
-          </Badge>
-          <HStack spacing={10} marginTop={5}>
-            <Box width="100%">
-              <VStack align="start">
-                <HStack spacing={5} width="100%">
-                  <RadioGroup isDisabled={inputDisable} width="100%" color="purple" onChange={(currency: any) => {
-                    setField("paymentCurrency", currency);
-                  }} value={paymentCurrency}>
-                    <HStack spacing={20} width="100%">
-                      <Radio value='CAD' colorScheme="red">
-                        <HStack>
-                          <_Label fontSize="0.9em">CAD $</_Label>
-                          <Image width="3.5vw" src={flag_CA}></Image>
-                        </HStack>
-                      </Radio>
-                      <Radio value='USD' colorScheme="blue">
-                        <HStack width="100%">
-                          <_Label fontSize="0.9em">USD $</_Label>
-                          <Image width="3.5vw" src={flag_US}></Image>
-                        </HStack>
-                      </Radio>
-                    </HStack>
-                    {paymentCurrency === "USD" && <HStack marginTop={5} spacing={20} width="100%">
-                      <Box width="20%">
-                        <_Label fontSize="0.8em">USD/CAD Exchange Rate: </_Label>
-                      </Box>
-                      <Box width="10%">
-                        <_Input fontFamily={numberFont} type="number" defaultValue={exchangeRateUSDToCAD} fontSize="0.8em" onBlur={(event: any) => {
-                          let exchangeRate: number = parseFloat(event.target.value);
-                          if(isNaN(exchangeRate) === false) {
-                            setField("exchangeRateCADToUSD", exchangeRate);
-                          }
-                          else setField("exchangeRateCADToUSD", 0);
-                        }}></_Input>
-                        </Box>
-                    </HStack>}
-                  </RadioGroup>
-                </HStack>
-              </VStack>
-            </Box>
-          </HStack>
-        </Box>
         <Box width="100%">
           <_Divider />
           <Badge
