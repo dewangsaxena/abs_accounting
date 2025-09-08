@@ -356,8 +356,7 @@ class Client {
             credit_limit,
             shipping_addresses,
             custom_selling_price_for_items,
-            last_purchase_date,
-            exchange_rate_usd_to_cad
+            last_purchase_date
         )
         VALUES(
             :name,
@@ -392,8 +391,7 @@ class Client {
             :credit_limit,
             :shipping_addresses,
             :custom_selling_price_for_items,
-            :last_purchase_date,
-            :exchange_rate_usd_to_cad
+            :last_purchase_date
         );
         EOS);
 
@@ -513,7 +511,6 @@ class Client {
             name_history = :name_history,
             is_inactive = :is_inactive,
             custom_selling_price_for_items = :custom_selling_price_for_items,
-            exchange_rate_usd_to_cad = :exchange_rate_usd_to_cad,
             modified = CURRENT_TIMESTAMP
         WHERE
             id = :id
