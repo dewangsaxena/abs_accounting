@@ -168,6 +168,8 @@ SELECT SUM(gst_hst_tax), SUM(pst_tax) FROM sales_return WHERE store_id = 2 AND `
 SELECT SUM(gst_hst_tax), SUM(pst_tax) FROM credit_note WHERE store_id = 2 AND `date` >= '2025-01-01' ;
 SELECT SUM(gst_hst_tax), SUM(pst_tax) FROM debit_note WHERE store_id = 2 AND `date` >= '2025-01-01';
 
+SET autocommit=0;
+SAVEPOINT savepoint1;
 SET GLOBAL FOREIGN_KEY_CHECKS=0;
 update users set id = 8 where id = 10000;
 SET GLOBAL FOREIGN_KEY_CHECKS=1;
@@ -179,6 +181,8 @@ update debit_note set sales_rep_id = 8 where sales_rep_id = 10000;
 update receipt set sales_rep_id = 8 where sales_rep_id = 10000;
 update quotation set sales_rep_id = 8 where sales_rep_id = 10000;
 SET GLOBAL FOREIGN_KEY_CHECKS=1;
+ROLLBACK TO SAVEPOINT savepoint1;
+COMMIT;
 
 ALTER TABLE sales_invoice ADD COLUMN sales_rep_history JSON NOT NULL DEFAULT '[]';
 ALTER TABLE sales_return ADD COLUMN sales_rep_history JSON NOT NULL DEFAULT '[]';
