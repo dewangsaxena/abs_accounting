@@ -1165,7 +1165,7 @@ class Shared {
         string $amount, 
         ?string $po, 
         ?string $unit_number, 
-        string $additional_email_addresses=''
+        ?string $additional_email_addresses = null,
     ) : array {
         $exception_message = '';
         try {
