@@ -16,6 +16,9 @@ class SpecialExceptions {
             10010, /* PRITPAL */
             10015 /* JAIDEEP */
         ],
+        StoreDetails::SLAVE_LAKE => [
+            10015, /* JAIDEEP */
+        ],
     ];
 
     // Customer aged summary client exlusion
