@@ -1119,7 +1119,7 @@ class Shared {
                 $record['sum_total'],
                 $record['po'] ?? null,
                 $record['unit_no'] ?? null,
-                $transaction_id === QUOTATION ? null : $record['additional_email_addresses'],
+                $transaction_type === QUOTATION ? null : $record['additional_email_addresses'],
             );
             return ['status' => true];
         }
