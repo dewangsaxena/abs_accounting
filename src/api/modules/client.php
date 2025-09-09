@@ -711,7 +711,7 @@ class Client {
             // Disable Credit Transactions
             $disable_credit_transactions = $data['disableCreditTransactions'];
 
-            // Check for Special Exception for Edmonton
+            // Check for Special Exception for Few Stores.
             if($data['action'] === 'client_update' && $user_id !== UserManagement::ROOT_USER_ID) {
                 if(in_array($store_id, self::STORES_WITH_RESTRICTED_ACCESS[SYSTEM_INIT_MODE]) && SYSTEM_INIT_MODE === PARTS) {
                     if(in_array($_SESSION['user_id'], SpecialExceptions::USERS_WITH_SPECIAL_ACCESS[$store_id]) === false) {
