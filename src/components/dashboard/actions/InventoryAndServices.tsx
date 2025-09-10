@@ -383,6 +383,8 @@ const InventoryAndServices = () => {
     const [reportYear, setReportYear] = useState<number>(new Date().getFullYear());
     const [minCost, setMinCost] = useState<number>(0);
     const [maxCost, setMaxCost] = useState<number>(0);
+    const [minQty, setMinQty] = useState<number>(0);
+    const [maxQty, setMaxQty] = useState<number>(0);
     return (
         <>
             <CanvasGrid>
@@ -528,7 +530,7 @@ const InventoryAndServices = () => {
                 <_Divider/><_Divider/>
                 <Box paddingRight={2}>
                     <VStack align="start">
-                        <_Label fontSize={"0.8em"}>FETCH PARTS BY PRICE</_Label>
+                        <_Label fontSize={"0.8em"}>FETCH PARTS BY PRICE, QUANTITY</_Label>
                         <_Divider margin={1}></_Divider>
                         <HStack width="100%">
                             <Box width="25%">
@@ -558,12 +560,42 @@ const InventoryAndServices = () => {
                                 }}></_Input>
                             </Box>
                         </HStack>
+                        <HStack width="100%">
+                            <Box width="25%">
+                                <_Label fontSize={"0.7em"} color="blue">MIN QTY:</_Label>
+                            </Box>
+                            <Box width="75%">
+                                <_Input fontSize="0.8em" type="number" onBlur={(event: any) => {
+                                    let value = event.target.value;
+                                    if(isNaN(value) === false) {
+                                        setMinQty(parseInt(value));
+                                    }
+                                    else setMinQty(0);
+                                }}></_Input>
+                            </Box>
+                        </HStack>
+                        <HStack width="100%">
+                            <Box width="25%">
+                                <_Label fontSize={"0.7em"} color="blue">MAX QTY:</_Label>
+                            </Box>
+                            <Box width="75%">
+                                <_Input fontSize="0.8em" type="number" onBlur={(event: any) => {
+                                    let value = event.target.value;
+                                    if(isNaN(value) === false) {
+                                        setMaxQty(parseInt(value));
+                                    }
+                                    else setMaxQty(0);
+                                }}></_Input>
+                            </Box>
+                        </HStack>
                         <_Button icon={<FcSearch/>} fontSize="1em" bgColor="black" color="white" label="Find Items" onClick={() => {
                             const newURLParams = new URLSearchParams();
                             newURLParams.append("minCost", minCost.toString());
                             newURLParams.append("maxCost", maxCost.toString());
+                            newURLParams.append("minQty", minQty.toString());
+                            newURLParams.append("maxQty", minQty.toString());
                             window.open(
-                                `${APP_HOST}/api.php?action=filter_items_by_price&storeId=${localStorage.getItem("storeId")}&minCost=${minCost}&maxCost=${maxCost}`, 
+                                `${APP_HOST}/api.php?action=filter_items_by_price&storeId=${localStorage.getItem("storeId")}&minCost=${minCost}&maxCost=${maxCost}&minQty=${minQty}&maxQty=${maxQty}`, 
                                 "_blank"
                             );
                         }}></_Button>
