@@ -560,6 +560,7 @@ const InventoryAndServices = () => {
                                 }}></_Input>
                             </Box>
                         </HStack>
+                        <_Divider margin={0}/>
                         <HStack width="100%">
                             <Box width="25%">
                                 <_Label fontSize={"0.7em"} color="blue">MIN QTY:</_Label>
