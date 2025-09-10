@@ -90,11 +90,13 @@ if (isset($_GET['action'])) {
         Inventory::fetch_quantity_sold_for_all_items(intval($_GET['storeId']), intval($_GET['year']));
         die;
     }
-    else if($action === 'filter_items_by_price' && is_numeric($_GET['storeId'] ?? null)) {
-        GeneratePDF::filter_items_by_price(
+    else if($action === 'filter_items_by_price_quantity' && is_numeric($_GET['storeId'] ?? null)) {
+        GeneratePDF::filter_items_by_price_and_quantity(
             intval($_GET['storeId']),
             floatval($_GET['minCost'] ?? 0),
             floatval($_GET['maxCost'] ?? 0),
+            intval($_GET['minQty'] ?? 0),
+            intval($_GET['maxQty'] ?? 0),
         );
         die;
     }

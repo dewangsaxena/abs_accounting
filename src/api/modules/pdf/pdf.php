@@ -3387,14 +3387,16 @@ class GeneratePDF {
     }
 
     /**
-     * This method will filter items by price.
+     * This method will filter items by price and quantity.
      * @param store_id
      * @param min_cost
      * @param max_cost
+     * @param min_qty
+     * @param max_qty
      * @return void
      */
-    public static function filter_items_by_price(int $store_id, float $min_cost = 0, float $max_cost = 0): void {
-        $response = Inventory::filter_items_by_price($store_id, $min_cost, $max_cost);
+    public static function filter_items_by_price_and_quantity(int $store_id, float $min_cost = 0, float $max_cost = 0, int $min_qty = 0, int $max_qty = 0): void {
+        $response = Inventory::filter_items_by_price_and_quantity($store_id, $min_cost, $max_cost, $min_qty, $max_qty);
 
         // Error Message
         if(count($response['data']['records']) === 0) die('No Items were found for the matching criteria.');

@@ -2085,13 +2085,15 @@ class Inventory {
     }
 
     /**
-     * This method will filter items by price.
+     * This method will filter items by price and quantity.
      * @param store_id
      * @param min_cost
      * @param max_cost
+     * @param min_qty
+     * @param max_qty
      * @return array
      */
-    public static function filter_items_by_price(int $store_id, float $min_cost = 0, float $max_cost = 0): array {
+    public static function filter_items_by_price_and_quantity(int $store_id, float $min_cost = 0, float $max_cost = 0, int $min_qty = 0, int $max_qty = 0): array {
         $db = get_db_instance();
         $query = <<<'EOS'
         SELECT
@@ -2110,22 +2112,33 @@ class Inventory {
         WHERE 
             inv.store_id = :store_id
         AND
-            inv.quantity > 0;
+            inv.quantity > :min_qty
         EOS;
 
         if($min_cost < 0) $min_cost = 0;
         if($max_cost < 0) $max_cost = 0;
+        if($min_qty < 0) $min_qty = 0;
+        if($max_qty < 0) $max_qty = 0;
+
+        if($max_qty > 0) $query .= ' AND inv.quantity <= :max_qty';
+        $query .= ';';
 
         // Round off.
         $min_cost = Utils::round($min_cost);
         $max_cost = Utils::round($max_cost);
 
         // Invalid Criteria
-        if($min_cost == 0 && $max_cost == 0) return ['status' => false, 'message' => 'Invalid Criteria.'];
+        if($min_cost == 0 && $max_cost == 0 && $min_qty == 0 && $max_qty == 0) return ['status' => false, 'message' => 'Invalid Criteria.'];
 
         // Store Id
         $store_id = $store_id;
-        $params = [':store_id' => $store_id,];
+        $params = [
+            ':store_id' => $store_id,
+            ':min_qty' => $min_qty,
+        ];
+
+        // Max Qty
+        if($max_qty > 0) $params[':max_qty'] = $max_qty;
         $statement = $db -> prepare($query);
         $statement -> execute($params);
         $results = $statement -> fetchAll(PDO::FETCH_ASSOC);
@@ -2159,10 +2172,18 @@ class Inventory {
             else if($min_cost > 0 && $buying_cost >= $min_cost) $flag = true;
             else if($max_cost > 0 && $buying_cost <= $max_cost) $flag = true;
 
+            // Quantity
+            $quantity = $r['quantity'];
+            if($min_qty > 0 && $max_qty > 0) {
+                if($quantity >= $min_qty && $quantity <= $max_qty) $flag = true;
+            }
+            else if($min_qty > 0 && $quantity >= $min_qty) $flag = true;
+            else if($max_qty > 0 && $quantity <= $max_qty) $flag = true;
+
             if($flag && isset($items[$id]) === false) {
-                $value_of_item = ($buying_cost * $r['quantity']);
+                $value_of_item = ($buying_cost * $quantity);
                 $total_inventory_value += $value_of_item;
-                $quantity = $r['quantity'];
+                $quantity = $quantity;
                 $items[$id] = [
                     'identifier' => $r['identifier'],
                     'description' => $r['description'],
