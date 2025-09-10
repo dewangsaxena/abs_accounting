@@ -595,7 +595,7 @@ const InventoryAndServices = () => {
                             newURLParams.append("minQty", minQty.toString());
                             newURLParams.append("maxQty", minQty.toString());
                             window.open(
-                                `${APP_HOST}/api.php?action=filter_items_by_price&storeId=${localStorage.getItem("storeId")}&minCost=${minCost}&maxCost=${maxCost}&minQty=${minQty}&maxQty=${maxQty}`, 
+                                `${APP_HOST}/api.php?action=filter_items_by_price_quantity&storeId=${localStorage.getItem("storeId")}&minCost=${minCost}&maxCost=${maxCost}&minQty=${minQty}&maxQty=${maxQty}`, 
                                 "_blank"
                             );
                         }}></_Button>
