@@ -2725,7 +2725,7 @@ function fetch_existing_quantity_and_buying_cost(int $store_id): void {
 // fetch_quantity_sold(StoreDetails::EDMONTON);
 // print_r(GeneratePDF::filter_items_by_price(StoreDetails::EDMONTON, 1000, 2000));
 
-function fetch_items_more_than_quantity(int $store_id, int $quantity) : void {
+function fetch_items_more_than_quantity(int $store_id, int $min_quantity, ?int $max_quantity = null) : void {
     $db = get_db_instance();
     $statement = $db -> prepare(<<<'EOS'
     SELECT 
@@ -2739,12 +2739,18 @@ function fetch_items_more_than_quantity(int $store_id, int $quantity) : void {
     ON
         i.id = inv.item_id
     WHERE
-        inv.quantity >= :quantity
+        inv.quantity >= :min_quantity
+    AND
+        inv.quantity <= :max_quantity
     AND
         inv.store_id = :store_id;
     EOS);
 
-    $statement -> execute([':store_id' => $store_id, ':quantity' => $quantity]);
+    $statement -> execute([
+        ':store_id' => $store_id, 
+        ':min_quantity' => $min_quantity,
+        ':max_quantity' => is_null($max_quantity) ? 1000000 : $max_quantity,
+    ]);
     $results = $statement -> fetchAll(PDO::FETCH_ASSOC);
     foreach($results as $result) {
         $identifier = $result['identifier'];
@@ -2754,5 +2760,5 @@ function fetch_items_more_than_quantity(int $store_id, int $quantity) : void {
     }
 }
 
-fetch_items_more_than_quantity(StoreDetails::EDMONTON, 200);
+fetch_items_more_than_quantity(StoreDetails::EDMONTON, 200, 1000);
 ?>  
