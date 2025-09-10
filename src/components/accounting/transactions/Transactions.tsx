@@ -918,6 +918,10 @@ const ItemFieldRow = memo(
 
       let sellingPrice: number = 0;
 
+      // Flag
+      // This will be used if customer price or custom markup is set for client.
+      let disableDiscount: boolean = false;
+
       /* Set Original Selling Price */
       details[rowIndex].originalSellingPrice =
         event.value.prices[storeId].sellingPrice;
@@ -941,6 +945,9 @@ const ItemFieldRow = memo(
           let itemsList = Object.keys(customSellingPriceForItems);
           if (itemsList.indexOf(itemId.toString()) !== -1) {
             sellingPrice = customSellingPriceForItems[itemId].sellingPrice;
+
+            // Disable Discount as custom pricing is set
+            disableDiscount = true;
           } else {
             // Check Custom Profit Margin.
             let standardProfitMargins = clientDetails.standardProfitMargins;
@@ -954,8 +961,12 @@ const ItemFieldRow = memo(
               profitMarginThisItem
             );
 
-            if (sellingPrice === -1)
+            if (sellingPrice === -1) {
               sellingPrice = event.value.prices[storeId].sellingPrice;
+            }
+
+            // Disable Discount as Custom Markup is Set
+            else disableDiscount = true;
           }
         } else {
           sellingPrice = event.value.prices[storeId].sellingPrice;
@@ -989,7 +1000,7 @@ const ItemFieldRow = memo(
       // Discount Any Discount if Item is on the flyer.
       if (
         (clientDetails && clientDetails.isSelfClient) ||
-        event.value.disableDiscount === true
+        event.value.disableDiscount === true || disableDiscount
       ) {
         details[rowIndex].discountRate = 0;
 
