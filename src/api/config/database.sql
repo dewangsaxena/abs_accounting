@@ -158,8 +158,8 @@ CREATE TABLE IF NOT EXISTS clients(
     /* Last Purchase Date */ 
     last_purchase_date JSON NOT NULL DEFAULT '{}',
 
-    /* Send Quotations to Secondary Email Addresses */
-    send_quotations_to_secondary_emails JSON NOT NULL DEFAULT '{}',
+    /* Send Quotations to additional Email Addresses */
+    send_quotations_to_additional_email_addresses JSON NOT NULL DEFAULT '{}',
     
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modified TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP

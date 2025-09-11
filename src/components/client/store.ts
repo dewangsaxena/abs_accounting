@@ -75,6 +75,7 @@ export interface ClientDetails {
   };
   lastPurchaseDate: string;
   enforceSelfClientPriceLock: number;
+  sendQuotationsToAdditionalEmailAddresses: number;
 }
 
 /**
@@ -153,6 +154,7 @@ export const clientStore = create<ClientStore>((set, get) => ({
   customSellingPriceForItems: {},
   lastPurchaseDate: "",
   enforceSelfClientPriceLock: 1,
+  sendQuotationsToAdditionalEmailAddresses: 1,
   setField: (detailName: string, value: any) => {
     if (detailName === "id") set({ id: value });
     /* Primary Details */ else if (detailName === "primaryClientName") {
@@ -289,6 +291,9 @@ export const clientStore = create<ClientStore>((set, get) => ({
       delete standardProfitMargins[value];
       set({ standardProfitMargins: standardProfitMargins });
     }
+    else if(detailName === "sendQuotationsToAdditionalEmailAddresses") {
+      set({sendQuotationsToAdditionalEmailAddresses: value});
+    }
   },
   setDetails: (details: ClientDetails) => {
     set({ id: details.id });
@@ -327,6 +332,7 @@ export const clientStore = create<ClientStore>((set, get) => ({
     set({ customSellingPriceForItems: details.customSellingPriceForItems });
     set({ lastPurchaseDate: details.lastPurchaseDate });
     set({ enforceSelfClientPriceLock: details.enforceSelfClientPriceLock });
+    set({ sendQuotationsToAdditionalEmailAddresses: details.sendQuotationsToAdditionalEmailAddresses });
   },
   fetch: async (
     searchTerm: string,
@@ -406,5 +412,6 @@ export const clientStore = create<ClientStore>((set, get) => ({
     set({ isSelfClient: 0 });
     set({ customSellingPriceForItems: {} as any });
     set({ enforceSelfClientPriceLock: 1});
+    set({ sendQuotationsToAdditionalEmailAddresses: 1 });
   },
 }));

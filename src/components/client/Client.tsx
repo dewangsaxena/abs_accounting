@@ -833,6 +833,7 @@ const ClientOptions = memo(({ inputDisable }: SharedClientProps) => {
     disableProvincialTaxes,
     additionalEmailAddresses,
     disableCreditTransactions,
+    sendQuotationsToAdditionalEmailAddresses,
     setField,
   } = clientStore(
     (state) => ({
@@ -850,6 +851,7 @@ const ClientOptions = memo(({ inputDisable }: SharedClientProps) => {
       disableProvincialTaxes: state.disableProvincialTaxes,
       additionalEmailAddresses: state.additionalEmailAddresses,
       disableCreditTransactions: state.disableCreditTransactions,
+      sendQuotationsToAdditionalEmailAddresses: state.sendQuotationsToAdditionalEmailAddresses,
       setField: state.setField,
     }),
     shallow
@@ -1320,6 +1322,34 @@ const ClientOptions = memo(({ inputDisable }: SharedClientProps) => {
               </HStack>
             </Box>
           </Stack>
+        </Box>
+        <Box width="100%">
+          <_Divider />
+          <Badge
+            fontSize={"0.8em"}
+            letterSpacing={5}
+            colorScheme="purple"
+            variant="outline"
+          >
+            SEND QUOTATIONS TO ADDITIONAL EMAIL ADDRESSES
+          </Badge>
+          <HStack spacing={10} marginTop={5}>
+            <Box>
+              <HStack spacing={5}>
+                <Checkbox
+                  key={`send_quotations_to_additional_email_addresses.${id}`}
+                  isDisabled={inputDisable}
+                  colorScheme="green"
+                  isChecked={sendQuotationsToAdditionalEmailAddresses ? true : false}
+                  onChange={() => {
+                    setField("sendQuotationsToAdditionalEmailAddresses", sendQuotationsToAdditionalEmailAddresses ^ 1);
+                  }}
+                >
+                  <_Label fontSize="0.8em">Send Quotations to Additional Email Addresses</_Label>
+                </Checkbox>
+              </HStack>
+            </Box>
+          </HStack>
         </Box>
         <_Divider></_Divider>
         <Box>
