@@ -417,7 +417,7 @@ class Client {
      * @param dynamic_values
      * @return array
      */
-    private static function update(PDO $db, array $values, array $dynamic_values): array { 
+    private static function update(PDO &$db, array $values, array &$dynamic_values): array { 
 
         // Check for Latest Copy of Client
         $statement = $db -> prepare('SELECT * FROM clients WHERE id = :id;');
@@ -472,6 +472,10 @@ class Client {
         $disable_provincial_taxes = json_decode($existing_record['disable_provincial_taxes'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
         $disable_provincial_taxes[$store_id] = $dynamic_values['disable_provincial_taxes'];
 
+        // Send Quotations to Secondary Emails
+        $send_quotations_to_secondary_emails = json_decode($existing_record['send_quotations_to_secondary_emails'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+        $send_quotations_to_secondary_emails[$store_id] = $dynamic_values['send_quotations_to_secondary_emails'];
+
         // Convert to JSON
         $values[':standard_discount'] = json_encode($standard_discount, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
         $values[':standard_profit_margins'] = json_encode($standard_profit_margins, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
@@ -482,6 +486,7 @@ class Client {
         $values[':credit_limit'] = json_encode($credit_limit, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
         $values[':disable_federal_taxes'] = json_encode($disable_federal_taxes, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
         $values[':disable_provincial_taxes'] = json_encode($disable_provincial_taxes, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+        $values[':send_quotations_to_secondary_emails'] = json_encode($send_quotations_to_secondary_emails, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
 
         // Insert into table
         $statement = $db -> prepare(<<<'EOS'
@@ -522,6 +527,7 @@ class Client {
             name_history = :name_history,
             is_inactive = :is_inactive,
             custom_selling_price_for_items = :custom_selling_price_for_items,
+            send_quotations_to_secondary_emails = :send_quotations_to_secondary_emails,
             modified = CURRENT_TIMESTAMP
         WHERE
             id = :id
@@ -780,6 +786,9 @@ class Client {
                 // Last Purchase Date
                 $values[':last_purchase_date'] = '{}';
 
+                // Send Quotation to Secondary Email Addresses
+                $values[':send_quotations_to_secondary_emails'] = json_encode([$store_id => $data['sendQuotationsToSecondaryEmails']], JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+
                 $success_status = self::add($db, $values);
             }
             else if($data['action'] === 'client_update') {
@@ -815,6 +824,7 @@ class Client {
                     'credit_limit' => Utils::round($data['creditLimit']),
                     'disable_federal_taxes' => $data['disableFederalTaxes'],
                     'disable_provincial_taxes' => $data['disableProvincialTaxes'],
+                    'send_quotations_to_secondary_emails' => $data['sendQuotationsToSecondaryEmails'],
                 ];
 
                 $ret_value = self::update($db, $values, $dynamic_values);
@@ -1068,6 +1078,10 @@ class Client {
                 $last_purchase_date = json_decode($record['last_purchase_date'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
                 $last_purchase_date = $last_purchase_date[$store_id] ?? null;
 
+                // Send Quotations to Secondary Emails
+                $send_quotations_to_secondary_emails = json_decode($record['send_quotations_to_secondary_emails'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+                $send_quotations_to_secondary_emails = $send_quotations_to_secondary_emails[$store_id] ?? 1;
+
                 // Set EPOCH time
                 if($client_since === '0000/00/00') $client_since = '1970/01/01';
                 $data = [
@@ -1103,6 +1117,7 @@ class Client {
                     'customSellingPriceForItems' => $custom_selling_price_for_items,
                     'lastPurchaseDate' => is_string($last_purchase_date) ? Utils::format_to_human_readable_date($last_purchase_date) : 'N/A',
                     'enforceSelfClientPriceLock' => $store_id === StoreDetails::CALGARY ? 0 : 1,
+                    'sendQuotationsToSecondaryEmails' => $send_quotations_to_secondary_emails,
                 ];
                 $formatted_records []= $data;
             }
