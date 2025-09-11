@@ -62,7 +62,7 @@ class Email {
      * @param add_cc
      * @return array
      */
-    public static function send(string $subject, string $recipient_email, string $recipient_name, string $content, ?string $path_to_attachment=null, ?string $file_name=null, int $store_id, ?string $additional_email_addresses=null, ?bool $is_html=true, ?bool $add_cc=true) : array {
+    public static function send(string $subject, string $recipient_email, string $recipient_name, string $content, int $store_id, ?string $path_to_attachment=null, ?string $file_name=null, ?string $additional_email_addresses=null, ?bool $is_html=true, ?bool $add_cc=true) : array {
         /* Return on Localhost */
         if(defined('DISABLE_EMAIL_ON_LOCALHOST')) return ['status' => true];
         try {
