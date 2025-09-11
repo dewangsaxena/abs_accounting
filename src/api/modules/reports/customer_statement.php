@@ -386,6 +386,7 @@ class CustomerStatement {
                     file_name: $filename,
                     store_id: $store_id,
                     additional_email_addresses: $client_details['additionalEmailAddresses'],
+                    is_html: true,
                 );
 
                 if($is_email_sent['status'] === false) throw new Exception($is_email_sent['message']);

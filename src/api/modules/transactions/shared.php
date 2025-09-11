@@ -1069,7 +1069,8 @@ class Shared {
                 txn.*,
                 c.`name`,
                 c.email_id,
-                c.additional_email_addresses
+                c.additional_email_addresses,
+                c.send_quotations_to_additional_email_addresses
             FROM
                 $table_name AS txn
             LEFT JOIN 
@@ -1083,7 +1084,16 @@ class Shared {
             $statement = $db -> prepare($query);
             $statement -> execute([':txn_id' => $transaction_id]);
             $record = $statement -> fetchAll(PDO::FETCH_ASSOC);
-            if(isset($record[0])) $record = $record[0];
+            if(isset($record[0])) {
+                $record = $record[0];
+                $send_quotations_to_additional_email_addresses = 
+                $send_quotations_to_additional_email_addresses = json_decode(
+                    $record['send_quotations_to_additional_email_addresses'],
+                    true,
+                    flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR
+                );
+                $record['send_quotations_to_additional_email_addresses'] = $send_quotations_to_additional_email_addresses[$record['store_id']] ?? 1;
+            }
             return ['status' => true, 'data' => $record];
         }
         catch(Exception $e) {
@@ -1119,7 +1129,10 @@ class Shared {
                 $record['sum_total'],
                 $record['po'] ?? null,
                 $record['unit_no'] ?? null,
-                $transaction_type === QUOTATION ? null : $record['additional_email_addresses'],
+                ($transaction_type === QUOTATION && 
+                $record['send_quotations_to_additional_email_addresses'] === 0 ? 
+                    null : 
+                    $record['additional_email_addresses']),
             );
             return ['status' => true];
         }
