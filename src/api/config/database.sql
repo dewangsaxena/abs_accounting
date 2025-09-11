@@ -110,8 +110,8 @@ CREATE TABLE IF NOT EXISTS clients(
     email_id VARCHAR(320),
     additional_email_addresses TEXT DEFAULT NULL,
     client_since DATE,
-    disable_credit_transactions BOOLEAN DEFAULT 0,
-    is_default_shipping_address BOOLEAN DEFAULT 0,
+    disable_credit_transactions NOT NULL BOOLEAN DEFAULT 0,
+    is_default_shipping_address NOT NULL BOOLEAN DEFAULT 0,
     default_receipt_payment_method BOOLEAN,
     default_payment_method TINYINT UNSIGNED NOT NULL DEFAULT 0,
     standard_discount JSON NOT NULL DEFAULT '{}',
@@ -159,7 +159,7 @@ CREATE TABLE IF NOT EXISTS clients(
     last_purchase_date JSON NOT NULL DEFAULT '{}',
 
     /* Send Quotations to Secondary Email Addresses */
-    send_quotations_to_secondary_emails BOOLEAN DEFAULT 0,
+    send_quotations_to_secondary_emails JSON NOT NULL DEFAULT '{}',
     
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modified TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
