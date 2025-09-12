@@ -3026,7 +3026,13 @@ class __GenerateInventory {
      * @param store_id
      * @param show_last_dates_for_all_stores
      */
-    public static function generate_dead_inventory_list(array &$inventory_details, int $store_id, int $month, int $year, int $show_last_dates_for_all_stores = 0): void {
+    public static function generate_dead_inventory_list(
+        array &$inventory_details, 
+        int $store_id, 
+        int $month, 
+        int $year, 
+        int $show_last_dates_for_all_stores = 0,
+        ): void {
         $item_details = $inventory_details['dead_stock'];
         $total_dead_inventory_value = Utils::number_format($inventory_details['value'], 2);
         if($year > 0) $date_text = "IN $year";
@@ -3389,9 +3395,25 @@ class GeneratePDF {
      * @param month
      * @param year
      * @param include_last_sold_for_all_stores
+     * @param min_cost_of_each_item
+     * @param max_cost_of_each_item
+     * @param min_qty_dead_stock
+     * @param max_qty_dead_stock
      */
-    public static function generate_dead_inventory_list(array &$inventory_details, int $store_id, int $month, int $year, int $include_last_sold_for_all_stores): void {
-        __GenerateInventory::generate_dead_inventory_list($inventory_details, $store_id, $month, $year, $include_last_sold_for_all_stores);
+    public static function generate_dead_inventory_list(
+        array &$inventory_details, 
+        int $store_id, 
+        int $month, 
+        int $year, 
+        int $include_last_sold_for_all_stores,
+    ): void {
+        __GenerateInventory::generate_dead_inventory_list(
+            $inventory_details, 
+            $store_id, 
+            $month, 
+            $year, 
+            $include_last_sold_for_all_stores,
+        );
     }
 
     /**

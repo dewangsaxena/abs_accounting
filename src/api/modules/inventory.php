@@ -1837,12 +1837,23 @@ class Inventory {
      * @param store_id
      * @param month
      * @param year
+     * @param min_cost_of_each_item
+     * @param max_cost_of_each_item
+     * @param min_qty_dead_stock
+     * @param max_qty_dead_stock
      * @return array
      */
-    private static function get_dead_inventory(int $store_id, int $month, int $year): array {
+    private static function get_dead_inventory(
+        int $store_id, 
+        int $month, 
+        int $year, 
+        float $min_cost_of_each_item = 0, 
+        float $max_cost_of_each_item = 0,
+        int $min_qty_dead_stock = 0,
+        int $max_qty_dead_stock = 0
+    ): array {
         $db = get_db_instance();
-
-        $statement = $db -> prepare(<<<'EOS'
+        $query = <<<'EOS'
         SELECT 
             i.identifier, 
             i.`description`, 
@@ -1860,9 +1871,25 @@ class Inventory {
         AND
             inv.quantity > 0
         AND
-            inv.store_id = :store_id;
-        EOS);
-        $statement -> execute([':last_sold_tag' => "%\"$store_id\":%", ':store_id' => $store_id]);
+            inv.quantity >= :min_quantity
+        __MAX_INV_QUANTITY__
+        AND
+            inv.store_id = :store_id
+        EOS;
+
+        $params = [
+            ':last_sold_tag' => "%\"$store_id\":%", 
+            ':store_id' => $store_id,
+            ':min_quantity' => $min_qty_dead_stock <= 0 ? 0 : $min_qty_dead_stock,
+        ];
+        if($max_qty_dead_stock > 0) {
+            $query = str_replace('__MAX_INV_QUANTITY__', ' AND inv.quantity <= :max_quantity ', $query);
+            $params[':max_quantity'] = $max_qty_dead_stock;
+        }
+        else $query = str_replace('__MAX_INV_QUANTITY__', '', $query);
+
+        $statement = $db -> prepare($query);
+        $statement -> execute($params);
         $results = $statement -> fetchAll(PDO::FETCH_ASSOC);
 
         $dead_stock = [];
@@ -1888,10 +1915,26 @@ class Inventory {
                 else if($date_diff['y'] >= 1 || $date_diff['m'] >= $month) $flag = true;
                 else $flag = false;
             }
+            $prices = [];
 
             if($flag) {
+                // Reset Flag
+                $flag = false;
+
+                // Unpack Prices
                 $prices = json_decode($result['prices'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
-                if(isset($prices[$store_id]) === false) continue;
+                if(isset($prices[$store_id]) === false) continue; 
+
+                // Filter Buy Buying Cost
+                $buying_cost = $prices[$store_id]['buyingCost'];
+
+                // Filter Buy Buying Price
+                if($buying_cost >= $min_cost_of_each_item && $max_cost_of_each_item > 0 && $buying_cost <= $max_cost_of_each_item) $flag = true;
+                else if($max_cost_of_each_item > 0 && $buying_cost <= $max_cost_of_each_item) $flag = true;
+                else if($max_cost_of_each_item == 0 && $buying_cost >= $min_cost_of_each_item) $flag = true;
+            }
+
+            if($flag) {
                 $value = $prices[$store_id]['buyingCost'] * $result['quantity'];
                 $dead_stock[] = [
                     'identifier' => $result['identifier'],
@@ -1932,17 +1975,21 @@ class Inventory {
         int $min_qty_dead_stock = 0,
         int $max_qty_dead_stock = 0,
     ): void {
-        $inventory_details = self::get_dead_inventory($store_id, $month, $year);
+        $inventory_details = self::get_dead_inventory(
+            $store_id, 
+            $month, 
+            $year,
+            $min_cost_of_each_item,
+            $max_cost_of_each_item,
+            $min_qty_dead_stock,
+            $max_qty_dead_stock,
+        );
         GeneratePDF::generate_dead_inventory_list(
             $inventory_details, 
             $store_id, 
             $month,
             $year,
             $include_last_sold_for_all_stores,
-            $min_cost_of_each_item,
-            $max_cost_of_each_item,
-            $min_qty_dead_stock,
-            $max_qty_dead_stock,
         );
     }
 
