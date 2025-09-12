@@ -86,7 +86,11 @@ if (isset($_GET['action'])) {
                 intval($_GET['storeId']), 
                 intval($_GET['month']), 
                 intval($_GET['year']),
-                intval($_GET['includeLastSoldForAllStores'])
+                intval($_GET['includeLastSoldForAllStores']),
+                intval($_GET['minCostOfEachItem'] ?? 0),
+                intval($_GET['maxCostOfEachItem'] ?? 0),
+                intval($_GET['minQtyDeadStock'] ?? 0),
+                intval($_GET['maxQtyDeadStock'] ?? 0),
             );
             die;
         }
