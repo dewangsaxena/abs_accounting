@@ -9,6 +9,7 @@ import {
     inputConfig,
     navBgColor,
     numberFont,
+    selectConfig,
 } from "../../../shared/style";
 import {
     Badge,
@@ -16,6 +17,7 @@ import {
     Card,
     CardBody,
     HStack,
+    Select,
     VStack,
     useToast,
 } from "@chakra-ui/react";
@@ -51,6 +53,7 @@ import {
     DEFAULT_PROFIT_MARGIN_KEY,
     MODE_PARTS,
     MODE_WASH,
+    Stores,
     UNKNOWN_SERVER_ERROR_MSG,
     systemConfigMode,
 } from "../../../shared/config";
@@ -385,6 +388,11 @@ const InventoryAndServices = () => {
     const [maxCost, setMaxCost] = useState<number>(0);
     const [minQty, setMinQty] = useState<number>(0);
     const [maxQty, setMaxQty] = useState<number>(0);
+    const [selectedStoreForDeadInventory, setSelectedStoreForDeadInventory] = useState<number>(0);
+    
+    // Stores
+    const stores: any = Stores.getActiveStores();
+    const CURRENT_STORE: any = localStorage.getItem("storeId") || null;
     return (
         <>
             <CanvasGrid>
@@ -452,9 +460,7 @@ const InventoryAndServices = () => {
                                     if (systemConfigMode !== MODE_PARTS) return;
                                     else {
                                         window.open(
-                                            `${APP_HOST}/api.php?action=low_stock&store_id=${localStorage.getItem(
-                                                "storeId"
-                                            )}`
+                                            `${APP_HOST}/api.php?action=low_stock&store_id=${CURRENT_STORE}`
                                         );
                                     }
                                 },
@@ -488,8 +494,30 @@ const InventoryAndServices = () => {
                                             }
                                         }
                                     }}></_Input>
+                                    <Select
+                                        defaultValue={CURRENT_STORE}
+                                        size="xs"
+                                        variant={selectConfig.variant}
+                                        borderRadius={selectConfig.borderRadius}
+                                        fontSize={selectConfig.fontSize}
+                                        borderBottomColor={selectConfig.borderColor}
+                                        borderBottomWidth={1}
+                                        onChange={(event: any) => {
+                                            setSelectedStoreForDeadInventory(parseInt(event.target.value));
+                                        }}
+                                        >
+                                        {Object.keys(stores).map((store, index) => (
+                                            <option
+                                            key={index}
+                                            value={store}
+                                            disabled={store == "1"}
+                                            >
+                                            {Stores.names[parseInt(store)]}
+                                            </option>
+                                        ))}
+                                        </Select>
                                 </VStack>
-                                <_Button bgColor="black" fontSize={"1.2em"} icon={<IoStopCircleOutline color="#E3242B"/>}label="Fetch Dead Stock" onClick={() => {
+                                <_Button bgColor="black" fontSize={"1.2em"} icon={<IoStopCircleOutline color="#E3242B"/>} label="Fetch Dead Stock" onClick={() => {
                                     if((isNaN(deadInventoryYear) || deadInventoryYear == 0) && deadInventoryMonth == 0) return;
                                     const newURLParams = new URLSearchParams();
                                     
