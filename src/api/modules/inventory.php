@@ -1917,8 +1917,21 @@ class Inventory {
      * @param month
      * @param year
      * @param include_last_sold_for_all_stores
+     * @param min_cost_of_each_item
+     * @param max_cost_of_each_item
+     * @param min_qty_dead_stock
+     * @param max_qty_dead_stock
      */
-    public static function generate_dead_inventory(int $store_id, int $month=0, int $year=0, int $include_last_sold_for_all_stores = 0): void {
+    public static function generate_dead_inventory(
+        int $store_id, 
+        int $month=0, 
+        int $year=0, 
+        int $include_last_sold_for_all_stores = 0, 
+        float $min_cost_of_each_item = 0, 
+        float $max_cost_of_each_item = 0,
+        int $min_qty_dead_stock = 0,
+        int $max_qty_dead_stock = 0,
+    ): void {
         $inventory_details = self::get_dead_inventory($store_id, $month, $year);
         GeneratePDF::generate_dead_inventory_list(
             $inventory_details, 
@@ -1926,6 +1939,10 @@ class Inventory {
             $month,
             $year,
             $include_last_sold_for_all_stores,
+            $min_cost_of_each_item,
+            $max_cost_of_each_item,
+            $min_qty_dead_stock,
+            $max_qty_dead_stock,
         );
     }
 
