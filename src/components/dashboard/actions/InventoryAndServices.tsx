@@ -388,7 +388,7 @@ const InventoryAndServices = () => {
     const [maxCost, setMaxCost] = useState<number>(0);
     const [minQty, setMinQty] = useState<number>(0);
     const [maxQty, setMaxQty] = useState<number>(0);
-    const [selectedStoreForDeadInventory, setSelectedStoreForDeadInventory] = useState<number>(0);
+    const [selectedStoreForDeadInventory, setSelectedStoreForDeadInventory] = useState<string>("0");
     
     // Stores
     const stores: any = Stores.getActiveStores();
@@ -503,7 +503,7 @@ const InventoryAndServices = () => {
                                         borderBottomColor={selectConfig.borderColor}
                                         borderBottomWidth={1}
                                         onChange={(event: any) => {
-                                            setSelectedStoreForDeadInventory(parseInt(event.target.value));
+                                            setSelectedStoreForDeadInventory(event.target.value);
                                         }}
                                         >
                                         {Object.keys(stores).map((store, index) => (
@@ -527,7 +527,7 @@ const InventoryAndServices = () => {
                                     else newURLParams.append("month", deadInventoryMonth.toString());
 
                                     // Append Store
-                                    newURLParams.append("storeId", localStorage.getItem("storeId")?.toString() || "");
+                                    newURLParams.append("storeId", selectedStoreForDeadInventory || "");
 
                                     // Query Params
                                     const queryParams = newURLParams.toString();
