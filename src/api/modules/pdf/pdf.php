@@ -3038,7 +3038,6 @@ class __GenerateInventory {
         Utils::format_to_human_readable_date(Utils::get_business_date($store_id));
 
         $item_code = '';
-        $show_last_dates_for_all_stores = 1;
         foreach($item_details as $item) {
 
             $identifier = $item['identifier'];
