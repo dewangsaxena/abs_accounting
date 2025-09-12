@@ -16,6 +16,7 @@ import {
     Box,
     Card,
     CardBody,
+    Checkbox,
     HStack,
     Select,
     VStack,
@@ -389,6 +390,7 @@ const InventoryAndServices = () => {
     const [minQty, setMinQty] = useState<number>(0);
     const [maxQty, setMaxQty] = useState<number>(0);
     const [selectedStoreForDeadInventory, setSelectedStoreForDeadInventory] = useState<string>("0");
+    const [includeLastSoldForAllStores, setIncludeLastSoldForAllStores] = useState<number>(0);
     
     // Stores
     const stores: any = Stores.getActiveStores();
@@ -529,6 +531,9 @@ const InventoryAndServices = () => {
                                     // Append Store
                                     newURLParams.append("storeId", selectedStoreForDeadInventory || "");
 
+                                    // Append Flag
+                                    newURLParams.append("includeLastSoldForAllStores", includeLastSoldForAllStores.toString());
+
                                     // Query Params
                                     const queryParams = newURLParams.toString();
                                     window.open(
@@ -537,6 +542,17 @@ const InventoryAndServices = () => {
                                     );
                                 }}></_Button>
                             </HStack>
+                            <Box marginTop={2}>
+                                <Checkbox
+                                    colorScheme="green"
+                                    isChecked={includeLastSoldForAllStores ? true : false}
+                                    onChange={() => {
+                                        setIncludeLastSoldForAllStores(includeLastSoldForAllStores ^ 1);
+                                    }}
+                                >
+                                <_Label fontSize="0.8em">Include Last Sold for All Stores?</_Label>
+                            </Checkbox>
+                            </Box>
                         </Box>
                         <Box marginTop={5}>
                         <_Label fontSize="0.8em" textTransform={"uppercase"}>Fetch Item Sold Report</_Label>

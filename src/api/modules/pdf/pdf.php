@@ -3388,9 +3388,10 @@ class GeneratePDF {
      * @param store_id
      * @param month
      * @param year
+     * @param include_last_sold_for_all_stores
      */
-    public static function generate_dead_inventory_list(array &$inventory_details, int $store_id, int $month, int $year): void {
-        __GenerateInventory::generate_dead_inventory_list($inventory_details, $store_id, $month, $year);
+    public static function generate_dead_inventory_list(array &$inventory_details, int $store_id, int $month, int $year, int $include_last_sold_for_all_stores): void {
+        __GenerateInventory::generate_dead_inventory_list($inventory_details, $store_id, $month, $year, $include_last_sold_for_all_stores);
     }
 
     /**

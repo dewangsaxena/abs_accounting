@@ -1916,14 +1916,16 @@ class Inventory {
      * @param store_id
      * @param month
      * @param year
+     * @param include_last_sold_for_all_stores
      */
-    public static function generate_dead_inventory(int $store_id, int $month=0, int $year=0): void {
+    public static function generate_dead_inventory(int $store_id, int $month=0, int $year=0, int $include_last_sold_for_all_stores = 0): void {
         $inventory_details = self::get_dead_inventory($store_id, $month, $year);
         GeneratePDF::generate_dead_inventory_list(
             $inventory_details, 
             $store_id, 
             $month,
             $year,
+            $include_last_sold_for_all_stores,
         );
     }
 

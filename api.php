@@ -82,7 +82,12 @@ if (isset($_GET['action'])) {
     } 
     else if($action === 'dead_inventory_report' && is_numeric($_GET['storeId'] ?? null)) {
         if(is_numeric($_GET['month'] ?? null) || is_numeric($_GET['year'] ?? null)) {
-            Inventory::generate_dead_inventory(intval($_GET['storeId']), intval($_GET['month']), intval($_GET['year']));
+            Inventory::generate_dead_inventory(
+                intval($_GET['storeId']), 
+                intval($_GET['month']), 
+                intval($_GET['year']),
+                intval($_GET['includeLastSoldForAllStores'])
+            );
             die;
         }
     }
