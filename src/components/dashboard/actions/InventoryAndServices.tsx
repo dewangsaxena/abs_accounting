@@ -391,7 +391,11 @@ const InventoryAndServices = () => {
     const [maxQty, setMaxQty] = useState<number>(0);
     const [selectedStoreForDeadInventory, setSelectedStoreForDeadInventory] = useState<string>("0");
     const [includeLastSoldForAllStores, setIncludeLastSoldForAllStores] = useState<number>(0);
-    
+    const [minCostOfEachItem, setMinCostOfEachItem] = useState<number>(0);
+    const [maxCostOfEachItem, setMaxCostOfEachItem] = useState<number>(0);
+    const [minQtyDeadStock, setMinQtyDeadStock] = useState<number>(0);
+    const [maxQtyDeadStock, setMaxQtyDeadStock] = useState<number>(0);
+
     // Stores
     const stores: any = Stores.getActiveStores();
     const CURRENT_STORE: any = localStorage.getItem("storeId") || null;
@@ -534,6 +538,14 @@ const InventoryAndServices = () => {
                                     // Append Flag
                                     newURLParams.append("includeLastSoldForAllStores", includeLastSoldForAllStores.toString());
 
+                                    // Cost of each item
+                                    newURLParams.append("minCostOfEachItem", minCostOfEachItem.toString());
+                                    newURLParams.append("maxCostOfEachItem", maxCostOfEachItem.toString());
+
+                                    // Quantity
+                                    newURLParams.append("minQtyDeadStock", minQtyDeadStock.toString());
+                                    newURLParams.append("maxQtyDeadStock", maxQtyDeadStock.toString());
+
                                     // Query Params
                                     const queryParams = newURLParams.toString();
                                     window.open(
@@ -542,7 +554,7 @@ const InventoryAndServices = () => {
                                     );
                                 }}></_Button>
                             </HStack>
-                            <Box marginTop={2}>
+                            <VStack marginTop={2} align="start">
                                 <Checkbox
                                     colorScheme="green"
                                     isChecked={includeLastSoldForAllStores ? true : false}
@@ -550,10 +562,67 @@ const InventoryAndServices = () => {
                                         setIncludeLastSoldForAllStores(includeLastSoldForAllStores ^ 1);
                                     }}
                                 >
-                                <_Label fontSize="0.8em">Include Last Sold for All Stores?</_Label>
-                            </Checkbox>
-                            </Box>
+                                    <_Label fontSize="0.8em">Include Last Sold for All Stores?</_Label>
+                                </Checkbox>
+                                <HStack width="100%">
+                                    <Box width="25%">
+                                        <_Label fontSize={"0.7em"} color="blue">MIN $:</_Label>
+                                    </Box>
+                                    <Box width="75%">
+                                        <_Input fontSize="0.8em" type="number" onBlur={(event: any) => {
+                                            let value = event.target.value;
+                                            if(isNaN(value) === false) {
+                                                setMinCostOfEachItem(parseInt(value));
+                                            }
+                                            else setMinCostOfEachItem(0);
+                                        }}></_Input>
+                                    </Box>
+                                </HStack>
+                                <HStack width="100%">
+                                    <Box width="25%">
+                                        <_Label fontSize={"0.7em"} color="blue">MAX $:</_Label>
+                                    </Box>
+                                    <Box width="75%">
+                                        <_Input fontSize="0.8em" type="number" onBlur={(event: any) => {
+                                            let value = event.target.value;
+                                            if(isNaN(value) === false) {
+                                                setMaxCostOfEachItem(parseInt(value));
+                                            }
+                                            else setMaxCostOfEachItem(0);
+                                        }}></_Input>
+                                    </Box>
+                                </HStack>
+                                <HStack width="100%">
+                                    <Box width="25%">
+                                        <_Label fontSize={"0.7em"} color="blue">MIN QTY:</_Label>
+                                    </Box>
+                                    <Box width="75%">
+                                        <_Input fontSize="0.8em" type="number" onBlur={(event: any) => {
+                                            let value = event.target.value;
+                                            if(isNaN(value) === false) {
+                                                setMinQtyDeadStock(parseInt(value));
+                                            }
+                                            else setMinQtyDeadStock(0);
+                                        }}></_Input>
+                                    </Box>
+                                </HStack>
+                                <HStack width="100%">
+                                    <Box width="25%">
+                                        <_Label fontSize={"0.7em"} color="blue">MAX QTY:</_Label>
+                                    </Box>
+                                    <Box width="75%">
+                                        <_Input fontSize="0.8em" type="number" onBlur={(event: any) => {
+                                            let value = event.target.value;
+                                            if(isNaN(value) === false) {
+                                                setMaxQtyDeadStock(parseInt(value));
+                                            }
+                                            else setMaxQtyDeadStock(0);
+                                        }}></_Input>
+                                    </Box>
+                                </HStack>
+                            </VStack>
                         </Box>
+                        <_Divider margin={1}/>
                         <Box marginTop={5}>
                         <_Label fontSize="0.8em" textTransform={"uppercase"}>Fetch Item Sold Report</_Label>
                             <_Divider margin={2}/>
