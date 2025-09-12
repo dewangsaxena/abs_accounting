@@ -1897,6 +1897,7 @@ class Inventory {
                     'identifier' => $result['identifier'],
                     'description' => $result['description'], 
                     'last_sold' => $last_sold[$store_id],
+                    'last_sold_all_stores' => $last_sold,
                     'quantity' => $result['quantity'],
                     'buying_cost' => $prices[$store_id]['buyingCost'],
                     'value' => $value,

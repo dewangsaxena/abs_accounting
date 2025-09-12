@@ -2760,5 +2760,5 @@ function fetch_items_more_than_quantity(int $store_id, int $min_quantity, ?int $
     }
 }
 
-fetch_items_more_than_quantity(StoreDetails::EDMONTON, 200, 1000);
+// fetch_items_more_than_quantity(StoreDetails::EDMONTON, 200, 1000);
 ?>  

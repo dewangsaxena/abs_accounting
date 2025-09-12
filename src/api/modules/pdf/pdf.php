@@ -3024,8 +3024,9 @@ class __GenerateInventory {
      * @param month
      * @param year
      * @param store_id
+     * @param show_last_dates_for_all_stores
      */
-    public static function generate_dead_inventory_list(array &$inventory_details, int $store_id, int $month, int $year): void {
+    public static function generate_dead_inventory_list(array &$inventory_details, int $store_id, int $month, int $year, int $show_last_dates_for_all_stores = 0): void {
         $item_details = $inventory_details['dead_stock'];
         $total_dead_inventory_value = Utils::number_format($inventory_details['value'], 2);
         if($year > 0) $date_text = "IN $year";
@@ -3037,6 +3038,7 @@ class __GenerateInventory {
         Utils::format_to_human_readable_date(Utils::get_business_date($store_id));
 
         $item_code = '';
+        $show_last_dates_for_all_stores = 1;
         foreach($item_details as $item) {
 
             $identifier = $item['identifier'];
@@ -3046,6 +3048,19 @@ class __GenerateInventory {
             if($value <= 0) continue;
             $buying_cost = Utils::number_format($item['buying_cost']);
             $last_sold = Utils::format_to_human_readable_date($item['last_sold']);
+            $last_sold_all_stores = $item['last_sold_all_stores'];
+
+            $last_sold_all_stores_codes = '';
+            if($show_last_dates_for_all_stores && count($last_sold_all_stores) > 1) {
+                if(isset($last_sold_all_stores[$store_id])) unset($last_sold_all_stores[$store_id]);
+                $last_sold_all_stores_codes = '<tr><td colspan="6"><ul>';
+                foreach($last_sold_all_stores as $key => $last_sold_current_store) {
+                    $store_name = StoreDetails::STORE_DETAILS[$key]['name'];
+                    $last_sold_current_store = Utils::format_to_human_readable_date($last_sold_current_store);
+                    $last_sold_all_stores_codes .= "<li>$store_name ~ $last_sold_current_store</li>";
+                }
+                $last_sold_all_stores_codes .= '</ul></td></tr>';
+            }
             $item_code .= <<<EOS
             <tr>
                 <td>$identifier</td>
@@ -3055,6 +3070,7 @@ class __GenerateInventory {
                 <td>$value</td>
                 <td>$last_sold</td>
             </tr>
+            $last_sold_all_stores_codes
             EOS;
         }
 
