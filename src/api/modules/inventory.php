@@ -1930,7 +1930,7 @@ class Inventory {
 
                 // Filter Buy Buying Price
                 if($buying_cost >= $min_cost_of_each_item && $max_cost_of_each_item > 0 && $buying_cost <= $max_cost_of_each_item) $flag = true;
-                else if($max_cost_of_each_item > 0 && $buying_cost <= $max_cost_of_each_item) $flag = true;
+                else if($min_cost_of_each_item == 0 && $max_cost_of_each_item > 0 && $buying_cost <= $max_cost_of_each_item) $flag = true;
                 else if($max_cost_of_each_item == 0 && $buying_cost >= $min_cost_of_each_item) $flag = true;
             }
 
