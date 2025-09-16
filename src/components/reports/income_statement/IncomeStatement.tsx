@@ -20,6 +20,7 @@ import {
   Legend,
 } from "recharts";
 import {
+  CurrencyIcon,
   HomeNavButton,
   _Button,
   _Divider,
@@ -52,11 +53,12 @@ import { FcLineChart } from "react-icons/fc";
 
 const Filter = () => {
   const toast = useToast();
-  const { startDate, endDate, setDate, setData, fetch, selectedStores } =
+  const { startDate, endDate, data, setDate, setData, fetch, selectedStores } =
     filterStore(
       (state) => ({
         startDate: state.startDate,
         endDate: state.endDate,
+        data: state.data,
         selectedStores: state.selectedStores,
         setDate: state.setDate,
         setData: state.setData,
@@ -113,92 +115,167 @@ const Filter = () => {
   return (
     <Card width="100%">
       <CardBody padding={1} width="100%">
-        <VStack align="start">
-          <Box width="30%">
-            <HomeNavButton />
-          </Box>
-          <HStack width="100%">
-            <Box width={{ sm: "50%", lg: "20%", md: "50%" }}>
-              <HStack>
-                <_Label fontSize="0.8em">Start Date:</_Label>
-                <DatePicker
-                  wrapperClassName="datepicker_style"
-                  dateFormat={"MM/dd/yyyy"}
-                  placeholderText="Txn. Date"
-                  selected={startDate}
-                  onChange={(date: any) => {
-                    setDate("startDate", date);
-                  }}
-                  closeOnScroll={true}
-                  maxDate={new Date()}
-                />
-              </HStack>
+        <HStack>
+          <VStack align="start" width="70%">
+            <Box width="30%">
+              <HomeNavButton />
             </Box>
-            <Box width="20%">
+            <HStack width="100%">
+              <Box width={{ sm: "50%", lg: "20%", md: "50%" }}>
+                <HStack>
+                  <_Label fontSize="0.8em">Start Date:</_Label>
+                  <DatePicker
+                    wrapperClassName="datepicker_style"
+                    dateFormat={"MM/dd/yyyy"}
+                    placeholderText="Txn. Date"
+                    selected={startDate}
+                    onChange={(date: any) => {
+                      setDate("startDate", date);
+                    }}
+                    closeOnScroll={true}
+                    maxDate={new Date()}
+                  />
+                </HStack>
+              </Box>
+              <Box width="20%">
+                <HStack>
+                  <_Label fontSize="0.8em">End Date:</_Label>
+                  <DatePicker
+                    wrapperClassName="datepicker_style"
+                    dateFormat={"MM/dd/yyyy"}
+                    placeholderText="Txn. Date"
+                    selected={endDate}
+                    onChange={(date: any) => {
+                      setDate("endDate", date);
+                    }}
+                    closeOnScroll={true}
+                    maxDate={new Date()}
+                  />
+                </HStack>
+              </Box>
+            </HStack>
+            <HStack>
+              <_Label fontSize="0.8em">Locations:</_Label>
+              {Object.keys(stores).map((value: string) => {
+                /* Skip All Stores and Vancouver */
+                let newValue: number = parseInt(value);
+                if (newValue == 1 || newValue == 5) return;
+                return (
+                  <Checkbox
+                    key={value}
+                    colorScheme="gray"
+                    onChange={() => {
+                      if (selectedStores[newValue] === undefined) {
+                        selectedStores[newValue] = newValue;
+                        setNoStoreSelected(false);
+                      } else {
+                        delete selectedStores[newValue];
+                        if (Object.keys(selectedStores).length === 0)
+                          setNoStoreSelected(true);
+                      }
+                    }}
+                  >
+                    <_Label fontSize="0.8em">{Stores.names[newValue]}</_Label>
+                  </Checkbox>
+                );
+              })}
+            </HStack>
+            <HStack width="25%">
+              <_Button
+                icon={<FcLineChart />}
+                isDisabled={disableButton || noStoreSelected}
+                color="#ADD8E6"
+                bgColor={navBgColor}
+                label="Generate"
+                onClick={generate}
+                fontSize="1.2em"
+              ></_Button>
+              <_Button
+                icon={<FaFilePdf />}
+                isDisabled={disableButton || noStoreSelected}
+                color="#90EE90"
+                bgColor={navBgColor}
+                label="PDF"
+                onClick={print}
+                fontSize="1.2em"
+              ></_Button>
+            </HStack>
+            <_Divider margin={1}></_Divider>
+          </VStack>
+          {data.summaryOfAllStores !== undefined && 
+            <VStack width="30%" align="start" spacing={0}>
+              <_Label fontSize={"0.9em"} textTransform={"uppercase"}>Summary Report</_Label>
               <HStack>
-                <_Label fontSize="0.8em">End Date:</_Label>
-                <DatePicker
-                  wrapperClassName="datepicker_style"
-                  dateFormat={"MM/dd/yyyy"}
-                  placeholderText="Txn. Date"
-                  selected={endDate}
-                  onChange={(date: any) => {
-                    setDate("endDate", date);
-                  }}
-                  closeOnScroll={true}
-                  maxDate={new Date()}
-                />
+                <Box width="15vw">
+                  <Badge
+                    colorScheme="green"
+                    letterSpacing={2}
+                    borderRadius={0}
+                  >
+                    Total Revenue
+                  </Badge>
+                </Box>
+                <CurrencyIcon/>
+                <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2}>{formatNumberWithDecimalPlaces(data.summaryOfAllStores['total_revenue'])}</_Label>
               </HStack>
-            </Box>
-          </HStack>
-          <HStack>
-            <_Label fontSize="0.8em">Locations:</_Label>
-            {Object.keys(stores).map((value: string) => {
-              /* Skip All Stores and Vancouver */
-              let newValue: number = parseInt(value);
-              if (newValue == 1 || newValue == 5) return;
-              return (
-                <Checkbox
-                  key={value}
-                  colorScheme="gray"
-                  onChange={() => {
-                    if (selectedStores[newValue] === undefined) {
-                      selectedStores[newValue] = newValue;
-                      setNoStoreSelected(false);
-                    } else {
-                      delete selectedStores[newValue];
-                      if (Object.keys(selectedStores).length === 0)
-                        setNoStoreSelected(true);
-                    }
-                  }}
-                >
-                  <_Label fontSize="0.8em">{Stores.names[newValue]}</_Label>
-                </Checkbox>
-              );
-            })}
-          </HStack>
-          <HStack width="25%">
-            <_Button
-              icon={<FcLineChart />}
-              isDisabled={disableButton || noStoreSelected}
-              color="#ADD8E6"
-              bgColor={navBgColor}
-              label="Generate"
-              onClick={generate}
-              fontSize="1.2em"
-            ></_Button>
-            <_Button
-              icon={<FaFilePdf />}
-              isDisabled={disableButton || noStoreSelected}
-              color="#90EE90"
-              bgColor={navBgColor}
-              label="PDF"
-              onClick={print}
-              fontSize="1.2em"
-            ></_Button>
-          </HStack>
-          <_Divider margin={1}></_Divider>
-        </VStack>
+
+              <HStack>
+                <Box width="15vw">
+                  <Badge
+                    colorScheme="orange"
+                    letterSpacing={2}
+                    borderRadius={0}
+                  >
+                    C.O.G.S
+                  </Badge>
+                </Box>
+                <CurrencyIcon/>
+                <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2}>{formatNumberWithDecimalPlaces(data.summaryOfAllStores['cogs'])}</_Label>
+              </HStack>
+
+              <HStack>
+                <Box width="15vw">
+                  <Badge
+                    colorScheme="purple"
+                    letterSpacing={2}
+                    borderRadius={0}
+                  >
+                    NET INCOME
+                  </Badge>
+                </Box>
+                <CurrencyIcon/>
+                <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2} fontWeight="bold">{formatNumberWithDecimalPlaces(data.summaryOfAllStores['net_income'])}</_Label>
+              </HStack>
+
+              <HStack>
+                <Box width="15vw">
+                  <Badge
+                    color="#5D3FD3"
+                    bgColor="#CCCCFF"
+                    letterSpacing={2}
+                    borderRadius={0}
+                  >
+                    PROFIT MARGIN
+                  </Badge>
+                </Box>
+                <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2} fontWeight="bold">{formatNumberWithDecimalPlaces(data.summaryOfAllStores['profit_margin'])} %</_Label>
+              </HStack>
+
+              <HStack>
+                <Box width="15vw">
+                  <Badge
+                    color="#14EB71"
+                    bgColor="#1422EB"
+                    letterSpacing={2}
+                    borderRadius={0}
+                  >
+                    C.O.G.S MARGIN
+                  </Badge>
+                </Box>
+                <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2} fontWeight="bold">{formatNumberWithDecimalPlaces(data.summaryOfAllStores['cogs_margin'])} %</_Label>
+              </HStack>
+            </VStack>}
+        </HStack>
       </CardBody>
     </Card>
   );

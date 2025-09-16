@@ -38,11 +38,52 @@ class IncomeStatementActions {
         // Summed Statements
         $summed_statements = self::sum_all_statements($grouped_statements);
 
+        // Total Summary of all Stores.
+        $summary_of_all_stores = [
+            'sales_inventory' => 0,
+            'sales_return' => 0,
+            'early_payment_sales_discounts' => 0,
+            'total_revenue' => 0,
+            'cogs' => 0,
+            'net_income' => 0,
+            'profit_margin' => 0,
+            'cogs_margin' => 0,
+        ];
+ 
         $chart_data = Charts::income_statement($data);
         if($chart_data['status'] === false) return [];
+
+        foreach($summed_statements as $statement) {
+            $summary_of_all_stores['sales_inventory'] += $statement[4020];
+            $summary_of_all_stores['sales_returns'] += $statement[4220];
+            $summary_of_all_stores['early_payment_sales_discounts'] += $statement[4240];
+            $summary_of_all_stores['cogs'] += $statement[1520];
+        }
+
+        // Calculate Total Revenue
+        $summary_of_all_stores['total_revenue'] = 
+        $summary_of_all_stores['sales_inventory'] - 
+        $summary_of_all_stores['sales_returns'] -
+        $summary_of_all_stores['early_payment_sales_discounts'];
+
+        // Net Income
+        $summary_of_all_stores['net_income'] = $summary_of_all_stores['total_revenue'] - abs($summary_of_all_stores['cogs']);
+
+        // Profit Margin
+        $summary_of_all_stores['profit_margin'] = Utils::calculateProfitMargin($summary_of_all_stores['total_revenue'], $summary_of_all_stores['cogs']);
+        $summary_of_all_stores['cogs_margin'] = Utils::calculateCOGSMargin($summary_of_all_stores['total_revenue'], $summary_of_all_stores['cogs']);
+
+        // Negate 
+        $summary_of_all_stores['sales_returns'] = -$summary_of_all_stores['sales_returns'];
+        $summary_of_all_stores['early_payment_sales_discounts'] = -$summary_of_all_stores['early_payment_sales_discounts'];
+
+        // Round off
+        $keys = array_keys($summary_of_all_stores);
+        foreach($keys as $key) $summary_of_all_stores[$key] = Utils::round($summary_of_all_stores[$key], 2);
         $data = [
             'chartData' => $chart_data['data'],
             'statement' => $summed_statements,
+            'summaryOfAllStores' => $summary_of_all_stores,
         ];
         return ['status' => true, 'data' => $data];
     }

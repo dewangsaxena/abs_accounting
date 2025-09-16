@@ -5,6 +5,7 @@ import { HTTPService } from "../../../service/api-client";
 interface IncomeStatement {
   chartData: { [storeId: number]: any };
   statement: { [accountNumber: number]: number };
+  summaryOfAllStores: {[param: string] : number};
 }
 
 /**
