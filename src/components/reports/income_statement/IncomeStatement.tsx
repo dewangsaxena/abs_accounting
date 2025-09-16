@@ -213,7 +213,7 @@ const Filter = () => {
                   <HStack>
                       <FcInfo />
                       <_Label letterSpacing={2} fontSize="0.8em" fontFamily={numberFont} textTransform={"uppercase"}>
-                            Summary Report
+                            Total Summary Report
                       </_Label>
                       </HStack>
                   <HStack>
