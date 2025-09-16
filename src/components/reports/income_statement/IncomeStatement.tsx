@@ -113,6 +113,9 @@ const Filter = () => {
 
   const stores = Stores.getActiveStores();
 
+  // Badge Width
+  const badgeWidth: string = "12vw";
+
   return (
     <Card width="100%">
       <CardBody padding={1} width="100%">
@@ -214,7 +217,7 @@ const Filter = () => {
                       </_Label>
                       </HStack>
                   <HStack>
-                    <Box width="15vw">
+                    <Box width={badgeWidth}>
                       <Badge
                         colorScheme="green"
                         letterSpacing={2}
@@ -228,7 +231,7 @@ const Filter = () => {
                   </HStack>
 
                   <HStack>
-                    <Box width="15vw">
+                    <Box width={badgeWidth}>
                       <Badge
                         colorScheme="orange"
                         letterSpacing={2}
@@ -242,7 +245,7 @@ const Filter = () => {
                   </HStack>
 
                   <HStack>
-                    <Box width="15vw">
+                    <Box width={badgeWidth}>
                       <Badge
                         colorScheme="purple"
                         letterSpacing={2}
@@ -256,7 +259,7 @@ const Filter = () => {
                   </HStack>
 
                   <HStack>
-                    <Box width="15vw">
+                    <Box width={badgeWidth}>
                       <Badge
                         color="#5D3FD3"
                         bgColor="#CCCCFF"
@@ -270,7 +273,7 @@ const Filter = () => {
                   </HStack>
 
                   <HStack>
-                    <Box width="15vw">
+                    <Box width={badgeWidth}>
                       <Badge
                         color="#14EB71"
                         bgColor="#1422EB"
