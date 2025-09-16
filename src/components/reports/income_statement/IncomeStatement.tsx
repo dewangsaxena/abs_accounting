@@ -31,6 +31,7 @@ import { shallow } from "zustand/shallow";
 import {
   APP_HOST,
   AttributeType,
+  MODE_PARTS,
   MODE_WASH,
   Stores,
   systemConfigMode,
@@ -213,9 +214,9 @@ const Filter = () => {
                   <HStack>
                       <FcInfo />
                       <_Label letterSpacing={2} fontSize="0.8em" fontFamily={numberFont} textTransform={"uppercase"}>
-                            Total Summary Report
+                          Total Summary Report
                       </_Label>
-                      </HStack>
+                  </HStack>
                   <HStack>
                     <Box width={badgeWidth}>
                       <Badge
@@ -230,61 +231,65 @@ const Filter = () => {
                     <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2}>{formatNumberWithDecimalPlaces(data.summaryOfAllStores['total_revenue'])}</_Label>
                   </HStack>
 
-                  <HStack>
-                    <Box width={badgeWidth}>
-                      <Badge
-                        colorScheme="orange"
-                        letterSpacing={2}
-                        borderRadius={0}
-                      >
-                        C.O.G.S
-                      </Badge>
-                    </Box>
-                    <CurrencyIcon/>
-                    <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2}>{formatNumberWithDecimalPlaces(data.summaryOfAllStores['cogs'])}</_Label>
-                  </HStack>
+                  {systemConfigMode === MODE_PARTS && 
+                  <>
+                    <HStack>
+                      <Box width={badgeWidth}>
+                        <Badge
+                          colorScheme="orange"
+                          letterSpacing={2}
+                          borderRadius={0}
+                        >
+                          C.O.G.S
+                        </Badge>
+                      </Box>
+                      <CurrencyIcon/>
+                      <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2}>{formatNumberWithDecimalPlaces(data.summaryOfAllStores['cogs'])}</_Label>
+                    </HStack>
 
-                  <HStack>
-                    <Box width={badgeWidth}>
-                      <Badge
-                        colorScheme="purple"
-                        letterSpacing={2}
-                        borderRadius={0}
-                      >
-                        NET INCOME
-                      </Badge>
-                    </Box>
-                    <CurrencyIcon/>
-                    <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2} fontWeight="bold">{formatNumberWithDecimalPlaces(data.summaryOfAllStores['net_income'])}</_Label>
-                  </HStack>
+                    <HStack>
+                      <Box width={badgeWidth}>
+                        <Badge
+                          colorScheme="purple"
+                          letterSpacing={2}
+                          borderRadius={0}
+                        >
+                          NET INCOME
+                        </Badge>
+                      </Box>
+                      <CurrencyIcon/>
+                      <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2} fontWeight="bold">{formatNumberWithDecimalPlaces(data.summaryOfAllStores['net_income'])}</_Label>
+                    </HStack>
 
-                  <HStack>
-                    <Box width={badgeWidth}>
-                      <Badge
-                        color="#5D3FD3"
-                        bgColor="#CCCCFF"
-                        letterSpacing={2}
-                        borderRadius={0}
-                      >
-                        PROFIT MARGIN
-                      </Badge>
-                    </Box>
-                    <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2} fontWeight="bold">{formatNumberWithDecimalPlaces(data.summaryOfAllStores['profit_margin'])} %</_Label>
-                  </HStack>
+                    <HStack>
+                      <Box width={badgeWidth}>
+                        <Badge
+                          color="#5D3FD3"
+                          bgColor="#CCCCFF"
+                          letterSpacing={2}
+                          borderRadius={0}
+                        >
+                          PROFIT MARGIN
+                        </Badge>
+                      </Box>
+                      <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2} fontWeight="bold">{formatNumberWithDecimalPlaces(data.summaryOfAllStores['profit_margin'])} %</_Label>
+                    </HStack>
 
-                  <HStack>
-                    <Box width={badgeWidth}>
-                      <Badge
-                        color="#14EB71"
-                        bgColor="#1422EB"
-                        letterSpacing={2}
-                        borderRadius={0}
-                      >
-                        C.O.G.S MARGIN
-                      </Badge>
-                    </Box>
-                    <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2} fontWeight="bold">{formatNumberWithDecimalPlaces(data.summaryOfAllStores['cogs_margin'])} %</_Label>
-                  </HStack>
+                    <HStack>
+                      <Box width={badgeWidth}>
+                        <Badge
+                          color="#14EB71"
+                          bgColor="#1422EB"
+                          letterSpacing={2}
+                          borderRadius={0}
+                        >
+                          C.O.G.S MARGIN
+                        </Badge>
+                      </Box>
+                      <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2} fontWeight="bold">{formatNumberWithDecimalPlaces(data.summaryOfAllStores['cogs_margin'])} %</_Label>
+                    </HStack>
+                  </>
+                }
                 </VStack>
               </CardBody>
             </Card>

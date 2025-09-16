@@ -48,6 +48,16 @@ class IncomeStatementActions {
             'net_income' => 0,
             'profit_margin' => 0,
             'cogs_margin' => 0,
+
+            /* Wash Specific Accounts */
+            'part_sales' => 0,
+            'merchandise_sales' => 0,
+            'labour_revenue' => 0,
+            'sales' => 0,
+            'full_service' => 0,
+            'self_wash' => 0,
+            'oil_grease' => 0,
+            'misc_revenue' => 0,
         ];
  
         $chart_data = Charts::income_statement($data);
@@ -58,25 +68,56 @@ class IncomeStatementActions {
             $summary_of_all_stores['sales_returns'] += $statement[4220];
             $summary_of_all_stores['early_payment_sales_discounts'] += $statement[4240];
             $summary_of_all_stores['cogs'] += $statement[1520];
+
+            if(SYSTEM_INIT_MODE === WASH) {
+                $summary_of_all_stores['part_sales'] += $statement[4150];
+                $summary_of_all_stores['merchandise_sales'] += $statement[4170];
+                $summary_of_all_stores['labour_revenue'] += $statement[4175];
+                $summary_of_all_stores['sales'] += $statement[4200];
+                $summary_of_all_stores['full_service'] += $statement[4205];
+                $summary_of_all_stores['self_wash'] += $statement[4210];
+                $summary_of_all_stores['oil_grease'] += $statement[4215];
+                $summary_of_all_stores['misc_revenue'] += $statement[4460];
+            }
         }
 
-        // Calculate Total Revenue
+        // // Calculate Total Revenue
         $summary_of_all_stores['total_revenue'] = 
         $summary_of_all_stores['sales_inventory'] - 
         $summary_of_all_stores['sales_returns'] -
         $summary_of_all_stores['early_payment_sales_discounts'];
 
+        // Add Wash Specific Revenue
+        if(SYSTEM_INIT_MODE === WASH) {
+            $keys = [
+                'part_sales',
+                'merchandise_sales',
+                'labour_revenue',
+                'sales',
+                'full_service',
+                'self_wash',
+                'oil_grease',
+                'misc_revenue',
+            ];
+
+            foreach($keys as $key) {
+                $summary_of_all_stores['total_revenue'] += $summary_of_all_stores[$key];
+            }
+        }
+        
         // Net Income
         $summary_of_all_stores['net_income'] = $summary_of_all_stores['total_revenue'] - abs($summary_of_all_stores['cogs']);
-
+        
         // Profit Margin
-        $summary_of_all_stores['profit_margin'] = Utils::calculateProfitMargin($summary_of_all_stores['total_revenue'], $summary_of_all_stores['cogs']);
-        $summary_of_all_stores['cogs_margin'] = Utils::calculateCOGSMargin($summary_of_all_stores['total_revenue'], $summary_of_all_stores['cogs']);
-
+        if (SYSTEM_INIT_MODE === PARTS) {
+            $summary_of_all_stores['profit_margin'] = Utils::calculateProfitMargin($summary_of_all_stores['total_revenue'], $summary_of_all_stores['cogs']);
+            $summary_of_all_stores['cogs_margin'] = Utils::calculateCOGSMargin($summary_of_all_stores['total_revenue'], $summary_of_all_stores['cogs']);
+        }
+        
         // Negate 
         $summary_of_all_stores['sales_returns'] = -$summary_of_all_stores['sales_returns'];
         $summary_of_all_stores['early_payment_sales_discounts'] = -$summary_of_all_stores['early_payment_sales_discounts'];
-
+        
         // Round off
         $keys = array_keys($summary_of_all_stores);
         foreach($keys as $key) $summary_of_all_stores[$key] = Utils::round($summary_of_all_stores[$key], 2);
