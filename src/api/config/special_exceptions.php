@@ -71,6 +71,7 @@ class SpecialExceptions {
                 12089,  /* SST TRUCKING LTD */
             ]
         ],
+        WASH => [],
     ][SYSTEM_INIT_MODE];
 
     /**

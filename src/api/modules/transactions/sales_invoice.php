@@ -607,8 +607,8 @@ class SalesInvoice {
             /* COMMIT UPDATES TO INCOME STATEMENT */
             IncomeStatementActions::update(
                 $is_affected_accounts,
-                $date,
                 $store_id,
+                $date,
                 $db,
             );
 
@@ -872,8 +872,8 @@ class SalesInvoice {
             // Update Income Statement
             IncomeStatementActions::update(
                 $is_affected_accounts,
-                $data['initial']['txnDate'],
                 $store_id,
+                $data['initial']['txnDate'],
                 $db,
             );
 
@@ -1010,8 +1010,8 @@ class SalesInvoice {
             // COMMIT UPDATES TO INCOME STATEMENT
             IncomeStatementActions::update(
                 $is_affected_accounts,
-                $details['txn_date'],
                 $store_id,
+                $details['txn_date'],
                 $db,
             );
 

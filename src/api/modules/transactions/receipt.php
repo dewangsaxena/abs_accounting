@@ -297,8 +297,8 @@ class Receipt {
                 // Deduct from Income Statement
                 IncomeStatementActions::update(
                     [AccountsConfig::SALES_INVENTORY_A => 0],
-                    $date,
                     $store_id,
+                    $date,
                     $db
                 );
             }
@@ -314,8 +314,8 @@ class Receipt {
                 // Update Income Statement
                 IncomeStatementActions::update(
                     [AccountsConfig::EARLY_PAYMENT_SALES_DISCOUNT => $total_discount],
-                    $date,
                     $store_id,
+                    $date,
                     $db
                 );
             }
@@ -592,8 +592,8 @@ class Receipt {
             // Update Income Statement
             IncomeStatementActions::update(
                 [AccountsConfig::EARLY_PAYMENT_SALES_DISCOUNT => -abs($total_discount)],
-                $date,
                 $store_id,
+                $date,
                 $db
             );
 

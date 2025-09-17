@@ -784,8 +784,8 @@ class SalesReturn {
             /* COMMIT UPDATES TO INCOME STATEMENT */
             IncomeStatementActions::update(
                 $is_affected_accounts,
-                $date,
                 $store_id,
+                $date,
                 $db,
             );
 
@@ -1162,8 +1162,8 @@ class SalesReturn {
             // Update Income Statement
             IncomeStatementActions::update(
                 $is_affected_accounts,
-                $data['initial']['txnDate'],
                 $store_id,
+                $data['initial']['txnDate'],
                 $db,
             );
 
@@ -1277,8 +1277,8 @@ class SalesReturn {
             // COMMIT UPDATES TO INCOME STATEMENT
             IncomeStatementActions::update(
                 $is_affected_accounts,
-                $date,
                 $store_id,
+                $date,
                 $db,
             );
 

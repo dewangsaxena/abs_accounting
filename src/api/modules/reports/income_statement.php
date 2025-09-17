@@ -324,7 +324,7 @@ class IncomeStatementActions {
      * @throws Exception
      * @return void 
      */
-    public static function update(array $account_details, ?string $date=null, int $store_id, ?PDO &$db=null): void {
+    public static function update(array $account_details, int $store_id, ?string $date=null, ?PDO &$db=null): void {
         // NOTE: Ensure the server is using UTC timezone.
         if($date === null) $date = Utils::get_business_date($store_id);
 
