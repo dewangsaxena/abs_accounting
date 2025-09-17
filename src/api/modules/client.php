@@ -367,7 +367,8 @@ class Client {
             credit_limit,
             shipping_addresses,
             custom_selling_price_for_items,
-            last_purchase_date
+            last_purchase_date,
+            send_quotations_to_additional_email_addresses
         )
         VALUES(
             :name,
@@ -402,7 +403,8 @@ class Client {
             :credit_limit,
             :shipping_addresses,
             :custom_selling_price_for_items,
-            :last_purchase_date
+            :last_purchase_date,
+            :send_quotations_to_additional_email_addresses
         );
         EOS);
 
