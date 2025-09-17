@@ -382,6 +382,8 @@ const ProfitMarginsHandler = () => {
 };
 
 const InventoryAndServices = () => {
+    const CURRENT_STORE: any = localStorage.getItem("storeId") || null;
+    
     const [deadInventoryMonth, setDeadInventoryMonth] = useState<number>(3);
     const [deadInventoryYear, setDeadInventoryYear] = useState<number>(0);
     const [reportYear, setReportYear] = useState<number>(new Date().getFullYear());
@@ -389,7 +391,7 @@ const InventoryAndServices = () => {
     const [maxCost, setMaxCost] = useState<number>(0);
     const [minQty, setMinQty] = useState<number>(0);
     const [maxQty, setMaxQty] = useState<number>(0);
-    const [selectedStoreForDeadInventory, setSelectedStoreForDeadInventory] = useState<string>("0");
+    const [selectedStoreForDeadInventory, setSelectedStoreForDeadInventory] = useState<string>(CURRENT_STORE);
     const [includeLastSoldForAllStores, setIncludeLastSoldForAllStores] = useState<number>(0);
     const [minCostOfEachItem, setMinCostOfEachItem] = useState<number>(0);
     const [maxCostOfEachItem, setMaxCostOfEachItem] = useState<number>(0);
@@ -398,7 +400,6 @@ const InventoryAndServices = () => {
 
     // Stores
     const stores: any = Stores.getActiveStores();
-    const CURRENT_STORE: any = localStorage.getItem("storeId") || null;
     return (
         <>
             <CanvasGrid>
