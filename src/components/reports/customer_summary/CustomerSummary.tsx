@@ -376,7 +376,7 @@ const __MonthlyReport = ({
               {amountReceived === subTotal
                 ? "PAID ✔"
                 : amountReceived > 0.0
-                ? "PARTIALLY PAID 🞜"
+                ? "PARTIALLY PAID ∂"
                 : "UNPAID ✖"}
             </Badge>
             {amountReceived > 0.0 && amountReceived < subTotal ? (
