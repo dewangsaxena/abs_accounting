@@ -178,6 +178,7 @@ update credit_note set sales_rep_id = 8 where sales_rep_id = 10000;
 update debit_note set sales_rep_id = 8 where sales_rep_id = 10000;
 update receipt set sales_rep_id = 8 where sales_rep_id = 10000;
 update quotation set sales_rep_id = 8 where sales_rep_id = 10000;
+update inventory_history set sales_rep_id = 8 where sales_rep_id = 10000;
 SET GLOBAL FOREIGN_KEY_CHECKS=1;
 
 ALTER TABLE sales_invoice ADD COLUMN sales_rep_history JSON NOT NULL DEFAULT '[]';
