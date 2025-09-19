@@ -49,7 +49,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
     private const TABLE_ELEMENTS_WIDTH = [28, 15, 10, 45, 12, 22, 12, 22, 22, 10];
 
     // Data Table details
-    private const MAX_ROWS_FIRST_PAGE = [26, 43];
+    private const MAX_ROWS_FIRST_PAGE = [25, 43];
     private const MAX_ROWS_SUBSEQUENT_PAGES = 65;
     private const MAX_ROWS_SUBSEQUENT_PAGES_WITHOUT_FOOTER = 55;
 
@@ -273,7 +273,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         self::$pdf -> SetFont(self::ARIAL, 'B', 7.5);
         self::$pdf -> Cell(w: 40, h:4, txt: 'Business Number:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> SetFont(self::COURIER, '', 7.5);
-        self::$pdf -> Cell(w: 40, h:4, txt: self::$details['business_number'], border: self::SHOW_BORDER_FOR_DEBUG, ln: isset(self::$details['pst_number'][0]) ? 0 : 1);
+        self::$pdf -> Cell(w: 40, h:4, txt: self::$details['business_number'], border: self::SHOW_BORDER_FOR_DEBUG, ln: self::$details['pst_tax'] != 0 ? 0 : 1);
 
         // Add PST Number where applicable
         if((self::$details['pst_tax'] ?? 0) != 0.0) {
@@ -804,7 +804,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         self::add_business_number();
 
         // Padding 
-        self::$pdf -> Cell(w: 0, h: 2, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
+        self::$pdf -> Cell(w: 0, h: 1, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
 
         // Build Table
         $last_page_rows = self::build_table($skip_table_header_for_last_page);
