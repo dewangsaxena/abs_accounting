@@ -276,7 +276,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         self::$pdf -> Cell(w: 40, h:4, txt: self::$details['business_number'], border: self::SHOW_BORDER_FOR_DEBUG, ln: isset(self::$details['pst_number'][0]) ? 0 : 1);
 
         // Add PST Number where applicable
-        if((self::$details['pst_tax'] ?? 0) > 0.0) {
+        if((self::$details['pst_tax'] ?? 0) != 0.0) {
             self::$pdf -> SetFont(self::ARIAL, 'B', 7.5);
             self::$pdf -> Cell(w: 40, h:4, txt: 'PST Number:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
             self::$pdf -> SetFont(self::COURIER, '', 7.5);
@@ -309,7 +309,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
      */
     private static function footer(int $last_page=2, int $last_page_rows=0, bool $add_padding=true): void {
         if($last_page_rows > 50) self::add_page($last_page);
-        if($add_padding) self::$pdf -> SetY(self::$details['pst_tax'] > 0 ? -89 : -83);
+        if($add_padding) self::$pdf -> SetY(self::$details['pst_tax'] != 0 ? -89 : -83);
         
         // Flag
         $is_sales_return = self::$transaction_type === 2; 
@@ -352,7 +352,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         self::$pdf -> Cell(w: 0, h: 4, txt: '$ '.number_format(self::$details['gst_hst_tax'], 2), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'R');
 
         // Show PST if Provincial Tax rate is to be used.
-        if(self::$details['pst_tax'] > 0.00) {
+        if(self::$details['pst_tax'] != 0.00) {
             self::$pdf -> SetFont(self::ARIAL, 'B', 8);
             self::$pdf -> Cell(w: 146, h: 4, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
             self::$pdf -> Cell(w: 22, h: 4, txt: 'Total PST Tax:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
