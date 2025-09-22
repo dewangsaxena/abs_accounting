@@ -159,7 +159,13 @@ SELECT sum(sum_total), sum(total_discount) FROM receipt WHERE store_id = 6 and d
 SELECT SUM(sum_total) FROM debit_note WHERE store_id = 6 AND `date` >= '2025-01-01';
 SELECT SUM(sum_total) FROM credit_note WHERE store_id = 6 AND `date` >= '2025-01-01';
 
-
+// Excluding Self client except for Slave lake
+SELECT payment_method, SUM(sum_total) FROM sales_invoice WHERE store_id = 2 AND client_id NOT IN(13735, 14506, 15260, 16047, 15356, 18636, 17773, 16630, 20432) GROUP BY payment_method;
+SELECT payment_method, SUM(sum_total) FROM sales_return WHERE store_id = 2 AND client_id NOT IN(13735, 14506, 15260, 16047, 15356, 18636, 17773, 16630, 20432)  GROUP BY payment_method;
+SELECT payment_method, SUM(sum_total), sum(total_discount) FROM receipt WHERE store_id = 2 and do_conceal = 0 AND client_id NOT IN(13735, 14506, 15260, 16047, 15356, 18636, 17773, 16630, 20432) GROUP BY payment_method;
+SELECT sum(sum_total), sum(total_discount) FROM receipt WHERE store_id = 2 and do_conceal = 0 AND client_id NOT IN(13735, 14506, 15260, 16047, 15356, 18636, 17773, 16630, 20432) ;
+SELECT SUM(sum_total) FROM debit_note WHERE store_id = 2 AND client_id NOT IN(13735, 14506, 15260, 16047, 15356, 18636, 17773, 16630, 20432) ;
+SELECT SUM(sum_total) FROM credit_note WHERE store_id = 2  AND client_id NOT IN(13735, 14506, 15260, 16047, 15356, 18636, 17773, 16630, 20432);
 
 delete from balance_sheet where store_id = 6 and `date` >= '2025-03-01';
 
