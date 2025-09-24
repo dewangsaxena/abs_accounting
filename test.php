@@ -2761,4 +2761,50 @@ function fetch_items_more_than_quantity(int $store_id, int $min_quantity, ?int $
 }
 
 // fetch_items_more_than_quantity(StoreDetails::EDMONTON, 200, 1000);
+
+function fix_account_receivables(int $store_id): void {
+    $db = get_db_instance();
+    try {
+        $db -> beginTransaction();
+
+        // Fetch Customer Aged Summary
+        $cus = CustomerAgedSummary::fetch_customer_aged_summary(
+            $store_id, 
+            null,
+            '2025-12-31',
+            0,
+            client_id: null,
+            exclude_self: 1,
+            exclude_clients: 0,
+        );
+        
+        $total_receivables = 0;
+        foreach($cus as $c) $total_receivables += $c['total'];
+
+        // Fetch Latest Balance Sheet
+        $statement = $db -> prepare('SELECT id, `statement` FROM balance_sheet WHERE store_id = :store_id ORDER BY `date` DESC LIMIT 1;');
+        $statement -> execute([':store_id' => $store_id]);
+        $results = $statement -> fetchAll(PDO::FETCH_ASSOC)[0];
+        $balance_sheet = json_decode($results['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+        $balance_sheet[AccountsConfig::ACCOUNTS_RECEIVABLE] = $total_receivables;
+
+        // Update Balance Sheet
+        $statement = $db -> prepare('UPDATE balance_sheet SET `statement` = :_statement WHERE id = :id;');
+        $is_succesful = $statement -> execute([
+            ':_statement' => json_encode($balance_sheet, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
+            ':id' => $results['id'],
+        ]);
+
+        if($is_succesful !== true && $statement -> rowCount() < 1) throw new Exception('Unable to Update Balance Sheet.');
+
+        $db -> commit();
+        echo 'Updated';
+    }
+    catch(Exception $e) {
+        echo $e -> getMessage();
+        if($db -> inTransaction()) $db -> rollBack();
+    }
+}
+
+fix_account_receivables(StoreDetails::DELTA);
 ?>  
