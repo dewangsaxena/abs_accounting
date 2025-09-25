@@ -2806,5 +2806,53 @@ function fix_account_receivables(int $store_id): void {
     }
 }
 
-fix_account_receivables(StoreDetails::DELTA);
+// fix_account_receivables(StoreDetails::DELTA);
+
+function fix_amount_owing_of_client(int $store_id): void {
+    $db = get_db_instance();
+    try {
+        $db -> beginTransaction();
+
+        $customer_aged_summary = CustomerAgedSummary::fetch_customer_aged_summary(
+            $store_id,
+            null,
+            '2025-12-31',
+            0,
+            null,
+            0,
+            0,
+        );
+
+        $statement_select = $db -> prepare('SELECT amount_owing, modified FROM clients WHERE id = :id;');
+        $statement_update = $db -> prepare('UPDATE clients SET amount_owing = :amount_owing WHERE id = :id AND modified = :modified_timestamp;');
+
+        foreach($customer_aged_summary as $cus) {
+            $client_id = $cus['client_id'];
+            $statement_select -> execute([':id' => $client_id]);
+            $record = $statement_select -> fetchAll(PDO::FETCH_ASSOC)[0];
+            $amount_owing = json_decode($record['amount_owing'], true, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+
+            if(isset($amount_owing[$store_id])) {
+                $amount_owing[$store_id] = $cus['total'];
+
+                $is_successful = $statement_update -> execute([
+                    ':amount_owing' => json_encode($amount_owing, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
+                    ':id' => $client_id,
+                    ':modified_timestamp' => $record['modified'],
+                ]);
+
+                if($is_successful !== true && $statement_update -> rowCount() < 1) throw new Exception('Unable to Update for '. $cus['client_name']);
+            }
+        }
+
+        assert_success();
+        $db -> commit();
+
+        echo 'Done!';
+    }
+    catch(Exception $e) {
+        echo $e -> getMessage();
+        if($db -> inTransaction()) $db -> rollBack();
+    }
+}
 ?>  
