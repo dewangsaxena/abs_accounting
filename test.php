@@ -2855,4 +2855,5 @@ function fix_amount_owing_of_client(int $store_id): void {
         if($db -> inTransaction()) $db -> rollBack();
     }
 }
+fix_amount_owing_of_client(StoreDetails::EDMONTON);
 ?>  
