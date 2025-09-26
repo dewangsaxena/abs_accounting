@@ -1867,8 +1867,6 @@ class Inventory {
         ON 
             i.id = inv.item_id
         WHERE
-            last_sold LIKE :last_sold_tag
-        AND
             inv.quantity > 0
         AND
             inv.quantity >= :min_quantity
@@ -1878,7 +1876,6 @@ class Inventory {
         EOS;
 
         $params = [
-            ':last_sold_tag' => "%\"$store_id\":%", 
             ':store_id' => $store_id,
             ':min_quantity' => $min_qty_dead_stock <= 0 ? 0 : $min_qty_dead_stock,
         ];
@@ -1895,25 +1892,36 @@ class Inventory {
         $dead_stock = [];
         $total_dead_inventory_value = 0;
         $search_by_year = $year > 0;
+        $items_never_sold = 0;
+        $total_items = 0;
         foreach($results as $result) {
             $last_sold = json_decode($result['last_sold'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
-            if(isset($last_sold[$store_id]) === false) continue;
-            $flag = false;
-
-            if($search_by_year) {
-                $last_purchase_year = explode('-', $last_sold[$store_id])[0];
-                if($year == $last_purchase_year) $flag = true;
+            $never_sold = false;
+            if(isset($last_sold[$store_id]) === false) {
+                $never_sold = true;
+                $flag = true;
+                ++$items_never_sold;
             }
-            else {
-                $date_diff = Utils::get_difference_between_dates(
-                    $last_sold[$store_id],
-                    Utils::get_business_date($store_id),
-                    $store_id,
-                );
+            else $flag = false;
 
-                if($month >= 12) $flag = $date_diff['y'] >= 1;
-                else if($date_diff['y'] >= 1 || $date_diff['m'] >= $month) $flag = true;
-                else $flag = false;
+            if($never_sold === false) {
+                if($search_by_year) {
+                    $last_purchase_year = explode('-', $last_sold[$store_id])[0];
+                    if($year == $last_purchase_year) $flag = true;
+                }
+                else {
+                    if($never_sold === false) {
+                        $date_diff = Utils::get_difference_between_dates(
+                            $last_sold[$store_id],
+                            Utils::get_business_date($store_id),
+                            $store_id,
+                        );
+
+                        if($month >= 12) $flag = $date_diff['y'] >= 1;
+                        else if($date_diff['y'] >= 1 || $date_diff['m'] >= $month) $flag = true;
+                        else $flag = false;
+                    }
+                }
             }
             $prices = [];
 
@@ -1934,16 +1942,21 @@ class Inventory {
                 else if($max_cost_of_each_item == 0 && $buying_cost >= $min_cost_of_each_item) $flag = true;
             }
 
+            // Always include never sold
+            if($never_sold) $flag = true;
+
             if($flag) {
+                ++$total_items;
                 $value = $prices[$store_id]['buyingCost'] * $result['quantity'];
                 $dead_stock[] = [
                     'identifier' => $result['identifier'],
                     'description' => $result['description'], 
-                    'last_sold' => $last_sold[$store_id],
+                    'last_sold' => $never_sold ? 'Never Sold' : $last_sold[$store_id],
                     'last_sold_all_stores' => $last_sold,
                     'quantity' => $result['quantity'],
-                    'buying_cost' => $prices[$store_id]['buyingCost'],
+                    'buying_cost' => $prices[$store_id]['buyingCost'] ?? 0,
                     'value' => $value,
+                    'never_sold' => $never_sold ? 1 : 0,
                 ];
                 $total_dead_inventory_value += $value;
             }
@@ -1951,6 +1964,8 @@ class Inventory {
         return [
             'dead_stock' => $dead_stock,
             'value' => $total_dead_inventory_value,
+            'total_items' => $total_items,
+            'items_never_sold' => $items_never_sold,
         ];
     }
 

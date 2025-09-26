@@ -3050,9 +3050,10 @@ class __GenerateInventory {
             $description = $item['description'];
             $quantity = $item['quantity'];
             $value = Utils::number_format($item['value']);
-            if($value <= 0) continue;
+            $never_sold = $item['never_sold'];
+            if($value <= 0 && $never_sold == 0) continue;
             $buying_cost = Utils::number_format($item['buying_cost']);
-            $last_sold = Utils::format_to_human_readable_date($item['last_sold']);
+            $last_sold = $never_sold == 0 ? Utils::format_to_human_readable_date($item['last_sold']) : $item['last_sold'];
             $last_sold_all_stores = $item['last_sold_all_stores'];
 
             $last_sold_all_stores_codes = '';
@@ -3078,6 +3079,11 @@ class __GenerateInventory {
             $last_sold_all_stores_codes
             EOS;
         }
+
+        // Total Items
+        $total_items = $inventory_details['total_items'];
+        $items_never_sold = $inventory_details['items_never_sold'];
+        $items_sold = $total_items - $items_never_sold;
 
         echo <<<EOS
         <html>
@@ -3128,7 +3134,10 @@ class __GenerateInventory {
         $item_code
         </table>
         <div style="margin-top:5%">
-            <span style="font-size: 1em;">TOTAL INVENTORY VALUE: $ $total_dead_inventory_value</span>
+            <span style="font-size: 1em;">TOTAL INVENTORY VALUE: $ $total_dead_inventory_value</span><br>
+            <span style="font-size: 1em;">TOTAL ITEMS: $total_items</span><br>
+            <span style="font-size: 1em;">TOTEL ITEMS EVER SOLD: $items_sold</span><br>
+            <span style="font-size: 1em;color: red;">TOTAL ITEMS NEVER SOLD: $items_never_sold</span>
         </div>
         </body>
         </html>
