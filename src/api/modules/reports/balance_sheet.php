@@ -721,39 +721,6 @@ class BalanceSheetActions {
             }
         }
     }
-
-    /**
-     * Create Historical Balance Sheet
-     */
-    private const CREATE_HISTORICAL_BALANCE_SHEET = <<<'EOS'
-    INSERT INTO historical_balance_sheet
-    (
-        `statement`,
-        `date`,
-        `store_id`
-    )
-    VALUES
-    (
-        :statement,
-        :date,
-        :store_id
-    );
-    EOS;
-
-    // Fetch Historical Statement for Date and Store.
-    private const FETCH_HISTORICAL_BALANCE_SHEET_PER_STORE_AND_DATE = <<<'EOS'
-    SELECT 
-        * 
-    FROM 
-        historical_balance_sheet 
-    WHERE 
-        store_id = :store_id
-    AND
-        `date` = :date 
-    ORDER BY 
-        `date` DESC
-    LIMIT 1;
-    EOS;
     
     /**
      * This method will check whether statement exists for a particular date for a store.

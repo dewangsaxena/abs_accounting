@@ -533,20 +533,6 @@ CREATE TABLE balance_sheet(
 CREATE INDEX idx_balance_sheet_date ON balance_sheet(`date`);
 
 /**
- * Historical Balance Sheet
-*/
-CREATE TABLE historical_balance_sheet(
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `statement` JSON NOT NULL,
-    `date` DATE NOT NULL,
-    store_id SMALLINT UNSIGNED NOT NULL,
-    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    modified TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT FK_hbs_store_id FOREIGN KEY(store_id) REFERENCES store_details(id)
-);
-CREATE INDEX idx_historical_balance_sheet_date ON historical_balance_sheet(`date`);
-
-/**
  * Customer Aged Summary.
  */
 CREATE TABLE customer_aged_summary(
