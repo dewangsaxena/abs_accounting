@@ -2905,5 +2905,96 @@ function export_inventory(): void {
     echo $formatted_data;
 }
 
-export_inventory(StoreDetails::EDMONTON);
+// export_inventory(StoreDetails::EDMONTON);
+
+function import_inventory(): void {
+    $db = get_db_instance();
+    try {
+        $db -> beginTransaction();
+        $items = json_decode(file_get_contents('items.txt'), true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+        $statement = $db -> prepare(<<<'EOS'
+        INSERT INTO items
+        (
+            `code`,
+            `identifier`,
+            `description`,
+            `oem`,
+            `category`,
+            `unit`,
+            `prices`,
+            `account_assets`,
+            `account_revenue`,
+            `account_cogs`,
+            `account_variance`,
+            `account_expense`,
+            `is_inactive`,
+            `is_core`,
+            `memo`,
+            `additional_information`,
+            `reorder_quantity`,
+            `images`,
+            `is_discount_disabled`,
+            `last_sold`
+        )
+        VALUES
+        (
+            :code,
+            :identifier,
+            :description,
+            :oem,
+            :category,
+            :unit,
+            :prices,
+            :account_assets,
+            :account_revenue,
+            :account_cogs,
+            :account_variance,
+            :account_expense,
+            :is_inactive,
+            :is_core,
+            :memo,
+            :additional_information,
+            :reorder_quantity,
+            :images,
+            :is_discount_disabled,
+            :last_sold
+        );
+        EOS);
+        foreach($items as $item) {
+            $is_successful = $statement -> execute([
+                ':code' => $item['code'],
+                ':identifier' => $item['identifier'],
+                ':description' => $item['description'],
+                ':oem' => $item['oem'],
+                ':category' => $item['category'],
+                ':unit' => $item['unit'],
+                ':prices' => $item['prices'],
+                ':account_assets' => $item['account_assets'],
+                ':account_revenue' => $item['account_revenue'],
+                ':account_cogs' => $item['account_cogs'],
+                ':account_variance' => $item['account_variance'],
+                ':account_expense' => $item['account_expense'],
+                ':is_inactive' => $item['is_inactive'],
+                ':is_core' => $item['is_core'],
+                ':memo' => $item['memo'],
+                ':additional_information' => $item['additional_information'],
+                ':reorder_quantity' => $item['reorder_quantity'],
+                ':images' => $item['images'],
+                ':is_discount_disabled' => $item['is_discount_disabled'],
+                ':last_sold' => $item['last_sold'],
+            ]);
+
+            if($is_successful !== true && $statement -> rowCount() < 1) throw new Exception('Unable to add item');
+        }
+        assert_success();
+        $db -> commit();
+
+        echo 'Item Inserted.';
+    }
+    catch(Exception $e) {
+        echo $e -> getMessage();
+        $db -> rollBack();
+    }
+}
+import_inventory();
 ?>  

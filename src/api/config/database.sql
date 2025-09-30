@@ -612,7 +612,7 @@ CREATE TABLE purchase_invoices(
     store_id SMALLINT UNSIGNED NOT NULL,
     notes TEXT DEFAULT NULL COMMENT 'Txn. Specific Notes.',
     sales_rep_id INT UNSIGNED NOT NULL, 
-    /* COGP: Cogs of Goods Purchased */ 
+    -- COGP: Cogs of Goods Purchased 
     cogp NUMERIC(13, 4) NOT NULL,
     purchased_by VARCHAR(32) DEFAULT NULL,
     account_number VARCHAR(32) DEFAULT NULL,
