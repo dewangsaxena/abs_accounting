@@ -572,7 +572,7 @@ ALTER TABLE receipt AUTO_INCREMENT=10000;
 CREATE INDEX idx_receipt_client_id ON receipt(client_id);
 CREATE INDEX idx_receipt_sales_rep_id ON receipt(sales_rep_id);
 
-/* Purchase Vendors */
+-- Purchase Vendors
 CREATE TABLE purchase_vendors(
     id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `name` VARCHAR(128) NOT NULL,
@@ -582,7 +582,8 @@ CREATE TABLE purchase_vendors(
 ALTER TABLE purchase_vendors AUTO_INCREMENT=10000;
 CREATE INDEX idx_purchase_vendors_name ON purchase_vendors(`name`);
 
-/* Vendors */
+/*
+-- Vendors
 CREATE TABLE vendors(
     id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `name` VARCHAR(128) NOT NULL,
@@ -594,7 +595,7 @@ CREATE TABLE vendors(
 ALTER TABLE vendors AUTO_INCREMENT = 10000;
 CREATE INDEX idx_vendor_name ON vendors(`name`);
 
-/* Purchase Invoices */
+-- Purchase Invoices
 CREATE TABLE purchase_invoices(
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     vendor_id INT UNSIGNED NOT NULL,
@@ -624,3 +625,4 @@ ALTER TABLE purchase_invoices AUTO_INCREMENT = 10000;
 CREATE INDEX idx_purchase_invoices_vendor_id ON purchase_invoices(vendor_id);
 CREATE INDEX idx_purchase_invoices_store_id ON purchase_invoices(store_id);
 CREATE INDEX idx_purchase_invoices_sales_rep_id ON purchase_invoices(sales_rep_id);
+*/
