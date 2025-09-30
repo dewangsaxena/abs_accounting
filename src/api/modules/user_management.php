@@ -121,13 +121,13 @@ class UserManagement {
     /**
      * This method will create user.
      * @param data
+     * @param do_root_check
      * @return array
      */
-    public static function add(array $data): array {
+    public static function add(array $data, bool $do_root_check = true): array {
         $db_instance = get_db_instance();
         try {
-
-            self::verify_root_user();
+            if($do_root_check == true) self::verify_root_user();
 
             // Begin Transaction
             $db_instance -> beginTransaction();
@@ -724,7 +724,7 @@ class UserManagement {
             'access_level' => 0,
             'store_id' => 1,
         ];
-        $ret = self::add($data);
+        $ret = self::add($data, do_root_check: false);
         if($ret['status'] !== true) echo $ret['message'];
     }
 
