@@ -96,6 +96,9 @@ else die('Invalid Domain');
 define('SYSTEM_INIT_MODE', $mode);
 define('SYSTEM_INIT_HOST', $offset);
 
+/** IS Amount Currency in USD */
+define('IS_CURRENCY_USD', SYSTEM_INIT_HOST === VANGUARD_HOST ? true : false);
+
 // Credentials
 // This should always be loaded after the Domain is selected.
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/credentials.php";

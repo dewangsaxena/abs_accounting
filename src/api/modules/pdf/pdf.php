@@ -49,7 +49,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
     private const TABLE_ELEMENTS_WIDTH = [28, 15, 10, 45, 12, 22, 12, 22, 22, 10];
 
     // Data Table details
-    private const MAX_ROWS_FIRST_PAGE = [25, 43];
+    private const MAX_ROWS_FIRST_PAGE = [26, 43];
     private const MAX_ROWS_SUBSEQUENT_PAGES = 65;
     private const MAX_ROWS_SUBSEQUENT_PAGES_WITHOUT_FOOTER = 55;
 
@@ -315,6 +315,9 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         $is_sales_return = self::$transaction_type === 2; 
         $is_quotations = self::$transaction_type === 5;
 
+        // US Dollar Tag
+        $us_dollar_tag = (IS_CURRENCY_USD ? 'US': '');
+
         // Add Line break
         self::$pdf -> Ln(1);
         self::$pdf -> SetFont(self::COURIER, 'U', 6);
@@ -325,14 +328,14 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
 
         self::$pdf -> Cell(w: 22, h: 4, txt: 'Subtotal:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> SetFont(self::COURIER, '', 8);
-        self::$pdf -> Cell(w: 0, h: 4, txt: '$ '.number_format(self::$details['sub_total'], 2), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'R');
+        self::$pdf -> Cell(w: 0, h: 4, txt: "$$us_dollar_tag ".number_format(self::$details['sub_total'], 2), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'R');
         self::$pdf -> SetFont(self::COURIER, 'I', 6);
         self::$pdf -> Cell(w: 35, h: 4, txt: Utils::get_local_timestamp(self::$details['modified'], self::$details['store_id']), border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> Cell(w: 111, h: 4, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> SetFont(self::ARIAL, 'B', 8);
         self::$pdf -> Cell(w: 22, h: 4, txt: 'Total Discount:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> SetFont(self::COURIER, '', 8);
-        self::$pdf -> Cell(w: 0, h: 4, txt: '$ '.number_format(self::$details['txn_discount'], 2), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'R');
+        self::$pdf -> Cell(w: 0, h: 4, txt: "$$us_dollar_tag ".number_format(self::$details['txn_discount'], 2), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'R');
         self::$pdf -> SetFont(self::ARIAL, 'B', 8);
         
         // Restocking fees for sales return
@@ -340,7 +343,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
             self::$pdf -> Cell(w: 146, h: 4, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, align: 'R');
             self::$pdf -> Cell(w: 22, h: 4, txt: 'Restocking Fees:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
             self::$pdf -> SetFont(self::COURIER, '', 8);
-            self::$pdf -> Cell(w: 0, h: 4, txt: '$ '.number_format(self::$details['restocking_fees'], 2), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'R');
+            self::$pdf -> Cell(w: 0, h: 4, txt: "$$us_dollar_tag ".number_format(self::$details['restocking_fees'], 2), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'R');
         }
         
         self::$pdf -> Cell(w: 28, h: 4, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
@@ -349,7 +352,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
 
         self::$pdf -> Cell(w: 22, h: 4, txt: 'Total GST/HST Tax:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> SetFont(self::COURIER, '', 8);
-        self::$pdf -> Cell(w: 0, h: 4, txt: '$ '.number_format(self::$details['gst_hst_tax'], 2), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'R');
+        self::$pdf -> Cell(w: 0, h: 4, txt: "$$us_dollar_tag ".number_format(self::$details['gst_hst_tax'], 2), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'R');
 
         // Show PST if Provincial Tax rate is to be used.
         if(self::$details['pst_tax'] != 0.00) {
@@ -357,27 +360,27 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
             self::$pdf -> Cell(w: 146, h: 4, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
             self::$pdf -> Cell(w: 22, h: 4, txt: 'Total PST Tax:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
             self::$pdf -> SetFont(self::COURIER, '', 8);
-            self::$pdf -> Cell(w: 0, h: 4, txt: '$ '.number_format(self::$details['pst_tax'], 2), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'R');
+            self::$pdf -> Cell(w: 0, h: 4, txt: "$$us_dollar_tag ".number_format(self::$details['pst_tax'], 2), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'R');
         }
 
         self::$pdf -> SetFont(self::ARIAL, 'B', 8);
         self::$pdf -> Cell(w: 146, h: 4, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, align: 'C');
         self::$pdf -> Cell(w: 22, h: 4, txt: 'Total Amount:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> SetFont(self::COURIER, '', 8);
-        self::$pdf -> Cell(w: 0, h: 4, txt: '$ '.number_format(self::$details['sum_total'], 2), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'R');
+        self::$pdf -> Cell(w: 0, h: 4, txt: "$$us_dollar_tag ".number_format(self::$details['sum_total'], 2), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'R');
 
         if($is_quotations === false) {
             self::$pdf -> SetFont(self::ARIAL, 'B', 8);
             self::$pdf -> Cell(w: 146, h: 4, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, align: 'C');
             self::$pdf -> Cell(w: 22, h: 4, txt: 'Amount Paid:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
             self::$pdf -> SetFont(self::COURIER, '', 8);
-            self::$pdf -> Cell(w: 0, h: 4, txt: '$ '.number_format(self::$details['amount_paid'], 2), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'R');
+            self::$pdf -> Cell(w: 0, h: 4, txt: "$$us_dollar_tag ".number_format(self::$details['amount_paid'], 2), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'R');
 
             self::$pdf -> SetFont(self::ARIAL, 'B', 8);
             self::$pdf -> Cell(w: 146, h: 4, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, align: 'C');
             self::$pdf -> Cell(w: 22, h: 4, txt: $is_sales_return ? 'Amt. O/S:' : 'Amount Owing:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
             self::$pdf -> SetFont(self::COURIER, '', 8);
-            self::$pdf -> Cell(w: 0, h: 4, txt: '$ '.number_format(self::$details['amount_owing'], 2), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'R');
+            self::$pdf -> Cell(w: 0, h: 4, txt: "$$us_dollar_tag ".number_format(self::$details['amount_owing'], 2), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'R');
         }   
     
         self::$pdf -> SetFont(self::ARIAL, 'BUI', 13);
@@ -1498,7 +1501,7 @@ class __GeneratePDF_Receipt {
         self::$pdf -> Cell(100, 4, self::$details['created_timestamp'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, align:'L');
 
         // Add Amount
-        self::$pdf -> Cell(0, 4, '$ '. Utils::number_format(self::$details['sum_total']), border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, align:'R');
+        self::$pdf -> Cell(0, 4, (IS_CURRENCY_USD ? 'US': ''). '$ '. Utils::number_format(self::$details['sum_total']), border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, align:'R');
     }
 
     /**
@@ -1544,7 +1547,7 @@ class __GeneratePDF_Receipt {
         self::$pdf -> Cell(20, 4, '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> Cell(35, 4, 'Amount Received:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, align: 'L');
         self::$pdf -> SetFont(self::SPACE_MONO_REGULAR, '', 8);
-        self::$pdf -> Cell(0, 4, '$ '. number_format(self::$details['sum_total'], 2), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'L');
+        self::$pdf -> Cell(0, 4, (IS_CURRENCY_USD ? 'US': ''). '$ '. number_format(self::$details['sum_total'], 2), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'L');
 
         self::$pdf -> Ln(4);
 
@@ -2452,7 +2455,11 @@ class __GenerateCustomerAgedSummary {
         self::$pdf -> Cell(w: 0, h: 4, txt: StoreDetails::STORE_DETAILS[self::$details['store_id']]['address']['name']. '('. StoreDetails::STORE_DETAILS[self::$details['store_id']]['name'].')', border: self::SHOW_BORDER_FOR_DEBUG, ln:1);
         self::$pdf -> SetFont(self::COURIER, '', 10,);
         self::$pdf -> Ln(1);
-        self::$pdf -> Cell(w: 35, h: 4, txt: 'Customer Aged Summary As at '. self::$details['date'], border: self::SHOW_BORDER_FOR_DEBUG, ln:1);
+        // self::$pdf -> Cell(w: 35, h: 4, txt: 'Customer Aged Summary As at '. self::$details['date'], border: self::SHOW_BORDER_FOR_DEBUG, ln:1);
+        self::$pdf -> Cell(w: 218, h: 4, txt: 'Customer Aged Summary As at '. self::$details['date'], border: self::SHOW_BORDER_FOR_DEBUG, ln:0);
+        self::$pdf -> SetTextColor(255, 0, 0);
+        self::$pdf -> Cell(w: 35, h: 4, txt: 'Amounts are in '. (IS_CURRENCY_USD ? 'USD': 'CAD'), border: self::SHOW_BORDER_FOR_DEBUG, ln:1);
+        self::$pdf -> SetTextColor(0, 0, 0);
     }
 
     // Table Header
