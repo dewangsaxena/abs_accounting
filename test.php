@@ -2807,7 +2807,7 @@ function fix_account_receivables(int $store_id): void {
     }
 }
 
-// fix_account_receivables(StoreDetails::DELTA);
+// fix_account_receivables(StoreDetails::EDMONTON);
 
 function fix_amount_owing_of_client(int $store_id): void {
     $db = get_db_instance();
@@ -2856,5 +2856,54 @@ function fix_amount_owing_of_client(int $store_id): void {
         if($db -> inTransaction()) $db -> rollBack();
     }
 }
-fix_amount_owing_of_client(StoreDetails::EDMONTON);
+// fix_amount_owing_of_client(StoreDetails::EDMONTON);
+
+function convert_prices_to_usd(array $prices) : array {
+    $stores = array_keys($prices);
+    foreach($stores as $s) {
+        $prices[$s]['buyingCost'] = Utils::round($prices[$s]['buyingCost'] / 1.45, 4);
+        $prices[$s]['preferredPrice'] = Utils::round($prices[$s]['preferredPrice'] / 1.45, 2);
+        $prices[$s]['sellingPrice'] = Utils::round($prices[$s]['sellingPrice'] / 1.45, 2);
+    }
+    return $prices;
+}
+
+function export_inventory(): void {
+    $db = get_db_instance();
+    $statement = $db -> prepare('SELECT * FROM items;');
+    $statement -> execute();
+    $items = $statement -> fetchAll(PDO::FETCH_ASSOC);
+    $formatted_data = [];
+
+    foreach($items as $i) {
+        $prices = convert_prices_to_usd(json_decode($i['prices'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR));
+        $formatted_data []= [
+            'code' => $i['code'],
+            'identifier' => $i['identifier'],
+            'description' => $i['description'],
+            'oem' => $i['oem'],
+            'category' => $i['category'],
+            'unit' => $i['unit'],
+            'prices' => json_encode($prices, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
+            'account_assets' => $i['account_assets'],
+            'account_revenue' => $i['account_revenue'],
+            'account_cogs' => $i['account_cogs'],
+            'account_variance' => $i['account_variance'],
+            'account_expense' => $i['account_expense'],
+            'is_inactive' => $i['is_inactive'],
+            'is_core' => $i['is_core'],
+            'memo' => $i['memo'],
+            'additional_information' => $i['additional_information'],
+            'reorder_quantity' => $i['reorder_quantity'],
+            'images' => $i['images'],
+            'is_discount_disabled' => $i['is_discount_disabled'],
+            'last_sold' => '{}',
+        ];
+    }
+
+    $formatted_data = json_encode($formatted_data, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+    echo $formatted_data;
+}
+
+export_inventory(StoreDetails::EDMONTON);
 ?>  
