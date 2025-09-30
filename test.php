@@ -76,14 +76,14 @@ function generate_list(int $store_id, bool $do_print=true) {
 
     
     if($do_print) {
-        $total_value = Utils::number_format($total_value, 2);
+        $total_value = Utils::number_format($total_value, 4);
         $code .= "</table><br><br>Total Inventory Value: &nbsp;&nbsp;&nbsp;&nbsp;<label style='letter-spacing: 2px;font-weight:bold;'>\$ $total_value</label>";
         echo $code;
     }
     else return $total_value;
 }
 
-// echo generate_list(StoreDetails::EDMONTON, true);die;
+// echo generate_list(StoreDetails::DELTA, true);die;
 
 function fetch_inventory(int $store_id): void {
     $db = get_db_instance();
@@ -3000,30 +3000,6 @@ function import_items(): void {
         echo $e -> getMessage();
         $db -> rollBack();
     }
-}
-
-function export_inventory_() : void {
-    $db = get_db_instance();
-    $statement = $db -> prepare('SELECT * FROM inventory;');
-    $statement -> execute();
-    $inventory = $statement -> fetchAll(PDO::FETCH_ASSOC);
-    $formatted_data = [];
-    foreach($inventory as $i) {
-        $formatted_data[]= [
-            'item_id' => $i['item_id'],
-            'quantity' => $i['quantity'],
-            'store_id' => $i['store_id'],
-            'aisle' => $i['aisle'],
-            'shelf' => $i['shelf'],
-            'column' => $i['column'],
-        ];
-    }
-
-    echo json_encode($formatted_data, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
-}
-
-function import_inventory(): void {
-
 }
 
 if (SYSTEM_INIT_HOST === VANGUARD_HOST) {
