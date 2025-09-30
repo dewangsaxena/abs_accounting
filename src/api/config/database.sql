@@ -573,6 +573,7 @@ CREATE INDEX idx_receipt_client_id ON receipt(client_id);
 CREATE INDEX idx_receipt_sales_rep_id ON receipt(sales_rep_id);
 
 -- Purchase Vendors
+/*
 CREATE TABLE purchase_vendors(
     id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `name` VARCHAR(128) NOT NULL,
@@ -581,6 +582,7 @@ CREATE TABLE purchase_vendors(
 );
 ALTER TABLE purchase_vendors AUTO_INCREMENT=10000;
 CREATE INDEX idx_purchase_vendors_name ON purchase_vendors(`name`);
+*/
 
 /*
 -- Vendors
