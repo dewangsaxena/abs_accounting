@@ -75,7 +75,7 @@ VALUES
 ),
 (
     9,
-    'Saskatoon',
+    'Saskatoon'
 );
 
 /* User Information */ 
