@@ -86,7 +86,11 @@ if ($domain === 'localhost') {
 } else if ($domain === 'wash.absyeg.store') {
     $offset = __WASH_V2__;
     $mode = WASH;
-} else die('Invalid Domain');
+} else if ($domain === 'vanguard.absyeg.store') {
+    $offset = __VANGUARD__;
+    $mode = PARTS;
+}
+else die('Invalid Domain');
 
 /* Business Specific Configuration. */
 define('SYSTEM_INIT_MODE', $mode);
