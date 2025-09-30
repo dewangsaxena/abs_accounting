@@ -9,6 +9,7 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/suppressions.php
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/flyer.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/user_management.php";
 
+
 // Inventory::generate_inventory_list(StoreDetails::SLAVE_LAKE);die;
 
 // Inventory::fetch_low_stock(StoreDetails::EDMONTON);
@@ -2868,7 +2869,7 @@ function convert_prices_to_usd(array $prices) : array {
     return $prices;
 }
 
-function export_inventory(): void {
+function export_items(): void {
     $db = get_db_instance();
     $statement = $db -> prepare('SELECT * FROM items;');
     $statement -> execute();
@@ -2878,6 +2879,7 @@ function export_inventory(): void {
     foreach($items as $i) {
         $prices = convert_prices_to_usd(json_decode($i['prices'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR));
         $formatted_data []= [
+            'id' => $i['id'],
             'code' => $i['code'],
             'identifier' => $i['identifier'],
             'description' => $i['description'],
@@ -2905,9 +2907,9 @@ function export_inventory(): void {
     echo $formatted_data;
 }
 
-// export_inventory(StoreDetails::EDMONTON);
 
-function import_inventory(): void {
+
+function import_items(): void {
     $db = get_db_instance();
     try {
         $db -> beginTransaction();
@@ -2915,6 +2917,7 @@ function import_inventory(): void {
         $statement = $db -> prepare(<<<'EOS'
         INSERT INTO items
         (
+            `id`,
             `code`,
             `identifier`,
             `description`,
@@ -2938,6 +2941,7 @@ function import_inventory(): void {
         )
         VALUES
         (
+            :id,
             :code,
             :identifier,
             :description,
@@ -2962,6 +2966,7 @@ function import_inventory(): void {
         EOS);
         foreach($items as $item) {
             $is_successful = $statement -> execute([
+                ':id' => $item['id'],
                 ':code' => $item['code'],
                 ':identifier' => $item['identifier'],
                 ':description' => $item['description'],
@@ -2996,5 +3001,35 @@ function import_inventory(): void {
         $db -> rollBack();
     }
 }
-import_inventory();
+
+function export_inventory_() : void {
+    $db = get_db_instance();
+    $statement = $db -> prepare('SELECT * FROM inventory;');
+    $statement -> execute();
+    $inventory = $statement -> fetchAll(PDO::FETCH_ASSOC);
+    $formatted_data = [];
+    foreach($inventory as $i) {
+        $formatted_data[]= [
+            'item_id' => $i['item_id'],
+            'quantity' => $i['quantity'],
+            'store_id' => $i['store_id'],
+            'aisle' => $i['aisle'],
+            'shelf' => $i['shelf'],
+            'column' => $i['column'],
+        ];
+    }
+
+    echo json_encode($formatted_data, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+}
+
+function import_inventory(): void {
+
+}
+
+if (SYSTEM_INIT_HOST === VANGUARD_HOST) {
+    // export_items();
+    import_items();
+    // export_inventory_();
+}
+
 ?>  
