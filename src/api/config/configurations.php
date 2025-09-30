@@ -22,11 +22,13 @@ define('__DEMO__', 7);
 define('__PARTS_V2__', 8);
 define('__WASH_V2__', 9);
 define('__TEN_LEASING__', 10);
+define('__VANGUARD__', 11);
 
 /* Hosting Mode */
 define('PARTS_HOST', __PARTS_V2__);
 define('WASH_HOST', __WASH_V2__);
 define('TENLEASING_HOST', __TEN_LEASING__);
+define('VANGUARD_HOST', __VANGUARD__);
 
 /* Modes */
 define('WASH', 1);
