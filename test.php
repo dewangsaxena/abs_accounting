@@ -8,6 +8,8 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_aged_
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/suppressions.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/flyer.php";
 
+// UserManagement::add_root_user();
+die;
 // Inventory::generate_inventory_list(StoreDetails::SLAVE_LAKE);die;
 
 // Inventory::fetch_low_stock(StoreDetails::EDMONTON);
