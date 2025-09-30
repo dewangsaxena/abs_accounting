@@ -1,7 +1,7 @@
 /**
  * Configurations used the application.
  */
-export const CLIENT_APP_VERSION = "2.2.46";
+export const CLIENT_APP_VERSION = "2.2.47";
 
 // Stores
 export class Stores {
@@ -41,6 +41,7 @@ const DOMAINS_BASE_URLS: AttributeType = {
   wash: "wash.absyeg.store",
   ten_leasing: "tenleasing.absyeg.store",
   localhost: "localhost",
+  vanguard: "vanguard.absyeg.store",
 };
 
 /* Default System Init Mode */
@@ -55,6 +56,7 @@ const isWash: boolean = location.hostname.includes(DOMAINS_BASE_URLS["wash"])
   ? true
   : false;
 const isTenLeasing: boolean = location.hostname.includes(DOMAINS_BASE_URLS["ten_leasing"]) ? true : false;
+const isVanguard: boolean = location.hostname.includes(DOMAINS_BASE_URLS["vanguard"]) ? true : false;
 
 /** Detault System Mode */
 const defaultSystemMode: number = MODE_PARTS;
@@ -67,7 +69,13 @@ export const systemConfigMode: number | null =
   isParts
     ? MODE_PARTS
   : 
-  isTenLeasing ? MODE_PARTS: defaultSystemMode;
+  isTenLeasing 
+    ? MODE_PARTS
+  : 
+  isVanguard
+    ? MODE_PARTS
+  :  
+  defaultSystemMode;
 
 // System Config Mode Colors
 export const systemConfigModeColors: string | undefined = {
@@ -169,6 +177,8 @@ export const APP_HOST = isParts
   ? "https://" + DOMAINS_BASE_URLS["wash"]
   : isTenLeasing ? 
     "https://" + DOMAINS_BASE_URLS["ten_leasing"]
+  : isVanguard ? 
+    "https://" + DOMAINS_BASE_URLS["vanguard"]
   : "http://" + DOMAINS_BASE_URLS["localhost"];
 
 /** Min Length before fetching */
