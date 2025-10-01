@@ -650,7 +650,7 @@ class UserManagement {
         } 
         else $query = str_replace('__STATEMENT__', '', $query);
 
-        if(SYSTEM_INIT_HOST === TENLEASING_HOST) {
+        if(SYSTEM_INIT_HOST === TENLEASING_HOST || SYSTEM_INIT_HOST === VANGUARD_HOST) {
             $query = str_replace(
                 '__SEWAK_ACCESS__',
                 ' OR id IN (10000)',
