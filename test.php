@@ -1,5 +1,5 @@
 <?php 
-die;
+
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/utils.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/database.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_summary.php";
@@ -3005,8 +3005,41 @@ function import_items(): void {
 
 if (SYSTEM_INIT_HOST === VANGUARD_HOST) {
     // export_items();
-    import_items();
+    // import_items();
     // export_inventory_();
 }
+
+function spread_amount() : void {
+    $amount = 291560.96;
+
+    $data = Utils::read_csv_file('DEWANG.csv');
+    $clients = [];
+    foreach($data as $d) {
+        if(isset($d[0])) $clients[]= [$d[0], 0];
+    }
+
+    $total_amount_adjusted = 0;
+    $client_index = 0;
+    while($amount > 10) {
+        $random_amount = rand(100, 1100);
+        $decimal = rand(0, 100);
+        $amount_to_adjust = $random_amount + ($decimal/ 100);
+        $clients[$client_index][1] += $amount_to_adjust;
+        $amount -= $amount_to_adjust;
+        $total_amount_adjusted += $amount_to_adjust;
+        $client_index += 1;
+        if($client_index == 265 && $amount > 10) $client_index = 0;
+    }
+
+    echo "$amount : $total_amount_adjusted";
+    
+    $fp = fopen('new_clients_list.csv', 'w');
+    foreach($clients as $c) {
+        fputcsv($fp, $c);
+    }
+
+}
+
+spread_amount();
 
 ?>  
