@@ -735,5 +735,17 @@ class UserManagement {
     public static function is_root_user(): bool {
         return isset($_SESSION['user_id']) && intval($_SESSION['user_id']) == self::ROOT_USER_ID;
     }
+
+    /**
+     * This method will fetch sales rep name.
+     * @param sales_rep_id
+     * @return string
+     */
+    public static function fetch_sales_rep_name(int $sales_rep_id): string {
+        $db = get_db_instance();
+        $statement = $db -> prepare('SELECT `name` FROM users WHERE id = :id;');
+        $statement -> execute([':id' => $sales_rep_id]);
+        return ($statement -> fetchAll(PDO::FETCH_ASSOC)[0]['name'] ?? '');
+    } 
 }
 ?>

@@ -192,9 +192,14 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         self::$pdf -> SetFont(self::COURIER, '', 7.5);
         self::$pdf -> Cell(w: 0, h:4, txt: self::$details['purchased_by'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
 
+        self::$pdf -> SetFont(self::ARIAL, '', 7.5);
+        self::$pdf -> Cell(w: 30, h:4, txt: 'Sales Representative:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
+        self::$pdf -> SetFont(self::COURIER, '', 7.5);
+        self::$pdf -> Cell(w: 50, h:4, txt: strtoupper(self::$details['sales_rep_name']), border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
+
         // Account Number
         self::$pdf -> SetFont(self::ARIAL, '', 7.5);
-        self::$pdf -> Cell(w:$offset_right_section, h:4, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
+        self::$pdf -> Cell(w:$offset_right_section - 80, h:4, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> Cell(w: 22, h:4, txt: 'Account Number:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> SetFont(self::COURIER, '', 7.5);
         self::$pdf -> Cell(w: 0, h:4, txt: self::$details['account_number'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
