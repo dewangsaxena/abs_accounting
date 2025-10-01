@@ -49,7 +49,7 @@ class SpecialExceptions {
             StoreDetails::SASKATOON => true,
         ],
         WASH => [
-            StoreDetails::NISKU => true,
+            StoreDetails::NISKU => false,
         ],
     ][SYSTEM_INIT_MODE];
     
