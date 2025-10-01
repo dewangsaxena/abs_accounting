@@ -138,6 +138,9 @@ class PrepareDetails_SI_SR_CN_DN_QT {
         // Transaction Discount
         $txn_discount = $txn['txn_discount'] ?? 0;
 
+        // Fetch Sales Rep ID
+        $sales_rep_name = UserManagement::fetch_sales_rep_name($txn['sales_rep_id']);
+
         $details = [
             'txn_type_id' => $transaction_type,
             'document_id' => $txn['id'],
@@ -170,6 +173,7 @@ class PrepareDetails_SI_SR_CN_DN_QT {
             'account_number' => $txn['account_number'] ?? '',
             'store_id' => $store_id,
             'is_old_version' => $txn['is_old_version'] ?? false,
+            'sales_rep_name' => $sales_rep_name,
         ];
 
         // Add Restocking Fees
