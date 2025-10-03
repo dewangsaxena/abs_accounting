@@ -1086,10 +1086,7 @@ class SalesReturn {
                 $sales_return_id,
                 $db,
             );
-            
-            // Set Initial Transaction Details
-            $data['initial']['txn'] = $initial_details['txn'];
-
+        
             // Set Initial Details
             Shared::set_initial_client_details($data['initial'], $initial_details);
 

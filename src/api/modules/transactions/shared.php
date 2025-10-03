@@ -1486,6 +1486,7 @@ class Shared {
         $details['sumTotal'] = $initial_details['txn']['sum_total'];
         $details['txnDate'] = $initial_details['txn']['date'];
         $details['txnDiscount'] = $initial_details['txn']['txn_discount'];
+        $details['txn'] = $initial_details['txn'];
     }
 
     /**
