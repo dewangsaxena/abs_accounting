@@ -500,6 +500,20 @@ class Shared {
             throw new Exception('Provincial Tax Status cannot be changed for this Txn.');
         }
 
+        // Validate with existing tax status
+        if(isset($data['initial'])) {
+            $initial_disable_federal_taxes = $data['initial']['txn']['disable_federal_taxes'];
+            $initial_disable_provincial_taxes = $data['initial']['txn']['disable_provincial_taxes'];
+
+            if($initial_disable_federal_taxes !== $disable_federal_taxes) {
+                throw new Exception('Federal Tax Status cannot be changed for this txn. #2');
+            }
+
+            if($initial_disable_provincial_taxes !== $disable_provincial_taxes) {
+                throw new Exception('Provincial Tax Status cannot be changed for this txn. #2');
+            }
+        }
+
         // Validate Items Information
         $valid_ret_value = self::validate_items_details_for_credit_and_debit_note(
             $data['details'],

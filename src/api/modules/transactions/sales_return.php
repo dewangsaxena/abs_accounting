@@ -440,6 +440,20 @@ class SalesReturn {
             throw new Exception('Provincial Tax Status cannot be changed for this sales return as it is different from the associated sales invoice.');
         }
 
+        // Validate with existing tax status
+        if(isset($data['initial'])) {
+            $initial_disable_federal_taxes = $data['initial']['txn']['disable_federal_taxes'];
+            $initial_disable_provincial_taxes = $data['initial']['txn']['disable_provincial_taxes'];
+
+            if($initial_disable_federal_taxes !== $disable_federal_taxes) {
+                throw new Exception('Federal Tax Status cannot be changed for this txn. #2');
+            }
+
+            if($initial_disable_provincial_taxes !== $disable_provincial_taxes) {
+                throw new Exception('Provincial Tax Status cannot be changed for this txn. #2');
+            }
+        }
+
         // Validate Items Information
         $valid_ret_value = self::validate_items_details(
             $data['details'],
@@ -1072,6 +1086,9 @@ class SalesReturn {
                 $sales_return_id,
                 $db,
             );
+            
+            // Set Initial Transaction Details
+            $data['initial']['txn'] = $initial_details['txn'];
 
             // Set Initial Details
             Shared::set_initial_client_details($data['initial'], $initial_details);
@@ -1318,6 +1335,10 @@ class SalesReturn {
                 versions = :versions,
                 modified = CURRENT_TIMESTAMP 
             WHERE
+                disable_federal_taxes = :disable_federal_taxes
+            AND
+                disable_provincial_taxes = :disable_provincial_taxes
+            AND
                 id = :id;
             EOS;
 
@@ -1357,6 +1378,8 @@ class SalesReturn {
                 ':restocking_fees' => $restocking_fees,
                 ':sales_rep_history' => json_encode($sales_rep_history, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
                 ':versions' => is_array($versions) ? json_encode($versions, JSON_THROW_ON_ERROR) : null,
+                ':disable_federal_taxes' => $data['disableFederalTaxes'],
+                ':disable_provincial_taxes' => $data['disableProvincialTaxes'],
                 ':id' => $sales_return_id,
             ];
 

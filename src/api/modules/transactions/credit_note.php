@@ -229,6 +229,9 @@ class CreditNote {
                 $db,
             );
 
+            // Set Initial Transaction Details
+            $data['initial']['txn'] = $initial_details['txn'];
+
             // Set Initial Details
             Shared::set_initial_client_details($data['initial'], $initial_details);
 
@@ -346,6 +349,10 @@ class CreditNote {
                 versions = :versions,
                 modified = CURRENT_TIMESTAMP 
             WHERE
+                disable_federal_taxes = :disable_federal_taxes
+            AND
+                disable_provincial_taxes = :disable_provincial_taxes
+            AND
                 id = :id;
             EOS;
 
@@ -362,6 +369,8 @@ class CreditNote {
                 ':notes' => $validated_details['notes'],
                 ':sales_rep_history' => json_encode($sales_rep_history, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
                 ':versions' => is_array($versions) ? json_encode($versions, JSON_THROW_ON_ERROR) : null,
+                ':disable_federal_taxes' => $data['disableFederalTaxes'],
+                ':disable_provincial_taxes' => $data['disableProvincialTaxes'],
                 ':id' => $txn_id,
             ];
 
