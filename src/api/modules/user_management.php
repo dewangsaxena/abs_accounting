@@ -720,7 +720,7 @@ class UserManagement {
             'id' => self::ROOT_USER_ID,
             'name' => 'Dewang Saxena',
             'username' => 'dewangs',
-            'password' => 'helloworld',
+            'password' => '#&&vS}=NwJ2t7"rp7g/(vs*o.b+MpK7:',
             'access_level' => 0,
             'store_id' => 1,
         ];
