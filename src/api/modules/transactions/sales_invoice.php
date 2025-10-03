@@ -263,11 +263,25 @@ class SalesInvoice {
 
         // Check for Disabled Taxes
         if($disable_federal_taxes !== $data['clientDetails']['disableFederalTaxes']) {
-            throw new Exception('Federal Tax Status cannot be changed for this invoice.');
+            throw new Exception('Federal Tax Status cannot be changed for this invoice. #1');
         }
 
         if($disable_provincial_taxes !== $data['clientDetails']['disableProvincialTaxes']) {
-            throw new Exception('Provincial Tax Status cannot be changed for this invoice.');
+            throw new Exception('Provincial Tax Status cannot be changed for this invoice. #1');
+        }
+
+        // Validate with existing tax status
+        if(isset($data['initial'])) {
+            $initial_disable_federal_taxes = $data['initial']['txn']['disable_federal_taxes'];
+            $initial_disable_provincial_taxes = $data['initial']['txn']['disable_provincial_taxes'];
+
+            if($initial_disable_federal_taxes !== $disable_federal_taxes) {
+                throw new Exception('Federal Tax Status cannot be changed for this txn. #2');
+            }
+
+            if($initial_disable_provincial_taxes !== $disable_provincial_taxes) {
+                throw new Exception('Provincial Tax Status cannot be changed for this txn. #2');
+            }
         }
 
         // Validate Items Information
@@ -1060,6 +1074,10 @@ class SalesInvoice {
                 modified = CURRENT_TIMESTAMP 
             WHERE
                 id = :id
+            AND 
+                disable_federal_taxes = :disable_federal_taxes
+            AND
+                disable_provincial_taxes = :disable_provincial_taxes
             AND
                 is_invoice_transferred = 0;
             EOS;
@@ -1093,6 +1111,8 @@ class SalesInvoice {
                 ':purchased_by' => $details['purchased_by'],
                 ':sales_rep_history' => json_encode($sales_rep_history, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
                 ':versions' => is_array($versions) ? json_encode($versions, JSON_THROW_ON_ERROR) : null,
+                ':disable_federal_taxes' => $data['disableFederalTaxes'],
+                ':disable_provincial_taxes' => $data['disableProvincialTaxes'],
             ];
 
             $statement = $db -> prepare($query);
