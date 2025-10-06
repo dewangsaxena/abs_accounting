@@ -111,75 +111,8 @@ function fix_inventory_value(int $store_id): void {
     }
 }
 $store_id = StoreDetails::SASKATOON;
-fix_inventory_value($store_id);
-echo generate_list($store_id, true);
-die;
-
-function check_tax(int $store_id): void {
-    $db = get_db_instance();
-    $statement = $db -> prepare('SELECT * FROM sales_invoice WHERE store_id = :store_id;');
-    $statement -> execute([':store_id' => $store_id]);
-    $records = $statement -> fetchAll(PDO::FETCH_ASSOC);
-    $gst_tax_rate = null;
-    $pst_tax_rate = null;
-    $counter = 0;
-    foreach($records as $record) {
-        $gst_tax_rate = null;
-        $pst_tax_rate = null;
-        $details = json_decode($record['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
-        foreach($details as $detail) {
-            if(is_null($gst_tax_rate) || is_null($pst_tax_rate)) {
-                $gst_tax_rate = $detail['gstHSTTaxRate'];
-                $pst_tax_rate = $detail['pstTaxRate'];
-            }
-            
-            if(in_array($detail['itemId'], Inventory::EHC_ITEMS) === false && ($gst_tax_rate != $detail['gstHSTTaxRate'] || $pst_tax_rate != $detail['pstTaxRate'])) {
-                $disable_gst = $record['disable_federal_taxes'];
-                $disable_pst = $record['disable_provincial_taxes'];
-                echo $detail['identifier'].'<br>';
-                echo "$disable_gst | $disable_pst<br>";
-                echo 'Payment Method: '. $record['payment_method'].'<br><br>';
-                echo('Record# '.$record['id']).'<br>';
-                echo "$gst_tax_rate : ". $detail['gstHSTTaxRate']. ' | '. "$pst_tax_rate | ". $detail['pstTaxRate'].'<br><br><br>';
-                $counter += 1;
-            }
-        }
-    }
-
-    // echo $counter;
-}
-
-function spread_amount() : void {
-    $amount = 291560.96;
-
-    $data = Utils::read_csv_file('DEWANG.csv');
-    $clients = [];
-    foreach($data as $d) {
-        if(isset($d[0])) $clients[]= [$d[0], 0];
-    }
-
-    $total_amount_adjusted = 0;
-    $client_index = 0;
-    while($amount > 10) {
-        $random_amount = rand(100, 1100);
-        $decimal = rand(0, 100);
-        $amount_to_adjust = $random_amount + ($decimal/ 100);
-        $clients[$client_index][1] += $amount_to_adjust;
-        $amount -= $amount_to_adjust;
-        $total_amount_adjusted += $amount_to_adjust;
-        $client_index += 1;
-        if($client_index == 265 && $amount > 10) $client_index = 0;
-    }
-
-    echo "$amount : $total_amount_adjusted";
-    
-    $fp = fopen('new_clients_list.csv', 'w');
-    foreach($clients as $c) {
-        fputcsv($fp, $c);
-    }
-
-}
-
-spread_amount();
+// fix_inventory_value($store_id);
+// echo generate_list($store_id, true);
+// die;
 
 ?>  
