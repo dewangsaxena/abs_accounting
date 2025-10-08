@@ -31,6 +31,7 @@ function generate_list(int $store_id, bool $do_print=true) {
     $statement -> execute([':store_id' => $store_id]);
     $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
     $store_name = StoreDetails::STORE_DETAILS[$store_id]['name'];
+    $current_date = date('d M, Y');
     $code = <<<EOS
     <html>
     <head></head>
@@ -40,7 +41,7 @@ function generate_list(int $store_id, bool $do_print=true) {
         border-spacing: 20px 0;
     }
     </style>
-    <h1>List for $store_name</h1>
+    <h1>List for $store_name as on $current_date </h1>
     <table cellspacing="pixels">
     <thead>
     <th align="left">Item Identifier</th>
@@ -112,7 +113,7 @@ function fix_inventory_value(int $store_id): void {
 }
 $store_id = StoreDetails::SASKATOON;
 // fix_inventory_value($store_id);
-// echo generate_list($store_id, true);
+// generate_list($store_id, true);
 // die;
 
 ?>  
