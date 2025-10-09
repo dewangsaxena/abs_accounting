@@ -674,7 +674,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
     
             foreach($keys as $key) {
                 $no_of_rows_required = $data_rows_required[$key];
-                echo $no_of_rows_required.'<br>';
+
                 if($no_of_rows_required > 1) {
                     $temp = $data_row_index;
                     for($x = 0 ; $x < $no_of_rows_required; ++$x) {
@@ -693,10 +693,10 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
             }
 
             // Add completed key
-            $data_row_index += $max_no_of_rows_required;
-            $data[$data_row_index - 1]['completed'] = true;
+            // $data_row_index += $max_no_of_rows_required;
+            // $data[$data_row_index - 1]['completed'] = true;
         }
-
+        print_r($data);die;
         return $data;
     }
 
