@@ -17,11 +17,11 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/transactions/sales_ret
 class __GeneratePDF_SI_SR_CN_DN_QT {
 
     // Max Characters acceptable per field in table
-    public const MAX_CHARACTER_PER_FIELD = [
+    private static $MAX_CHARACTER_PER_FIELD = [
         'identifier' => 15,
         'unit' => 8,
         'quantity' => 4,
-        'description' => 31,
+        'description' => [31, 25],
         'tax' => 7,
         'basePrice' => 15,
         'discount' => 7,
@@ -619,7 +619,10 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         $data = [];
 
         // Check for Sales return
-        $is_sales_return = self::$transaction_type === SALES_RETURN;
+        $is_sales_return = self::$transaction_type === SALES_RETURN ? 1 : 0;
+
+        // Set Data rows is transaction is Sales Return
+        self::$MAX_CHARACTER_PER_FIELD['description'] = self::$MAX_CHARACTER_PER_FIELD['description'][$is_sales_return ? 1 : 0];
 
         for($i = 0; $i < $total_items_sold; ++$i) {
             
@@ -627,7 +630,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
             $_data = [
                 'identifier' => strval($records[$i]['identifier']),
                 'unit' => $records[$i]['unit'] ?? 'Each',
-                'quantity' => strval($records[$i][self::$transaction_type === SALES_RETURN ? 'returnQuantity' : 'quantity']),
+                'quantity' => strval($records[$i][$is_sales_return ? 'returnQuantity' : 'quantity']),
                 'description' => strval($records[$i]['description']),
                 'tax' => number_format($records[$i]['gstHSTTaxRate'] + $records[$i]['pstTaxRate'], 2),
                 'basePrice' => number_format(strval($records[$i]['basePrice']), 2),
@@ -642,35 +645,36 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
 
             // Format for Backorder
             self::format_for_backorder($_data);
-    
+
             // Data Rows 
             $data_rows_required = [
-                'identifier' => ceil((strlen($_data['identifier'])) / self::MAX_CHARACTER_PER_FIELD['identifier']),
-                'unit' => ceil(strlen($_data['unit']) / self::MAX_CHARACTER_PER_FIELD['unit']),
-                'quantity' => ceil((strlen($_data['quantity'])) / self::MAX_CHARACTER_PER_FIELD['quantity']),
-                'description' => ceil((strlen($_data['description'])) / self::MAX_CHARACTER_PER_FIELD['description']),
-                'tax' => ceil(strlen($_data['tax']) / self::MAX_CHARACTER_PER_FIELD['tax']),
-                'basePrice' => ceil(strlen($_data['basePrice']) / self::MAX_CHARACTER_PER_FIELD['basePrice']),
-                'discountRate' => ceil(strlen($_data['discountRate']) / self::MAX_CHARACTER_PER_FIELD['discount']),
-                'pricePerItem' => ceil(strlen($_data['pricePerItem']) / self::MAX_CHARACTER_PER_FIELD['pricePerItem']),
-                'amountPerItem' => ceil((strlen($_data['amountPerItem'])) / self::MAX_CHARACTER_PER_FIELD['amount']),
+                'identifier' => ceil((strlen($_data['identifier'])) / self::$MAX_CHARACTER_PER_FIELD['identifier']),
+                'unit' => ceil(strlen($_data['unit']) / self::$MAX_CHARACTER_PER_FIELD['unit']),
+                'quantity' => ceil((strlen($_data['quantity'])) / self::$MAX_CHARACTER_PER_FIELD['quantity']),
+                'description' => ceil((strlen($_data['description'])) / self::$MAX_CHARACTER_PER_FIELD['description']),
+                'tax' => ceil(strlen($_data['tax']) / self::$MAX_CHARACTER_PER_FIELD['tax']),
+                'basePrice' => ceil(strlen($_data['basePrice']) / self::$MAX_CHARACTER_PER_FIELD['basePrice']),
+                'discountRate' => ceil(strlen($_data['discountRate']) / self::$MAX_CHARACTER_PER_FIELD['discount']),
+                'pricePerItem' => ceil(strlen($_data['pricePerItem']) / self::$MAX_CHARACTER_PER_FIELD['pricePerItem']),
+                'amountPerItem' => ceil((strlen($_data['amountPerItem'])) / self::$MAX_CHARACTER_PER_FIELD['amount']),
                 'isBackOrder' => 1,
             ];
 
             // Restocking Rate
-            if($is_sales_return) $data_rows_required['restockingRate'] = ceil((strlen($_data['restockingRate'])) / self::MAX_CHARACTER_PER_FIELD['restockingRate']);
-    
+            if($is_sales_return) $data_rows_required['restockingRate'] = ceil((strlen($_data['restockingRate'])) / self::$MAX_CHARACTER_PER_FIELD['restockingRate']);
+
             // Get Max Rows Required
             $max_no_of_rows_required = max(array_values($data_rows_required));
-    
+
             // Add Total rows required.
             for($j = 0; $j < $max_no_of_rows_required; ++$j) $data[]= [];
-    
+
             // Keys 
             $keys = array_keys($_data);
-    
+
             foreach($keys as $key) {
                 $no_of_rows_required = $data_rows_required[$key];
+
                 if($no_of_rows_required > 1) {
                     $temp = $data_row_index;
                     for($x = 0 ; $x < $no_of_rows_required; ++$x) {
@@ -680,7 +684,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
 
                         // Add all keys
                         foreach(self::KEYS as $k) if(!isset($data[$index][$k][0])) $data[$index][$k] = '';
-                        $data[$index][$key] = trim(substr($_data[$key], $x * self::MAX_CHARACTER_PER_FIELD[$key], self::MAX_CHARACTER_PER_FIELD[$key]));
+                        $data[$index][$key] = trim(substr($_data[$key], $x * self::$MAX_CHARACTER_PER_FIELD[$key], self::$MAX_CHARACTER_PER_FIELD[$key]));
                     }
                 }
                 else {
@@ -692,7 +696,6 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
             $data_row_index += $max_no_of_rows_required;
             $data[$data_row_index - 1]['completed'] = true;
         }
-
         return $data;
     }
 

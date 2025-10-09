@@ -264,7 +264,7 @@ class CustomerAgedSummary {
     private static function exclude_clients(array &$summary): array {
         $new_summary = [];
         foreach($summary as $s) {
-            if(isset(SpecialExceptions::CUSTOMER_AGED_SUMMARY_CLIENT_EXCLUSIONS[$s['client_id']]) === false) $new_summary[]= $s;
+            if(isset(SpecialExceptions::CUSTOMER_AGED_SUMMARY_CLIENT_EXCLUSIONS[SYSTEM_INIT_HOST][$s['client_id']]) === false) $new_summary[]= $s;
         }
         return $new_summary;
     }
