@@ -24,16 +24,27 @@ class SpecialExceptions {
     // Customer aged summary client exlusion
     const CUSTOMER_AGED_SUMMARY_CLIENT_EXCLUSIONS = [
 
-        /* Dead */
-        13371 => 'DB CUSTOMS',
-        16396 => 'DAVE\'S DIESEL REPAIR',
-        15867 => 'VELOCITY TRUCK CENTRES',
-        16745 => 'UNITED DIESEL',
+        // Parts 
+        PARTS_HOST => [
+            /* Dead */
+            13371 => 'DB CUSTOMS',
+            16396 => 'DAVE\'S DIESEL REPAIR',
+            15867 => 'VELOCITY TRUCK CENTRES',
+            16745 => 'UNITED DIESEL',
 
-
-        /* Other */
-        18021 => '1573670 AB LTD',
-        18695 => 'VR ENTERPRISES',
+            /* Other */
+            18021 => '1573670 AB LTD',
+            18695 => 'VR ENTERPRISES',
+            15793 => 'AFFINITY TUNING INC',
+            13928 => 'DIESEL GUYS TRUCK REPAIR',
+            15749 => '1994426 Ab Ltd',
+            14409 => 'SUMMIT TRAILER LTD',
+            14285 => 'FATEH TRUCKING LTD',
+            14111 => '12899281 CANADA INC / BIRRING LO',
+            13856 => 'BABA SAHIB SINGH TRUCKING LTD /',
+            10725 => 'AUTO GATES TRUCKING LTD',
+            14468 => 'BRIMSTONE SULPHUR INC',
+        ],
     ];
 
     /* Check Over 60+ Balance For Client For Credit Transaction */ 
