@@ -21,7 +21,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         'identifier' => 15,
         'unit' => 8,
         'quantity' => 4,
-        'description' => [31, 22],
+        'description' => [31, 25],
         'tax' => 7,
         'basePrice' => 15,
         'discount' => 7,
@@ -621,6 +621,9 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         // Check for Sales return
         $is_sales_return = self::$transaction_type === SALES_RETURN ? 1 : 0;
 
+        // Set Data rows is transaction is Sales Return
+        self::$MAX_CHARACTER_PER_FIELD['description'] = self::$MAX_CHARACTER_PER_FIELD['description'][$is_sales_return ? 1 : 0];
+
         for($i = 0; $i < $total_items_sold; ++$i) {
             
             // Data 
@@ -639,13 +642,10 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
 
             // Restocking Rate
             if($is_sales_return) $_data['restockingRate'] = number_format($records[$i]['restockingRate'] ?? 0, 2);
-            
+
             // Format for Backorder
             self::format_for_backorder($_data);
 
-            // Set Data rows is transaction is Sales Return
-            self::$MAX_CHARACTER_PER_FIELD['description'] = self::$MAX_CHARACTER_PER_FIELD['description'][$is_sales_return ? 1 : 0];
-            
             // Data Rows 
             $data_rows_required = [
                 'identifier' => ceil((strlen($_data['identifier'])) / self::$MAX_CHARACTER_PER_FIELD['identifier']),
@@ -662,16 +662,16 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
 
             // Restocking Rate
             if($is_sales_return) $data_rows_required['restockingRate'] = ceil((strlen($_data['restockingRate'])) / self::$MAX_CHARACTER_PER_FIELD['restockingRate']);
-    
+
             // Get Max Rows Required
             $max_no_of_rows_required = max(array_values($data_rows_required));
-    
+
             // Add Total rows required.
             for($j = 0; $j < $max_no_of_rows_required; ++$j) $data[]= [];
-    
+
             // Keys 
             $keys = array_keys($_data);
-    
+
             foreach($keys as $key) {
                 $no_of_rows_required = $data_rows_required[$key];
 
@@ -693,10 +693,9 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
             }
 
             // Add completed key
-            // $data_row_index += $max_no_of_rows_required;
-            // $data[$data_row_index - 1]['completed'] = true;
+            $data_row_index += $max_no_of_rows_required;
+            $data[$data_row_index - 1]['completed'] = true;
         }
-        print_r($data);die;
         return $data;
     }
 
