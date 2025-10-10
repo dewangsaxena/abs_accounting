@@ -733,7 +733,7 @@ class UserManagement {
      * @return bool
      */
     public static function is_root_user(): bool {
-        return isset($_SESSION['user_id']) && intval($_SESSION['user_id']) == self::ROOT_USER_ID;
+        return isset($_SESSION['user_id']) && intval($_SESSION['user_id']) === self::ROOT_USER_ID;
     }
 
     /**
