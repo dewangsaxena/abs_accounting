@@ -622,7 +622,9 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         $is_sales_return = self::$transaction_type === SALES_RETURN ? 1 : 0;
 
         // Set Data rows is transaction is Sales Return
-        self::$MAX_CHARACTER_PER_FIELD['description'] = self::$MAX_CHARACTER_PER_FIELD['description'][$is_sales_return ? 1 : 0];
+        if(is_array(self::$MAX_CHARACTER_PER_FIELD['description'])) {
+            self::$MAX_CHARACTER_PER_FIELD['description'] = self::$MAX_CHARACTER_PER_FIELD['description'][$is_sales_return ? 1 : 0];
+        }
 
         for($i = 0; $i < $total_items_sold; ++$i) {
             
