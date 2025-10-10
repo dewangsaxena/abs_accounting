@@ -41,7 +41,8 @@ define('CATEGORY_INVENTORY', 1);
 /* Select Credentials Based On Server */
 $mode = null;
 $domain = $_SERVER['SERVER_NAME'];
-if ($domain === 'localhost') {
+$is_localhost = $domain === 'localhost';
+if ($is_localhost) {
     $offset = __LOCALHOST__;
     $mode = PARTS;
     if (!defined('IS_LOCALHOST')) {
@@ -94,7 +95,7 @@ else die('Invalid Domain');
 
 /* Business Specific Configuration. */
 define('SYSTEM_INIT_MODE', $mode);
-define('SYSTEM_INIT_HOST', $offset);
+define('SYSTEM_INIT_HOST', $is_localhost ? __PARTS_V2__ : $offset);
 
 /** IS Amount Currency in USD */
 define('IS_CURRENCY_USD', SYSTEM_INIT_HOST === VANGUARD_HOST ? true : false);

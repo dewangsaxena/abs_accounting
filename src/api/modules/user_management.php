@@ -624,7 +624,7 @@ class UserManagement {
         ];
 
         // Parts
-        if(SYSTEM_INIT_MODE === PARTS) $excluded_users[]= self::BOSS_USER_ID;
+        if(SYSTEM_INIT_HOST === PARTS_HOST) $excluded_users[]= self::BOSS_USER_ID;
 
         $results = Utils::mysql_in_placeholder_pdo_substitute(
             $excluded_users,

@@ -249,7 +249,7 @@ class SalesInvoice {
 
         if($do_validate_date) {
             /* Make an Exception for J.LOEWEN MECHANICAL LTD, DriftPile */
-            if(SYSTEM_INIT_MODE === PARTS && ($client_id !== 14376 && $client_id !== 18520) ) {
+            if(SYSTEM_INIT_HOST === PARTS_HOST && ($client_id !== 14376 && $client_id !== 18520) ) {
                 if(isset($data['initial']['txnDate']) && UserManagement::is_root_user() === false) Shared::check_transaction_older_than_n_days(
                     $data['initial']['txnDate'], 
                     $store_id,
@@ -1561,7 +1561,7 @@ class SalesInvoice {
                 }
 
                 // Check whether sales invoice belongs to valid store.
-                if(Client::SELF_CLIENT_WHITELIST[SYSTEM_INIT_MODE][$si['client_id']] !== $transfer_to) throw new Exception('Sales Invoice #'. $si['id']. ' does not belong to the selected store.');
+                if(isset(Client::SELF_CLIENT_WHITELIST[$si['client_id']]) && Client::SELF_CLIENT_WHITELIST[$si['client_id']] !== $transfer_to) throw new Exception('Sales Invoice #'. $si['id']. ' does not belong to the selected store.');
 
                 // Update Flag
                 $is_successful = $statement_flag -> execute([':id' => $si['id']]);
