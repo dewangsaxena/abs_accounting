@@ -8,7 +8,7 @@ This file contains configurations used by the application.
 /**
  * Client App Version
  */
-define('CLIENT_APP_VERSION', '2.2.49');
+define('CLIENT_APP_VERSION', '2.2.50');
 
 /* Hosts */
 define('__LOCALHOST__', 0);
@@ -253,8 +253,4 @@ define('DEFAULT_PROFIT_MARGIN_KEY', 'DEFAULT');
 
 // Check Transaction Date
 define('CHECK_TRANSACTION_DATE', SYSTEM_INIT_HOST === __TEN_LEASING__ ? 5 : 2);
-
-// Enable Date Edit By Root
-// This provides additional safeguard.
-define('ENABLE_DATE_EDIT_BY_ROOT', false);
 ?>
