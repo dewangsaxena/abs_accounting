@@ -250,7 +250,7 @@ class SalesInvoice {
         if($do_validate_date) {
             /* Make an Exception for J.LOEWEN MECHANICAL LTD, DriftPile */
             if(SYSTEM_INIT_MODE === PARTS && ($client_id !== 14376 && $client_id !== 18520) ) {
-                if(isset($data['initial']['txnDate'])) Shared::check_transaction_older_than_n_days(
+                if(isset($data['initial']['txnDate']) && UserManagement::is_root_user() === false) Shared::check_transaction_older_than_n_days(
                     $data['initial']['txnDate'], 
                     $store_id,
                 );
