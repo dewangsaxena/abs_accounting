@@ -2281,4 +2281,105 @@ class Inventory {
             'total_inventory_value' => $total_inventory_value,
         ]];
     }
+
+    /**
+     * This method will fetch item quantity sold by prefix.
+     * @param prefix
+     * @param store_id
+     * @param start_date
+     * @param end_date
+     * @return array
+     */
+    public static function fetch_item_quantity_sold_by_prefix(string $prefix, int $store_id, string $start_date, string $end_date): array {
+        $db = get_db_instance();
+        $statement = $db -> prepare('SELECT id, `identifier`, `description` FROM items WHERE `identifier` LIKE :prefix;');
+        $statement -> execute([':prefix' => "$prefix%"]);
+        $results = $statement -> fetchAll(PDO::FETCH_ASSOC);
+        $item_ids = [];
+        $quantity_sold_per_item = [];
+        foreach($results as $result) {
+            $item_ids[]= $result['id'];
+            $quantity_sold_per_item[$result['id']] = [
+                'identifier' => $result['identifier'],
+                'description' => $result['description'],
+                'quantity' => 0
+            ];
+        }
+
+        // Fetch Invoices
+        $statement = $db -> prepare(<<<'EOS'
+        SELECT 
+            `details` 
+        FROM 
+            sales_invoice 
+        WHERE
+            store_id = :store_id
+        AND 
+            `date` >= :start_date
+        AND
+            `date` <= :end_date;
+        EOS);
+        $statement -> execute([
+            ':store_id' => $store_id,
+            ':start_date' => $start_date,
+            ':end_date' => $end_date,
+        ]);
+        $sales_invoices = $statement -> fetchAll(PDO::FETCH_ASSOC);
+
+        $statement = $db -> prepare(<<<'EOS'
+        SELECT 
+            `details` 
+        FROM 
+            sales_return 
+        WHERE
+            store_id = :store_id
+        AND 
+            `date` >= :start_date
+        AND
+            `date` <= :end_date;
+        EOS);
+        $statement -> execute([
+            ':store_id' => $store_id,
+            ':start_date' => $start_date,
+            ':end_date' => $end_date,
+        ]);
+        $sales_return = $statement -> fetchAll(PDO::FETCH_ASSOC);
+
+        // Items Sold
+        foreach($sales_invoices as $txn) {
+            $details = json_decode($txn['details'], true);
+            foreach($details as $item) {
+                $item_id = $item['itemId'];
+                if(in_array($item['itemId'], $item_ids)) {
+                    $quantity_sold_per_item[$item_id]['quantity'] += $item['quantity'];
+                }
+            }
+        }
+
+        foreach($sales_return as $txn) {
+            $details = json_decode($txn['details'], true);
+            foreach($details as $item) {
+                $item_id = $item['itemId'];
+                if(in_array($item['itemId'], $item_ids)) {
+                    $quantity_sold_per_item[$item_id]['quantity'] -= ($item['returnQuantity'] ?? 0);
+                }
+            }
+        }
+        return $quantity_sold_per_item;
+    }
+
+    /**
+     * This method will generate quantity report of item sold.
+     * @param details
+     */
+    public static function generate_quantity_report_of_item_sold(string $filename, array $details): void {
+        $fp = fopen("$filename.csv", 'w');
+
+        foreach($details as $d) {
+            if($d['quantity'] == 0) continue;
+            fputcsv($fp, [$d['identifier'], $d['description'], $d['quantity']]);
+        }
+
+        fclose($fp);
+    }
 }
