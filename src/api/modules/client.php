@@ -85,7 +85,7 @@ class Client {
             /* ABS Truck & Trailer Parts Slave Lake */ 
             17671 => StoreDetails::SLAVE_LAKE,
         ],
-    ][SYSTEM_INIT_HOST];
+    ][SYSTEM_INIT_HOST] ?? [];
 
     /**
      * Inter stores.
