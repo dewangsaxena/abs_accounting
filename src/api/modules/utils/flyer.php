@@ -83,7 +83,7 @@ class FlyerManagement {
         $no_of_clients = count($client_details);
 
         // Test
-        $index = 170;
+        $index = 0;
         $limit = $index + 20;
     
         for(;$index < $limit; ++$index) {
