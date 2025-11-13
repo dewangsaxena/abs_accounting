@@ -824,6 +824,11 @@ class SalesInvoice {
             // Check for Client Change
             if($client_id != $data['initial']['clientDetails']['id'] && $initial_payment_method === PaymentMethod::PAY_LATER) {
                 
+                // Check if any of them are self clients
+                if (Client::is_self_client($data['initial']['clientDetails']['id']) || self::$is_self_client) {
+                    throw new Exception('Cannot Change Client due to one of them being Self Client.');
+                }
+
                 // Revert Amount owing for old client.
                 Client::update_amount_owing_of_client(
                     $data['initial']['clientDetails']['id'], 
