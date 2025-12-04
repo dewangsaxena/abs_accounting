@@ -328,6 +328,9 @@ class SalesInvoice {
         if(!is_numeric($txn_discount)) throw new Exception('Total Discount should be numeric.');
         if($txn_discount < 0) throw new Exception('Total Discount cannot be zero or negative.');
 
+        // Remove Tag from meta details
+        Shared::remove_item_tag_from_transaction_meta_details($data);
+
         // Flag
         $is_unit_no_or_vin_or_po_given = false;
 
@@ -507,7 +510,6 @@ class SalesInvoice {
             $pst_tax = $validated_details['pst_tax'];
             $gst_hst_tax = $validated_details['gst_hst_tax'];
             $txn_discount = $validated_details['txn_discount'];
-            // $cogs = $validated_details['cogs'];
 
             // Txn Details
             $details = $data['details'];

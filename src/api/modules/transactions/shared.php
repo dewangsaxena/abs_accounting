@@ -160,7 +160,7 @@ class Shared {
             'netAmountDueWithinDays' => $record['net_amount_due_within_days'] ?? 0,
             'isInvoiceTransferred' => $record['is_invoice_transferred'] ?? 1,
             'accountNumber' => $record['account_number'] ?? '',
-            'purchasedBy' => $record['purchased_by'] ?? '',
+            'purchasedBy' => Inventory::ITEM_DETAILS_TAG . ($record['purchased_by'] ?? ''),
             'versionKeys' => $version_keys,
             '__lockCounter' => $record['__lock_counter'] ?? 0,
             'initial' => [
@@ -178,10 +178,10 @@ class Shared {
         // Add Transaction Specific Details
         if($transaction_type === SALES_INVOICE) {
             $response = array_merge($response, [
-                'po' => $record['po'] ?? '',
-                'unitNo' => $record['unit_no'] ?? '',
+                'po' => Inventory::ITEM_DETAILS_TAG . ($record['po'] ?? ''),
+                'unitNo' => Inventory::ITEM_DETAILS_TAG . ($record['unit_no'] ?? ''),
                 'vin' => strlen($record['vin']) === 17 ? self::format_vin($record['vin']) : '',
-                'driverName' => $record['driver_name'] ?? '',
+                'driverName' => Inventory::ITEM_DETAILS_TAG . ($record['driver_name'] ?? ''),
                 'odometerReading' => $record['odometer_reading'] ?? '',
                 'trailerNumber' => $record['trailer_number'] ?? '',
             ]);
@@ -1415,6 +1415,17 @@ class Shared {
             $details[$i]['identifier'] = self::remove_item_tag_from_string($details[$i]['identifier']);
             $details[$i]['description'] = self::remove_item_tag_from_string($details[$i]['description']);
         }
+    }
+
+    /**
+     * This method will remove item tag from txn meta details such as unit no, po.
+     * @param details
+     */
+    public static function remove_item_tag_from_transaction_meta_details(array &$details): void {
+        if(isset($details['unitNo']) && is_string($details['unitNo'])) $details['unitNo'] = self::remove_item_tag_from_string($details['unitNo']);
+        if(isset($details['accountNumber']) && is_string($details['accountNumber'])) $details['accountNumber'] = self::remove_item_tag_from_string($details['accountNumber']);
+        if(isset($details['po']) && is_string($details['po'])) $details['po'] = self::remove_item_tag_from_string($details['po']);
+        if(isset($details['purchasedBy']) && is_string($details['purchasedBy'])) $details['purchasedBy'] = self::remove_item_tag_from_string($details['purchasedBy']);
     }
 
     /**

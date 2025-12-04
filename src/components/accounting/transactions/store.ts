@@ -352,6 +352,12 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
       delete __get.clientDetails?.salesInvoices;
     let payload: TransactionStoreFields = JSON.parse(JSON.stringify(__get));
 
+    // Append Tag to Unit No, Account Number, PO, Purchased By
+    if(payload['unitNo']) payload['unitNo'] = ITEM_DETAILS_TAG + payload['unitNo'];
+    if(payload['accountNumber']) payload['accountNumber'] = ITEM_DETAILS_TAG + payload['accountNumber'];
+    if(payload['po']) payload['po'] = ITEM_DETAILS_TAG + payload['po'];
+    if(payload['purchasedBy']) payload['purchasedBy'] = ITEM_DETAILS_TAG + payload['purchasedBy'];
+  
     // Assign sanitized Details
     payload.details = sanitizedDetails;
 
