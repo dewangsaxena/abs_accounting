@@ -8,7 +8,7 @@ This file contains configurations used by the application.
 /**
  * Client App Version
  */
-define('CLIENT_APP_VERSION', '2.2.48');
+define('CLIENT_APP_VERSION', '2.2.51');
 
 /* Hosts */
 define('__LOCALHOST__', 0);
@@ -41,7 +41,8 @@ define('CATEGORY_INVENTORY', 1);
 /* Select Credentials Based On Server */
 $mode = null;
 $domain = $_SERVER['SERVER_NAME'];
-if ($domain === 'localhost') {
+$is_localhost = $domain === 'localhost';
+if ($is_localhost) {
     $offset = __LOCALHOST__;
     $mode = PARTS;
     if (!defined('IS_LOCALHOST')) {
@@ -94,7 +95,7 @@ else die('Invalid Domain');
 
 /* Business Specific Configuration. */
 define('SYSTEM_INIT_MODE', $mode);
-define('SYSTEM_INIT_HOST', $offset);
+define('SYSTEM_INIT_HOST', $is_localhost ? __PARTS_V2__ : $offset);
 
 /** IS Amount Currency in USD */
 define('IS_CURRENCY_USD', SYSTEM_INIT_HOST === VANGUARD_HOST ? true : false);
@@ -252,8 +253,4 @@ define('DEFAULT_PROFIT_MARGIN_KEY', 'DEFAULT');
 
 // Check Transaction Date
 define('CHECK_TRANSACTION_DATE', SYSTEM_INIT_HOST === __TEN_LEASING__ ? 5 : 2);
-
-// Enable Date Edit By Root
-// This provides additional safeguard.
-define('ENABLE_DATE_EDIT_BY_ROOT', false);
 ?>

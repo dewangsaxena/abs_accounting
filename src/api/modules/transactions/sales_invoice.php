@@ -249,7 +249,7 @@ class SalesInvoice {
 
         if($do_validate_date) {
             /* Make an Exception for J.LOEWEN MECHANICAL LTD, DriftPile */
-            if(SYSTEM_INIT_MODE === PARTS && ($client_id !== 14376 && $client_id !== 18520) ) {
+            if(SYSTEM_INIT_HOST === PARTS_HOST && ($client_id !== 14376 && $client_id !== 18520) ) {
                 if(isset($data['initial']['txnDate']) && UserManagement::is_root_user() === false) Shared::check_transaction_older_than_n_days(
                     $data['initial']['txnDate'], 
                     $store_id,
@@ -327,6 +327,9 @@ class SalesInvoice {
         // Total Discount
         if(!is_numeric($txn_discount)) throw new Exception('Total Discount should be numeric.');
         if($txn_discount < 0) throw new Exception('Total Discount cannot be zero or negative.');
+
+        // Remove Tag from meta details
+        Shared::remove_item_tag_from_transaction_meta_details($data);
 
         // Flag
         $is_unit_no_or_vin_or_po_given = false;
@@ -507,7 +510,6 @@ class SalesInvoice {
             $pst_tax = $validated_details['pst_tax'];
             $gst_hst_tax = $validated_details['gst_hst_tax'];
             $txn_discount = $validated_details['txn_discount'];
-            // $cogs = $validated_details['cogs'];
 
             // Txn Details
             $details = $data['details'];
@@ -824,6 +826,11 @@ class SalesInvoice {
             // Check for Client Change
             if($client_id != $data['initial']['clientDetails']['id'] && $initial_payment_method === PaymentMethod::PAY_LATER) {
                 
+                // Check if any of them are self clients
+                if (Client::is_self_client($data['initial']['clientDetails']['id']) || self::$is_self_client) {
+                    throw new Exception('Cannot Change Client due to one of them being Self Client.');
+                }
+
                 // Revert Amount owing for old client.
                 Client::update_amount_owing_of_client(
                     $data['initial']['clientDetails']['id'], 
@@ -1561,7 +1568,7 @@ class SalesInvoice {
                 }
 
                 // Check whether sales invoice belongs to valid store.
-                if(Client::SELF_CLIENT_WHITELIST[SYSTEM_INIT_MODE][$si['client_id']] !== $transfer_to) throw new Exception('Sales Invoice #'. $si['id']. ' does not belong to the selected store.');
+                if(isset(Client::SELF_CLIENT_WHITELIST[$si['client_id']]) && Client::SELF_CLIENT_WHITELIST[$si['client_id']] !== $transfer_to) throw new Exception('Sales Invoice #'. $si['id']. ' does not belong to the selected store.');
 
                 // Update Flag
                 $is_successful = $statement_flag -> execute([':id' => $si['id']]);

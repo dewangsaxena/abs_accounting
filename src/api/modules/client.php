@@ -28,7 +28,7 @@ class Client {
      * Client Id : Store ID
      */
     public const SELF_CLIENT_WHITELIST = [
-        PARTS => [
+        PARTS_HOST => [
             /* ABS Truck Wash And Lube */
             13735 => StoreDetails::EDMONTON,
 
@@ -59,14 +59,13 @@ class Client {
             /* ABS TRUCK AND TRAILER PARTS SK LTD. */
             20432 => StoreDetails::REGINA,
         ],
-        WASH => [],
-    ];
+    ][SYSTEM_INIT_HOST] ?? [];
 
     /**
      * Self Client Exceptions.
      */
     public const SELF_CLIENT_EXCEPTIONS = [
-        PARTS => [
+        PARTS_HOST => [
             /* ABS Trucking Ltd. */
             14506 => StoreDetails::EDMONTON,
 
@@ -76,25 +75,23 @@ class Client {
             /* ABS Truck Wash And Lube */
             13735 => StoreDetails::EDMONTON,
         ],
-        WASH => [],
-    ];
+    ][SYSTEM_INIT_HOST] ?? [];
 
     /**
      * Self Client to be included in customer aged summary report.
      */
     public const SELF_CLIENT_INCLUDED_IN_CUSTOMER_AGED_SUMMARY_REPORTING = [
-        PARTS => [
+        PARTS_HOST => [
             /* ABS Truck & Trailer Parts Slave Lake */ 
             17671 => StoreDetails::SLAVE_LAKE,
         ],
-        WASH => [],
-    ];
+    ][SYSTEM_INIT_HOST] ?? [];
 
     /**
      * Inter stores.
      */
     private const INTER_STORES = [
-        PARTS => [
+        PARTS_HOST => [
             /* ABS Truck & Trailer Parts Ltds. */ 
             15260 => StoreDetails::EDMONTON,
 
@@ -116,18 +113,17 @@ class Client {
             /* ABS TRUCK AND TRAILER PARTS SK LTD. */
             20432 => StoreDetails::REGINA,
         ],
-    ];
+    ][SYSTEM_INIT_HOST] ?? [];
 
     /**
      * Stores with Restricted Access
      */
     private const STORES_WITH_RESTRICTED_ACCESS = [
-        PARTS => [
+        PARTS_HOST => [
             StoreDetails::EDMONTON,
             StoreDetails::SLAVE_LAKE,
         ],
-        WASH => [],
-    ];
+    ][SYSTEM_INIT_HOST] ?? [];
 
     /**
      * Client Catgeory
@@ -721,8 +717,8 @@ class Client {
 
             // Check for Special Exception for Few Stores.
             if($data['action'] === 'client_update' && $user_id !== UserManagement::ROOT_USER_ID) {
-                if(SYSTEM_INIT_MODE === PARTS && in_array($store_id, self::STORES_WITH_RESTRICTED_ACCESS[SYSTEM_INIT_MODE])) {
-                    if(in_array($_SESSION['user_id'], SpecialExceptions::USERS_WITH_SPECIAL_ACCESS[$store_id]) === false) {
+                if(SYSTEM_INIT_HOST === PARTS_HOST && in_array($store_id, self::STORES_WITH_RESTRICTED_ACCESS)) {
+                    if(isset(SpecialExceptions::USERS_WITH_SPECIAL_ACCESS[$store_id]) && in_array($_SESSION['user_id'], SpecialExceptions::USERS_WITH_SPECIAL_ACCESS[$store_id]) === false) {
                         $disable_credit_transactions = $data['initial']['disableCreditTransactions'];
                     }
                 }
@@ -872,7 +868,7 @@ class Client {
      * @return bool
      */
     public static function is_self_client(int $client_id): bool {
-        return isset(self::SELF_CLIENT_WHITELIST[SYSTEM_INIT_MODE][$client_id]);
+        return isset(self::SELF_CLIENT_WHITELIST[$client_id]);
     }
 
     /**
@@ -881,7 +877,7 @@ class Client {
      * @return bool
      */
     public static function is_exception_made_for_self_client(int $client_id): bool {
-        return isset(self::SELF_CLIENT_EXCEPTIONS[SYSTEM_INIT_MODE][$client_id]);
+        return isset(self::SELF_CLIENT_EXCEPTIONS[$client_id]);
     }
 
     /**
@@ -890,7 +886,7 @@ class Client {
      * @return bool
      */
     public static function include_self_client_in_customer_aged_summary_report(int $client_id): bool {
-        return isset(self::SELF_CLIENT_INCLUDED_IN_CUSTOMER_AGED_SUMMARY_REPORTING[SYSTEM_INIT_MODE][$client_id]);
+        return isset(self::SELF_CLIENT_INCLUDED_IN_CUSTOMER_AGED_SUMMARY_REPORTING[$client_id]);
     }
 
     /**
@@ -898,7 +894,7 @@ class Client {
      * @param client_id
      */
     public static function is_inter_store_client($client_id): bool {
-        return isset(self::INTER_STORES[SYSTEM_INIT_MODE][$client_id]);
+        return isset(self::INTER_STORES[$client_id]);
     }
 
     /**

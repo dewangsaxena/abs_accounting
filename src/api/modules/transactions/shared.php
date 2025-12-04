@@ -160,7 +160,7 @@ class Shared {
             'netAmountDueWithinDays' => $record['net_amount_due_within_days'] ?? 0,
             'isInvoiceTransferred' => $record['is_invoice_transferred'] ?? 1,
             'accountNumber' => $record['account_number'] ?? '',
-            'purchasedBy' => $record['purchased_by'] ?? '',
+            'purchasedBy' => Inventory::ITEM_DETAILS_TAG . ($record['purchased_by'] ?? ''),
             'versionKeys' => $version_keys,
             '__lockCounter' => $record['__lock_counter'] ?? 0,
             'initial' => [
@@ -178,10 +178,10 @@ class Shared {
         // Add Transaction Specific Details
         if($transaction_type === SALES_INVOICE) {
             $response = array_merge($response, [
-                'po' => $record['po'] ?? '',
-                'unitNo' => $record['unit_no'] ?? '',
+                'po' => Inventory::ITEM_DETAILS_TAG . ($record['po'] ?? ''),
+                'unitNo' => Inventory::ITEM_DETAILS_TAG . ($record['unit_no'] ?? ''),
                 'vin' => strlen($record['vin']) === 17 ? self::format_vin($record['vin']) : '',
-                'driverName' => $record['driver_name'] ?? '',
+                'driverName' => Inventory::ITEM_DETAILS_TAG . ($record['driver_name'] ?? ''),
                 'odometerReading' => $record['odometer_reading'] ?? '',
                 'trailerNumber' => $record['trailer_number'] ?? '',
             ]);
@@ -1418,6 +1418,17 @@ class Shared {
     }
 
     /**
+     * This method will remove item tag from txn meta details such as unit no, po.
+     * @param details
+     */
+    public static function remove_item_tag_from_transaction_meta_details(array &$details): void {
+        if(isset($details['unitNo']) && is_string($details['unitNo'])) $details['unitNo'] = self::remove_item_tag_from_string($details['unitNo']);
+        if(isset($details['accountNumber']) && is_string($details['accountNumber'])) $details['accountNumber'] = self::remove_item_tag_from_string($details['accountNumber']);
+        if(isset($details['po']) && is_string($details['po'])) $details['po'] = self::remove_item_tag_from_string($details['po']);
+        if(isset($details['purchasedBy']) && is_string($details['purchasedBy'])) $details['purchasedBy'] = self::remove_item_tag_from_string($details['purchasedBy']);
+    }
+
+    /**
      * This method will add item tag to txn details.
      * @param details
      */
@@ -1500,7 +1511,7 @@ class Shared {
         $initial_date = date_create($initial_date);
         $current_date = date_create(Utils::get_business_date($store_id));
         $difference = date_diff($initial_date, $current_date);
-        if(!(UserManagement::is_root_user() && ENABLE_DATE_EDIT_BY_ROOT)) {
+        if(!(UserManagement::is_root_user())) {
             if($difference -> d > CHECK_TRANSACTION_DATE) throw new Exception('Cannot Update Transaction after '. CHECK_TRANSACTION_DATE. ' days.');
         }
     }
@@ -1522,7 +1533,7 @@ class Shared {
             $old_month = intval($old_date['month']);
             $new_month = intval($new_date['month']);
             if($new_month === 0 || $old_month === 0) throw new Exception('Invalid Month.');
-            if(!(UserManagement::is_root_user() && ENABLE_DATE_EDIT_BY_ROOT)) {
+            if(!(UserManagement::is_root_user())) {
                 if($new_month !== $old_month) throw new Exception('Cannot Post Transaction in Other Month.');
             }
             
@@ -1577,7 +1588,7 @@ class Shared {
         $txn_year = intval($txn_date_parts[0]);
         $txn_month = intval($txn_date_parts[1]);
 
-        if(!(UserManagement::is_root_user() && ENABLE_DATE_EDIT_BY_ROOT)) {
+        if(!(UserManagement::is_root_user())) {
             if($is_transaction_detail_changed && ($txn_year === $current_year && $txn_month === $current_month) === false) throw new Exception(
                 'Cannot Create or Update Transaction in Different Month/Year. Please create new Transaction on current date.'
             );

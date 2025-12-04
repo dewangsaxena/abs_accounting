@@ -12,7 +12,7 @@ class FlyerManagement {
      * @param store_id
      * @return array
      */
-    public static function fetch_client_detail_of_store(int $store_id): array {
+    private static function fetch_client_detail_of_store(int $store_id): array {
         try {
             $db = get_db_instance();
             $query = <<<'EOS'
@@ -83,7 +83,7 @@ class FlyerManagement {
         $no_of_clients = count($client_details);
 
         // Test
-        $index = 170;
+        $index = 0;
         $limit = $index + 20;
     
         for(;$index < $limit; ++$index) {

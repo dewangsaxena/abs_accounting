@@ -114,7 +114,7 @@ class UserManagement {
      * @param password 
      * @return string 
      */
-    private static function password_hash(string $password) : string {
+    private static function password_hash(#[\SensitiveParameter] string $password) : string {
         return password_hash(trim($password), PASSWORD_DEFAULT, self::HASH_OPTIONS);
     }
 
@@ -124,7 +124,7 @@ class UserManagement {
      * @param do_root_check
      * @return array
      */
-    public static function add(array $data, bool $do_root_check = true): array {
+    public static function add(#[\SensitiveParameter] array $data, bool $do_root_check = true): array {
         $db_instance = get_db_instance();
         try {
             if($do_root_check == true) self::verify_root_user();
@@ -222,7 +222,7 @@ class UserManagement {
      * Else it will return null
      * @return array
      */
-    public static function authenticate(array $data): array {
+    public static function authenticate(#[\SensitiveParameter] array $data): array {
         try {
             require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/inventory.php";
 
@@ -335,7 +335,7 @@ class UserManagement {
      * @param password
      * @return array
      */
-    private static function update_password(int $user_id, string $password) : array {
+    private static function update_password(int $user_id, #[\SensitiveParameter] string $password) : array {
         // Get DB Instance
         $db_instance = get_db_instance();
         try {
@@ -381,7 +381,7 @@ class UserManagement {
      * @param data
      * @return array
      */
-    public static function change_password(array $data): array {
+    public static function change_password(#[\SensitiveParameter] array $data): array {
         try {
             // Get DB Instance
             $db = get_db_instance();
@@ -624,7 +624,7 @@ class UserManagement {
         ];
 
         // Parts
-        if(SYSTEM_INIT_MODE === PARTS) $excluded_users[]= self::BOSS_USER_ID;
+        if(SYSTEM_INIT_HOST === PARTS_HOST) $excluded_users[]= self::BOSS_USER_ID;
 
         $results = Utils::mysql_in_placeholder_pdo_substitute(
             $excluded_users,

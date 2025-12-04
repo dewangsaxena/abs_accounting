@@ -116,4 +116,7 @@ $store_id = StoreDetails::SASKATOON;
 // generate_list($store_id, true);
 // die;
 
+$code = 'AF';
+$details = Inventory::fetch_item_quantity_sold_by_prefix($code, StoreDetails::CALGARY, '2025-01-01', '2025-12-31');
+Inventory::generate_quantity_report_of_item_sold($code, $details);
 ?>  

@@ -11,15 +11,17 @@ class SpecialExceptions {
 
     /* Users With Special Access */ 
     const USERS_WITH_SPECIAL_ACCESS = [
-        StoreDetails::EDMONTON => [
-            10007, /* LUCKY */
-            10010, /* PRITPAL */
-            10015 /* JAIDEEP */
+        PARTS_HOST => [
+            StoreDetails::EDMONTON => [
+                10007, /* LUCKY */
+                10010, /* PRITPAL */
+                10015 /* JAIDEEP */
+            ],
+            StoreDetails::SLAVE_LAKE => [
+                10015, /* JAIDEEP */
+            ],
         ],
-        StoreDetails::SLAVE_LAKE => [
-            10015, /* JAIDEEP */
-        ],
-    ];
+    ][SYSTEM_INIT_HOST] ?? [];
 
     // Customer aged summary client exlusion
     const CUSTOMER_AGED_SUMMARY_CLIENT_EXCLUSIONS = [
@@ -49,7 +51,7 @@ class SpecialExceptions {
 
     /* Check Over 60+ Balance For Client For Credit Transaction */ 
     private const CHECK_OVER_60_PLUS_BALANCE_DUE_OF_CLIENT_FOR_CREDIT_TRANSACTION_PER_STORE = [
-        PARTS => [
+        PARTS_HOST => [
             StoreDetails::EDMONTON => false,
             StoreDetails::CALGARY => false,
             StoreDetails::NISKU => false,
@@ -59,14 +61,14 @@ class SpecialExceptions {
             StoreDetails::REGINA => false,
             StoreDetails::SASKATOON => true,
         ],
-        WASH => [
+        WASH_HOST => [
             StoreDetails::NISKU => false,
         ],
-    ][SYSTEM_INIT_MODE];
+    ][SYSTEM_INIT_HOST] ?? [];
     
     /* Whitelist for Clients per store */ 
     private const CLIENT_BALANCE_OVER_DUE_WHITELIST = [
-        PARTS => [
+        PARTS_HOST => [
             StoreDetails::CALGARY => [
                 14597, /* Shokee Trucking Ltd */
                 14816, /* AS TRUCK & TRAILER REPAIRS LTD */
@@ -82,8 +84,7 @@ class SpecialExceptions {
                 12089,  /* SST TRUCKING LTD */
             ]
         ],
-        WASH => [],
-    ][SYSTEM_INIT_MODE];
+    ][SYSTEM_INIT_HOST] ?? [];
 
     /**
      * This method will check client for balance due.
