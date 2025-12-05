@@ -1283,6 +1283,7 @@ class Shared {
      * @throws Exception
      */
     public static function allow_balance_due_check_for_client(int $client_id, int $store_id): void {
+        if(SYSTEM_INIT_HOST == VANGUARD_HOST) return;
         if(SpecialExceptions::allow_balance_due_check_for_client($client_id, $store_id)) {
             Shared::check_balance_due_over_60_plus_days($client_id, $store_id);
         }

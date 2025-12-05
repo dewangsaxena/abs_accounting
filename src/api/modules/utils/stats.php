@@ -48,6 +48,8 @@ class Stats
             AND
                 client_id NOT IN (:placeholder);
             EOS;
+
+            if (count($self_clients) == 0) $self_clients = [-1];
             $result = Utils::mysql_in_placeholder_pdo_substitute($self_clients, $query);
             $params = array_merge(
                 [':date' => $current_date, ':store_id' => $store_id],
