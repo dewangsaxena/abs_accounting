@@ -27,12 +27,12 @@ class Email {
 
     // Username
     private const USERNAME = [
-        'postmarkapp' => 'PM-B-broadcast-bQWBIt6Eq51i-XmcSJFLn',
+        'postmarkapp' => 'PM-B-broadcast-Zpm9Y7N2du7GHn1Sv-5Z9',
     ][self::SERVICE];
 
     // Password
     private const APP_ACCESS_KEY = [
-        'postmarkapp' => 'jY5ocel379u_TwwZN0XJiNtZ-xYXsH6FQR9g',
+        'postmarkapp' => 'Gzi12Uj3bSzD6eRcnLUWSCynET9so28B38Jo',
     ][self::SERVICE];
 
     // Port 
