@@ -1304,10 +1304,11 @@ class Client {
      * @param client_id
      * @param start_date
      * @param end_date
+     * @param filename
      * @param is_csv
      * @return void
      */    
-    public static function generate_item_sold_reports(array $store_ids, int $client_id, string $start_date, string $end_date, bool $is_csv = false): void {
+    public static function generate_item_sold_reports(array $store_ids, int $client_id, string $start_date, string $end_date, string $filename, bool $is_csv = false): void {
         $db = get_db_instance();
 
         $query = <<<'EOS'
@@ -1353,7 +1354,7 @@ class Client {
         }
 
         if($is_csv) {
-            $fopen = fopen('dbi.csv', 'w');
+            $fopen = fopen($filename, 'w');
             fputcsv($fopen, ['Identifier', 'Description', 'Quantity']);
             foreach($items_sold as $item) {
                 fputcsv($fopen, [$item['identifier'], $item['description'], $item['quantity']]);
