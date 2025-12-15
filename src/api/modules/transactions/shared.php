@@ -159,7 +159,7 @@ class Shared {
             'earlyPaymentPaidWithinDays' => $record['early_payment_paid_within_days'] ?? 0,
             'netAmountDueWithinDays' => $record['net_amount_due_within_days'] ?? 0,
             'isInvoiceTransferred' => $record['is_invoice_transferred'] ?? 1,
-            'accountNumber' => $record['account_number'] ?? '',
+            'accountNumber' => Inventory::ITEM_DETAILS_TAG. ($record['account_number'] ?? ''),
             'purchasedBy' => Inventory::ITEM_DETAILS_TAG . ($record['purchased_by'] ?? ''),
             'versionKeys' => $version_keys,
             '__lockCounter' => $record['__lock_counter'] ?? 0,

@@ -235,6 +235,9 @@ class Quotations {
         if(!is_numeric($txn_discount)) throw new Exception('Total Discount should be numeric.');
         if($txn_discount < 0) throw new Exception('Total Discount cannot be zero or negative.');
 
+        // Remove Tag
+        Shared::remove_item_tag_from_transaction_meta_details($data);
+        
         // Account Number
         $account_number = ucwords(trim($data['accountNumber'] ?? ''));
 
