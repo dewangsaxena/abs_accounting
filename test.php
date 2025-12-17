@@ -116,7 +116,46 @@ $store_id = StoreDetails::SASKATOON;
 // generate_list($store_id, true);
 // die;
 
-$code = 'AF';
-$details = Inventory::fetch_item_quantity_sold_by_prefix($code, StoreDetails::CALGARY, '2025-01-01', '2025-12-31');
-Inventory::generate_quantity_report_of_item_sold($code, $details);
+// $code = 'AF';
+// $details = Inventory::fetch_item_quantity_sold_by_prefix($code, StoreDetails::CALGARY, '2025-01-01', '2025-12-31');
+// Inventory::generate_quantity_report_of_item_sold($code, $details);
+
+function f_record(): void {
+    $db = get_db_instance();
+    try {
+        $db -> beginTransaction();
+        
+        $statement = $db -> prepare('SELECT * FROM income_statement WHERE store_id = 2 AND `date` = "2025-11-12";');
+        $statement -> execute();
+        $records = $statement -> fetchAll(PDO::FETCH_ASSOC);
+        $income_statement = json_decode($records[0]['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+
+        // Sales Revenue
+        $income_statement[4020] -= 45.62;
+
+        // Inventory
+        $income_statement[1520] += 36.18;
+ 
+        // Update Records
+        $statement = $db -> prepare('UPDATE income_statement SET `statement` = :_statement WHERE store_id = 2 AND `date` = "2025-11-12";');
+        $is_successful = $statement -> execute([':_statement' => json_encode($income_statement, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR)]);
+        if($is_successful && $statement -> rowCount() < 1) throw new Exception('Unable to update Income Statement');
+
+        // Update Balance Sheet
+        $bs = AccountsConfig::ACCOUNTS;
+
+        BalanceSheetActions::update_account_value($bs, AccountsConfig::ACCOUNTS_RECEIVABLE, -47.90);
+        BalanceSheetActions::update_account_value($bs, AccountsConfig::INVENTORY_A, 36.18);
+        BalanceSheetActions::update_from($bs, '2025-11-12', 2, $db);
+
+        $db -> commit();
+        echo 'Done';
+    }
+    catch(Exception $e) {
+        $db -> rollBack();
+        print_r($e -> getMessage());
+    }
+}
+
+f_record(StoreDetails::EDMONTON);
 ?>  
