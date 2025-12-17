@@ -240,7 +240,7 @@ class Utils {
      */
     public static function number_format(float $number, int $precision = 2): string {
         return number_format(
-            self::round($number, 4),
+            self::round($number, 2),
             $precision, 
             '.', 
             ','
