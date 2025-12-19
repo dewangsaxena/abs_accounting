@@ -168,7 +168,7 @@ for (; $index < $limit; ++$index) {
         $client_ids[$index]['email_id'],
         $client_ids[$index]['name'],
         <<<'EOS'
-        We at ABS Truck & Trailer Parts Nisku wish you a Merry Christmas and a Happy New Year! Have a jolly holiday.<br><br>
+        We at ABS Truck & Trailer Parts Nisku wish you a Merry Christmas and a Happy New Year! Have a Jolly holidays.<br><br>
         Our hours vary during this time, please see the attachment below to learn more.<br>
         <br>
         <br>
