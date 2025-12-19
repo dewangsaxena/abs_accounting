@@ -1407,4 +1407,49 @@ class Client {
             EOS;
         }
     }
+
+    /**
+     * This method will fetch client of a store.
+     * @param store_id
+     * @return array
+     */
+    public static function fetch_clients_of_store(int $store_id): array {
+        $db = get_db_instance();
+
+        $statement = $db -> prepare(<<<'EOS'
+        SELECT 
+            c.id,
+            c.`name`,
+            c.`email_id`
+        FROM 
+            clients AS c
+        LEFT JOIN 
+            sales_invoice AS si
+        ON
+            si.client_id = c.id
+        WHERE 
+            si.store_id = :store_id;
+        EOS);
+
+        $statement -> execute([':store_id' => $store_id]);
+        $clients = $statement -> fetchAll(PDO::FETCH_ASSOC);
+
+        $clients_details = [];
+        foreach($clients as $client) {
+            $id = $client['id'];
+            $email_id = $client['email_id'];
+
+            // Validate Email
+            if(is_string($email_id) && Validate::is_email_id($email_id) === false) continue;
+
+            if(isset($clients_details[$id]) == false) {
+                $clients_details[$id] = [
+                    'email_id' => $email_id,
+                    'name' => $client['name'],
+                ];
+            }
+        }
+
+        return $clients_details;
+    }
 }

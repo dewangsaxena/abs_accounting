@@ -157,5 +157,26 @@ function f_record(): void {
     }
 }
 
-f_record(StoreDetails::EDMONTON);
+// f_record(StoreDetails::EDMONTON);
+$client_ids = Client::fetch_clients_of_store(StoreDetails::NISKU);
+
+$index = 0;
+$limit = $index + 25;
+for (; $index < $limit; ++$index) {
+    Email::send(
+        'Happy Holidays From ABS Truck and Trailer Parts Nisku',
+        $client_ids[$index]['email_id'],
+        $client_ids[$index]['name'],
+        <<<'EOS'
+        We at ABS Truck & Trailer Parts Nisku wish you a merry Christmas and Happy New Year! Have a jolly holiday.<br><br>
+        Our hours vary during this time, please see the attachment below to learn more.
+
+
+        Regards,
+        ABS Truck & Trailer Parts Nisku
+        EOS,
+        StoreDetails::NISKU,
+    );
+}
+
 ?>  
