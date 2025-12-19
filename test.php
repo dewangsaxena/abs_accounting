@@ -176,7 +176,7 @@ for (; $index < $limit; ++$index) {
         ABS Truck & Trailer Parts Nisku
         EOS,
         StoreDetails::NISKU,
-        "{$_SERVER['DOCUMENT_ROOT']}/nisku_holiday_schedule.jfif",
+        "{$_SERVER['DOCUMENT_ROOT']}/nisku_holiday_schedule.png",
         'Holiday_schedule.png'
     );
 }
