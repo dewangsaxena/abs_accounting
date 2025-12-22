@@ -168,7 +168,7 @@ class Utils {
      * @param precision
      * @return float rounded amount
      */
-    public static function round(float $amount, int $precision = 4): float {
+    public static function round(float $amount, int $precision = 2): float {
         return round($amount, $precision, PHP_ROUND_HALF_UP);
     }
 
@@ -240,7 +240,7 @@ class Utils {
      */
     public static function number_format(float $number, int $precision = 2): string {
         return number_format(
-            self::round($number, 4),
+            self::round($number, 2),
             $precision, 
             '.', 
             ','

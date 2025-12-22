@@ -502,6 +502,9 @@ class SalesReturn {
         if(!is_numeric($txn_discount)) throw new Exception('Total Discount should be numeric.');
         if($txn_discount < 0) throw new Exception('Total Discount cannot be zero or negative.');
 
+        // Remove Tag from meta details
+        Shared::remove_item_tag_from_transaction_meta_details($data);
+        
         // Notes 
         $notes = isset($data['notes']) ? trim(ucfirst($data['notes'])) : '';
 
