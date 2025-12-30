@@ -120,6 +120,8 @@ $store_id = StoreDetails::SASKATOON;
 // $details = Inventory::fetch_item_quantity_sold_by_prefix($code, StoreDetails::CALGARY, '2025-01-01', '2025-12-31');
 // Inventory::generate_quantity_report_of_item_sold($code, $details);
 
+// ********** FROM HERE **************
+
 function f_record(): void {
     $db = get_db_instance();
     try {
@@ -157,9 +159,7 @@ function f_record(): void {
     }
 }
 
-// f_record(StoreDetails::EDMONTON);
-
-function find_receipt_for_transaction(int $store_id, int $client_id, int $transaction_id, float $credit_amount, PDO &$db, &$set_transaction_to_zero, $transaction_type) {
+function __find_receipt_for_transaction(int $store_id, int $client_id, int $transaction_id, float $credit_amount, PDO &$db, &$set_transaction_to_zero, $transaction_type) {
     $statement = $db -> prepare('SELECT id, `details` FROM receipt WHERE store_id = :store_id AND client_id = :client_id AND `details` LIKE :txn_id;');
     $txn_tag = $transaction_type === SALES_INVOICE ? 'IN': 'SR';
     $statement -> execute([
@@ -202,7 +202,7 @@ function find_receipt_for_transaction(int $store_id, int $client_id, int $transa
     }
 }
 
-function fetch_transactions_by_receipt(int $store_id, string $date, int $transaction_type, PDO &$db): array {
+function __fetch_transactions_by_receipt(int $store_id, string $date, int $transaction_type, PDO &$db): array {
     $statement = $db -> prepare('SELECT id, `details` FROM receipt WHERE store_id = :store_id AND `date` >= :_date;');
     $statement -> execute([':store_id' => $store_id, ':_date' => $date ]);
     $receipts = $statement -> fetchAll(PDO::FETCH_ASSOC);
@@ -227,7 +227,7 @@ function fix_transactions_credit_amount(bool $is_test, int $store_id, string $da
         $table_name = ($transaction_type === SALES_INVOICE ? 'sales_invoice': 'sales_return');
 
         // Fetch Transaction IDS
-        $transaction_ids = fetch_transactions_by_receipt($store_id, $date, $transaction_type, $db);
+        $transaction_ids = __fetch_transactions_by_receipt($store_id, $date, $transaction_type, $db);
 
         // Fetch IDS
         $query = 'SELECT id, client_id, credit_amount FROM '. $table_name. ' WHERE id IN (:placeholder);';
@@ -253,7 +253,7 @@ function fix_transactions_credit_amount(bool $is_test, int $store_id, string $da
                 if($is_test) echo "$transaction_id,";
                 else {
                     // Fetch Receipt for this transactions
-                    find_receipt_for_transaction($store_id, $client_id, $transaction_id, $credit_amount, $db, $set_transaction_to_zero, $transaction_type);
+                    __find_receipt_for_transaction($store_id, $client_id, $transaction_id, $credit_amount, $db, $set_transaction_to_zero, $transaction_type);
                 }
             }
         }
@@ -270,5 +270,88 @@ function fix_transactions_credit_amount(bool $is_test, int $store_id, string $da
         echo $e -> getMessage();
     }
 }
-fix_transactions_credit_amount(is_test: false, store_id: StoreDetails::EDMONTON, date: '2025-12-01');
+// fix_transactions_credit_amount(is_test: false, store_id: StoreDetails::EDMONTON, date: '2025-12-01');
+
+$store_id = StoreDetails::EDMONTON;
+
+// f_record($store_id);
+
+function fix_balance_sheet_amount_receivables(int $store_id) {
+    $db = get_db_instance();
+    try {
+        $db -> beginTransaction();
+        
+        // Fetch Accounts Receivables for Store.
+        $customer_aged_summary = CustomerAgedSummary::generate(
+            $store_id,
+            '1970-01-01',
+            '2025-12-31',
+            0,
+            0,
+            1,
+            0,
+            0,
+            true,
+        );
+
+        // Calculate Sum Total
+        $amount_receivables = 0;
+        foreach($customer_aged_summary as $r) {
+            $amount_receivables += $r['total'];
+        }
+
+        // Round off.
+        $amount_receivables = Utils::round($amount_receivables, 2);
+
+        // Update Balance Sheet
+        $statement = $db -> prepare('SELECT id, `statement`, modified FROM balance_sheet WHERE store_id = :store_id ORDER by `date` DESC LIMIT 1;');
+        $statement -> execute([':store_id' => $store_id]);
+        $balance_sheet = $statement -> fetchAll(PDO::FETCH_ASSOC)[0];
+        $bs_id = $balance_sheet['id'];
+        $bs_modified = $balance_sheet['modified'];
+        $bs_statement = json_decode($balance_sheet['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+
+        $bs_statement[AccountsConfig::ACCOUNTS_RECEIVABLE] = $amount_receivables;
+
+        // Update 
+        $statement = $db -> prepare('UPDATE balance_sheet SET `statement` = :_statement WHERE id = :id AND modified = :modified;');
+        $is_successful = $statement -> execute([
+            ':id' => $bs_id, 
+            ':_statement' => json_encode($bs_statement, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
+            ':modified' => $bs_modified
+        ]);
+        if($is_successful !== true && $statement -> rowCount() < 1) {
+            throw new Exception('Unable to Update Balance Sheet.');
+        }
+        assert_success();
+        $db -> commit();
+        echo 'Fixed';
+    }
+    catch(Exception $e) {
+        $db -> rollBack();
+        echo $e -> getMessage();
+    }
+}
+
+// fix_balance_sheet_amount_receivables($store_id, $customer_aged_summary);
+
+function fix_amount_owing(int $store_id) {
+
+    // Fetch All Clients
+    $clients = array_keys(Client::fetch_clients_of_store($store_id));
+
+    // Fetch Customer Statement 
+    foreach($clients as $client_id) {
+        $customer_statement = CustomerStatement::fetch_customer_statement(
+            $client_id,
+            $store_id,
+            null,
+            '2025-12-31',
+        );
+        print_r($customer_statement);
+        break;
+    }
+}
+
+fix_amount_owing($store_id);
 ?>  
