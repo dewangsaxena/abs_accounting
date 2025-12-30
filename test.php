@@ -193,6 +193,7 @@ function __find_receipt_for_transaction(int $store_id, int $client_id, int $tran
         // Amount to be adjusted
         $amount_to_be_adjusted = Utils::round($total_amount_received - $amount_owing, 4);
         
+        // This will execute when there is only 1 receipt and the entire amount is settled in it.
         if(strval($amount_owing) == strval($total_amount_received)) {
             $is_successful = $set_transaction_to_zero -> execute([':id' => $transaction_id, ':credit_amount' => $credit_amount]);
             if($is_successful !== true || $set_transaction_to_zero -> rowCount() < 1) {
@@ -457,16 +458,16 @@ function print_client_details($client_table): void {
 }
 
 // SET UTILS::ROUND to 4 Decimal Places before proceeding.
-$store_id = StoreDetails::EDMONTON;
+$store_id = StoreDetails::CALGARY;
 $client_table = [];
-// if($store_id == StoreDetails::EDMONTON) f_record($store_id);
-// fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_INVOICE, client_table: $client_table);
-// fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_RETURN, client_table: $client_table);
-// print_client_details($client_table);
-// update_credit_amount_of_all_transaction($client_table);
+if($store_id == StoreDetails::EDMONTON) f_record($store_id);
+fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_INVOICE, client_table: $client_table);
+fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_RETURN, client_table: $client_table);
+print_client_details($client_table);
+update_credit_amount_of_all_transaction($client_table);
 // DISABLE FEDERAL AND PROVINCIAL TAXES FOR CLIENTS.
-fix_balance_sheet_amount_receivables($store_id);
-fix_amount_owing($store_id);
+// fix_balance_sheet_amount_receivables($store_id);
+// fix_amount_owing($store_id);
 // SET UTILS::ROUND to 2 Decimal Places AFTER COMPLETING ALL STORES.
 // ENABLE FEDERAL AND PROVINCIAL TAXES FOR CLIENTS.
 ?>  
