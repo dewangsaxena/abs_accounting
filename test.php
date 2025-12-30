@@ -3,6 +3,7 @@
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/utils.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/database.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_summary.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_statement.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/inventory.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/correct_is_bs_inventory_v2.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_aged_summary.php";
@@ -339,18 +340,19 @@ function fix_amount_owing(int $store_id) {
 
     // Fetch All Clients
     $clients = array_keys(Client::fetch_clients_of_store($store_id));
+    print_r($clients);
 
     // Fetch Customer Statement 
-    foreach($clients as $client_id) {
-        $customer_statement = CustomerStatement::fetch_customer_statement(
-            $client_id,
-            $store_id,
-            null,
-            '2025-12-31',
-        );
-        print_r($customer_statement);
-        break;
-    }
+    // foreach($clients as $client_id) {
+    //     $customer_statement = CustomerStatement::fetch_customer_statement(
+    //         $client_id,
+    //         $store_id,
+    //         null,
+    //         '2025-12-31',
+    //     );
+    //     print_r($customer_statement);
+    //     break;
+    // }
 }
 
 fix_amount_owing($store_id);
