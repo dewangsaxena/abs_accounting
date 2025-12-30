@@ -188,6 +188,9 @@ function find_receipt_for_transaction(int $store_id, int $client_id, int $transa
 
         // Total Amount Received
         $total_amount_received = $amount_received + $discount_given;
+
+        // Amount to be adjusted
+        $amount_to_be_adjusted = Utils::round($total_amount_received - $amount_owing, 4);
         
         if(strval($amount_owing) == strval($total_amount_received)) {
             $is_successful = $set_transaction_to_zero -> execute([':id' => $transaction_id, ':credit_amount' => $credit_amount]);
@@ -195,7 +198,7 @@ function find_receipt_for_transaction(int $store_id, int $client_id, int $transa
                 throw new Exception('Unable to Update Transaction: '. $transaction_id);
             }
         }
-        else echo $transaction_id. ' | '. $amount_owing . ' | '. $total_amount_received. '<br>';
+        else echo "$transaction_id $amount_owing $total_amount_received $amount_to_be_adjusted<br>";
     }
 }
 
@@ -218,7 +221,7 @@ function fix_transactions_credit_amount(bool $is_test, int $store_id, string $da
     $db = get_db_instance();
     try {
         $db -> beginTransaction();
-        $transaction_type = SALES_RETURN;
+        $transaction_type = SALES_INVOICE;
 
         // Select Table name
         $table_name = ($transaction_type === SALES_INVOICE ? 'sales_invoice': 'sales_return');
@@ -267,5 +270,5 @@ function fix_transactions_credit_amount(bool $is_test, int $store_id, string $da
         echo $e -> getMessage();
     }
 }
-fix_transactions_credit_amount(is_test: false, store_id: StoreDetails::SASKATOON, date: '2025-12-01');
+fix_transactions_credit_amount(is_test: false, store_id: StoreDetails::EDMONTON, date: '2025-12-01');
 ?>  
