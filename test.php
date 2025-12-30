@@ -152,7 +152,7 @@ function f_record(): void {
         BalanceSheetActions::update_from($bs, '2025-11-12', 2, $db);
 
         $db -> commit();
-        echo 'Done';
+        echo 'f_record: Done';
     }
     catch(Exception $e) {
         $db -> rollBack();
@@ -264,7 +264,7 @@ function fix_transactions_credit_amount(bool $is_test, int $store_id, string $da
 
         assert_success();
         $db -> commit();
-        echo 'Done';
+        echo 'fix_transactions_credit_amount: Done';
     }
     catch(Exception $e) {
         $db -> rollBack();
@@ -321,7 +321,7 @@ function fix_balance_sheet_amount_receivables(int $store_id) {
         }
         assert_success();
         $db -> commit();
-        echo 'Fixed';
+        echo 'fix_balance_sheet_amount_receivables: Done';
     }
     catch(Exception $e) {
         $db -> rollBack();
@@ -373,7 +373,7 @@ function fix_amount_owing(int $store_id) {
             }
         }
 
-        echo 'Done';
+        echo 'fix_amount_owing: Done';
         assert_success();
         $db -> commit();
     }
@@ -384,7 +384,7 @@ function fix_amount_owing(int $store_id) {
 }
 
 $store_id = StoreDetails::EDMONTON;
-// f_record($store_id);
+f_record($store_id);
 // fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01');
 // fix_balance_sheet_amount_receivables($store_id);
 // fix_amount_owing($store_id);
