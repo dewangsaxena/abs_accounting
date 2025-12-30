@@ -390,5 +390,5 @@ function fix_amount_owing(int $store_id) {
     }
 }
 
-fix_amount_owing($store_id);
+// fix_amount_owing($store_id);
 ?>  
