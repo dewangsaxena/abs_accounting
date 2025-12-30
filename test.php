@@ -460,13 +460,13 @@ function print_client_details($client_table): void {
 $store_id = StoreDetails::EDMONTON;
 $client_table = [];
 // if($store_id == StoreDetails::EDMONTON) f_record($store_id);
-fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_INVOICE, client_table: $client_table);
-fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_RETURN, client_table: $client_table);
-print_client_details($client_table);
-update_credit_amount_of_all_transaction($client_table);
+// fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_INVOICE, client_table: $client_table);
+// fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_RETURN, client_table: $client_table);
+// print_client_details($client_table);
+// update_credit_amount_of_all_transaction($client_table);
 // DISABLE FEDERAL AND PROVINCIAL TAXES FOR CLIENTS.
-// fix_balance_sheet_amount_receivables($store_id);
-// fix_amount_owing($store_id);
+fix_balance_sheet_amount_receivables($store_id);
+fix_amount_owing($store_id);
 // SET UTILS::ROUND to 2 Decimal Places AFTER COMPLETING ALL STORES.
 // ENABLE FEDERAL AND PROVINCIAL TAXES FOR CLIENTS.
 ?>  
