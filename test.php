@@ -306,7 +306,7 @@ function update_credit_amount_of_all_transaction($client_table) {
 
             foreach($sales_returns as $txn => $credit_amount) {
                 $is_successful = $set_sr_transaction_to_zero -> execute([
-                    ':credit_amount' => $credit_amount,
+                    ':credit_amount' => abs($credit_amount),
                     ':id' => $txn,
                 ]);
 
