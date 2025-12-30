@@ -337,22 +337,57 @@ function fix_balance_sheet_amount_receivables(int $store_id) {
 // fix_balance_sheet_amount_receivables($store_id, $customer_aged_summary);
 
 function fix_amount_owing(int $store_id) {
+    $db = get_db_instance();
+    try {
+        $db -> beginTransaction();
 
-    // Fetch All Clients
-    $clients = array_keys(Client::fetch_clients_of_store($store_id));
-    print_r($clients);
+        // Fetch All Clients
+        $clients = array_keys(Client::fetch_clients_of_store($store_id));
 
-    // Fetch Customer Statement 
-    // foreach($clients as $client_id) {
-    //     $customer_statement = CustomerStatement::fetch_customer_statement(
-    //         $client_id,
-    //         $store_id,
-    //         null,
-    //         '2025-12-31',
-    //     );
-    //     print_r($customer_statement);
-    //     break;
-    // }
+        // Prepare Statement
+        $statement_fetch_amount_owing = $db -> prepare('SELECT amount_owing FROM clients WHERE id = :id;');
+        $statement_update_amount_owing = $db -> prepare('UPDATE clients SET amount_owing = :amount_owing WHERE id = :id;');
+
+        // Fetch Customer Statement 
+        foreach($clients as $client_id) {
+            $customer_statement = CustomerStatement::fetch_customer_statement(
+                $client_id,
+                $store_id,
+                null,
+                '2025-12-31',
+            );
+            
+            if($customer_statement['status'] === false) continue;
+            else {
+                // Fetch Amount Owing
+                $statement_fetch_amount_owing -> execute([':id' => $client_id]);
+                $amount_owing = $statement_fetch_amount_owing -> fetchAll(PDO::FETCH_ASSOC)[0]['amount_owing'];
+                
+                $amount_owing = json_decode($amount_owing, true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+                if(isset($amount_owing[$store_id])) {
+                    $amount_owing[$store_id] = Utils::round($customer_statement['data']['aged_summary']['total'], 2);
+                }
+
+                // Update Amount owing
+                $is_successful = $statement_update_amount_owing -> execute([
+                    ':amount_owing' => json_encode($amount_owing, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
+                    ':id' => $client_id,
+                ]);
+                
+                if($is_successful !== true && $statement_update_amount_owing -> rowCount() < 1) {
+                    throw new Exception('Unable to update amount owing for client: '. $client_id);
+                }
+            }
+        }
+
+        echo 'Done';
+        assert_success();
+        $db -> commit();
+    }
+    catch(Exception $e) {
+        $db -> rollBack();
+        print_r($e -> getMessage());
+    }
 }
 
 fix_amount_owing($store_id);
