@@ -218,11 +218,10 @@ function __fetch_transactions_by_receipt(int $store_id, string $date, int $trans
     return $transactions_ids;
 }
 
-function fix_transactions_credit_amount(bool $is_test, int $store_id, string $date): void {
+function fix_transactions_credit_amount(bool $is_test, int $store_id, string $date, int $transaction_type): void {
     $db = get_db_instance();
     try {
         $db -> beginTransaction();
-        $transaction_type = SALES_INVOICE;
 
         // Select Table name
         $table_name = ($transaction_type === SALES_INVOICE ? 'sales_invoice': 'sales_return');
@@ -384,8 +383,9 @@ function fix_amount_owing(int $store_id) {
 }
 
 $store_id = StoreDetails::EDMONTON;
-f_record($store_id);
-// fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01');
+// f_record($store_id);
+// fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_INVOICE);
+fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_RETURN);
 // fix_balance_sheet_amount_receivables($store_id);
 // fix_amount_owing($store_id);
 ?>  
