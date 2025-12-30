@@ -200,7 +200,8 @@ function __find_receipt_for_transaction(int $store_id, int $client_id, int $tran
             }
         }
         else {
-            $transaction_type_str = $transaction_type === SALES_INVOICE ? 'Sales_Invoice' : 'Sales_Return';
+            // $transaction_type_str = $transaction_type === SALES_INVOICE ? 'Sales_Invoice' : 'Sales_Return';
+            $transaction_type_str = $transaction_type;
             if(isset($client_table[$client_id]) === false) $client_table[$client_id] = [];
             if(isset($client_table[$client_id][$transaction_type_str][$transaction_id]) === false) {
                 $client_table[$client_id][$transaction_type_str][$transaction_id] = 0;
@@ -276,6 +277,50 @@ function fix_transactions_credit_amount(bool $is_test, int $store_id, string $da
     catch(Exception $e) {
         $db -> rollBack();
         echo $e -> getMessage();
+    }
+}
+
+function update_credit_amount_of_all_transaction($client_table) {
+    $db = get_db_instance();
+    try {
+        $db -> beginTransaction();
+
+        // Prepare Statement 
+        $set_si_transaction_to_zero = $db -> prepare('UPDATE sales_invoice SET credit_amount = credit_amount - :credit_amount WHERE id = :id;');
+        $set_sr_transaction_to_zero = $db -> prepare('UPDATE sales_return SET credit_amount = credit_amount - :credit_amount WHERE id = :id;');
+
+        foreach($client_table as $txn) {
+            $sales_invoices = $txn[SALES_INVOICE] ?? [];
+            $sales_returns = $txn[SALES_RETURN] ?? [];
+
+            foreach($sales_invoices as $txn => $credit_amount) {
+                $is_successful = $set_si_transaction_to_zero -> execute([
+                    ':credit_amount' => $credit_amount,
+                    ':id' => $txn,
+                ]);
+
+                if($is_successful !== true && $set_si_transaction_to_zero -> rowCount() < 1) {
+                    throw new Exception('Unable to Update Transaction: SI-'. $txn);
+                }
+            }
+
+            foreach($sales_returns as $txn => $credit_amount) {
+                $is_successful = $set_sr_transaction_to_zero -> execute([
+                    ':credit_amount' => $credit_amount,
+                    ':id' => $txn,
+                ]);
+
+                if($is_successful !== true && $set_sr_transaction_to_zero -> rowCount() < 1) {
+                    throw new Exception('Unable to Update Transaction: SR-'. $txn);
+                }
+            }
+        }
+        assert_success();
+        $db -> commit();
+    }
+    catch(Exception $e) {
+        $db -> rollBack();
+        print_r($e -> getMessage());
     }
 }
 
@@ -407,17 +452,19 @@ function print_client_details($client_table): void {
     }
 
     print_r($client_details);
-
 }
 
 // SET UTILS::ROUND to 4 Decimal Places before proceeding.
 $store_id = StoreDetails::EDMONTON;
 $client_table = [];
-if($store_id == StoreDetails::EDMONTON) f_record($store_id);
+// if($store_id == StoreDetails::EDMONTON) f_record($store_id);
 fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_INVOICE, client_table: $client_table);
 fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_RETURN, client_table: $client_table);
 print_client_details($client_table);
+update_credit_amount_of_all_transaction($client_table);
+// DISABLE FEDERAL AND PROVINCIAL TAXES FOR CLIENTS.
 // fix_balance_sheet_amount_receivables($store_id);
 // fix_amount_owing($store_id);
 // SET UTILS::ROUND to 2 Decimal Places AFTER COMPLETING ALL STORES.
+// ENABLE FEDERAL AND PROVINCIAL TAXES FOR CLIENTS.
 ?>  
