@@ -210,7 +210,7 @@ function __find_receipt_for_transaction(int $store_id, int $client_id, int $tran
                 $client_table[$client_id][$transaction_type_str][$transaction_id] = 0;
             }
             $client_table[$client_id][$transaction_type_str][$transaction_id] += $amount_to_be_adjusted;
-            // echo "$transaction_id $amount_owing $total_amount_received $amount_to_be_adjusted<br>";
+            echo "$transaction_id $amount_owing $total_amount_received $amount_to_be_adjusted<br>";
         }
     }
 }
@@ -289,8 +289,8 @@ function update_credit_amount_of_all_transaction($client_table) {
         $db -> beginTransaction();
 
         // Prepare Statement 
-        $set_si_transaction_to_zero = $db -> prepare('UPDATE sales_invoice SET credit_amount = credit_amount - :credit_amount WHERE id = :id;');
-        $set_sr_transaction_to_zero = $db -> prepare('UPDATE sales_return SET credit_amount = credit_amount - :credit_amount WHERE id = :id;');
+        $set_si_transaction_to_zero = $db -> prepare('UPDATE sales_invoice SET credit_amount = 0 WHERE id = :id;');
+        $set_sr_transaction_to_zero = $db -> prepare('UPDATE sales_return  SET credit_amount = 0 WHERE id = :id;');
 
         foreach($client_table as $txn) {
             $sales_invoices = $txn[SALES_INVOICE] ?? [];
@@ -298,7 +298,6 @@ function update_credit_amount_of_all_transaction($client_table) {
 
             foreach($sales_invoices as $txn => $credit_amount) {
                 $is_successful = $set_si_transaction_to_zero -> execute([
-                    ':credit_amount' => $credit_amount,
                     ':id' => $txn,
                 ]);
 
@@ -309,7 +308,6 @@ function update_credit_amount_of_all_transaction($client_table) {
 
             foreach($sales_returns as $txn => $credit_amount) {
                 $is_successful = $set_sr_transaction_to_zero -> execute([
-                    ':credit_amount' => abs($credit_amount),
                     ':id' => $txn,
                 ]);
 
@@ -442,27 +440,29 @@ function fix_amount_owing(int $store_id) {
 function print_client_details($client_table): void {
     $db = get_db_instance();
     $clients = array_keys($client_table);
-    $query = 'SELECT id, `name` FROM clients WHERE id IN (:placeholder);';
-    $results = Utils::mysql_in_placeholder_pdo_substitute($clients, $query);
-    $query = $results['query'];
-    $values = $results['values'];
+    if (count($clients)) {
+        $query = 'SELECT id, `name` FROM clients WHERE id IN (:placeholder);';
+        $results = Utils::mysql_in_placeholder_pdo_substitute($clients, $query);
+        $query = $results['query'];
+        $values = $results['values'];
 
-    $statement = $db -> prepare($query);
-    $statement -> execute($values);
-    $temp = $statement -> fetchAll(PDO::FETCH_ASSOC);
-    $client_details = [];
-    foreach($temp as $client_detail) {
-        $client_details[$client_detail['name']] = $client_table[$client_detail['id']];
+        $statement = $db -> prepare($query);
+        $statement -> execute($values);
+        $temp = $statement -> fetchAll(PDO::FETCH_ASSOC);
+        $client_details = [];
+        foreach($temp as $client_detail) {
+            $client_details[$client_detail['name']] = $client_table[$client_detail['id']];
+        }
+
+        print_r($client_details);
+        echo '<br>';
     }
-
-    print_r($client_details);
-    echo '<br>';
 }
 
 // SET UTILS::ROUND to 4 Decimal Places before proceeding.
-$store_id = StoreDetails::CALGARY;
+$store_id = StoreDetails::NISKU;
 $client_table = [];
-if($store_id == StoreDetails::EDMONTON) f_record($store_id);
+// if($store_id == StoreDetails::EDMONTON) f_record($store_id);
 fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_INVOICE, client_table: $client_table);
 fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_RETURN, client_table: $client_table);
 print_client_details($client_table);
