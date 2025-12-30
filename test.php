@@ -158,27 +158,114 @@ function f_record(): void {
 }
 
 // f_record(StoreDetails::EDMONTON);
-$client_ids = Client::fetch_clients_of_store(StoreDetails::NISKU);
 
-$index = 0;
-$limit = $index + 25;
-for (; $index < $limit; ++$index) {
-    Email::send(
-        'Merry Christmas and Happy New Year!',
-        $client_ids[$index]['email_id'],
-        $client_ids[$index]['name'],
-        <<<'EOS'
-        We at ABS Truck & Trailer Parts Nisku wish you a Merry Christmas and a Happy New Year! Have a Jolly holidays.<br><br>
-        Our hours vary during this time, please see the attachment below to learn more.<br>
-        <br>
-        <br>
-        Regards,<br>
-        ABS Truck & Trailer Parts Nisku
-        EOS,
-        StoreDetails::NISKU,
-        "{$_SERVER['DOCUMENT_ROOT']}/nisku_holiday_schedule.png",
-        'Holiday_schedule.png'
-    );
+function find_receipt_for_transaction(int $store_id, int $client_id, int $transaction_id, float $credit_amount, PDO &$db, &$set_transaction_to_zero, $transaction_type) {
+    $statement = $db -> prepare('SELECT id, `details` FROM receipt WHERE store_id = :store_id AND client_id = :client_id AND `details` LIKE :txn_id;');
+    $txn_tag = $transaction_type === SALES_INVOICE ? 'IN': 'SR';
+    $statement -> execute([
+        ':store_id' => $store_id,
+        ':client_id' => $client_id,
+        ':txn_id' => "%\"txnId\":\"$txn_tag-$transaction_id\",%",
+    ]);
+
+    $receipts = $statement -> fetchAll(PDO::FETCH_ASSOC);
+    if(count($receipts)) {
+        $amount_owing = null;
+        $amount_received = 0;
+        $discount_given = 0;
+        foreach($receipts as $r) {
+            $txn_details = json_decode($r['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+            foreach($txn_details as $txn) {
+                if($txn['type'] === $transaction_type && $txn['id'] === $transaction_id) {
+
+                    // Assign this one.
+                    if(is_null($amount_owing)) $amount_owing = $txn['amountOwing'];
+                    $amount_received += $txn['amountReceived'];
+                    $discount_given += $txn['discountGiven'];
+                }
+            }
+        }
+
+        // Total Amount Received
+        $total_amount_received = $amount_received + $discount_given;
+        
+        if(strval($amount_owing) == strval($total_amount_received)) {
+            $is_successful = $set_transaction_to_zero -> execute([':id' => $transaction_id, ':credit_amount' => $credit_amount]);
+            if($is_successful !== true || $set_transaction_to_zero -> rowCount() < 1) {
+                throw new Exception('Unable to Update Transaction: '. $transaction_id);
+            }
+        }
+        else echo $transaction_id. ' | '. $amount_owing . ' | '. $total_amount_received. '<br>';
+    }
 }
 
+function fetch_transactions_by_receipt(int $store_id, string $date, int $transaction_type, PDO &$db): array {
+    $statement = $db -> prepare('SELECT id, `details` FROM receipt WHERE store_id = :store_id AND `date` >= :_date;');
+    $statement -> execute([':store_id' => $store_id, ':_date' => $date ]);
+    $receipts = $statement -> fetchAll(PDO::FETCH_ASSOC);
+    $transactions_ids = [];
+    foreach($receipts as $receipt) {
+        $details = json_decode($receipt['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+        foreach($details as $d) {
+            if($d['type'] != $transaction_type) continue;
+            $transactions_ids []= $d['id'];
+        }
+    }
+    return $transactions_ids;
+}
+
+function fix_transactions_credit_amount(bool $is_test, int $store_id, string $date): void {
+    $db = get_db_instance();
+    try {
+        $db -> beginTransaction();
+        $transaction_type = SALES_RETURN;
+
+        // Select Table name
+        $table_name = ($transaction_type === SALES_INVOICE ? 'sales_invoice': 'sales_return');
+
+        // Fetch Transaction IDS
+        $transaction_ids = fetch_transactions_by_receipt($store_id, $date, $transaction_type, $db);
+
+        // Fetch IDS
+        $query = 'SELECT id, client_id, credit_amount FROM '. $table_name. ' WHERE id IN (:placeholder);';
+        $result = Utils::mysql_in_placeholder_pdo_substitute($transaction_ids, $query);
+        
+        // Fetch Transactions
+        $statement = $db -> prepare($result['query']);
+        $statement -> execute($result['values']);
+        $results = $statement -> fetchAll(PDO::FETCH_ASSOC);
+
+        // Prepare Statement 
+        $set_transaction_to_zero = $db -> prepare('UPDATE '. $table_name.' SET credit_amount = credit_amount - :credit_amount WHERE id = :id;');
+
+        foreach($results as $result) {
+            $transaction_id = $result['id'];
+            $client_id = $result['client_id'];
+            $credit_amount = $result['credit_amount'];
+            $credit_amount_str = strval($credit_amount);
+
+            if(Utils::round($credit_amount, 2) == 0.0 && $credit_amount_str != '0.0000') {
+
+                // Print Transactions
+                if($is_test) echo "$transaction_id,";
+                else {
+                    // Fetch Receipt for this transactions
+                    find_receipt_for_transaction($store_id, $client_id, $transaction_id, $credit_amount, $db, $set_transaction_to_zero, $transaction_type);
+                }
+            }
+        }
+
+        // Generate Exception on test
+        if($is_test) throw new Exception('<br><br>TEST EXCEPTION');
+
+        assert_success();
+        $db -> commit();
+        echo 'Done';
+    }
+    catch(Exception $e) {
+        $db -> rollBack();
+        echo $e -> getMessage();
+    }
+}
+fix_transactions_credit_amount(is_test: false, store_id: StoreDetails::SASKATOON, date: '2025-12-01');
 ?>  
