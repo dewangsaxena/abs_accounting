@@ -358,7 +358,7 @@ function fix_amount_owing(int $store_id) {
                 
                 $amount_owing = json_decode($amount_owing, true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
                 if(isset($amount_owing[$store_id])) {
-                    $amount_owing[$store_id] = Utils::round($customer_statement['data']['aged_summary']['total'], 2);
+                    $amount_owing[$store_id] = Utils::round($customer_statement['data']['aged_summary']['total'], 4);
                 }
 
                 // Update Amount owing
