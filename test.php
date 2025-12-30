@@ -385,7 +385,7 @@ function fix_amount_owing(int $store_id) {
 
 $store_id = StoreDetails::EDMONTON;
 // f_record($store_id);
-// fix_transactions_credit_amount(is_test: false, store_id: StoreDetails::EDMONTON, date: '2025-12-01');
-// fix_balance_sheet_amount_receivables($store_id, $customer_aged_summary);
+// fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01');
+// fix_balance_sheet_amount_receivables($store_id);
 // fix_amount_owing($store_id);
 ?>  
