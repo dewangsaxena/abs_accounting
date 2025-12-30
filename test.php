@@ -410,6 +410,7 @@ function print_client_details($client_table): void {
 
 }
 
+// SET UTILS::ROUND to 4 Decimal Places before proceeding.
 $store_id = StoreDetails::EDMONTON;
 $client_table = [];
 // if($store_id == StoreDetails::EDMONTON) f_record($store_id);
@@ -418,4 +419,5 @@ fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-
 print_client_details($client_table);
 // fix_balance_sheet_amount_receivables($store_id);
 // fix_amount_owing($store_id);
+// SET UTILS::ROUND to 2 Decimal Places AFTER COMPLETING ALL STORES.
 ?>  
