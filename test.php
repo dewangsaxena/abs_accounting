@@ -200,6 +200,8 @@ function __find_receipt_for_transaction(int $store_id, int $client_id, int $tran
                 throw new Exception('Unable to Update Transaction: '. $transaction_id);
             }
         }
+
+        // This will execute when the transaction is in multiple receipts.
         else {
             // $transaction_type_str = $transaction_type === SALES_INVOICE ? 'Sales_Invoice' : 'Sales_Return';
             $transaction_type_str = $transaction_type;
