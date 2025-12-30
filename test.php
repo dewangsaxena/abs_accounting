@@ -453,6 +453,7 @@ function print_client_details($client_table): void {
     }
 
     print_r($client_details);
+    echo '<br>';
 }
 
 // SET UTILS::ROUND to 4 Decimal Places before proceeding.
