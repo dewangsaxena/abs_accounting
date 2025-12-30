@@ -271,11 +271,6 @@ function fix_transactions_credit_amount(bool $is_test, int $store_id, string $da
         echo $e -> getMessage();
     }
 }
-// fix_transactions_credit_amount(is_test: false, store_id: StoreDetails::EDMONTON, date: '2025-12-01');
-
-$store_id = StoreDetails::EDMONTON;
-
-// f_record($store_id);
 
 function fix_balance_sheet_amount_receivables(int $store_id) {
     $db = get_db_instance();
@@ -334,8 +329,6 @@ function fix_balance_sheet_amount_receivables(int $store_id) {
     }
 }
 
-// fix_balance_sheet_amount_receivables($store_id, $customer_aged_summary);
-
 function fix_amount_owing(int $store_id) {
     $db = get_db_instance();
     try {
@@ -390,5 +383,9 @@ function fix_amount_owing(int $store_id) {
     }
 }
 
+$store_id = StoreDetails::EDMONTON;
+// f_record($store_id);
+// fix_transactions_credit_amount(is_test: false, store_id: StoreDetails::EDMONTON, date: '2025-12-01');
+// fix_balance_sheet_amount_receivables($store_id, $customer_aged_summary);
 // fix_amount_owing($store_id);
 ?>  
