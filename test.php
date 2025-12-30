@@ -317,6 +317,7 @@ function update_credit_amount_of_all_transaction($client_table) {
         }
         assert_success();
         $db -> commit();
+        echo 'update_credit_amount_of_all_transaction: Done<br>';
     }
     catch(Exception $e) {
         $db -> rollBack();
