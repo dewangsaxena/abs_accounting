@@ -3,6 +3,7 @@
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/utils.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/database.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_summary.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_statement.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/inventory.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/correct_is_bs_inventory_v2.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_aged_summary.php";
@@ -120,6 +121,8 @@ $store_id = StoreDetails::SASKATOON;
 // $details = Inventory::fetch_item_quantity_sold_by_prefix($code, StoreDetails::CALGARY, '2025-01-01', '2025-12-31');
 // Inventory::generate_quantity_report_of_item_sold($code, $details);
 
+// ********** FROM HERE **************
+
 function f_record(): void {
     $db = get_db_instance();
     try {
@@ -149,7 +152,7 @@ function f_record(): void {
         BalanceSheetActions::update_from($bs, '2025-11-12', 2, $db);
 
         $db -> commit();
-        echo 'Done';
+        echo 'f_record: Done<br>';
     }
     catch(Exception $e) {
         $db -> rollBack();
@@ -157,9 +160,7 @@ function f_record(): void {
     }
 }
 
-// f_record(StoreDetails::EDMONTON);
-
-function find_receipt_for_transaction(int $store_id, int $client_id, int $transaction_id, float $credit_amount, PDO &$db, &$set_transaction_to_zero, $transaction_type) {
+function __find_receipt_for_transaction(int $store_id, int $client_id, int $transaction_id, float $credit_amount, PDO &$db, &$set_transaction_to_zero, $transaction_type, &$client_table) {
     $statement = $db -> prepare('SELECT id, `details` FROM receipt WHERE store_id = :store_id AND client_id = :client_id AND `details` LIKE :txn_id;');
     $txn_tag = $transaction_type === SALES_INVOICE ? 'IN': 'SR';
     $statement -> execute([
@@ -188,18 +189,33 @@ function find_receipt_for_transaction(int $store_id, int $client_id, int $transa
 
         // Total Amount Received
         $total_amount_received = $amount_received + $discount_given;
+
+        // Amount to be adjusted
+        $amount_to_be_adjusted = Utils::round($total_amount_received - $amount_owing, 4);
         
+        // This will execute when there is only 1 receipt and the entire amount is settled in it.
         if(strval($amount_owing) == strval($total_amount_received)) {
             $is_successful = $set_transaction_to_zero -> execute([':id' => $transaction_id, ':credit_amount' => $credit_amount]);
             if($is_successful !== true || $set_transaction_to_zero -> rowCount() < 1) {
                 throw new Exception('Unable to Update Transaction: '. $transaction_id);
             }
         }
-        else echo $transaction_id. ' | '. $amount_owing . ' | '. $total_amount_received. '<br>';
+
+        // This will execute when the transaction is in multiple receipts.
+        else {
+            // $transaction_type_str = $transaction_type === SALES_INVOICE ? 'Sales_Invoice' : 'Sales_Return';
+            $transaction_type_str = $transaction_type;
+            if(isset($client_table[$client_id]) === false) $client_table[$client_id] = [];
+            if(isset($client_table[$client_id][$transaction_type_str][$transaction_id]) === false) {
+                $client_table[$client_id][$transaction_type_str][$transaction_id] = 0;
+            }
+            $client_table[$client_id][$transaction_type_str][$transaction_id] += $amount_to_be_adjusted;
+            // echo "$transaction_id $amount_owing $total_amount_received $amount_to_be_adjusted<br>";
+        }
     }
 }
 
-function fetch_transactions_by_receipt(int $store_id, string $date, int $transaction_type, PDO &$db): array {
+function __fetch_transactions_by_receipt(int $store_id, string $date, int $transaction_type, PDO &$db): array {
     $statement = $db -> prepare('SELECT id, `details` FROM receipt WHERE store_id = :store_id AND `date` >= :_date;');
     $statement -> execute([':store_id' => $store_id, ':_date' => $date ]);
     $receipts = $statement -> fetchAll(PDO::FETCH_ASSOC);
@@ -214,17 +230,16 @@ function fetch_transactions_by_receipt(int $store_id, string $date, int $transac
     return $transactions_ids;
 }
 
-function fix_transactions_credit_amount(bool $is_test, int $store_id, string $date): void {
+function fix_transactions_credit_amount(bool $is_test, int $store_id, string $date, int $transaction_type, array &$client_table): void {
     $db = get_db_instance();
     try {
         $db -> beginTransaction();
-        $transaction_type = SALES_RETURN;
 
         // Select Table name
         $table_name = ($transaction_type === SALES_INVOICE ? 'sales_invoice': 'sales_return');
 
         // Fetch Transaction IDS
-        $transaction_ids = fetch_transactions_by_receipt($store_id, $date, $transaction_type, $db);
+        $transaction_ids = __fetch_transactions_by_receipt($store_id, $date, $transaction_type, $db);
 
         // Fetch IDS
         $query = 'SELECT id, client_id, credit_amount FROM '. $table_name. ' WHERE id IN (:placeholder);';
@@ -250,7 +265,7 @@ function fix_transactions_credit_amount(bool $is_test, int $store_id, string $da
                 if($is_test) echo "$transaction_id,";
                 else {
                     // Fetch Receipt for this transactions
-                    find_receipt_for_transaction($store_id, $client_id, $transaction_id, $credit_amount, $db, $set_transaction_to_zero, $transaction_type);
+                    __find_receipt_for_transaction($store_id, $client_id, $transaction_id, $credit_amount, $db, $set_transaction_to_zero, $transaction_type, $client_table);
                 }
             }
         }
@@ -260,12 +275,226 @@ function fix_transactions_credit_amount(bool $is_test, int $store_id, string $da
 
         assert_success();
         $db -> commit();
-        echo 'Done';
+        echo 'fix_transactions_credit_amount: Done<br>';
     }
     catch(Exception $e) {
         $db -> rollBack();
         echo $e -> getMessage();
     }
 }
-fix_transactions_credit_amount(is_test: false, store_id: StoreDetails::SASKATOON, date: '2025-12-01');
+
+function update_credit_amount_of_all_transaction($client_table) {
+    $db = get_db_instance();
+    try {
+        $db -> beginTransaction();
+
+        // Prepare Statement 
+        $set_si_transaction_to_zero = $db -> prepare('UPDATE sales_invoice SET credit_amount = 0 WHERE id = :id;');
+        $set_sr_transaction_to_zero = $db -> prepare('UPDATE sales_return  SET credit_amount = 0 WHERE id = :id;');
+
+        foreach($client_table as $txn) {
+            $sales_invoices = $txn[SALES_INVOICE] ?? [];
+            $sales_returns = $txn[SALES_RETURN] ?? [];
+
+            foreach($sales_invoices as $txn => $credit_amount) {
+                $is_successful = $set_si_transaction_to_zero -> execute([
+                    ':id' => $txn,
+                ]);
+
+                if($is_successful !== true && $set_si_transaction_to_zero -> rowCount() < 1) {
+                    throw new Exception('Unable to Update Transaction: SI-'. $txn);
+                }
+            }
+
+            foreach($sales_returns as $txn => $credit_amount) {
+                $is_successful = $set_sr_transaction_to_zero -> execute([
+                    ':id' => $txn,
+                ]);
+
+                if($is_successful !== true && $set_sr_transaction_to_zero -> rowCount() < 1) {
+                    throw new Exception('Unable to Update Transaction: SR-'. $txn);
+                }
+            }
+        }
+        assert_success();
+        $db -> commit();
+        echo 'update_credit_amount_of_all_transaction: Done<br>';
+    }
+    catch(Exception $e) {
+        $db -> rollBack();
+        print_r($e -> getMessage());
+    }
+}
+
+function fix_balance_sheet_amount_receivables(int $store_id) {
+    $db = get_db_instance();
+    try {
+        $db -> beginTransaction();
+        
+        // Fetch Accounts Receivables for Store.
+        $customer_aged_summary = CustomerAgedSummary::generate(
+            $store_id,
+            '1970-01-01',
+            '2025-12-31',
+            0,
+            0,
+            1,
+            0,
+            0,
+            true,
+        );
+
+        // Calculate Sum Total
+        $amount_receivables = 0;
+        foreach($customer_aged_summary as $r) {
+            $amount_receivables += $r['total'];
+        }
+
+        // Round off.
+        $amount_receivables = Utils::round($amount_receivables, 2);
+
+        // Update Balance Sheet
+        $statement = $db -> prepare('SELECT id, `statement`, modified FROM balance_sheet WHERE store_id = :store_id ORDER by `date` DESC LIMIT 1;');
+        $statement -> execute([':store_id' => $store_id]);
+        $balance_sheet = $statement -> fetchAll(PDO::FETCH_ASSOC)[0];
+        $bs_id = $balance_sheet['id'];
+        $bs_modified = $balance_sheet['modified'];
+        $bs_statement = json_decode($balance_sheet['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+
+        $bs_statement[AccountsConfig::ACCOUNTS_RECEIVABLE] = $amount_receivables;
+
+        // Update 
+        $statement = $db -> prepare('UPDATE balance_sheet SET `statement` = :_statement WHERE id = :id AND modified = :modified;');
+        $is_successful = $statement -> execute([
+            ':id' => $bs_id, 
+            ':_statement' => json_encode($bs_statement, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
+            ':modified' => $bs_modified
+        ]);
+        if($is_successful !== true && $statement -> rowCount() < 1) {
+            throw new Exception('Unable to Update Balance Sheet.');
+        }
+        assert_success();
+        $db -> commit();
+        echo 'fix_balance_sheet_amount_receivables: Done<br>';
+    }
+    catch(Exception $e) {
+        $db -> rollBack();
+        echo $e -> getMessage();
+    }
+}
+
+function fix_amount_owing(int $store_id) {
+    $db = get_db_instance();
+    try {
+        $db -> beginTransaction();
+
+        // Fetch All Clients
+        $clients = array_keys(Client::fetch_clients_of_store($store_id));
+
+        // Prepare Statement
+        $statement_fetch_amount_owing = $db -> prepare('SELECT amount_owing FROM clients WHERE id = :id;');
+        $statement_update_amount_owing = $db -> prepare('UPDATE clients SET amount_owing = :amount_owing WHERE id = :id;');
+
+        // Fetch Customer Statement 
+        foreach($clients as $client_id) {
+            $customer_statement = CustomerStatement::fetch_customer_statement(
+                $client_id,
+                $store_id,
+                null,
+                '2025-12-31',
+            );
+            
+            if($customer_statement['status'] === false) continue;
+            else {
+                // Fetch Amount Owing
+                $statement_fetch_amount_owing -> execute([':id' => $client_id]);
+                $amount_owing = $statement_fetch_amount_owing -> fetchAll(PDO::FETCH_ASSOC)[0]['amount_owing'];
+                
+                $amount_owing = json_decode($amount_owing, true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+                if(isset($amount_owing[$store_id])) {
+                    $amount_owing[$store_id] = Utils::round($customer_statement['data']['aged_summary']['total'], 4);
+                }
+
+                // Update Amount owing
+                $is_successful = $statement_update_amount_owing -> execute([
+                    ':amount_owing' => json_encode($amount_owing, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
+                    ':id' => $client_id,
+                ]);
+                
+                if($is_successful !== true && $statement_update_amount_owing -> rowCount() < 1) {
+                    throw new Exception('Unable to update amount owing for client: '. $client_id);
+                }
+            }
+        }
+
+        echo 'fix_amount_owing: Done<br>';
+        assert_success();
+        $db -> commit();
+    }
+    catch(Exception $e) {
+        $db -> rollBack();
+        print_r($e -> getMessage());
+    }
+}
+
+function print_client_details($client_table): void {
+    $db = get_db_instance();
+    $clients = array_keys($client_table);
+    if (count($clients)) {
+        $query = 'SELECT id, `name` FROM clients WHERE id IN (:placeholder);';
+        $results = Utils::mysql_in_placeholder_pdo_substitute($clients, $query);
+        $query = $results['query'];
+        $values = $results['values'];
+
+        $statement = $db -> prepare($query);
+        $statement -> execute($values);
+        $temp = $statement -> fetchAll(PDO::FETCH_ASSOC);
+        $client_details = [];
+        foreach($temp as $client_detail) {
+            $client_details[$client_detail['name']] = $client_table[$client_detail['id']];
+        }
+
+        $clients = array_keys($client_details);
+        $temp = [];
+        foreach($clients as $client) {
+            $temp[$client] = [
+                'credit_amount' => 0,
+                'debit_amount' => 0,
+                'txn' => $client_details[$client],
+            ];
+
+            $si = $client_details[$client][1] ?? [];
+            $sr = $client_details[$client][2] ?? [];
+            foreach($si as $t) {
+                $temp[$client]['credit_amount'] += abs($t);
+            }
+
+            foreach($sr as $t) {
+                $temp[$client]['debit_amount'] += abs($t);
+            }
+            
+        }
+        $clients = array_keys($temp);
+        foreach($clients as $client) {
+            echo $client.'<br>&nbsp;&nbsp;&nbsp;&nbsp;->&nbsp;&nbsp;';
+            print_r($temp[$client]);
+            echo '<br><br>';
+        }
+        echo '<br>';
+    }
+}
+
+// SET UTILS::ROUND to 4 Decimal Places before proceeding.
+$store_id = StoreDetails::CALGARY;
+$client_table = [];
+// if($store_id == StoreDetails::EDMONTON) f_record($store_id);
+fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_INVOICE, client_table: $client_table);
+fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_RETURN, client_table: $client_table);
+print_client_details($client_table);
+update_credit_amount_of_all_transaction($client_table);
+// DISABLE FEDERAL AND PROVINCIAL TAXES FOR CLIENTS.
+// fix_balance_sheet_amount_receivables($store_id);
+// fix_amount_owing($store_id);
+// SET UTILS::ROUND to 2 Decimal Places AFTER COMPLETING ALL STORES.
+// ENABLE FEDERAL AND PROVINCIAL TAXES FOR CLIENTS.
 ?>  
