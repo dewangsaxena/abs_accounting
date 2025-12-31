@@ -151,6 +151,7 @@ function f_record(): void {
         BalanceSheetActions::update_account_value($bs, AccountsConfig::INVENTORY_A, 36.18);
         BalanceSheetActions::update_from($bs, '2025-11-12', 2, $db);
 
+        assert_success();
         $db -> commit();
         echo 'f_record: Done<br>';
     }
@@ -485,9 +486,9 @@ function print_client_details($client_table): void {
 }
 
 // SET UTILS::ROUND to 4 Decimal Places before proceeding.
-$store_id = StoreDetails::CALGARY;
+$store_id = StoreDetails::EDMONTON;
 $client_table = [];
-// if($store_id == StoreDetails::EDMONTON) f_record($store_id);
+if($store_id == StoreDetails::EDMONTON) f_record($store_id);
 fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_INVOICE, client_table: $client_table);
 fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_RETURN, client_table: $client_table);
 print_client_details($client_table);
