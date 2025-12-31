@@ -70,11 +70,11 @@ class Receipt {
 
                 if($type === SALES_INVOICE) {
                     if($discount_given < 0) throw new Exception('Discount Given cannot be less than 0 for: '. $txn['txnId']);
-                    else if(Utils::round($discount_given + $amount_received, 4) > $amount_owing) throw new Exception('Discount Given + Amount Received cannot be greater tha Amount Owing: '. $txn['txnId']);
+                    else if(Utils::round($discount_given + $amount_received, 4) > $amount_owing) throw new Exception('Discount Given + Amount Received cannot be greater than Amount Owing: '. $txn['txnId']);
                 }
                 if($type === SALES_RETURN) {
                     if($discount_given > 0) throw new Exception('Discount Given cannot be more than 0 for: '. $txn['txnId']);
-                    else if(Utils::round($discount_given + $amount_received, 4) < $amount_owing) throw new Exception('Discount Given + Amount Received cannot be greater tha Amount Owing for: '. $txn['txnId']);
+                    else if(Utils::round($discount_given + $amount_received, 4) < $amount_owing) throw new Exception('Discount Given + Amount Received cannot be greater than Amount Owing for: '. $txn['txnId']);
                 }
                 else if($type === CREDIT_NOTE || $type === DEBIT_NOTE) {
                     if($discount_given !== 0) throw new Exception('Invalid Discount Given for Credit/Debit Note for: '. $txn['txnId']);
