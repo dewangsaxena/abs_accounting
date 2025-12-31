@@ -151,6 +151,7 @@ function f_record(): void {
         BalanceSheetActions::update_account_value($bs, AccountsConfig::INVENTORY_A, 36.18);
         BalanceSheetActions::update_from($bs, '2025-11-12', 2, $db);
 
+        assert_success();
         $db -> commit();
         echo 'f_record: Done<br>';
     }
@@ -409,17 +410,19 @@ function fix_amount_owing(int $store_id) {
                 // Fetch Amount Owing
                 $statement_fetch_amount_owing -> execute([':id' => $client_id]);
                 $amount_owing = $statement_fetch_amount_owing -> fetchAll(PDO::FETCH_ASSOC)[0]['amount_owing'];
-                
+  
                 $amount_owing = json_decode($amount_owing, true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
                 if(isset($amount_owing[$store_id])) {
                     $amount_owing[$store_id] = Utils::round($customer_statement['data']['aged_summary']['total'], 4);
                 }
+
 
                 // Update Amount owing
                 $is_successful = $statement_update_amount_owing -> execute([
                     ':amount_owing' => json_encode($amount_owing, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
                     ':id' => $client_id,
                 ]);
+   
                 
                 if($is_successful !== true && $statement_update_amount_owing -> rowCount() < 1) {
                     throw new Exception('Unable to update amount owing for client: '. $client_id);
@@ -485,13 +488,13 @@ function print_client_details($client_table): void {
 }
 
 // SET UTILS::ROUND to 4 Decimal Places before proceeding.
-$store_id = StoreDetails::CALGARY;
+$store_id = StoreDetails::DELTA;
 $client_table = [];
 // if($store_id == StoreDetails::EDMONTON) f_record($store_id);
-fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_INVOICE, client_table: $client_table);
-fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_RETURN, client_table: $client_table);
-print_client_details($client_table);
-update_credit_amount_of_all_transaction($client_table);
+// fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_INVOICE, client_table: $client_table);
+// fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_RETURN, client_table: $client_table);
+// print_client_details($client_table);
+// update_credit_amount_of_all_transaction($client_table);
 // DISABLE FEDERAL AND PROVINCIAL TAXES FOR CLIENTS.
 // fix_balance_sheet_amount_receivables($store_id);
 // fix_amount_owing($store_id);
