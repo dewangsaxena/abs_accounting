@@ -210,7 +210,7 @@ function __find_receipt_for_transaction(int $store_id, int $client_id, int $tran
                 $client_table[$client_id][$transaction_type_str][$transaction_id] = 0;
             }
             $client_table[$client_id][$transaction_type_str][$transaction_id] += $amount_to_be_adjusted;
-            echo "$transaction_id $amount_owing $total_amount_received $amount_to_be_adjusted<br>";
+            // echo "$transaction_id $amount_owing $total_amount_received $amount_to_be_adjusted<br>";
         }
     }
 }
@@ -454,13 +454,38 @@ function print_client_details($client_table): void {
             $client_details[$client_detail['name']] = $client_table[$client_detail['id']];
         }
 
-        print_r($client_details);
+        $clients = array_keys($client_details);
+        $temp = [];
+        foreach($clients as $client) {
+            $temp[$client] = [
+                'credit_amount' => 0,
+                'debit_amount' => 0,
+                'txn' => $client_details[$client],
+            ];
+
+            $si = $client_details[$client][1] ?? [];
+            $sr = $client_details[$client][2] ?? [];
+            foreach($si as $t) {
+                $temp[$client]['credit_amount'] += abs($t);
+            }
+
+            foreach($sr as $t) {
+                $temp[$client]['debit_amount'] += abs($t);
+            }
+            
+        }
+        $clients = array_keys($temp);
+        foreach($clients as $client) {
+            echo $client.'<br>&nbsp;&nbsp;&nbsp;&nbsp;->&nbsp;&nbsp;';
+            print_r($temp[$client]);
+            echo '<br><br>';
+        }
         echo '<br>';
     }
 }
 
 // SET UTILS::ROUND to 4 Decimal Places before proceeding.
-$store_id = StoreDetails::NISKU;
+$store_id = StoreDetails::CALGARY;
 $client_table = [];
 // if($store_id == StoreDetails::EDMONTON) f_record($store_id);
 fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_INVOICE, client_table: $client_table);
