@@ -120,7 +120,7 @@ class CustomerStatement {
      * @param generate_record_of_all_txn
      * @return array
      */
-    public static function fetch_customer_statement(int $client_id, int $store_id, ?string $from_date, string $till_date, bool $generate_record_of_all_txn=false): array {
+    private static function fetch_customer_statement(int $client_id, int $store_id, ?string $from_date, string $till_date, bool $generate_record_of_all_txn=false): array {
         try {
             $db = get_db_instance();
             $amount_owing_sql_statement = '';
