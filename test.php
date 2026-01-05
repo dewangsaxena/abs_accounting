@@ -161,7 +161,7 @@ function f_record(): void {
     }
 }
 
-function __find_receipt_for_transaction(int $store_id, int $client_id, int $transaction_id, float $credit_amount, PDO &$db, &$set_transaction_to_zero, $transaction_type, &$client_table) {
+function __find_receipt_for_transaction(int $store_id, int $client_id, int $transaction_id, float $credit_amount, PDO &$db, &$deduct_transaction_credit_amount, $transaction_type, &$client_table) {
     $statement = $db -> prepare('SELECT id, `details` FROM receipt WHERE store_id = :store_id AND client_id = :client_id AND `details` LIKE :txn_id;');
     $txn_tag = $transaction_type === SALES_INVOICE ? 'IN': 'SR';
     $statement -> execute([
@@ -196,8 +196,8 @@ function __find_receipt_for_transaction(int $store_id, int $client_id, int $tran
         
         // This will execute when there is only 1 receipt and the entire amount is settled in it.
         if(strval($amount_owing) == strval($total_amount_received)) {
-            $is_successful = $set_transaction_to_zero -> execute([':id' => $transaction_id, ':credit_amount' => $credit_amount]);
-            if($is_successful !== true || $set_transaction_to_zero -> rowCount() < 1) {
+            $is_successful = $deduct_transaction_credit_amount -> execute([':id' => $transaction_id, ':credit_amount' => $credit_amount]);
+            if($is_successful !== true || $deduct_transaction_credit_amount -> rowCount() < 1) {
                 throw new Exception('Unable to Update Transaction: '. $transaction_id);
             }
         }
@@ -252,7 +252,8 @@ function fix_transactions_credit_amount(bool $is_test, int $store_id, string $da
         $results = $statement -> fetchAll(PDO::FETCH_ASSOC);
 
         // Prepare Statement 
-        $set_transaction_to_zero = $db -> prepare('UPDATE '. $table_name.' SET credit_amount = credit_amount - :credit_amount WHERE id = :id;');
+        $deduct_transaction_credit_amount = $db -> prepare('UPDATE '. $table_name.' SET credit_amount = credit_amount - :credit_amount WHERE id = :id;');
+        $set_transaction_credit_amount_to_zero = $db -> prepare('UPDATE '. $table_name.' SET credit_amount = 0 WHERE id = :id;');
 
         foreach($results as $result) {
             $transaction_id = $result['id'];
@@ -260,15 +261,25 @@ function fix_transactions_credit_amount(bool $is_test, int $store_id, string $da
             $credit_amount = $result['credit_amount'];
             $credit_amount_str = strval($credit_amount);
 
-            if(Utils::round($credit_amount, 2) == 0.0 && $credit_amount_str != '0.0000') {
+            // Fix Negative Balance Issue
+            $credit_amount_abs = abs($credit_amount);
 
-                // Print Transactions
-                if($is_test) echo "$transaction_id,";
-                else {
-                    // Fetch Receipt for this transactions
-                    __find_receipt_for_transaction($store_id, $client_id, $transaction_id, $credit_amount, $db, $set_transaction_to_zero, $transaction_type, $client_table);
+            if($credit_amount_abs > 0 and $credit_amount_abs <= 0.1) {
+                echo "$transaction_id | $credit_amount_str<br>";
+                $is_successful = $set_transaction_credit_amount_to_zero -> execute([':id' => $transaction_id]);
+                if($is_successful !== true && $set_transaction_credit_amount_to_zero -> rowCount() < 1) {
+                    throw new Exception('Cannot Set Transaction to Zero: '. $transaction_id);
                 }
             }
+            
+            // if(Utils::round($credit_amount, 4) == 0.0 && $credit_amount_str != '0.0000') {
+            //     // Print Transactions
+            //     if($is_test) echo "$transaction_id,";
+            //     else {
+            //         // Fetch Receipt for this transactions
+            //         __find_receipt_for_transaction($store_id, $client_id, $transaction_id, $credit_amount, $db, $deduct_transaction_credit_amount, $transaction_type, $client_table);
+            //     }
+            // }
         }
 
         // Generate Exception on test
@@ -336,13 +347,13 @@ function fix_balance_sheet_amount_receivables(int $store_id) {
         $customer_aged_summary = CustomerAgedSummary::generate(
             $store_id,
             '1970-01-01',
-            '2025-12-31',
+            '2026-12-31',
             0,
             0,
-            1,
-            0,
-            0,
-            true,
+            exclude_self:1,
+            exclude_clients:0,
+            omit_credit_records: 0,
+            do_return: true,
         );
 
         // Calculate Sum Total
@@ -488,16 +499,15 @@ function print_client_details($client_table): void {
 }
 
 // SET UTILS::ROUND to 4 Decimal Places before proceeding.
-$store_id = StoreDetails::DELTA;
+$store_id = StoreDetails::EDMONTON;
 $client_table = [];
-// if($store_id == StoreDetails::EDMONTON) f_record($store_id);
-// fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_INVOICE, client_table: $client_table);
-// fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_RETURN, client_table: $client_table);
-// print_client_details($client_table);
+fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_INVOICE, client_table: $client_table);
+fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_RETURN, client_table: $client_table);
+print_client_details($client_table);
 // update_credit_amount_of_all_transaction($client_table);
 // DISABLE FEDERAL AND PROVINCIAL TAXES FOR CLIENTS.
-// fix_balance_sheet_amount_receivables($store_id);
-// fix_amount_owing($store_id);
+fix_balance_sheet_amount_receivables($store_id);
+fix_amount_owing($store_id);
 // SET UTILS::ROUND to 2 Decimal Places AFTER COMPLETING ALL STORES.
 // ENABLE FEDERAL AND PROVINCIAL TAXES FOR CLIENTS.
 ?>  
