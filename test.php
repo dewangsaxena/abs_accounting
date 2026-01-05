@@ -347,13 +347,13 @@ function fix_balance_sheet_amount_receivables(int $store_id) {
         $customer_aged_summary = CustomerAgedSummary::generate(
             $store_id,
             '1970-01-01',
-            '2025-12-31',
+            '2026-12-31',
             0,
             0,
-            1,
-            0,
-            0,
-            true,
+            exclude_self:1,
+            exclude_clients:0,
+            omit_credit_records: 0,
+            do_return: true,
         );
 
         // Calculate Sum Total
