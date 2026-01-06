@@ -192,11 +192,16 @@ class CustomerStatement {
                 ];  
                 $formatted_record[]= $temp;
             }
-
             $response = [
                 'client_details' => [
                     'name' => $records[0]['client_name'],
                     'contact' => $records[0]['contact_name'],
+                    'address_1' => $records[0]['street1'] ?? null,
+                    'address_2' => $records[0]['street2'] ?? null,
+                    'city' => $records[0]['city'] ?? null,
+                    'province' => $records[0]['province'] ?? null,
+                    'postal_code' => $records[0]['postal_code'] ?? null,
+                    'phone_number_1' => $records[0]['phone_number_1'] ?? null,
                 ],
                 'transaction_records' => $formatted_record,
                 'aged_summary' => $aged_summary,
@@ -271,6 +276,12 @@ class CustomerStatement {
                 'store_id' => $store_id,
                 'client_name' => $client_details['name'],
                 'contact_name' => $client_details['contact'],
+                'contact_address_1' => $client_details['address_1'],
+                'contact_address_2' => $client_details['address_2'],
+                'contact_city' => $client_details['city'],
+                'contact_province' => $client_details['province'],
+                'contact_postal_code' => $client_details['postal_code'],
+                'contact_phone_number_1' => $client_details['phone_number_1'],
                 'transaction_records' => $transaction_records,
                 'current' => $aged_summary['current'],
                 '31-60' => $aged_summary['31-60'],

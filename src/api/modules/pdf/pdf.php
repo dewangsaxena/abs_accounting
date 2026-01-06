@@ -1646,7 +1646,7 @@ class __GenerateCustomerStatement {
     private const FILL_COLORS = [true => [211, 211, 211], false => [255, 255, 255]];
     
     // Max rows per page 
-    private const MAX_ROW_PER_PAGE = [43, 58];
+    private const MAX_ROW_PER_PAGE = [41, 58];
 
     // Generate Record
     private static $generate_record = false;
@@ -1724,8 +1724,23 @@ class __GenerateCustomerStatement {
         self::$pdf -> Cell(w:110, h:4, txt: self::$details['client_name'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> Cell(w:50, h:4, txt: self::$details['client_name'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
         self::$pdf -> SetFont(self::COURIER, '', 7.5);
-        self::$pdf -> Cell(110, 4, self::$details['contact_name'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, align: 'L');
+        self::$pdf -> Cell(110, 4, self::$details['contact_name'] . (isset(self::$details['contact_phone_number_1']) ? (' '.Utils::format_phone_number(self::$details['contact_phone_number_1'])) : ''), border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, align: 'L');
         self::$pdf -> Cell(100, 4, 'IF PAYING BY INVOICE, CHECK INDIVIDUAL INVOICES PAID.', border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'L');
+
+        // Add Address
+        if(isset(self::$details['contact_address_1'])) {
+            self::$pdf -> Cell(110, 4, self::$details['contact_address_1'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'L');
+        }
+
+        $address_fields = ['contact_address_2', 'contact_city', 'contact_province', 'contact_postal_code'];
+        $address_2 = '';
+        foreach($address_fields as $field) {
+            if(isset(self::$details[$field])) {
+                $address_2 .= self::$details[$field].', ';
+            }
+        }
+        $address_2 = rtrim($address_2, ', ');
+        self::$pdf -> Cell(110, 4, $address_2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, align: 'L');
         
         // Add break lines
         self::$pdf -> Ln(4);
