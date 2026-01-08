@@ -19,6 +19,7 @@ class SpecialExceptions {
             ],
             StoreDetails::SLAVE_LAKE => [
                 10015, /* JAIDEEP */
+                10007, /* LUCKY */
             ],
         ],
     ][SYSTEM_INIT_HOST] ?? [];
