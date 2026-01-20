@@ -13,27 +13,29 @@ class CustomerSales {
      * @param from_date 
      * @param till_date
      */
-    public static function generate_report(int $store_id, string $from_date, string $till_date): void {
+    public static function generate_report(int $store_id, int $year): void {
         $db = get_db_instance();
 
-        $query = 'SELECT client_id, SUM(sum_total) AS sum_total, YEAR(`date`) as __year FROM __TABLE_NAME__ WHERE store_id = :store_id AND `date` >= :_start_date AND `date` <= :end_date GROUP BY client_id, __year ORDER BY __year ASC;';
+        // Query
+        $query = 'SELECT client_id, SUM(sum_total) AS sum_total FROM __TABLE_NAME__ WHERE store_id = :store_id AND `date` LIKE :_year GROUP BY client_id;';
 
         $statement_sales_invoices = $db -> prepare(str_replace('__TABLE_NAME__', 'sales_invoice', $query));
-        $params = [':store_id' => $store_id, ':_start_date' => $from_date, ':end_date' => $till_date];
+        $params = [':store_id' => $store_id, ':_year' => "$year-__-__"];
         $statement_sales_invoices -> execute($params);
         $sales_invoices = $statement_sales_invoices -> fetchAll(PDO::FETCH_ASSOC);
         $records = [];
+        $total = 0;
 
         foreach($sales_invoices as $r) {
             $client_id = $r['client_id'];
             if(isset($records[$client_id]) === false) {
                 $records[$client_id] = [
                     'name' => '',
-                    '2024' => 0,
-                    '2025' => 0,
+                    'sum_total' => 0,
                 ];
             }
-            $records[$client_id][$r['__year']] += $r['sum_total'];
+            $records[$client_id]['sum_total'] += $r['sum_total'];
+            $total += $r['sum_total'];
         }
 
         $statement_sales_returns = $db -> prepare(str_replace('__TABLE_NAME__', 'sales_return', $query));
@@ -44,11 +46,11 @@ class CustomerSales {
             if(isset($records[$client_id]) === false) {
                 $records[$client_id] = [
                     'name' => '',
-                    '2024' => 0,
-                    '2025' => 0,
+                    'sum_total' => 0,
                 ];
             }
-            $records[$client_id][$r['__year']] -= $r['sum_total'];
+            $records[$client_id]['sum_total'] -= $r['sum_total'];
+            $total -= $r['sum_total'];
         }
 
         // Fetch Clients
@@ -61,35 +63,45 @@ class CustomerSales {
         foreach($client_details_records as $r) {
             $records[$r['id']]['name'] = $r['name'];
         }
-
-        self::format($store_id, $records);
+        self::format($store_id, $records, $total);
     }
 
     /**
      * This methid will format the details for printing.
+     * @param store_id
      * @param details
+     * @param total
      */
-    private static function format(int $store_id, array &$details): void {
+    private static function format(int $store_id, array &$details, float $total): void {
 
         $store_name = strtoupper(StoreDetails::STORE_DETAILS[$store_id]['name']);
         echo <<<EOS
         <html>
         <body>
             <h3>DETAILS FOR <b>$store_name</b></h3><br>
+            <table>
+            <tr>
+                <th>Name</th>
+                <th>Amount</th>
+            </tr>
         EOS;
         foreach($details as $detail) {
-            echo $detail['name'].'<br>';
-            $_2024 = Utils::round($detail['2024']);
-            $_2025 = Utils::round($detail['2025']);
+            $name = $detail['name'];
+            $sum_total = Utils::number_format($detail['sum_total']);
+
             echo <<<EOS
-<ul>
-    <li>2024: $ $_2024</li>
-    <li>2025: $ $_2025</li>
-</ul>
-EOS;    
+            <tr>
+                <td>$name</td>
+                <td>$ $sum_total</td>
+            </tr>
+            EOS;
         }
 
+        $total = Utils::number_format($total);
         echo <<<EOS
+        </table>
+        <br>
+        <span>Total: $$total</span>
         </body>
         </html>
         EOS;

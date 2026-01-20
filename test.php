@@ -512,5 +512,5 @@ function print_client_details($client_table): void {
 // // SET UTILS::ROUND to 2 Decimal Places AFTER COMPLETING ALL STORES.
 // // ENABLE FEDERAL AND PROVINCIAL TAXES FOR CLIENTS.
 
-CustomerSales::generate_report(StoreDetails::EDMONTON, '2024-01-01', '2025-12-31');
+CustomerSales::generate_report(StoreDetails::EDMONTON, 2024);
 ?>  
