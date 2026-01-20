@@ -12,8 +12,9 @@ class CustomerSales {
      * @param store_id
      * @param from_date 
      * @param till_date
+     * @return array
      */
-    public static function generate_report(int $store_id, int $year): void {
+    public static function generate_report(int $store_id, int $year): array {
         $db = get_db_instance();
 
         // Query
@@ -63,7 +64,8 @@ class CustomerSales {
         foreach($client_details_records as $r) {
             $records[$r['id']]['name'] = $r['name'];
         }
-        self::format($store_id, $records, $total);
+        
+        return ['records' => $records, 'total' => $total, 'year' => $year];
     }
 
     /**

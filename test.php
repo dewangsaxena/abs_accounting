@@ -512,5 +512,12 @@ function print_client_details($client_table): void {
 // // SET UTILS::ROUND to 2 Decimal Places AFTER COMPLETING ALL STORES.
 // // ENABLE FEDERAL AND PROVINCIAL TAXES FOR CLIENTS.
 
-CustomerSales::generate_report(StoreDetails::EDMONTON, 2024);
+$store_id = StoreDetails::CALGARY;
+$x = [
+    'store_id' => $store_id,
+    'client_details' => CustomerSales::generate_report($store_id, 2024),
+];
+// print_r($x);
+GeneratePDF::customer_sales($x);
+// 
 ?>  
