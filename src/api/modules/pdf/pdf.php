@@ -3413,6 +3413,7 @@ class __CustomerSales {
 
         foreach($client_details as $detail) {
 
+            if($detail['sum_total'] == 0) continue;
             if($color_index) self::$pdf -> SetFillColor(224, 224, 224);
             else self::$pdf -> SetFillColor(255, 255, 255);
 
@@ -3440,7 +3441,8 @@ class __CustomerSales {
         self::$pdf -> Ln(1);
 
         foreach($client_details as $detail) {
-
+            if($detail['sum_total'] == 0) continue;
+            
             if($color_index) self::$pdf -> SetFillColor(224, 224, 224);
             else self::$pdf -> SetFillColor(255, 255, 255);
 
