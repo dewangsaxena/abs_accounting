@@ -3,6 +3,7 @@
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/utils.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/database.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_summary.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_sales.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_statement.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/inventory.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/correct_is_bs_inventory_v2.php";
@@ -499,15 +500,17 @@ function print_client_details($client_table): void {
 }
 
 // SET UTILS::ROUND to 4 Decimal Places before proceeding.
-$store_id = StoreDetails::EDMONTON;
-$client_table = [];
-fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_INVOICE, client_table: $client_table);
-fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_RETURN, client_table: $client_table);
-print_client_details($client_table);
-// update_credit_amount_of_all_transaction($client_table);
-// DISABLE FEDERAL AND PROVINCIAL TAXES FOR CLIENTS.
-fix_balance_sheet_amount_receivables($store_id);
-fix_amount_owing($store_id);
-// SET UTILS::ROUND to 2 Decimal Places AFTER COMPLETING ALL STORES.
-// ENABLE FEDERAL AND PROVINCIAL TAXES FOR CLIENTS.
+// $store_id = StoreDetails::EDMONTON;
+// $client_table = [];
+// fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_INVOICE, client_table: $client_table);
+// fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_RETURN, client_table: $client_table);
+// print_client_details($client_table);
+// // update_credit_amount_of_all_transaction($client_table);
+// // DISABLE FEDERAL AND PROVINCIAL TAXES FOR CLIENTS.
+// fix_balance_sheet_amount_receivables($store_id);
+// fix_amount_owing($store_id);
+// // SET UTILS::ROUND to 2 Decimal Places AFTER COMPLETING ALL STORES.
+// // ENABLE FEDERAL AND PROVINCIAL TAXES FOR CLIENTS.
+
+CustomerSales::generate_report(StoreDetails::EDMONTON, '2024-01-01', '2025-12-31');
 ?>  
