@@ -3350,6 +3350,183 @@ class __GenerateLastPurchaseDateReport {
 }
 
 /**
+ * This class implements methods to generate customer sales.
+ */
+class __CustomerSales {
+
+    // Layout Settings
+    private const ORIENTATION = 'P';
+    private const UNIT = 'mm';
+    private const PAPER_SIZE = 'Letter';
+
+    // Font Settings
+    private const COURIER = 'Courier';
+
+    // PDF Instance
+    private static $pdf = null;
+
+    // Details
+    private static $details = null;
+
+    // Total
+    private static $total_amount = 0;
+
+    // For Debugging.
+    private const SHOW_BORDER_FOR_DEBUG = 0;
+
+    // Records per page
+    private const RECORDS_PER_PAGE = [67, 68];
+
+    // No. of pages
+    // This will be 1 by default
+    private static $no_of_pages = 1;
+
+    // Current page
+    private static $current_page = 1;
+
+    // Header
+    private static function header(): void {
+        // Set Font 
+        self::$pdf -> SetFont(self::COURIER, 'B', 12,);
+        self::$pdf -> Cell(w: 165, h: 5, txt: strtoupper('Client Sales Details: '. StoreDetails::STORE_DETAILS[self::$details['store_id']]['name']. ', '. self::$details['client_details']['year']), border: 0, ln: 0);
+        $current_page = self::$current_page;
+        $no_of_pages = self::$no_of_pages;
+        self::$pdf -> SetFont(self::COURIER, '', 8,);
+        self::$pdf -> Cell(w: 17, h: 5, txt: "Page# : $current_page of $no_of_pages", border: 0, ln: 1);
+    }
+
+    // Table Header
+    private static function table_header(): void {
+        self::$pdf -> Ln(4);
+        self::$pdf -> SetFont(self::COURIER, 'B', 8,);
+        self::$pdf -> Cell(w: 165, h: 5, txt: 'Client Name', border: 'B', ln: 0);
+        self::$pdf -> Cell(w: 2, h: 5, txt: '', border: 0, ln: 0);
+        self::$pdf -> Cell(w: 30, h: 5, txt: 'Amount', border: 'B', ln: 1);
+    }
+
+    // Table Body
+    private static function table_records_first_page(): void {
+        $color_index = 0;
+        self::$pdf -> SetFont(self::COURIER, '', 8,);
+        $client_details = self::$details['client_details']['records'];
+        $index = 0;
+
+        foreach($client_details as $detail) {
+
+            if($detail['sum_total'] == 0) continue;
+            if($color_index) self::$pdf -> SetFillColor(224, 224, 224);
+            else self::$pdf -> SetFillColor(255, 255, 255);
+
+            self::$pdf -> Cell(w: 165, h: 3.5, txt: strtoupper($detail['name']), border: 0, ln: 0, fill: $color_index);
+            self::$pdf -> Cell(w: 2, h: 3.5, txt: '', border: 0, ln: 0, fill: $color_index);
+            self::$pdf -> Cell(w: 30, h: 3.5, txt: '$ '. Utils::number_format($detail['sum_total']), border: 0, ln: 1, fill: $color_index);
+
+            $color_index ^= 1;
+            ++$index;
+            if ($index >= self::RECORDS_PER_PAGE[0]) break;
+        }
+    }
+
+    private static function table_records_rest_pages(): void {
+        $color_index = 0;
+        self::$pdf -> SetFont(self::COURIER, '', 8,);
+        $index = 0;
+        $client_details = array_slice(self::$details['client_details']['records'], self::RECORDS_PER_PAGE[0]);
+        $no_of_pages = self::$no_of_pages;
+        $current_page = 2;
+
+        // Print Page Index
+        self::$pdf -> SetFont(self::COURIER, '', 8,);
+        self::$pdf -> Cell(w: 17, h: 5, txt: "Page# : $current_page of $no_of_pages", border: 0, ln: 1);
+        self::$pdf -> Ln(1);
+
+        foreach($client_details as $detail) {
+            if($detail['sum_total'] == 0) continue;
+            
+            if($color_index) self::$pdf -> SetFillColor(224, 224, 224);
+            else self::$pdf -> SetFillColor(255, 255, 255);
+
+            self::$pdf -> Cell(w: 165, h: 3.5, txt: strtoupper($detail['name']), border: 0, ln: 0, fill: $color_index);
+            self::$pdf -> Cell(w: 2, h: 3.5, txt: '', border: 0, ln: 0, fill: $color_index);
+            self::$pdf -> Cell(w: 30, h: 3.5, txt: '$ '. Utils::number_format($detail['sum_total']), border: 0, ln: 1, fill: $color_index);
+
+            $color_index ^= 1;
+            ++$index;
+
+            if($index >= self::RECORDS_PER_PAGE[1]) {
+                $index = 0;
+                ++$current_page;
+                self::$pdf -> AddPage();
+                self::$pdf -> SetFont(self::COURIER, '', 8,);
+                self::$pdf -> Cell(w: 17, h: 5, txt: "Page# : $current_page of $no_of_pages", border: 0, ln: 1);
+                self::$pdf -> Ln(1);
+            }
+        }
+    }
+
+    private static function table_records_sum_total(): void {
+        self::$pdf -> SetFillColor(255, 255, 255);
+        self::$pdf -> SetFont(self::COURIER, 'B', 8,);
+        self::$pdf -> Cell(w: 165, h: 3.5, txt: 'TOTAL', border: 'TB', ln: 0, fill: 1);
+        self::$pdf -> Cell(w: 2, h: 3.5, txt: '', border: 0, ln: 0, fill: 1);
+        self::$pdf -> Cell(w: 30, h: 3.5, txt: '$ '. Utils::number_format(self::$details['client_details']['total']), border: 'TB', ln: 1, fill: 1);
+
+    }
+
+    // Body
+    private static function body(): void {
+        self::table_header();
+        self::table_records_first_page();
+        self::table_records_rest_pages();
+        self::table_records_sum_total();
+    }
+
+    // Calculate no. of pages
+    private static function calculate_no_of_pages(): void {
+        $records = self::$details['client_details']['records'];
+
+        // +2 for padding and total sum row
+        $no_of_records = count($records) + 2;  
+
+        if($no_of_records > self::RECORDS_PER_PAGE[0]) {
+            $no_of_records -= self::RECORDS_PER_PAGE[0];
+            self::$no_of_pages += ($no_of_records / self::RECORDS_PER_PAGE[1]);
+        }
+
+        self::$no_of_pages = ceil(self::$no_of_pages);
+    }
+
+    /**
+     * Generate
+     */
+    public static function generate(array $details): void {
+
+        // Set Details
+        self::$details = $details;
+
+        // Handle 
+        self::$pdf = new FPDF(self::ORIENTATION, self::UNIT, self::PAPER_SIZE);
+        self::$pdf -> SetTitle('client_sales_'. strtolower(StoreDetails::STORE_DETAILS[self::$details['store_id']]['name']).'_'. self::$details['client_details']['year']);
+        self::$pdf -> SetCompression(true);
+        self::$pdf -> AddPage();
+
+        // Calculate no. of pages
+        self::calculate_no_of_pages();
+
+        // Total Amount
+        self::$total_amount = self::$details['client_details']['total'];
+
+        // Show header
+        self::header();
+
+        // Body Report
+        self::body();
+
+        self::$pdf -> Output();
+    }
+}
+
+/**
  * Unified Class for Generating Transactions and Receipt.
  */
 class GeneratePDF {
@@ -3545,6 +3722,14 @@ class GeneratePDF {
      */
     public static function last_purchase_date(array $details): void {
         __GenerateLastPurchaseDateReport::generate($details);
+    }
+
+    /**
+     * This method will generate customer sales.
+     * @param details
+     */
+    public static function customer_sales(array &$details): void {
+        __CustomerSales::generate($details);
     }
 }
 ?>
