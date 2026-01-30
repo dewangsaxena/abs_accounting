@@ -139,7 +139,7 @@ export const decrypt = function (
  * @param precision
  * @returns
  */
-export const toFixed = (number: number, precision: number = 4): number => {
+export const toFixed = (number: number, precision: number = 2): number => {
   return parseFloat(number.toFixed(precision));
 };
 
