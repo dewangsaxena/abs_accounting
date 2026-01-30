@@ -233,7 +233,7 @@ const Row = memo(({ isDisabled, _key, invDetails }: RowProps) => {
                 // Update Store
                 invDetails[_key].quantity = quantity;
                 setQuantity(quantity);
-                setAmount(toFixed(totalAmount));
+                setAmount(totalAmount);
               }
             }}
           ></_InputLeftElement>
