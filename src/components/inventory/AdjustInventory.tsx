@@ -228,12 +228,12 @@ const Row = memo(({ isDisabled, _key, invDetails }: RowProps) => {
                 let quantity: number = parseFloat(
                   event.target.value.trim() || "0"
                 );
-                let totalAmount: number = buyingCost * quantity;
+                let totalAmount: number = toFixed(buyingCost * quantity);
 
                 // Update Store
                 invDetails[_key].quantity = quantity;
                 setQuantity(quantity);
-                setAmount(toFixed(totalAmount));
+                setAmount(totalAmount);
               }
             }}
           ></_InputLeftElement>
@@ -253,10 +253,10 @@ const Row = memo(({ isDisabled, _key, invDetails }: RowProps) => {
                 let buyingCost: number = parseFloat(
                   event.target.value.trim() || "0"
                 );
-                let totalAmount: number = buyingCost * quantity;
+                let totalAmount: number = toFixed(buyingCost * quantity);
                 invDetails[_key].buyingCost = buyingCost;
                 setBuyingCost(buyingCost);
-                setAmount(toFixed(totalAmount));
+                setAmount(totalAmount);
               }
             }}
           ></_InputLeftElement>

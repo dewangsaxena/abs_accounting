@@ -44,13 +44,13 @@ class Charts {
                 $inventory_A = abs($statement[AccountsConfig::INVENTORY_A]);
                 
                 // Profit
-                $temp['profit'] = Utils::round($statement[AccountsConfig::SALES_INVENTORY_A] - $inventory_A, 2);
+                $temp['profit'] = Utils::round($statement[AccountsConfig::SALES_INVENTORY_A] - $inventory_A);
 
                 // Sales 
-                $temp['sales'] = Utils::round($statement[AccountsConfig::SALES_INVENTORY_A], 2);
+                $temp['sales'] = Utils::round($statement[AccountsConfig::SALES_INVENTORY_A]);
 
                 // Inventory 
-                $temp['inventory'] = Utils::round($statement[AccountsConfig::INVENTORY_A], 2);
+                $temp['inventory'] = Utils::round($statement[AccountsConfig::INVENTORY_A]);
 
                 // Date
                 $temp['name'] = $record['date'];

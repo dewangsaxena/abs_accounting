@@ -386,6 +386,8 @@ class Shared {
         $gst_hst_tax = 0;
         $pst_tax = 0;
         $txn_discount = 0;
+        $discount_per_item = 0;
+        $total_discount_per_item = 0;
 
         // Select Tax Rate
         $federal_tax_rate = $disable_federal_taxes ? 0 : StoreDetails::STORE_DETAILS[$store_id]['gst_hst_tax_rate'];
@@ -396,7 +398,9 @@ class Shared {
             $gst_hst_tax += (($item['amountPerItem'] * $federal_tax_rate) / 100);
             $base_price = $item['basePrice'];
             $quantity = $item['quantity'];
-            $txn_discount += ((($base_price * $quantity) * $item['discountRate']) / 100);
+            $discount_per_item = Utils::round(($base_price * $item['discountRate']) / 100);
+            $total_discount_per_item = Utils::round($discount_per_item * $quantity);
+            $txn_discount += $total_discount_per_item;
         }
 
         // Set Sub total

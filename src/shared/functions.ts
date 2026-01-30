@@ -134,12 +134,12 @@ export const decrypt = function (
 };
 
 /**
- * This method format the number upto to 4 fixed decimal places.
+ * This method format the number upto to 2 fixed decimal places by default.
  * @param number
  * @param precision
  * @returns
  */
-export const toFixed = (number: number, precision: number = 4): number => {
+export const toFixed = (number: number, precision: number = 2): number => {
   return parseFloat(number.toFixed(precision));
 };
 
@@ -254,7 +254,7 @@ export const calculateProfitMargin = (
 ): number => {
   let grossMargin = sellingPrice - Math.abs(buyingCost);
   grossMargin = grossMargin / sellingPrice;
-  return parseFloat((grossMargin * 100).toFixed(2));
+  return toFixed(grossMargin * 100);
 };
 
 /**
@@ -268,7 +268,7 @@ export const calculateCOGSMargin = (
 ): number => {
   let x = sellingPrice / Math.abs(buyingCost);
   if (x >= 1) x = x - 1;
-  return parseFloat((x * 100).toFixed(2));
+  return toFixed(x * 100);
 };
 
 /**
