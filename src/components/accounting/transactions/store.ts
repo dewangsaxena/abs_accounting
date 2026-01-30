@@ -256,7 +256,6 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
       totalRestockingFees: number = 0;
 
     let base_price: number = 0,
-      price_per_item: number = 0,
       amount_per_item: number = 0,
       quantity: number = 0,
       discount_per_item: number = 0,
@@ -289,7 +288,6 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
 
         // Calculate Total Discount
         base_price = rowDetails[i].basePrice;
-        price_per_item = rowDetails[i].pricePerItem;
         quantity =
           IS_SALES_RETURN
             ? rowDetails[i].returnQuantity || 0
