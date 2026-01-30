@@ -134,7 +134,7 @@ export const decrypt = function (
 };
 
 /**
- * This method format the number upto to 4 fixed decimal places.
+ * This method format the number upto to 2 fixed decimal places by default.
  * @param number
  * @param precision
  * @returns
