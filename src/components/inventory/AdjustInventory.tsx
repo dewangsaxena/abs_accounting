@@ -228,7 +228,7 @@ const Row = memo(({ isDisabled, _key, invDetails }: RowProps) => {
                 let quantity: number = parseFloat(
                   event.target.value.trim() || "0"
                 );
-                let totalAmount: number = buyingCost * quantity;
+                let totalAmount: number = toFixed(buyingCost * quantity);
 
                 // Update Store
                 invDetails[_key].quantity = quantity;
