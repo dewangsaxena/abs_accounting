@@ -160,10 +160,13 @@ class SalesReturn {
                 $pst_tax += (($item['amountPerItem'] * $provincial_tax_rate) / 100);
                 $gst_hst_tax += (($item['amountPerItem'] * $federal_tax_rate) / 100);
             }
+            $cogr += ($item['buyingCost'] * $return_quantity);
             $base_price = $item['basePrice'];
             $return_quantity = $item['returnQuantity'];
-            $txn_discount += ((($base_price * $return_quantity) * $item['discountRate']) / 100);
-            $cogr += ($item['buyingCost'] * $return_quantity);
+
+            $discount_per_item = Utils::round(($base_price * $item['discountRate']) / 100);
+            $total_discount_per_item = Utils::round($discount_per_item * $return_quantity);
+            $txn_discount += $total_discount_per_item;
         }
 
         // Add Taxes to Sub total 

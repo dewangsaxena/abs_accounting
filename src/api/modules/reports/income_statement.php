@@ -120,7 +120,7 @@ class IncomeStatementActions {
         
         // Round off
         $keys = array_keys($summary_of_all_stores);
-        foreach($keys as $key) $summary_of_all_stores[$key] = Utils::round($summary_of_all_stores[$key], 2);
+        foreach($keys as $key) $summary_of_all_stores[$key] = Utils::round($summary_of_all_stores[$key]);
         $data = [
             'chartData' => $chart_data['data'],
             'statement' => $summed_statements,

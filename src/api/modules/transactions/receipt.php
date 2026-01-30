@@ -70,10 +70,12 @@ class Receipt {
 
                 if($type === SALES_INVOICE) {
                     if($discount_given < 0) throw new Exception('Discount Given cannot be less than 0 for: '. $txn['txnId']);
+                    /* Rounding will always be 4 for Receipts */
                     else if(Utils::round($discount_given + $amount_received, 4) > $amount_owing) throw new Exception('Discount Given + Amount Received cannot be greater than Amount Owing: '. $txn['txnId']);
                 }
                 if($type === SALES_RETURN) {
                     if($discount_given > 0) throw new Exception('Discount Given cannot be more than 0 for: '. $txn['txnId']);
+                    /* Rounding will always be 4 for Receipts */
                     else if(Utils::round($discount_given + $amount_received, 4) < $amount_owing) throw new Exception('Discount Given + Amount Received cannot be greater than Amount Owing for: '. $txn['txnId']);
                 }
                 else if($type === CREDIT_NOTE || $type === DEBIT_NOTE) {
@@ -89,6 +91,7 @@ class Receipt {
             $valid_transactions []= $txn;
         }
 
+        /* Rounding will always be 4 for Receipts */
         return [
             'sum_total' => Utils::round($total_amount_received - $total_discount, 4),
             'total_discount' => Utils::round($total_discount, 4),
@@ -169,6 +172,7 @@ class Receipt {
             $type = $txn['type'];
 
             // Amount Received
+            // Rounding will always be 4 for Receipts
             $amount_received = Utils::round($txn['amountReceived'] + $txn['discountGiven'], 4);
             
             // Discount Given
@@ -664,6 +668,7 @@ class Receipt {
         $diff = ($date_diff['y'] * 365) + ($date_diff['m'] * 30) + $date_diff['d'];
         $discount_available = 0;
         if($diff < $early_payment_paid_within_days) {
+            // Rounding will always be 4 for Receipts
             $discount_available = Utils::round(($amount_eligible_for_receipt_discount * $early_payment_discount) / 100, 4);
         }
         return $discount_available;

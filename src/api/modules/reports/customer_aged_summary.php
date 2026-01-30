@@ -366,11 +366,11 @@ class CustomerAgedSummary {
             fputcsv($handle, [
                 $r['client_name'],
                 $r['phone_number'],
-                Utils::round($r['total'], 2),
-                Utils::round($r['current'], 2),
-                Utils::round($r['31-60'], 2),
-                Utils::round($r['61-90'], 2),
-                Utils::round($r['91+'], 2),
+                Utils::round($r['total']),
+                Utils::round($r['current']),
+                Utils::round($r['31-60']),
+                Utils::round($r['61-90']),
+                Utils::round($r['91+']),
             ]);
 
             $footer[2] += $r['total'];
@@ -381,11 +381,11 @@ class CustomerAgedSummary {
         }
 
         // Round off
-        $footer[2] = Utils::round($footer[2], 2);
-        $footer[3] = Utils::round($footer[3], 2);
-        $footer[4] = Utils::round($footer[4], 2);
-        $footer[5] = Utils::round($footer[5], 2);
-        $footer[6] = Utils::round($footer[6], 2);
+        $footer[2] = Utils::round($footer[2]);
+        $footer[3] = Utils::round($footer[3]);
+        $footer[4] = Utils::round($footer[4]);
+        $footer[5] = Utils::round($footer[5]);
+        $footer[6] = Utils::round($footer[6]);
 
         fputcsv($handle, $footer);
 
