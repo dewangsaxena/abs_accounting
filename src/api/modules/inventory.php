@@ -2088,11 +2088,28 @@ class Inventory {
      * @param store_id
      * @param year
      * @param sort_order 0 -> Ascending, 1 -> Descending
+     * @param is_csv
      */
-    public static function fetch_quantity_sold_for_all_items(int $store_id, int $year, int $sort_order=1): void {
+    public static function fetch_quantity_sold_for_all_items(int $store_id, int $year, int $sort_order=1, int $is_csv=1): void {
         $item_details = self::__fetch_quantity_sold_for_all_items($store_id, $year, $sort_order);
+
         if(count($item_details)) {
-            GeneratePDF::generate_item_sold_quantity($item_details, $store_id, $year);
+            if($is_csv) {
+                // Path to file.
+                $path_to_file = TEMP_DIR. "item_sold_$year". '_'. strtolower(StoreDetails::STORE_DETAILS[$store_id]['name']).'.csv';
+                $fp = fopen($path_to_file, 'w');
+
+                // Generate CSV 
+                fputcsv($fp, ['Identifier', 'Description', 'Quantity Sold']);
+                foreach($item_details as $item) {
+                    fputcsv($fp, [$item['identifier'], $item['description'], $item['quantity']]);
+                }
+                fclose($fp);
+
+                // Force user to download file.
+                Utils::user_download($path_to_file);
+            }
+            else GeneratePDF::generate_item_sold_quantity($item_details, $store_id, $year);
         }
     }
 

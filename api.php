@@ -96,7 +96,11 @@ if (isset($_GET['action'])) {
         }
     }
     else if($action === 'fetch_item_sold_report' && is_numeric($_GET['storeId'] ?? null) && is_numeric($_GET['year'] ?? null)) {
-        Inventory::fetch_quantity_sold_for_all_items(intval($_GET['storeId']), intval($_GET['year']));
+        Inventory::fetch_quantity_sold_for_all_items(
+            intval($_GET['storeId']), 
+            intval($_GET['year']),
+            is_csv: intval($_GET['is_csv'] ?? 0),
+        );
         die;
     }
     else if($action === 'filter_items_by_price_quantity' && is_numeric($_GET['storeId'] ?? null)) {
