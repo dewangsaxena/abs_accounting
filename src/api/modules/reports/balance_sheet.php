@@ -619,14 +619,12 @@ class BalanceSheetActions {
         // Flags 
         // By Default this will be true
         $create_new_record = true;
-        // $is_record_matching_unique_id = false;
 
         $debug = '';
         if($record_count > 0) {
             $debug .= '0';
             // Check whether balance sheet exists for the current date.
             if($balance_sheet_statements[0]['date'] === $date) {
-                // $is_record_matching_unique_id = true;
                 $create_new_record = false;
             }
         }
