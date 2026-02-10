@@ -174,6 +174,7 @@ class PrepareDetails_SI_SR_CN_DN_QT {
             'store_id' => $store_id,
             'is_old_version' => $txn['is_old_version'] ?? false,
             'sales_rep_name' => $sales_rep_name,
+            'show_pst_number' => StoreDetails::STORE_DETAILS[$store_id]['pst_tax_rate'] > 0 ? 1 : 0,
         ];
 
         // Add Restocking Fees
