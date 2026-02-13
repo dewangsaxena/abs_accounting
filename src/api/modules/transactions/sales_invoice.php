@@ -12,6 +12,7 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/pdf/prepare_pdf_detail
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/transactions/quotation.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/client.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/special_exceptions.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/debug.php";
 
 /**
  * This class will handle processing of sales invoice.
@@ -531,6 +532,10 @@ class SalesInvoice {
             }
             else $amount_eligible_for_receipt_discount = 0;
 
+            // [DEBUG_START]
+            Debug::set_current_inventory_value('old_inventory_value', $db, $store_id);
+            // [DEBUG_END]
+
             // Prepared Statements
             $statement_adjust_inventory = $db -> prepare(Shared::ADJUST_INVENTORY_QUANTITY_AND_VALUE);
 
@@ -745,6 +750,10 @@ class SalesInvoice {
 
             // Update Last Sold Date
             Inventory::update_last_sold_for_items($details, $date, $store_id, $db);
+
+            // [DEBUG_START]
+            Debug::write_to_db($db, $store_id);
+            // [DEBUG_END]
 
             /* CHECK FOR ANY ERROR */
             assert_success();
