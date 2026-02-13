@@ -572,6 +572,15 @@ ALTER TABLE receipt AUTO_INCREMENT=10000;
 CREATE INDEX idx_receipt_client_id ON receipt(client_id);
 CREATE INDEX idx_receipt_sales_rep_id ON receipt(sales_rep_id);
 
+-- Debug Table.
+CREATE TABLE debug(
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    store_id SMALLINT UNSIGNED NOT NULL,
+    `details` JSON NOT NULL,
+    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    modified TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Purchase Vendors
 /*
 CREATE TABLE purchase_vendors(
