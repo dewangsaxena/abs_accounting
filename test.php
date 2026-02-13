@@ -410,35 +410,35 @@ function fix_amount_owing(int $store_id) {
 
         // Fetch Customer Statement 
         foreach($clients as $client_id) {
+
             $customer_statement = CustomerStatement::fetch_customer_statement(
                 $client_id,
                 $store_id,
                 null,
                 '2025-12-31',
             );
+
+            // Set to zero.
+            $set_to_zero = $customer_statement['status'] === false;
             
-            if($customer_statement['status'] === false) continue;
-            else {
-                // Fetch Amount Owing
-                $statement_fetch_amount_owing -> execute([':id' => $client_id]);
-                $amount_owing = $statement_fetch_amount_owing -> fetchAll(PDO::FETCH_ASSOC)[0]['amount_owing'];
+            // Fetch Amount Owing
+            $statement_fetch_amount_owing -> execute([':id' => $client_id]);
+            $amount_owing = $statement_fetch_amount_owing -> fetchAll(PDO::FETCH_ASSOC)[0]['amount_owing'];
   
-                $amount_owing = json_decode($amount_owing, true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
-                if(isset($amount_owing[$store_id])) {
-                    $amount_owing[$store_id] = Utils::round($customer_statement['data']['aged_summary']['total'], 4);
-                }
+            $amount_owing = json_decode($amount_owing, true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+            if(isset($amount_owing[$store_id])) {
+                if($set_to_zero) $amount_owing[$store_id] = 0;
+                else $amount_owing[$store_id] = Utils::round($customer_statement['data']['aged_summary']['total'], 4);
+            }
 
-
-                // Update Amount owing
-                $is_successful = $statement_update_amount_owing -> execute([
-                    ':amount_owing' => json_encode($amount_owing, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
-                    ':id' => $client_id,
-                ]);
+            // Update Amount owing
+            $is_successful = $statement_update_amount_owing -> execute([
+                ':amount_owing' => json_encode($amount_owing, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
+                ':id' => $client_id,
+            ]);
    
-                
-                if($is_successful !== true && $statement_update_amount_owing -> rowCount() < 1) {
-                    throw new Exception('Unable to update amount owing for client: '. $client_id);
-                }
+            if($is_successful !== true && $statement_update_amount_owing -> rowCount() < 1) {
+                throw new Exception('Unable to update amount owing for client: '. $client_id);
             }
         }
 
