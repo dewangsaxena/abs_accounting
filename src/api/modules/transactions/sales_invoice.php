@@ -231,16 +231,14 @@ class SalesInvoice {
         if($transaction_date === null) throw new Exception('Invalid Date.');
 
         // Change for Changed Transactions
-        $is_transaction_detail_changed = false;
+        // New Transactions will always have this to true.
+        $is_transaction_detail_changed = true;
         if(isset($data['initial'])) {
             $is_transaction_detail_changed = Shared::is_transaction_detail_changed(
                 $data['initial']['details'],
                 $data['details'],
             );
         }
-
-        // New Transactions will always have this set to true.
-        else $is_transaction_detail_changed = true;
 
         // Assert Current Month of Transaction
         Shared::assert_current_month_of_transaction($transaction_date, $store_id, $is_transaction_detail_changed);
