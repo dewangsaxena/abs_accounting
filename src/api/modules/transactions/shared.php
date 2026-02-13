@@ -471,6 +471,9 @@ class Shared {
                 $data['details'],
             );
         }
+        
+        // New Transactions will always have this set to true.
+        else $is_transaction_detail_changed = true;
 
         // Is Update Transaction
         $is_update_txn = isset($data['id']);

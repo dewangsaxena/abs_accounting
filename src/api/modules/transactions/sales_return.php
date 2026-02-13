@@ -408,6 +408,9 @@ class SalesReturn {
             );
         }
 
+        // New Transactions will always have this set to true.
+        else $is_transaction_detail_changed = true;
+
         // Assert Current Month of Transaction
         Shared::assert_current_month_of_transaction($transaction_date, $store_id, $is_transaction_detail_changed);
 
