@@ -1365,6 +1365,7 @@ class Inventory {
             // [DEBUG_START]
             Debug::$data['adjust_inventory'] = true;
             Debug::set_current_inventory_value('new_inventory_value', $db, $store_id);
+            Debug::write_to_db($db, $store_id);
             // [DEBUG_END]
 
             // DB Commit
