@@ -818,6 +818,10 @@ class SalesInvoice {
             // Store Id 
             $store_id = $details['store_id'];
 
+            // [DEBUG_START]
+            Debug::set_current_inventory_value('old_inventory_value', $db, $store_id);
+            // [DEBUG_END]
+
             // Client Id
             $client_id = $details['client_id'];
 
@@ -1149,6 +1153,12 @@ class SalesInvoice {
 
             // CHECK FOR ANY ERROR
             assert_success();
+
+            // [DEBUG_START]
+            Debug::$data['sales_invoice_id (Update)'] = $invoice_id;
+            Debug::set_current_inventory_value('new_inventory_value', $db, $store_id);
+            Debug::write_to_db($db, $store_id);
+            // [DEBUG_END]
 
             // Check for Successful Update
             if($is_successful !== true || $statement -> rowCount() < 1) throw new Exception('Unable to Update Sales Invoice.');
