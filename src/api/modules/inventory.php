@@ -14,6 +14,7 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/validate.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/utils.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/csrf.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/store_details.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/debug.php";
 
 class Inventory {
 
@@ -1058,6 +1059,10 @@ class Inventory {
                 $db->beginTransaction();
             }
 
+            // [DEBUG_START]
+            Debug::set_current_inventory_value('old_inventory_value', $db, $store_id);
+            // [DEBUG_END]
+
             // Insert Inventory History 
             self::insert_inventory_history($details, $store_id, $db);
 
@@ -1356,6 +1361,12 @@ class Inventory {
 
             // Assert 
             assert_success();
+
+            // [DEBUG_START]
+            Debug::$data['adjust_inventory'] = true;
+            Debug::set_current_inventory_value('new_inventory_value', $db, $store_id);
+            Debug::write_to_db($db, $store_id);
+            // [DEBUG_END]
 
             // DB Commit
             if ($is_new_db_connection && $db->inTransaction()) $db->commit();

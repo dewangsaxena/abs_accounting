@@ -7,6 +7,7 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/client.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/balance_sheet.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/transactions/shared.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_aged_summary.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/debug.php";
 
 class SalesReturn {
 
@@ -655,6 +656,10 @@ class SalesReturn {
             // Store ID
             $store_id = $validated_details['store_id'];
 
+            // [DEBUG_START]
+            Debug::set_current_inventory_value('old_inventory_value', $db, $store_id);
+            // [DEBUG_END]
+
             // Save Last Statement
             CustomerAgedSummary::save_last_statement($store_id, $db);
 
@@ -926,6 +931,12 @@ class SalesReturn {
             $sales_return_id = $db -> lastInsertId();
             if($sales_return_id === false) throw new Exception('Unable to create Sales Return.');
 
+            // [DEBUG_START]
+            Debug::$data['sales_return_id'] = $sales_return_id;
+            Debug::set_current_inventory_value('new_inventory_value', $db, $store_id);
+            Debug::write_to_db($db, $store_id);
+            // [DEBUG_END]
+
             // Commit
             if($db -> inTransaction()) $db -> commit();
             return ['status' => true, 'data' => $sales_return_id];
@@ -1117,6 +1128,10 @@ class SalesReturn {
 
             // Store ID
             $store_id = $validated_details['store_id'];
+
+            // [DEBUG_START]
+            Debug::set_current_inventory_value('old_inventory_value', $db, $store_id);
+            // [DEBUG_END]
 
             // Txn date
             $date = $validated_details['txn_date'];
@@ -1395,6 +1410,12 @@ class SalesReturn {
 
             // Check for Successful Update
             if($is_successful !== true || $statement -> rowCount () < 1) throw new Exception('Unable to Update Sales Return.');
+
+            // [DEBUG_START]
+            Debug::$data['sales_return_id (Update)'] = $sales_return_id;
+            Debug::set_current_inventory_value('new_inventory_value', $db, $store_id);
+            Debug::write_to_db($db, $store_id);
+            // [DEBUG_END]
 
             if($db -> inTransaction()) $db -> commit();
             return ['status' => true];

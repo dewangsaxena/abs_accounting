@@ -12,6 +12,7 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/pdf/prepare_pdf_detail
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/transactions/quotation.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/client.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/special_exceptions.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/debug.php";
 
 /**
  * This class will handle processing of sales invoice.
@@ -531,6 +532,10 @@ class SalesInvoice {
             }
             else $amount_eligible_for_receipt_discount = 0;
 
+            // [DEBUG_START]
+            Debug::set_current_inventory_value('old_inventory_value', $db, $store_id);
+            // [DEBUG_END]
+
             // Prepared Statements
             $statement_adjust_inventory = $db -> prepare(Shared::ADJUST_INVENTORY_QUANTITY_AND_VALUE);
 
@@ -757,6 +762,12 @@ class SalesInvoice {
             $sales_invoice_id = $db -> lastInsertId();
             if($sales_invoice_id === false) throw new Exception('Unable to create Sales Invoice.');
 
+            // [DEBUG_START]
+            Debug::$data['sales_invoice_id'] = $sales_invoice_id;
+            Debug::set_current_inventory_value('new_inventory_value', $db, $store_id);
+            Debug::write_to_db($db, $store_id);
+            // [DEBUG_END]
+
             /* COMMIT */
             if($is_new_connection && $db -> inTransaction()) $db -> commit();
             return ['status' => true, 'data' => $sales_invoice_id];
@@ -806,6 +817,10 @@ class SalesInvoice {
 
             // Store Id 
             $store_id = $details['store_id'];
+
+            // [DEBUG_START]
+            Debug::set_current_inventory_value('old_inventory_value', $db, $store_id);
+            // [DEBUG_END]
 
             // Client Id
             $client_id = $details['client_id'];
@@ -1138,6 +1153,12 @@ class SalesInvoice {
 
             // CHECK FOR ANY ERROR
             assert_success();
+
+            // [DEBUG_START]
+            Debug::$data['sales_invoice_id (Update)'] = $invoice_id;
+            Debug::set_current_inventory_value('new_inventory_value', $db, $store_id);
+            Debug::write_to_db($db, $store_id);
+            // [DEBUG_END]
 
             // Check for Successful Update
             if($is_successful !== true || $statement -> rowCount() < 1) throw new Exception('Unable to Update Sales Invoice.');
