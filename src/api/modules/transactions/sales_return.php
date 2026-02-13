@@ -400,7 +400,8 @@ class SalesReturn {
         if($transaction_date === null) throw new Exception('Invalid Date.');
 
         // Change for Changed Transactions
-        $is_transaction_detail_changed = false;
+        // New Transactions will always have this to true.
+        $is_transaction_detail_changed = true;
         if(isset($data['initial'])) {
             $is_transaction_detail_changed = Shared::is_transaction_detail_changed(
                 $data['initial']['details'],

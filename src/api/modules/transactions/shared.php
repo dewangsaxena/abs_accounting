@@ -464,7 +464,8 @@ class Shared {
         Shared::validate_new_date_of_transaction($data, $transaction_date);
 
         // Change for Changed Transactions
-        $is_transaction_detail_changed = false;
+        // New Transactions will always have this to true.
+        $is_transaction_detail_changed = true;
         if(isset($data['initial'])) {
             $is_transaction_detail_changed = Shared::is_transaction_detail_changed(
                 $data['initial']['details'],
