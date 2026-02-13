@@ -751,10 +751,6 @@ class SalesInvoice {
             // Update Last Sold Date
             Inventory::update_last_sold_for_items($details, $date, $store_id, $db);
 
-            // [DEBUG_START]
-            Debug::write_to_db($db, $store_id);
-            // [DEBUG_END]
-
             /* CHECK FOR ANY ERROR */
             assert_success();
 
@@ -765,6 +761,12 @@ class SalesInvoice {
             // Get Sales Invoice ID
             $sales_invoice_id = $db -> lastInsertId();
             if($sales_invoice_id === false) throw new Exception('Unable to create Sales Invoice.');
+
+            // [DEBUG_START]
+            Debug::$data['sales_invoice_id'] = $sales_invoice_id;
+            Debug::set_current_inventory_value('new_inventory_value', $db, $store_id);
+            Debug::write_to_db($db, $store_id);
+            // [DEBUG_END]
 
             /* COMMIT */
             if($is_new_connection && $db -> inTransaction()) $db -> commit();
