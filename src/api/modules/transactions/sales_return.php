@@ -161,9 +161,9 @@ class SalesReturn {
                 $pst_tax += (($item['amountPerItem'] * $provincial_tax_rate) / 100);
                 $gst_hst_tax += (($item['amountPerItem'] * $federal_tax_rate) / 100);
             }
+            $return_quantity = $item['returnQuantity'];
             $cogr += ($item['buyingCost'] * $return_quantity);
             $base_price = $item['basePrice'];
-            $return_quantity = $item['returnQuantity'];
 
             $discount_per_item = Utils::round(($base_price * $item['discountRate']) / 100);
             $total_discount_per_item = Utils::round($discount_per_item * $return_quantity);
