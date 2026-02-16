@@ -408,6 +408,8 @@ function fix_amount_owing(int $store_id) {
         $statement_fetch_amount_owing = $db -> prepare('SELECT amount_owing FROM clients WHERE id = :id;');
         $statement_update_amount_owing = $db -> prepare('UPDATE clients SET amount_owing = :amount_owing WHERE id = :id;');
 
+        $current_date = Utils::get_business_date($store_id);
+
         // Fetch Customer Statement 
         foreach($clients as $client_id) {
 
@@ -415,7 +417,7 @@ function fix_amount_owing(int $store_id) {
                 $client_id,
                 $store_id,
                 null,
-                '2025-12-31',
+                $current_date,
             );
 
             // Set to zero.
