@@ -823,6 +823,7 @@ class SalesInvoice {
             $store_id = $details['store_id'];
 
             // [DEBUG_START]
+            Debug::$data['cogs'] = 0;
             Debug::set_current_inventory_value('old_inventory_value', $db, $store_id);
             // [DEBUG_END]
 
@@ -972,6 +973,10 @@ class SalesInvoice {
                 op: 'deduct',
                 affected_accounts: $affected_accounts,
             );
+
+            // [DEBUG_START]
+            Debug::$data['cogs'] -= $cogs;
+            // [DEBUG_END]
 
             // Adjust Inventory And Revenue Accounts
             $accounts = array_keys($affected_accounts);
@@ -1288,6 +1293,10 @@ class SalesInvoice {
             'add',
             $affected_accounts
         );
+
+        // [DEBUG_START]
+        Debug::$data['cogs'] += $old_cogs;
+        // [DEBUG_END]
 
         $accounts = array_keys($affected_accounts);
         foreach($accounts as $account) {
