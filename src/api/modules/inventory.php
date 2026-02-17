@@ -1036,6 +1036,8 @@ class Inventory {
         if ($is_successful !== true || $statement->rowCount() < 0) throw new Exception('Unable to Insert Inventory History.');
     }
 
+
+
     /**
      * This method will adjust inventory.
      * @param details
@@ -1060,6 +1062,7 @@ class Inventory {
             }
 
             // [DEBUG_START]
+            $cogs = 0;
             Debug::set_current_inventory_value('old_inventory_value', $db, $store_id);
             // [DEBUG_END]
 
@@ -1224,6 +1227,10 @@ class Inventory {
                             -$existing_inv_value,
                         );
 
+                        // [DEBUG_START]
+                        $cogs += (-$existing_inv_value);
+                        // [DEBUG_END]
+
                         // Calculate Inventory Value to be adjusted
                         $value_to_be_adjusted = Utils::round($quantity_to_be_adjusted * $buying_cost);
 
@@ -1258,6 +1265,10 @@ class Inventory {
                             $new_total_inventory_value,
                         );
 
+                        // [DEBUG_START]
+                        $cogs += ($new_total_inventory_value);
+                        // [DEBUG_END]
+
                         // Update Prices
                         $is_successful = $statement_update_prices->execute([
                             ':item_id' => $item_id,
@@ -1287,6 +1298,10 @@ class Inventory {
                             AccountsConfig::INVENTORY_A,
                             $value_to_be_adjusted,  /* THIS IS ALREADY NEGATIVE */
                         );
+
+                        // [DEBUG_START]
+                        $cogs += ($value_to_be_adjusted);
+                        // [DEBUG_END]
                     }
 
                     // Update Inventory 
@@ -1308,6 +1323,10 @@ class Inventory {
                             AccountsConfig::INVENTORY_A,
                             $value_to_be_adjusted,
                         );
+
+                        // [DEBUG_START]
+                        $cogs += ($value_to_be_adjusted);
+                        // [DEBUG_END]
 
                         // Insert record
                         $statement_insert->execute($values);
@@ -1363,6 +1382,7 @@ class Inventory {
             assert_success();
 
             // [DEBUG_START]
+            Debug::$data['cogs'] = $cogs;
             Debug::$data['adjust_inventory'] = true;
             Debug::set_current_inventory_value('new_inventory_value', $db, $store_id);
             Debug::write_to_db($db, $store_id);
