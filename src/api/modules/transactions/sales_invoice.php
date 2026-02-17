@@ -557,6 +557,10 @@ class SalesInvoice {
                 'deduct',
                 $affected_accounts,
             );
+
+            // [DEBUG_START]
+            Debug::$data['cogs'] = -$cogs;
+            // [DEBUG_END]
             
             // Adjust Inventory And Revenue Accounts
             $accounts = array_keys($affected_accounts);
