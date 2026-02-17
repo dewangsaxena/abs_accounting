@@ -503,6 +503,7 @@ function print_client_details($client_table): void {
 
 // SET UTILS::ROUND to 4 Decimal Places before proceeding.
 $store_id = StoreDetails::EDMONTON;
+// echo generate_list($store_id, false);die;
 // $client_table = [];
 // fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_INVOICE, client_table: $client_table);
 // fix_transactions_credit_amount(is_test: false, store_id: $store_id, date: '2025-12-01', transaction_type: SALES_RETURN, client_table: $client_table);
@@ -546,6 +547,7 @@ function find_issue(int $store_id): void {
         $execute = false;
         $debug_created_time = $result['created'];
         if(isset($details['adjust_inventory'])) {
+            $execute = false;
 
             // Fetch Inventory details
             $statement_fetch_inventory -> execute([':store_id' => $store_id, ':_created_timestamp' => $debug_created_time]);
@@ -555,8 +557,6 @@ function find_issue(int $store_id): void {
             foreach($inventory as $i) {
                 $amount += ($i['quantity'] * $i['buyingCost']);
             }
-
-            $execute = false;
         }
         else if(isset($details['sales_invoice_id'])) {
             $execute = false;
@@ -586,19 +586,89 @@ function find_issue(int $store_id): void {
             $statement_fetch_si -> execute([':_id' => $details['sales_invoice_id (Update)']]);
             $si = $statement_fetch_si -> fetchAll(PDO::FETCH_ASSOC)[0];
             $amount = $si['cogs'];
-            $si_created_date = $si['modified'];
-            
-            if($si_created_date == $debug_created_time) {
+            $si_modified = $si['modified'];
+            $latest_cogs = $si['cogs'];
+
+            // Check for Edits
+            if(is_null($si['versions']) === false) {
+                $versions = json_decode($si['versions'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+                $version_keys = array_keys($versions);
+                $local_time_from_debug = Utils::convert_utc_str_timestamp_to_localtime($debug_created_time, $store_id);
+                $selected_version = null;
+
+                foreach($version_keys as $version) {
+                    $local_time = Utils::convert_to_local_timestamp_from_utc_unix_timestamp($version, $store_id);
+
+                    if($local_time_from_debug == $local_time) {
+                        $selected_version = $version;
+                        break;
+                    }
+
+                    $cogs_of_version = calculate_cogs_from_details($versions[$version]);
+                    $amount = Utils::round(abs($latest_cogs - $cogs_of_version), 2);
+                    if($amount == $inventory_diff) {
+                        $selected_version = $version;
+                        break;
+                    }
+                }
+
+                // if(is_null($selected_version) === false) $amount = calculate_cogs_from_details($versions[$selected_version]);                
+            } 
+
+            // No Changed have been made
+            // Just invoice was edited
+            else {
+                $amount = 0;
+            }
+
+            if(is_null($selected_version)) {
+                // The Latest Version
+                $amount = $latest_cogs ;
             }
         }
 
         // Check for Difference
         $amount = abs(Utils::round($amount, 2));
         if($execute && $inventory_diff != $amount) {
-            die("$id : $inventory_diff : $amount<br>");
+            echo ("$id : $inventory_diff : $amount<br>");
         }
     }
 }
-find_issue($store_id);
-// 
+
+function round_bs_inventory(int $store_id): void {
+    $db = get_db_instance();
+    $db -> beginTransaction();
+    try {
+
+        // Fetch Balance Sheet
+        $statement = $db -> prepare('SELECT * FROM balance_sheet WHERE store_id = :store_id ORDER BY id DESC LIMIT 1;');
+        $statement -> execute([':store_id' => $store_id]);
+        $balance_sheet = $statement -> fetchAll(PDO::FETCH_ASSOC)[0];
+        $id = $balance_sheet['id'];
+        $bs_statement = json_decode($balance_sheet['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+        
+
+        $bs_statement[1520] = Utils::round($bs_statement[1520], 2);
+
+        // Update Balance Sheet
+        $statement = $db -> prepare('UPDATE balance_sheet SET `statement` = :_statement WHERE id = :id;');
+        $is_successful = $statement -> execute([
+            ':_statement' => json_encode($bs_statement, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
+            ':id' => $id,
+        ]);
+        
+        if($is_successful !== true && $statement -> rowCount() < 1) {
+            throw new Exception('Unable to update Balance Sheet');
+        }
+
+        assert_success();
+        $db -> commit();
+        echo 'Done';
+    }
+    catch(Exception $e) {
+        print_r($e -> getMessage());
+        $db -> rollBack();
+    }
+}
+round_bs_inventory($store_id);
 ?>  
