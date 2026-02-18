@@ -670,5 +670,6 @@ function round_bs_inventory(int $store_id): void {
         $db -> rollBack();
     }
 }
+fix_inventory_value($store_id);
 round_bs_inventory($store_id);
 ?>  

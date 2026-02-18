@@ -1,4 +1,5 @@
 <?php 
+require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/configurations.php";
 
 class Debug {
     /**
@@ -12,7 +13,8 @@ class Debug {
      * @param store_id
      * @throws Exception
      */
-    public static function write_to_db(PDO &$db, int $store_id): void {
+    public static function  write_to_db(PDO &$db, int $store_id): void {
+        if(SYSTEM_INIT_HOST !== __PARTS_V2__) return;
         $statement = $db -> prepare('INSERT INTO debug(store_id, details) VALUES (:store_id, :details);');
         $is_successful = $statement -> execute([
             ':store_id' => $store_id,
