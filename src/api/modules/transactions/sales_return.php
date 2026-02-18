@@ -721,6 +721,10 @@ class SalesReturn {
                 'add',
                 $affected_accounts,
             );
+
+            // [DEBUG_START]
+            Debug::$data['cogs'] = $new_cogr;
+            // [DEBUG_END]
             
             // Adjust Inventory And Revenue Accounts
             $accounts = array_keys($affected_accounts);
@@ -935,6 +939,7 @@ class SalesReturn {
             Debug::$data['sales_return_id'] = $sales_return_id;
             Debug::set_current_inventory_value('new_inventory_value', $db, $store_id);
             Debug::write_to_db($db, $store_id);
+            assert_success();
             // [DEBUG_END]
 
             // Commit
@@ -972,6 +977,10 @@ class SalesReturn {
 
         // Old COGR Amount
         $old_cogr = Shared::calculate_cogs_of_items($details['initial']['details'], is_sales_return: true);
+
+        // [DEBUG_START]
+        Debug::$data['cogs'] += -$old_cogr;
+        // [DEBUG_END]
 
         // Adjust Inventory
         self::adjust_inventory(
@@ -1130,6 +1139,7 @@ class SalesReturn {
             $store_id = $validated_details['store_id'];
 
             // [DEBUG_START]
+            Debug::$data['cogs'] = 0;
             Debug::set_current_inventory_value('old_inventory_value', $db, $store_id);
             // [DEBUG_END]
 
@@ -1223,6 +1233,10 @@ class SalesReturn {
                 op: 'add',
                 affected_accounts: $affected_accounts,
             );
+
+            // [DEBUG_START]
+            Debug::$data['cogs'] += $cogr;
+            // [DEBUG_END]
             
             // Adjust Inventory And Revenue Accounts
             $accounts = array_keys($affected_accounts);
@@ -1415,6 +1429,7 @@ class SalesReturn {
             Debug::$data['sales_return_id (Update)'] = $sales_return_id;
             Debug::set_current_inventory_value('new_inventory_value', $db, $store_id);
             Debug::write_to_db($db, $store_id);
+            assert_success();
             // [DEBUG_END]
 
             if($db -> inTransaction()) $db -> commit();

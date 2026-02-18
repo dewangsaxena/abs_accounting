@@ -557,6 +557,10 @@ class SalesInvoice {
                 'deduct',
                 $affected_accounts,
             );
+
+            // [DEBUG_START]
+            Debug::$data['cogs'] = -$cogs;
+            // [DEBUG_END]
             
             // Adjust Inventory And Revenue Accounts
             $accounts = array_keys($affected_accounts);
@@ -766,6 +770,7 @@ class SalesInvoice {
             Debug::$data['sales_invoice_id'] = $sales_invoice_id;
             Debug::set_current_inventory_value('new_inventory_value', $db, $store_id);
             Debug::write_to_db($db, $store_id);
+            assert_success();
             // [DEBUG_END]
 
             /* COMMIT */
@@ -819,6 +824,7 @@ class SalesInvoice {
             $store_id = $details['store_id'];
 
             // [DEBUG_START]
+            Debug::$data['cogs'] = 0;
             Debug::set_current_inventory_value('old_inventory_value', $db, $store_id);
             // [DEBUG_END]
 
@@ -968,6 +974,10 @@ class SalesInvoice {
                 op: 'deduct',
                 affected_accounts: $affected_accounts,
             );
+
+            // [DEBUG_START]
+            Debug::$data['cogs'] -= $cogs;
+            // [DEBUG_END]
 
             // Adjust Inventory And Revenue Accounts
             $accounts = array_keys($affected_accounts);
@@ -1142,9 +1152,6 @@ class SalesInvoice {
                 ':disable_provincial_taxes' => $data['disableProvincialTaxes'],
             ];
 
-            $statement = $db -> prepare($query);
-            $is_successful = $statement -> execute($params);
-
             // Update Last Purchase Date
             Client::update_last_purchase_date($client_id, $invoice_id, $details['txn_date'], $db, $store_id);
 
@@ -1154,10 +1161,14 @@ class SalesInvoice {
             // CHECK FOR ANY ERROR
             assert_success();
 
+            $statement = $db -> prepare($query);
+            $is_successful = $statement -> execute($params);
+
             // [DEBUG_START]
             Debug::$data['sales_invoice_id (Update)'] = $invoice_id;
             Debug::set_current_inventory_value('new_inventory_value', $db, $store_id);
             Debug::write_to_db($db, $store_id);
+            assert_success();
             // [DEBUG_END]
 
             // Check for Successful Update
@@ -1284,6 +1295,10 @@ class SalesInvoice {
             'add',
             $affected_accounts
         );
+
+        // [DEBUG_START]
+        Debug::$data['cogs'] += $old_cogs;
+        // [DEBUG_END]
 
         $accounts = array_keys($affected_accounts);
         foreach($accounts as $account) {
