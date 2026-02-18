@@ -1036,8 +1036,6 @@ class Inventory {
         if ($is_successful !== true || $statement->rowCount() < 0) throw new Exception('Unable to Insert Inventory History.');
     }
 
-
-
     /**
      * This method will adjust inventory.
      * @param details
