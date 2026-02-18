@@ -770,6 +770,7 @@ class SalesInvoice {
             Debug::$data['sales_invoice_id'] = $sales_invoice_id;
             Debug::set_current_inventory_value('new_inventory_value', $db, $store_id);
             Debug::write_to_db($db, $store_id);
+            assert_success();
             // [DEBUG_END]
 
             /* COMMIT */
@@ -1151,9 +1152,6 @@ class SalesInvoice {
                 ':disable_provincial_taxes' => $data['disableProvincialTaxes'],
             ];
 
-            $statement = $db -> prepare($query);
-            $is_successful = $statement -> execute($params);
-
             // Update Last Purchase Date
             Client::update_last_purchase_date($client_id, $invoice_id, $details['txn_date'], $db, $store_id);
 
@@ -1163,10 +1161,14 @@ class SalesInvoice {
             // CHECK FOR ANY ERROR
             assert_success();
 
+            $statement = $db -> prepare($query);
+            $is_successful = $statement -> execute($params);
+
             // [DEBUG_START]
             Debug::$data['sales_invoice_id (Update)'] = $invoice_id;
             Debug::set_current_inventory_value('new_inventory_value', $db, $store_id);
             Debug::write_to_db($db, $store_id);
+            assert_success();
             // [DEBUG_END]
 
             // Check for Successful Update

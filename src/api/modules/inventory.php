@@ -1378,15 +1378,15 @@ class Inventory {
             // Update Balance Sheet
             BalanceSheetActions::update_from($bs_statement, Utils::get_business_date($store_id), $store_id, $db);
 
-            // Assert 
-            assert_success();
-
             // [DEBUG_START]
             Debug::$data['cogs'] = $cogs;
             Debug::$data['adjust_inventory'] = true;
             Debug::set_current_inventory_value('new_inventory_value', $db, $store_id);
             Debug::write_to_db($db, $store_id);
             // [DEBUG_END]
+
+            // Assert 
+            assert_success();
 
             // DB Commit
             if ($is_new_db_connection && $db->inTransaction()) $db->commit();

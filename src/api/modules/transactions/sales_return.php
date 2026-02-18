@@ -939,6 +939,7 @@ class SalesReturn {
             Debug::$data['sales_return_id'] = $sales_return_id;
             Debug::set_current_inventory_value('new_inventory_value', $db, $store_id);
             Debug::write_to_db($db, $store_id);
+            assert_success();
             // [DEBUG_END]
 
             // Commit
@@ -1428,6 +1429,7 @@ class SalesReturn {
             Debug::$data['sales_return_id (Update)'] = $sales_return_id;
             Debug::set_current_inventory_value('new_inventory_value', $db, $store_id);
             Debug::write_to_db($db, $store_id);
+            assert_success();
             // [DEBUG_END]
 
             if($db -> inTransaction()) $db -> commit();
