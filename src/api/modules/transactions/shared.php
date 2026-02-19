@@ -822,13 +822,13 @@ class Shared {
             // PO Number
             if(isset($data['poNumber'])) {
                 $query .= ' AND txn_tb.`po` LIKE :poNumber ';
-                $values[':poNumber'] = '%'. $data['poNumber']. '%';
+                $values[':poNumber'] = $data['poNumber'];
             }
 
             // Unit Number
             if(isset($data['unitNumber'])) {
                 $query .= ' AND txn_tb.`unit_no` LIKE :unitNumber ';
-                $values[':unitNumber'] = '%'. $data['unitNumber']. '%';
+                $values[':unitNumber'] = $data['unitNumber'];
             }
 
             // VIN 
