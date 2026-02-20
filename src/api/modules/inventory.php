@@ -1167,7 +1167,7 @@ class Inventory {
                 $buying_cost = is_numeric($details[$key]['buyingCost']) ? Utils::round(floatval($details[$key]['buyingCost'])) : null;
 
                 // Buying Cost cannot be negative or null
-                if ($buying_cost <= 0 || $buying_cost === null) throw new Exception('Invalid Buying Cost for ' . $identifier);
+                if ($buying_cost === null || $buying_cost <= 0) throw new Exception('Invalid Buying Cost for ' . $identifier);
 
                 // Item Id
                 $item_id = $details[$key]['id'];
