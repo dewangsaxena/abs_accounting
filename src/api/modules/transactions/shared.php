@@ -1552,8 +1552,10 @@ class Shared {
             if($initial_txn_year === 0) throw new Exception('Invalid initial transaction Year.');
 
             // Validate for Same Year
-            if($transaction_year !== $initial_txn_year) throw new Exception('Cannot change year of transaction.');
-
+            if(!(UserManagement::is_root_user())) {
+                if($transaction_year !== $initial_txn_year) throw new Exception('Cannot change year of transaction.');
+            }
+            
             // Only I can change the Transaction Date.
             if(intval($_SESSION['user_id'] ?? 0) !== UserManagement::ROOT_USER_ID && $new_date != $old_date) throw new Exception('Cannot Change Date of Transaction.');
         }
