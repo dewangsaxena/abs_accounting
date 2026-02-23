@@ -1114,7 +1114,7 @@ class Client {
                     'isSelfClient' => self::is_self_client($record['id']) ? 1 : 0,
                     'customSellingPriceForItems' => $custom_selling_price_for_items,
                     'lastPurchaseDate' => is_string($last_purchase_date) ? Utils::format_to_human_readable_date($last_purchase_date) : 'N/A',
-                    'enforceSelfClientPriceLock' => $store_id === StoreDetails::CALGARY ? 0 : 1,
+                    'enforceSelfClientPriceLock' => 0,
                     'sendQuotationsToAdditionalEmailAddresses' => $send_quotations_to_additional_email_addresses,
                 ];
                 $formatted_records []= $data;
