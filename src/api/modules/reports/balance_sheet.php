@@ -691,8 +691,9 @@ class BalanceSheetActions {
             $statement = json_decode($balance_sheet['statement'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
             $statement_year = intval(explode('-', $balance_sheet['date'])[0]);
             if($statement_year > $date_year) {
-                // Carry Forward only Account Receivables 
+                // Carry Forward only Account Receivables and Inventory 
                 $statement[AccountsConfig::ACCOUNTS_RECEIVABLE] += $account_details[AccountsConfig::ACCOUNTS_RECEIVABLE];
+                $statement[AccountsConfig::INVENTORY_A] += $account_details[AccountsConfig::INVENTORY_A];
             }
             else {
                 // Apply Changes
