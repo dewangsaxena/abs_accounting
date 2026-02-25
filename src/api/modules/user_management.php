@@ -407,8 +407,6 @@ class UserManagement {
             }
             else if($data['for'] !== 'self' && $data['for'] !== 'user') throw new Exception('Invalid Action.');
 
-            self::verify_root_user();
-
             // Validate New password
             $new_password = trim($data['new_password']);
 
