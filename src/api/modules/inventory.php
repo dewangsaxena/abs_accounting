@@ -1236,10 +1236,7 @@ class Inventory {
                             throw new Exception('Cannot process negative value balance for ' . $identifier);
                         }
 
-                        // Adjust Inventory value
-                        $new_inv_value = $existing_inv_value + $value_to_be_adjusted;
-
-                        // Adjust Quantity 
+                        // New Inventory Quantity
                         $new_inv_quantity = $existing_inv_quantity + $quantity_to_be_adjusted;
 
                         // Validate Quantity
@@ -1248,13 +1245,11 @@ class Inventory {
                         // Calculate New Prices
                         $new_prices = self::calculate_selling_price($store_id, $existing_prices, $profit_margins, $buying_cost, $item_record['identifier']);
 
-                        // Update Buying Cost
-                        // Adjusted for Quantity
-                        $new_prices[$store_id]['buyingCost'] = self::calculate_buying_cost($new_inv_value, $new_inv_quantity);
+                        // Update Buying Cost to latest price.
+                        $new_prices[$store_id]['buyingCost'] = $buying_cost;
 
                         // New Total Inventory Value 
-                        // (Old Quantity + New Quantity) * New Buying Cost
-                        $new_total_inventory_value = ($existing_inv_quantity + $quantity_to_be_adjusted) * $new_prices[$store_id]['buyingCost'];
+                        $new_total_inventory_value = Utils::round($new_inv_quantity * $new_prices[$store_id]['buyingCost']);
 
                         // Update Account Value
                         BalanceSheetActions::update_account_value(

@@ -9,6 +9,7 @@ delete from balance_sheet;
 delete from customer_aged_summary;
 update clients set amount_owing = '{}' where id in(10000);
 delete from inventory;
+delete from debug;
 
 -- OLD 
 DELETE FROM balance_sheet;
