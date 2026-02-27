@@ -80,7 +80,7 @@ function generate_list(int $store_id, bool $do_print=true) {
         $code .= "</table><br><br>Total Inventory Value: &nbsp;&nbsp;&nbsp;&nbsp;<label style='letter-spacing: 2px;font-weight:bold;'>\$ $total_value</label>";
         echo $code;
     }
-    else return $total_value;
+    else return Utils::round($total_value);
 }
 
 function fix_inventory_value(int $store_id): void {
