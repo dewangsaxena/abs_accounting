@@ -1206,7 +1206,7 @@ class Inventory {
 
                     // Existing Inventory Details
                     $existing_inv_quantity = $item_record['quantity'];
-                    $existing_inv_value = $existing_inv_quantity * $existing_prices[$store_id]['buyingCost'];
+                    $existing_inv_value = Utils::round($existing_inv_quantity * $existing_prices[$store_id]['buyingCost']);
 
                     // Validate Quantity
                     if ($quantity_to_be_adjusted < 0 && abs($quantity_to_be_adjusted) > $existing_inv_quantity) {
