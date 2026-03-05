@@ -562,7 +562,7 @@ class SalesInvoice {
             );
 
             // [DEBUG_START]
-            Debug::$data['cogs'] = -$cogs;
+            Debug::$data['cogs'] = Utils::round(-$cogs);
             // [DEBUG_END]
             
             // Adjust Inventory And Revenue Accounts
@@ -982,7 +982,7 @@ class SalesInvoice {
             );
 
             // [DEBUG_START]
-            Debug::$data['cogs'] -= $cogs;
+            Debug::$data['cogs'] -= Utils::round($cogs);
             // [DEBUG_END]
 
             // Adjust Inventory And Revenue Accounts
@@ -1303,7 +1303,7 @@ class SalesInvoice {
         );
 
         // [DEBUG_START]
-        Debug::$data['cogs'] += $old_cogs;
+        Debug::$data['cogs'] += Utils::round($old_cogs);
         // [DEBUG_END]
 
         $accounts = array_keys($affected_accounts);

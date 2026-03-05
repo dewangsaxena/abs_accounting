@@ -723,7 +723,7 @@ class SalesReturn {
             );
 
             // [DEBUG_START]
-            Debug::$data['cogs'] = $new_cogr;
+            Debug::$data['cogs'] = Utils::round($new_cogr);
             // [DEBUG_END]
             
             // Adjust Inventory And Revenue Accounts
@@ -979,7 +979,7 @@ class SalesReturn {
         $old_cogr = Shared::calculate_cogs_of_items($details['initial']['details'], is_sales_return: true);
 
         // [DEBUG_START]
-        Debug::$data['cogs'] += -$old_cogr;
+        Debug::$data['cogs'] += Utils::round(-$old_cogr);
         // [DEBUG_END]
 
         // Adjust Inventory
@@ -1235,7 +1235,7 @@ class SalesReturn {
             );
 
             // [DEBUG_START]
-            Debug::$data['cogs'] += $cogr;
+            Debug::$data['cogs'] += Utils::round($cogr);
             // [DEBUG_END]
             
             // Adjust Inventory And Revenue Accounts
