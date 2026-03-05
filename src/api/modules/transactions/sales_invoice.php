@@ -507,6 +507,9 @@ class SalesInvoice {
             // Fetch Customer Aged Summary of Client
             if($is_pay_later) Shared::allow_balance_due_check_for_client($client_id, $store_id);
 
+            // Check for self client and pay later only.
+            if(self::$is_self_client && $is_pay_later !== true) throw new Exception('Payment Method can only be Pay Later for Self Client.');
+
             // Txn date
             $date = $validated_details['txn_date'];
 
@@ -842,6 +845,9 @@ class SalesInvoice {
 
             // Fetch Customer Aged Summary of Client
             if($is_pay_later) Shared::allow_balance_due_check_for_client($client_id, $store_id);
+
+            // Check for self client and pay later only.
+            if(self::$is_self_client && $is_pay_later !== true) throw new Exception('Payment Method can only be Pay Later for Self Client.');
 
             // Versions
             $versions = Shared::fetch_latest_required_details_for_transaction($invoice_id, SALES_INVOICE, $data, $db);
