@@ -1650,7 +1650,7 @@ class Shared {
         foreach($item_details as $item) {
             // Sales Return could have missing 'returnQuantity' attribute
             if($is_sales_return && isset($item[$field_name]) === false) continue; 
-            $total_cogs += ($item['buyingCost'] * $item[$field_name]);
+            $total_cogs += Utils::round(($item['buyingCost'] * $item[$field_name]));
         }
         return $total_cogs;
     }
