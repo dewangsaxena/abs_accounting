@@ -11,6 +11,7 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_aged_
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/suppressions.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/flyer.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/user_management.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/stats.php";
 
 function generate_list(int $store_id, bool $do_print=true) {
     $db = get_db_instance();
@@ -670,6 +671,9 @@ function round_bs_inventory(int $store_id): void {
         $db -> rollBack();
     }
 }
-fix_inventory_value($store_id);
-round_bs_inventory($store_id);
+// fix_inventory_value($store_id);
+// round_bs_inventory($store_id);
+
+$x = Stats::stats();
+print_r($x);
 ?>  
