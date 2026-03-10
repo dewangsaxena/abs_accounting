@@ -4,6 +4,8 @@ import {
   Card,
   CardBody,
   HStack,
+  Select,
+  Spinner,
   Tooltip,
   VStack,
   useInterval,
@@ -16,13 +18,18 @@ import { APIResponse, HTTPService } from "../../../service/api-client";
 import { create } from "zustand";
 import {
   formatNumberWithDecimalPlaces,
+  getAttributeFromSession,
   showToast,
 } from "../../../shared/functions";
 import { CiTimer } from "react-icons/ci";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { isLocalHost, isParts, Stores } from "../../../shared/config";
 
 // Http Service
 const httpService = new HTTPService();
+
+// Revenue Breakdown 
+type RevenueBreakdownByPaymentMethod  = {[storeId: number]: number} | undefined;
 
 // Summary Report Details
 interface SummaryReportDetails {
@@ -35,12 +42,19 @@ interface SummaryReportDetails {
   profitMargin: number;
   receiptPayments: number;
   receiptDiscount: number;
+  revenueByPaymentMethod: RevenueBreakdownByPaymentMethod;
   lastUpdated?: Date;
+}
+
+// Summary Report Response
+interface SummaryReportResponse {
+  currentMonth: any;
+  currentDate: SummaryReportDetails;
 }
 
 // Summary Report Details Store
 interface SummaryReportDetailsStore extends SummaryReportDetails {
-  fetch: () => any;
+  fetch: (storeId: number) => any;
   setStats: (details: SummaryReportDetails) => void;
   setLastUpdated: (lastUpdated: Date) => void;
 }
@@ -56,9 +70,12 @@ export const summaryReportDetails = create<SummaryReportDetailsStore>(
     profitMargin: 0,
     receiptPayments: 0,
     receiptDiscount: 0,
+    revenueByPaymentMethod: undefined,
     lastUpdated: new Date(),
-    fetch: async () => {
-      return httpService.fetch<SummaryReportDetails>({}, "stats");
+    fetch: async (storeId: number) => {
+      return httpService.fetch<SummaryReportResponse>({
+        store_id: storeId,
+      }, "stats");
     },
     setStats: (details: SummaryReportDetails) => {
       set({ cogs: details.cogs });
@@ -70,6 +87,7 @@ export const summaryReportDetails = create<SummaryReportDetailsStore>(
       set({ profitMargin: details.profitMargin });
       set({ receiptPayments: details.receiptPayments });
       set({ receiptDiscount: details.receiptDiscount });
+      set({ revenueByPaymentMethod: details.revenueByPaymentMethod });
     },
     setLastUpdated: (lastUpdated: Date) => {
       set({ lastUpdated: lastUpdated });
@@ -106,6 +124,7 @@ const InventoryReport = () => {
     discount,
     receiptPayments,
     receiptDiscount,
+    revenueByPaymentMethod,
     fetch,
     setStats,
     setLastUpdated,
@@ -119,6 +138,7 @@ const InventoryReport = () => {
     netIncome: state.netIncome,
     receiptPayments: state.receiptPayments,
     receiptDiscount: state.receiptDiscount,
+    revenueByPaymentMethod: state.revenueByPaymentMethod,
     fetch: state.fetch,
     setStats: state.setStats,
     setLastUpdated: state.setLastUpdated,
@@ -135,27 +155,86 @@ const InventoryReport = () => {
 
   const ERROR_MESSAGE: string = "Unable to Fetch Stats.";
 
+  // Current Store
+  const currentStore = parseInt(localStorage.getItem("storeId") || "0");
+  const [selectedStore, setSelectedStore] = useState<number>(currentStore);
+
+  // Is Loading
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  // Current Month Revenue Breakdown
+  const [currentDayRevenueBreakdown, setCurrentDayRevenueBreakdown] = useState<RevenueBreakdownByPaymentMethod>(undefined);
+  const [currentMonthRevenueBreakdown, setCurrentMonthRevenueBreakdown] = useState<RevenueBreakdownByPaymentMethod>(undefined);
+
   // Execute Once only...
   useEffect(() => {
-    fetch().then((res: any) => {
-      let response: APIResponse<SummaryReportDetails> = res.data;
+    fetch(selectedStore).then((res: any) => {
+      let response: APIResponse<SummaryReportResponse> = res.data;
       if (response.status && response.data) {
-        updateStats(response.data);
+        updateStats(response.data.currentDate);
+        setCurrentDayRevenueBreakdown(response.data.currentDate.revenueByPaymentMethod);
+        setCurrentMonthRevenueBreakdown(response.data.currentMonth);
       } else showToast(toast, false, ERROR_MESSAGE);
+    }).finally(() => {
+      setIsLoading(false);
     });
-  }, []);
+  }, [selectedStore]);
 
   useInterval(() => {
-    fetch().then((res: any) => {
-      let response: APIResponse<SummaryReportDetails> = res.data;
+    fetch(selectedStore).then((res: any) => {
+      let response: APIResponse<SummaryReportResponse> = res.data;
       if (response.status && response.data) {
-        updateStats(response.data);
+        updateStats(response.data.currentDate);
+        setCurrentDayRevenueBreakdown(response.data.currentDate.revenueByPaymentMethod);
+        setCurrentMonthRevenueBreakdown(response.data.currentMonth);
       } else showToast(toast, false, ERROR_MESSAGE);
     });
   }, UPDATE_INTERVAL);
 
+  // User Id
+  let userId = getAttributeFromSession("userId");
+
+  // Disable Store Selector
+  let disableStoreSelector: boolean = true;
+  if(isParts && (userId === 8 || userId === 10007)) disableStoreSelector = false;
+
+  // Check for Localhost
+  if(isLocalHost) disableStoreSelector = false;
+
+  // Day or month selector
+  const [dayOrMonthSelector, setDayOrMonthSelector] = useState<string>("day");
+
+  // Stores
+  const stores: any = Stores.getActiveStores();
+  if(isLoading) return <Spinner/>;
+
   return (
     <VStack align={"start"} width="100%">
+      <HStack width="100%">
+        <Box width="10vw">
+          <Select
+            defaultValue={selectedStore}
+            isDisabled={disableStoreSelector}
+            size="xs"
+            borderBottomWidth={1}
+            onChange={(event: any) => {
+              setIsLoading(true);
+              setSelectedStore(event.target.value);
+            }}
+            >
+            {Object.keys(stores).map((store, index) => (
+                <option
+                key={index}
+                value={store}
+                disabled={store == "1"}
+                >
+                {Stores.names[parseInt(store)]}
+                </option>
+            ))}
+            </Select>
+        </Box>
+      </HStack>
+      <_Divider margin={1} />
       <HStack width="100%">
         <Box width="10vw">
           <Badge
@@ -318,9 +397,136 @@ const InventoryReport = () => {
           $ {formatNumberWithDecimalPlaces(receiptDiscount, 2)}
         </_Label>
       </HStack>
+      <HStack width="100%">
+        <_Divider margin={1} />
+      </HStack>
+      <HStack width="100%">
+        <Box width="15vw">
+          <Select
+            defaultValue={dayOrMonthSelector}
+            size="xs"
+            borderBottomWidth={1}
+            onChange={(event: any) => {
+              setDayOrMonthSelector(event.target.value);
+            }}
+            >
+              <option key={"day"} value="day">Brekdown by Day</option>
+              <option key={"month"} value="month">Breakdown by Month</option>
+            </Select>
+        </Box>
+      </HStack>
+      <BreakDownByPaymentMethod revenueByPaymentMethod={dayOrMonthSelector === "day" ? currentDayRevenueBreakdown: currentMonthRevenueBreakdown}/>
     </VStack>
   );
 };
+
+const BreakDownByPaymentMethod = ({revenueByPaymentMethod}: {revenueByPaymentMethod: RevenueBreakdownByPaymentMethod}) => {
+
+  console.log(revenueByPaymentMethod);
+  return <><HStack>
+        <Box width="10vw">
+          <Tooltip label="Pay Later">
+            <Badge
+              color="white"
+              bgColor="#4E8D9C"
+              letterSpacing={2}
+              borderRadius={0}
+            >
+              Pay Later
+            </Badge>
+          </Tooltip>
+        </Box>
+        <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2}>
+          $ {formatNumberWithDecimalPlaces(revenueByPaymentMethod !== undefined ? revenueByPaymentMethod[0] : 0, 2)}
+        </_Label>
+      </HStack>
+      <HStack>
+        <Box width="10vw">
+          <Tooltip label="Visa">
+            <Badge
+              color="white"
+              bgColor="#111FA2"
+              letterSpacing={2}
+              borderRadius={0}
+            >
+              Visa
+            </Badge>
+          </Tooltip>
+        </Box>
+        <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2}>
+          $ {formatNumberWithDecimalPlaces(revenueByPaymentMethod !== undefined ? revenueByPaymentMethod[6] : 0, 2)}
+        </_Label>
+      </HStack>
+      <HStack>
+        <Box width="10vw">
+          <Tooltip label="Mastercard">
+            <Badge
+              color="white"
+              bgColor="#FF8B5A"
+              letterSpacing={2}
+              borderRadius={0}
+            >
+              Mastercard
+            </Badge>
+          </Tooltip>
+        </Box>
+        <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2}>
+          $ {formatNumberWithDecimalPlaces(revenueByPaymentMethod !== undefined ? revenueByPaymentMethod[5] : 0, 2)}
+        </_Label>
+      </HStack>
+      <HStack>
+        <Box width="10vw">
+          <Tooltip label="AMEX">
+            <Badge
+              color="white"
+              bgColor="#5478FF"
+              letterSpacing={2}
+              borderRadius={0}
+            >
+              AMEX
+            </Badge>
+          </Tooltip>
+        </Box>
+        <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2}>
+          $ {formatNumberWithDecimalPlaces(revenueByPaymentMethod !== undefined ? revenueByPaymentMethod[4] : 0, 2)}
+        </_Label>
+      </HStack>
+      <HStack>
+        <Box width="10vw">
+          <Tooltip label="Cheque">
+            <Badge
+              color="white"
+              bgColor="#84B179"
+              letterSpacing={2}
+              borderRadius={0}
+            >
+              Cheque
+            </Badge>
+          </Tooltip>
+        </Box>
+        <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2}>
+          $ {formatNumberWithDecimalPlaces(revenueByPaymentMethod !== undefined ? revenueByPaymentMethod[2] : 0, 2)}
+        </_Label>
+      </HStack>
+      <HStack>
+        <Box width="10vw">
+          <Tooltip label="Debit">
+            <Badge
+              color="white"
+              bgColor="#8100D1"
+              letterSpacing={2}
+              borderRadius={0}
+            >
+              Debit
+            </Badge>
+          </Tooltip>
+        </Box>
+        <_Label fontFamily={numberFont} fontSize="0.8em" letterSpacing={2}>
+          $ {formatNumberWithDecimalPlaces(revenueByPaymentMethod !== undefined ? revenueByPaymentMethod[8] : 0, 2)}
+        </_Label>
+      </HStack>
+    </>;
+}
 
 const StatsUpdateMsg = () => {
   const { lastUpdated } = summaryReportDetails();

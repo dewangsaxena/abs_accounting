@@ -1,7 +1,7 @@
 /**
  * Configurations used the application.
  */
-export const CLIENT_APP_VERSION = "2.2.49";
+export const CLIENT_APP_VERSION = "2.3.0";
 
 // Stores
 export class Stores {
@@ -48,8 +48,11 @@ const DOMAINS_BASE_URLS: AttributeType = {
 export const MODE_WASH: number = 1;
 export const MODE_PARTS: number = 2;
 
+// Is LocalHost
+export const isLocalHost: boolean = location.hostname.includes(DOMAINS_BASE_URLS["localhost"]);
+
 // System Initiation Flags
-const isParts: boolean = location.hostname.includes(DOMAINS_BASE_URLS["parts"])
+export const isParts: boolean = location.hostname.includes(DOMAINS_BASE_URLS["parts"])
   ? true
   : false;
 const isWash: boolean = location.hostname.includes(DOMAINS_BASE_URLS["wash"])

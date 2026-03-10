@@ -20,21 +20,16 @@ class Stats {
      * This method will fetch stats. 
      * @return array
      */
-    public static function stats(): array {
+    public static function stats(int $store_id): array {
         try {
             $db = get_db_instance();
             $data = [
-                'current_month' => null,
-                'current_date' => null,
+                'currentMonth' => null,
+                'currentDate' => null,
             ];
 
-            $data['current_month'] = self::fetch_details_for_month_by_store($db);
-            $stores = array_keys(StoreDetails::STORE_DETAILS);
-            foreach($stores as $store_id) {
-                if($store_id !== StoreDetails::ALL_STORES) {
-                    $data['current_date'][$store_id] = self::fetch_details_by_store($store_id, $db);
-                }
-            }
+            $data['currentMonth'] = self::fetch_details_for_month_by_store($store_id, $db);
+            $data['currentDate'] = self::fetch_details_by_store($store_id, $db);
     
             return ['status' => true, 'data' => $data];
         } catch (Exception $e) {
@@ -48,9 +43,10 @@ class Stats {
      * @param db
      * @return array
      */
-    private static function fetch_details_for_month_by_store(PDO &$db): array {
+    private static function fetch_details_for_month_by_store(int $store_id, PDO &$db): array {
 
-        $details_by_stores = [];
+        // Revenue 
+        $revenue_by_payment_methods = self::REVENUE_BY_PAYMENT_METHODS;
 
         // Current Month 
         $month = date('m');
@@ -62,12 +58,13 @@ class Stats {
             sub_total, 
             txn_discount, 
             cogs,
-            payment_method,
-            store_id
+            payment_method
         FROM 
             sales_invoice
         WHERE 
             `date` LIKE :_date
+        AND 
+            store_id = :store_id
         AND
             client_id NOT IN (:placeholder)
         EOS;
@@ -78,17 +75,15 @@ class Stats {
         if (count($self_clients) == 0) $self_clients = [-1];
         $result = Utils::mysql_in_placeholder_pdo_substitute($self_clients, $query);
         $params = array_merge(
-            [':_date' => $current_month],
+            [':_date' => $current_month, ':store_id' => $store_id],
             $result['values'],
         );
         $statement = $db->prepare($result['query']);
         $statement->execute($params);
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         foreach ($result as $r) {
-            $store_id = $r['store_id'];
-            if(isset($details_by_stores[$store_id]) === false) $details_by_stores[$store_id] = self::REVENUE_BY_PAYMENT_METHODS;
             $payment_method = $r['payment_method'];
-            $details_by_stores[$store_id][$payment_method] += $r['sub_total'];
+            $revenue_by_payment_methods[$payment_method] += $r['sub_total'];
         }
 
         $result = Utils::mysql_in_placeholder_pdo_substitute(
@@ -100,12 +95,13 @@ class Stats {
                 txn_discount, 
                 cogr, 
                 restocking_fees,
-                payment_method,
-                store_id
+                payment_method
             FROM 
                 sales_return 
             WHERE 
                 `date` LIKE :_date
+            AND
+                store_id = :store_id 
             AND 
                 client_id NOT IN (:placeholder);
         EOS);
@@ -114,12 +110,11 @@ class Stats {
         $statement->execute($params);
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         foreach ($result as $r) {
-            $store_id = $r['store_id'];
             $payment_method = $r['payment_method'];
-            $details_by_stores[$store_id][$payment_method] -= ($r['sub_total'] + $r['restocking_fees']);
+            $revenue_by_payment_methods[$payment_method] -= ($r['sub_total'] + $r['restocking_fees']);
         }
 
-        return $details_by_stores;
+        return $revenue_by_payment_methods;
     }
 
     /**
