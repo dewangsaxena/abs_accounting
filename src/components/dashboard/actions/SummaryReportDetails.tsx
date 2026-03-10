@@ -190,7 +190,7 @@ const InventoryReport = () => {
   }, UPDATE_INTERVAL);
 
   // User Id
-  let userId = getAttributeFromSession("userId");
+  let userId = parseInt(getAttributeFromSession("userId"));
 
   // Disable Store Selector
   let disableStoreSelector: boolean = true;
