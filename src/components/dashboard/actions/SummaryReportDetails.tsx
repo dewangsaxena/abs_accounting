@@ -190,7 +190,7 @@ const InventoryReport = () => {
   }, UPDATE_INTERVAL);
 
   // User Id
-  let userId = getAttributeFromSession("userId");
+  let userId = parseInt(getAttributeFromSession("userId"));
 
   // Disable Store Selector
   let disableStoreSelector: boolean = true;
@@ -419,8 +419,6 @@ const InventoryReport = () => {
 };
 
 const BreakDownByPaymentMethod = ({revenueByPaymentMethod}: {revenueByPaymentMethod: RevenueBreakdownByPaymentMethod}) => {
-
-  console.log(revenueByPaymentMethod);
   return <><HStack>
         <Box width="10vw">
           <Tooltip label="Pay Later">
