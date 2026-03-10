@@ -410,7 +410,7 @@ const InventoryReport = () => {
               setDayOrMonthSelector(event.target.value);
             }}
             >
-              <option key={"day"} value="day">Brekdown by Day</option>
+              <option key={"day"} value="day">Breakdown by Day</option>
               <option key={"month"} value="month">Breakdown by Month</option>
             </Select>
         </Box>
