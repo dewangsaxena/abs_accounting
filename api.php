@@ -337,7 +337,7 @@ if (isset($_POST['action'])) {
 
             /* Stats */
         case 'stats':
-            $response = Stats::stats();
+            $response = Stats::stats($data['store_id']);
             break;
 
             /* Item Frequency */
