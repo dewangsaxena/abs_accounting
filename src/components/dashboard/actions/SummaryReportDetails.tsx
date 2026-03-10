@@ -195,7 +195,7 @@ const InventoryReport = () => {
 
   // Disable Store Selector
   let disableStoreSelector: boolean = true;
-  if(isParts && (userId === 8 || userId === 10007)) disableStoreSelector = false;
+  if(isParts && (userId === 8 || userId === 10007 /* Lucky */ || userId === 10005 /* Boss */)) disableStoreSelector = false;
 
   // Check for Localhost
   if(isLocalHost) disableStoreSelector = false;
