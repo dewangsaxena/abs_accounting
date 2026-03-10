@@ -10,6 +10,7 @@ import {
   VStack,
   useInterval,
   useToast,
+  Text,
 } from "@chakra-ui/react";
 import { _Divider, _Label } from "../../../shared/Components";
 import { FcInfo } from "react-icons/fc";
@@ -209,6 +210,7 @@ const InventoryReport = () => {
   return (
     <VStack align={"start"} width="100%">
       <HStack width="100%">
+        <Text fontSize={"0.8em"}>Show summary for: </Text>
         <Box width="10vw">
           <Select
             defaultValue={selectedStore}
