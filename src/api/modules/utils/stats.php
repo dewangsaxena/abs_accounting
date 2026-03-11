@@ -55,7 +55,6 @@ class Stats {
         $query = <<<"EOS"
         SELECT 
             sub_total, 
-            sub_total, 
             txn_discount, 
             cogs,
             payment_method
@@ -90,7 +89,6 @@ class Stats {
             $self_clients,
             <<<'EOS'
             SELECT 
-                sub_total, 
                 sub_total, 
                 txn_discount, 
                 cogr, 
@@ -142,7 +140,6 @@ class Stats {
         $query = <<<'EOS'
         SELECT 
             sub_total, 
-            sub_total, 
             txn_discount, 
             cogs,
             payment_method
@@ -178,7 +175,6 @@ class Stats {
             <<<'EOS'
             SELECT 
                 sub_total, 
-                sub_total, 
                 txn_discount, 
                 cogr, 
                 restocking_fees,
@@ -200,6 +196,7 @@ class Stats {
             $sales_return += ($r['sub_total'] + $r['restocking_fees']);
             $cogs -= $r['cogr'];
             $discount -= $r['txn_discount'];
+            $payment_method = $r['payment_method'];
             $revenue_by_payment_method_current_date[$payment_method] -= $r['sub_total'];
         }
 
