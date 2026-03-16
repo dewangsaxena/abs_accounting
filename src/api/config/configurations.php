@@ -210,7 +210,7 @@ define('PURCHASE_INVOICE', 7);
 
 /* Transactions Names */
 define('TRANSACTION_NAMES', [
-    SALES_INVOICE => 'Sales Invoice',
+    SALES_INVOICE => 'Invoice',
     SALES_RETURN => 'Sales Return',
     CREDIT_NOTE => 'Credit Note',
     DEBIT_NOTE => 'Debit Note',
