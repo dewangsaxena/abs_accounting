@@ -118,7 +118,8 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         self::$pdf -> Cell(w:$offset_right_section, h:4, txt: self::$details['company_name'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
 
         // Document Type
-        self::$pdf -> Cell(w:38, h:4, txt: strtoupper(self::$details['document_type']), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
+        $document_type = strtoupper(self::$details['document_type']);
+        self::$pdf -> Cell(w:38, h:4, txt: $document_type === 'SALES INVOICE' ? 'INVOICE': $document_type, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
 
         // PADDING 
         self::$pdf -> Cell(w: 0, h: 1.5, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
