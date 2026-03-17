@@ -165,8 +165,8 @@ class SalesReturn {
             $cogr += ($item['buyingCost'] * $return_quantity);
             $base_price = $item['basePrice'];
 
-            $discount_per_item = Utils::round(($base_price * $item['discountRate']) / 100);
-            $total_discount_per_item = Utils::round($discount_per_item * $return_quantity);
+            $discount_per_item = ($base_price * $item['discountRate']) / 100;
+            $total_discount_per_item = $discount_per_item * $return_quantity;
             $txn_discount += $total_discount_per_item;
         }
 
