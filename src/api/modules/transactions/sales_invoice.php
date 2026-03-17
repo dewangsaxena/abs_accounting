@@ -150,8 +150,8 @@ class SalesInvoice {
             $base_price = $item['basePrice'];
             $quantity = $item['quantity'];
             $cogs += ($item['buyingCost'] * $quantity);
-            $discount_per_item = Utils::round(($base_price * $item['discountRate']) / 100);
-            $total_discount_per_item = Utils::round($discount_per_item * $quantity);
+            $discount_per_item = ($base_price * $item['discountRate']) / 100;
+            $total_discount_per_item = $discount_per_item * $quantity;
             $txn_discount += $total_discount_per_item;
         }
 

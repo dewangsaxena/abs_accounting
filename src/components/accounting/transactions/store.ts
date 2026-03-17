@@ -292,8 +292,8 @@ export const transactionStore = create<TransactionStore>((set, get) => ({
           IS_SALES_RETURN
             ? rowDetails[i].returnQuantity || 0
             : rowDetails[i].quantity;
-        discount_per_item = toFixed((base_price * quantity) / 100);
-        total_discount_per_item = toFixed(discount_per_item * quantity);
+        discount_per_item = ((base_price * rowDetails[i].discountRate) / 100);
+        total_discount_per_item = (discount_per_item * quantity);
         txnDiscount += total_discount_per_item;
 
         // COGS
