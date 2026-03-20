@@ -674,6 +674,7 @@ function round_bs_inventory(int $store_id): void {
 // fix_inventory_value($store_id);
 // round_bs_inventory($store_id);
 
-$x = Stats::stats();
-print_r($x);
+// $x = Stats::stats();
+// print_r($x);
+
 ?>  

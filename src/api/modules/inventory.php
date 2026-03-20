@@ -1695,15 +1695,36 @@ class Inventory {
     }
 
     /**
-     * This method will generate inventory list.
+     * Generate Inventory report in CSV.
+     * 
      * @param details
      */
-    public static function generate_inventory_list(int $store_id): void {
+    private static function generate_inventory_report_csv(array $details): void {
+        $fp = fopen('inventory_list.csv', 'w');
+        fputcsv($fp, ['Identifier', 'Description', 'Quantity', 'Price / Item', 'Value']);
+        foreach($details as $item) {
+            $buying_cost = Utils::round($item['buying_cost']);
+            $quantity = $item['quantity'];
+            $value = Utils::round($buying_cost * $quantity);
+            fputcsv($fp, [$item['identifier'], $item['description'], $quantity, $buying_cost, $value]);
+        }
+        fclose($fp);
+    }
+
+    /**
+     * This method will generate inventory list.
+     * 
+     * @param store_id
+     * @param generate_csv
+     * @param details
+     */
+    public static function generate_inventory_list(int $store_id, bool $generate_csv = false): void {
         $list = PrepareDetails_Inventory::generate_inventory_list($store_id);
-        GeneratePDF::generate_inventory_list(
-            $list,
-            $store_id,
-        );
+        // GeneratePDF::generate_inventory_list(
+        //     $list,
+        //     $store_id,
+        // );
+        if($generate_csv) self::generate_inventory_report_csv($list);
     }
 
     /**
