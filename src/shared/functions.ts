@@ -10,6 +10,7 @@ import { ItemDetailsForTransactions } from "../components/accounting/transaction
 import { ItemDetails } from "../components/inventory/itemStore";
 import { ClientDetails } from "../components/client/store";
 import { InventoryResponseObject } from "../components/inventory/AdjustInventory";
+import { PiPawPrintLight } from "react-icons/pi";
 
 /**
  * This method will check for active session.
@@ -32,16 +33,21 @@ export const redirectIfInvalidSession = () => {
  * Format Number
  * @param number
  * @param precision
+ * @param convertToNumber
  * @returns number
  */
 export const formatNumber = (
   number: number,
-  precision: number | undefined = undefined
+  precision: number | undefined = undefined,
+  convertToNumber: boolean = false,
 ) => {
   if (precision === undefined) precision = 4;
-  return new Intl.NumberFormat("en-CA", {
+  let stringNumber = new Intl.NumberFormat("en-CA", {
     maximumFractionDigits: precision,
   }).format(number);
+
+  if(convertToNumber) return parseFloat(stringNumber.split(",").join(""));
+  return stringNumber;
 };
 
 /**
@@ -59,7 +65,7 @@ export const formatNumberWithDecimalPlaces = (
   let addAddTrailingText = number == parseInt(number.toString());
   let formattedNumber = formatNumber(number, precision);
   if (addAddTrailingText === false) {
-    let parts = formattedNumber.split(".");
+    let parts = formattedNumber.toString().split(".");
     if (parts !== undefined) {
       if (parts.length === 2 && parts[1].length == 1) parts[1] = `${parts[1]}0`;
       return parts.join(".");
@@ -140,7 +146,7 @@ export const decrypt = function (
  * @returns
  */
 export const toFixed = (number: number, precision: number = 2): number => {
-  return parseFloat(number.toFixed(precision));
+  return parseFloat(formatNumber(number, precision, true).toString());
 };
 
 /**
