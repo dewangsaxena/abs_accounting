@@ -10,7 +10,6 @@ import { ItemDetailsForTransactions } from "../components/accounting/transaction
 import { ItemDetails } from "../components/inventory/itemStore";
 import { ClientDetails } from "../components/client/store";
 import { InventoryResponseObject } from "../components/inventory/AdjustInventory";
-import { PiPawPrintLight } from "react-icons/pi";
 
 /**
  * This method will check for active session.
