@@ -29,6 +29,9 @@ export interface RowDetails {
   isBackOrder: number;
   restockingRate?: number;
 
+  /* Quantity in store */
+  quantityInStores?: number;
+
   /* Account Details */
   account: Account;
 
@@ -82,6 +85,7 @@ export interface ItemDetailsForTransactions {
   memo: string;
   additionalInformation: string;
   disableDiscount?: boolean;
+  quantitiesAllStores: {[storeId: number]: number};
 }
 
 /**
