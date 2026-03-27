@@ -27,6 +27,7 @@ import {
   VStack,
   useDisclosure,
   useToast,
+  Text,
 } from "@chakra-ui/react";
 import {
   CurrencyIcon,
@@ -1037,6 +1038,7 @@ const ItemFieldRow = memo(
       details[rowIndex].unit = event.value.unit;
       details[rowIndex].category = event.value.category;
       details[rowIndex].buyingCost = event.value.prices[storeId].buyingCost;
+      details[rowIndex].quantityInStores = event.value.quantitiesAllStores[storeId];
     };
 
     const toast = useToast();
@@ -1139,6 +1141,10 @@ const ItemFieldRow = memo(
       // Clear Amount of the removed item
       updateAmounts();
     };
+
+    // Inventory Quantity both historical and current Quantity
+    let historicalQuantity: number = (details[rowIndex].quantityInStores && details[rowIndex].quantityInStores) || 0;
+    let currentQuantity: number = (itemDetails && itemDetails.quantitiesAllStores[storeId]) || 0;
 
     return (
       <HStack spacing={2} marginTop={rowIndex == 0 ? 0 : 1}>
@@ -1387,9 +1393,9 @@ const ItemFieldRow = memo(
         {/* Inventory Quantity */}
         {type == TRANSACTION_TYPES["SI"] && (
           <Box width="5%" textAlign={"center"}>
-            <_Label fontSize="0.75em" fontFamily={numberFont} letterSpacing={2} color={(itemDetails && itemDetails.quantity <= 2) ? "#DC143C": "black"}>
-              {(itemDetails && itemDetails.quantity) || "0"}
-            </_Label>
+            <Tooltip label={`Quantity at the time of purchase: ${historicalQuantity}`} fontSize="0.75em" fontFamily={numberFont} letterSpacing={2}>
+              <Text fontSize="0.75em" fontFamily={numberFont} letterSpacing={2} color={(currentQuantity <= 2) ? "red": "black"} >{currentQuantity.toString()}</Text>
+            </Tooltip>
           </Box>
         )}
         {/* Quantity */}
@@ -2399,41 +2405,6 @@ const TransactionHeaderDetails = ({
                         />}
                       </Box>
                   )}
-                  {/* RESTOCKING FEES */}
-                  {/* {type === TRANSACTION_TYPES["SR"] && 
-                    <HStack>
-                      <Box width="60%" fontSize="0.7em">
-                        <Tooltip label="Restocking fees">
-                          RESTOCKING FEES %:
-                        </Tooltip>
-                        </Box>
-                        <Box width="75%">
-                        <_Input
-                            defaultValue={restockingRate}
-                            type="number"
-                            isReadOnly={isReadOnly || isProcessed || clientDetails === null}
-                            borderBottomColor={inputConfig.borderColor}
-                            borderBottomWidth={inputConfig.borderWidth}
-                            borderRadius={inputConfig.borderRadius}
-                            size={inputConfig.size}
-                            fontSize={inputConfig.fontSize}
-                            fontFamily={numberFont}
-                            letterSpacing={inputConfig.letterSpacing}
-                            width="100%"
-                            onClick={(event:any) => {
-                              event.target.select();
-                            }}
-                            onBlur={(e: any) => {
-                              if (e && e.target && e.target.value) {
-                                let rate: number = parseFloat(e.target.value);
-                                setProperty("restockingRate", rate);
-                                updateAmounts();
-                              }
-                            }}
-                          ></_Input>
-                        </Box>
-                    </HStack>
-                  } */}
                   {type === TRANSACTION_TYPES["SI"] && (
                     <Box width="100%">
                       <HStack width="100%">
