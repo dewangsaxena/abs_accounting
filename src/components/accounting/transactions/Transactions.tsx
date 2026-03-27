@@ -1143,7 +1143,7 @@ const ItemFieldRow = memo(
     };
 
     // Inventory Quantity both historical and current Quantity
-    let historicalQuantity: number = (details[rowIndex].quantityInStores && details[rowIndex].quantityInStores) || 0;
+    let historicalQuantity: string = (details[rowIndex].quantityInStores && details[rowIndex].quantityInStores)?.toString() || "N/A";
     let currentQuantity: number = (itemDetails && itemDetails.quantitiesAllStores[storeId]) || 0;
 
     return (
