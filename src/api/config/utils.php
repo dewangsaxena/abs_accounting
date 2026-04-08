@@ -436,6 +436,7 @@ class Utils {
      * @return float
      */
     public static function calculateCOGSMargin(float $selling_price, float $buying_cost): float {
+        if(!($selling_price > 0 && $buying_cost > 0)) return 0;
         $x = $selling_price / abs($buying_cost);
         if ($x >= 1) $x = $x - 1;
         return Utils::round($x * 100);
@@ -448,6 +449,7 @@ class Utils {
      * @return float
      */
     public static function calculateProfitMargin(float $selling_price, float $buying_cost): float {
+        if(!($selling_price > 0 && $buying_cost > 0)) return 0;
         $gross_margin = $selling_price - abs($buying_cost);
         $gross_margin = $gross_margin / $selling_price;
         return Utils::round($gross_margin * 100);
