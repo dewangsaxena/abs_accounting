@@ -1760,11 +1760,11 @@ class Inventory {
             $params = [':store_id' => $store_id];
             if (isset($start_date[0])) {
                 $query .= ' AND `date` >= :start_date ';
-                $params[':start_date'] = $start_date;
+                $params[':start_date'] = Utils::get_YYYY_mm_dd($start_date);
             }
             if (isset($end_date[0])) {
                 $query .= ' AND `date` <= :end_date ';
-                $params[':end_date'] = $end_date;
+                $params[':end_date'] = Utils::get_YYYY_mm_dd($end_date);
             }
 
             $params[':part_id'] = <<<EOS

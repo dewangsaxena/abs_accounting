@@ -677,4 +677,265 @@ function round_bs_inventory(int $store_id): void {
 // $x = Stats::stats();
 // print_r($x);
 
+// $db = get_db_instance();
+// echo Inventory::fetch_used_part_revenue($db, [2], '2026-03-01', '2026-03-31');
+
+$items_details = [];
+function read_line_code_from_calgary($filename) {
+    global $items_details;
+    $data = Utils::read_csv_file($filename);
+    foreach($data as $d) {
+        if(isset($items_details[$d[0]]) === false) {
+            $items_details[$d[0]] = [
+                'identifier' => $d[0],
+                'line_code' => $d[2], 
+                'quantity' => 0, 
+                'description' => $d[1],
+                'buyingCost' => 0,
+                'min' => 0,
+                'max' => 0,
+                'value' => 0,
+            ];
+        }
+    }
+}
+
+function read_line_code_from_delta($filename) {
+    global $items_details;
+    $data = Utils::read_csv_file($filename);
+    foreach($data as $d) {
+        if(isset($items_details[$d[0]]) === false) {
+            $items_details[$d[0]] = [
+                'identifier' => $d[0],
+                'line_code' => 'N/A', 
+                'quantity' => 0, 
+                'description' => $d[1],
+                'buyingCost' => 0,
+                'min' => 0,
+                'max' => 0,
+                'value' => 0,
+            ];
+        }
+    }
+    return $items_details;
+}
+
+// read_line_code_from_calgary("{$_SERVER['DOCUMENT_ROOT']}/calgary_line_code.csv");
+// $items_details = read_line_code_from_delta("{$_SERVER['DOCUMENT_ROOT']}/delta_line_code.csv");
+
+function generate_new_delta_inventory_file($store_id) {
+    global $items_details;
+    $db = get_db_instance();
+
+    $statement = $db -> prepare(<<<'EOS'
+    SELECT 
+        i.`code`,
+        i.oem,
+        i.is_inactive,
+        i.is_core,
+        i.memo,
+        i.additional_information,
+        i.is_discount_disabled,
+        i.`identifier`,
+        i.`description`,
+        i.`reorder_quantity`,
+        i.`prices`,
+        inv.`quantity`
+    FROM
+        inventory as inv
+    LEFT JOIN
+        items AS i
+    ON 
+        i.id = inv.item_id
+    WHERE 
+        inv.store_id = :store_id;
+    EOS
+    );
+    $statement -> execute([':store_id' => $store_id]);
+
+    $items_quantity = $statement -> fetchAll(PDO::FETCH_ASSOC);
+    foreach($items_quantity as $i) {
+        $identifier = $i['identifier'];
+        $prices = json_decode($i['prices'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+        $reorder_quantity = json_decode($i['reorder_quantity'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+        if(isset($items_details[$identifier]) === false) {
+            $items_details[$identifier] = [
+                'identifier' => $identifier,
+                'line_code' => 'N/A', 
+                'quantity' => 0, 
+                'description' => $i['description'],
+                'buyingCost' => 0,
+                'min' => 0,
+                'max' => 0,
+                'value' => 0,
+            ];
+        }
+        $items_details[$identifier]['quantity'] = $i['quantity'] ?? 0;
+        if(isset($reorder_quantity[$store_id])) $items_details[$identifier]['min'] = $reorder_quantity[$store_id];
+        if(isset($prices[$store_id])) $items_details[$identifier]['buyingCost'] = Utils::round($prices[$store_id]['buyingCost'], 2);
+        $items_details[$identifier]['value'] = Utils::round($items_details[$identifier]['buyingCost'] * $items_details[$identifier]['quantity'], 2);
+
+        $items_details[$identifier]['code'] = $i['code'];
+        $items_details[$identifier]['oem'] = $i['oem'];
+        $is_inactive = json_decode($i['is_inactive'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+        if(isset($is_inactive[$store_id])) $is_inactive = $is_inactive[$store_id];
+        else $is_inactive = 0;
+        $items_details[$identifier]['is_inactive'] = $is_inactive;
+        $items_details[$identifier]['is_core'] = $i['is_core'];
+        $items_details[$identifier]['memo'] = $i['memo'];
+        $items_details[$identifier]['additional_information'] = $i['additional_information'];
+
+        $is_discount_disabled = json_decode($i['is_discount_disabled'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+        if(isset($is_discount_disabled[$store_id])) $is_discount_disabled = $is_discount_disabled[$store_id];
+        else $is_discount_disabled = 0;
+        $items_details[$identifier]['is_discount_disabled'] = $is_discount_disabled;
+    }
+
+    $file_handle = fopen('delta_inventory.csv', 'w');
+
+    fputcsv($file_handle, [
+                'Line Abbreviation',
+                'Line Abbreviation Description',
+                'Part Number Identifier',
+                'Part Number Description',
+                'Supplier',
+                'Store Cost',
+                'Unit of measure',
+                'Quantity on Hand',
+                'Current Minium Stocked (MIN)',
+                'Current maximum Stocked (MAX)',
+                'Code',
+                'OEM',
+                'Is Inactive',
+                'Is Core',
+                'Memo',
+                'Additional Information',
+                'Is Discount Disabled',
+            ]);
+
+    foreach($items_details as $i) {
+            fputcsv($file_handle, [
+                $i['line_code'],
+                'N/A',
+                $i['identifier'],
+                $i['description'],
+                '',
+                $i['buyingCost'],
+                'Each',
+                $i['quantity'],
+                $i['min'],
+                $i['max'],
+                $i['code'] ?? ($i['identifier']. ' '. $i['description']),
+                $i['oem'] ?? '',
+                $i['is_inactive'] ?? 0,
+                $i['is_core'] ?? 0,
+                $i['memo'] ?? '',
+                $i['additional_information'] ?? '',
+                $i['is_discount_disabled'] ?? 0,
+            ]);
+    }
+
+    fclose($file_handle);
+}
+
+// generate_new_delta_inventory_file(StoreDetails::DELTA);
+// print_r($items_details);
+
+function extract_transaction_records_of_clients(int $store_id, string $table_name) {
+    $db = get_db_instance();
+    $clients = Client::fetch_clients_of_store($store_id);
+
+    if($table_name == 'credit_note' || $table_name == 'debit_note') {
+        $is_credit_or_debit = true;
+        $query = <<<EOS
+        SELECT 
+            t.* ,
+            c.`contact_name`
+        FROM 
+            $table_name AS t
+        LEFT JOIN 
+            clients AS c
+        ON 
+            t.client_id = c.id
+        WHERE 
+            t.client_id IN (:placeholder) 
+        AND 
+            t.store_id = :store_id 
+        AND 
+            t.`date` >= '2023-01-01' 
+        ORDER BY `id`, `date` ASC;
+        EOS;
+    }
+    else {
+        $is_credit_or_debit = false;
+        $query = "SELECT * FROM $table_name WHERE client_id IN (:placeholder) AND store_id = :store_id AND `date` >= '2023-01-01' ORDER BY `id`, `date` ASC;";
+    }
+
+    $results = Utils::mysql_in_placeholder_pdo_substitute(array_keys($clients), $query);
+    $query = $results['query'];
+    $values = $results['values'];
+    $values[':store_id'] = $store_id;
+    $statement = $db -> prepare($query);
+    $is_successful = $statement -> execute($values);
+    if($is_successful !== true) throw new Exception('Unable to execute query');
+
+    $transaction_records = $statement -> fetchAll(PDO::FETCH_ASSOC);
+
+    $file_handle = fopen("delta_$table_name.csv", 'w');
+    fputcsv($file_handle, [
+                'BranchCode',
+                'Customer',
+                'CompanyName',
+                'InvoiceNumber',
+                'InvoiceDate',
+                'Supplier',
+                'PartNumber',
+                'Quantity',
+                'Price',
+                'Cost',
+    ]);
+
+    foreach($transaction_records as $txn) {
+        
+        if($is_credit_or_debit === false) {
+            $contact_details = json_decode($txn['shipping_address'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+            $customer = $contact_details['name'];
+        }
+        else $customer = $txn['contact_name'];
+       
+        $all_records = [];
+        $base_record = [
+            $store_id,
+            $txn['client_id'],
+            $customer,
+            $txn['id'],
+            $txn['date'],
+            'N/A', /* Supplier */
+            null, /* [6]: Part Number */ 
+            null, /* [7]: Quantity */
+            null, /* [8]: Price */
+            null, /* [9]: Cost */
+        ];
+
+        $item_details = json_decode($txn['details'], true, flags: JSON_THROW_ON_ERROR);
+        foreach($item_details as $item) {
+            $column_name = $table_name === 'sales_return' ? 'returnQuantity': 'quantity';
+            $quantity = $item[$column_name] ?? 0;
+            if($quantity == 0) continue;
+            $tmp_record = $base_record;
+            $tmp_record[6] = $item['identifier'];
+            $tmp_record[7] = $item[$column_name];
+            $tmp_record[8] = Utils::round($item['pricePerItem'], 2);
+            $tmp_record[9] = Utils::round($item['buyingCost'], 2);
+            $all_records[]= $tmp_record;
+        }
+
+        foreach($all_records as $r) fputcsv($file_handle, $r);
+    }
+
+    fclose($file_handle);
+
+}
+
+extract_transaction_records_of_clients(StoreDetails::DELTA, 'sales_invoice');
 ?>  
