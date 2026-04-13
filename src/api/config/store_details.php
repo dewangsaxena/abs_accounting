@@ -36,9 +36,11 @@ class StoreDetails {
             'use_hst' => false,
             'business_number' => [
                 PARTS => '756104956RP0001', 
+                WASH => '',
             ],
             'pst_number' => [
                 PARTS => null,
+                WASH => null,
             ],
             'address' => [
                 'name' => 'ABS SALVAGE USED PARTS LTD.',
@@ -52,7 +54,8 @@ class StoreDetails {
             ],
             'email' => [
                 'from_name' => [
-                    PARTS => 'No reply from ABS Salvage Used Parts Ltd.'
+                    PARTS => 'No reply from ABS Salvage Used Parts Ltd.',
+                    WASH => '',
                 ],
                 'bcc' => [
                     PARTS => 'abssalvageparts@gmail.com', 
