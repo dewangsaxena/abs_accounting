@@ -42,7 +42,7 @@ const DOMAINS_BASE_URLS: AttributeType = {
   ten_leasing: "tenleasing.absyeg.store",
   localhost: "localhost",
   vanguard: "vanguard.absyeg.store",
-  used_parts: "usedparts.absyeg.store",
+  salvage_parts: "salvageparts.absyeg.store",
 };
 
 /* Default System Init Mode */
@@ -61,7 +61,7 @@ const isWash: boolean = location.hostname.includes(DOMAINS_BASE_URLS["wash"])
   : false;
 const isTenLeasing: boolean = location.hostname.includes(DOMAINS_BASE_URLS["ten_leasing"]) ? true : false;
 const isVanguard: boolean = location.hostname.includes(DOMAINS_BASE_URLS["vanguard"]) ? true : false;
-const isUsedParts: boolean = location.hostname.includes(DOMAINS_BASE_URLS["used_parts"]) ? true : false;;
+const isSalvageParts: boolean = location.hostname.includes(DOMAINS_BASE_URLS["salvage_parts"]) ? true : false;;
 
 /** Detault System Mode */
 const defaultSystemMode: number = MODE_PARTS;
@@ -80,7 +80,7 @@ export const systemConfigMode: number | null =
   isVanguard
     ? MODE_PARTS
   :
-  isUsedParts 
+  isSalvageParts 
     ? MODE_PARTS
   :
   defaultSystemMode;
@@ -187,8 +187,8 @@ export const APP_HOST = isParts
     "https://" + DOMAINS_BASE_URLS["ten_leasing"]
   : isVanguard ? 
     "https://" + DOMAINS_BASE_URLS["vanguard"]
-  : isUsedParts ?
-    "https://" + DOMAINS_BASE_URLS['used_parts']
+  : isSalvageParts ?
+    "https://" + DOMAINS_BASE_URLS['salvage_parts']
   : "http://" + DOMAINS_BASE_URLS["localhost"];
 
 /** Min Length before fetching */

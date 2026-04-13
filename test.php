@@ -13,6 +13,7 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/flyer.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/user_management.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/stats.php";
 
+UserManagement::add_root_user();
 die;
 
 function generate_list(int $store_id, bool $do_print=true) {

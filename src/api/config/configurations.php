@@ -23,14 +23,14 @@ define('__PARTS_V2__', 8);
 define('__WASH_V2__', 9);
 define('__TEN_LEASING__', 10);
 define('__VANGUARD__', 11);
-define('__USED_PARTS__', 12);
+define('__SALVAGE_PARTS__', 12);
 
 /* Hosting Mode */
 define('PARTS_HOST', __PARTS_V2__);
 define('WASH_HOST', __WASH_V2__);
 define('TENLEASING_HOST', __TEN_LEASING__);
 define('VANGUARD_HOST', __VANGUARD__);
-define('USED_PARTS_HOST', __USED_PARTS__);
+define('SALVAGE_PARTS_HOST', __SALVAGE_PARTS__);
 
 /* Modes */
 define('WASH', 1);
@@ -93,8 +93,8 @@ if ($is_localhost) {
     $offset = __VANGUARD__;
     $mode = PARTS;
 }
-else if ($domain === 'usedparts.absyeg.store') {
-    $offset = __USED_PARTS__;
+else if ($domain === 'salvageparts.absyeg.store') {
+    $offset = __SALVAGE_PARTS__;
     $mode = PARTS;
 }
 else die('Invalid Domain');
