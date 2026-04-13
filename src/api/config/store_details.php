@@ -22,6 +22,54 @@ class StoreDetails {
     // Business Name
     public const BUSINESS_NAME = [WASH => 'ABS TRUCK WASH AND LUBE LTD.', PARTS =>'ABS TRUCK & TRAILER PARTS LTD.'][SYSTEM_INIT_MODE];
 
+    // Salvage Parts Store Details
+    public const SALVAGE_PARTS_STORE_DETAILS = [
+        self::ALL_STORES => null,
+         self::EDMONTON => [
+            'id' => self::EDMONTON, 
+            'name' => 'Edmonton',
+            'location_code' => 'E',
+            'timezone' => 'America/Edmonton',
+            'pst_tax_rate' => 0.00,
+            'hst_tax_rate' => 0.00,
+            'gst_hst_tax_rate' => FEDERAL_TAX_RATE,
+            'use_hst' => false,
+            'business_number' => [
+                PARTS => '756104956RP0001', 
+            ],
+            'pst_number' => [
+                PARTS => null,
+            ],
+            'address' => [
+                'name' => 'ABS SALVAGE USED PARTS LTD.',
+                'street1' => '6030 125 AVENUE NW',
+                'city' => 'EDMONTON',
+                'province' => 'ALBERTA',
+                'postal_code' => 'T5W 1Z6',
+                'country' => 'CANADA',
+                'tel' => '+1 (780) 479-4700',
+                'fax' => '+1 (780) 479-7995',
+            ],
+            'email' => [
+                'from_name' => [
+                    PARTS => 'No reply from ABS Salvage Used Parts Ltd.'
+                ],
+                'bcc' => [
+                    PARTS => 'abssalvageparts@gmail.com', 
+                    WASH => '',
+                ],
+            ],
+            'payment_details' => [
+                'email_id' => 'abssalvageparts@gmail.com',
+                'checks' => [
+                    'payable_to' => 'ABS SALVAGE USED PARTS LTD.',
+                    'address' => '6030 125 AVE NW, EDMONTON, ALBERTA, T5W 1Z6',
+                ]
+            ],
+            'cipher_key' => 'uk.s+vD?acf:Y"-Q:5$.!WQt{)vr(/op',
+        ],
+    ];
+
     // Stores
     public const STORE_DETAILS = [
         self::ALL_STORES => null,
