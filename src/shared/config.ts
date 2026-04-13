@@ -53,7 +53,7 @@ export const MODE_PARTS: number = 2;
 export const isLocalHost: boolean = location.hostname.includes(DOMAINS_BASE_URLS["localhost"]);
 
 // System Initiation Flags
-export const isParts: boolean = location.hostname.includes(DOMAINS_BASE_URLS["parts"])
+export const isParts: boolean = location.hostname.includes(DOMAINS_BASE_URLS["parts"]) && location.hostname.includes("salvage") == false
   ? true
   : false;
 const isWash: boolean = location.hostname.includes(DOMAINS_BASE_URLS["wash"])
