@@ -15,7 +15,6 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/client.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/inventory.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/user_management.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/transactions.php";
-require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/store_details.php";
 
 /**
  * Session Management

@@ -6,7 +6,6 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/database.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/utils.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/accounts.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/chart.php";
-require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/store_details.php";
 
 class IncomeStatementActions {
 

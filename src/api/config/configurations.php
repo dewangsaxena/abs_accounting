@@ -119,9 +119,6 @@ define('NO_OF_STORES', count(STORE_DETAILS));
 // This should always be loaded after the Domain is selected.
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/credentials.php";
 
-// Store Details
-require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/store_details.php";
-
 /* Temp Directory */
 define('TEMP_DIR', "{$_SERVER['DOCUMENT_ROOT']}/tmp/");
 

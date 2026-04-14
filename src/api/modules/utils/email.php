@@ -15,7 +15,6 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/third_party/PHPMailer/
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/third_party/PHPMailer/src/SMTP.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/configurations.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/validate.php";
-require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/store_details.php";
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;

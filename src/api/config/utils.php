@@ -9,7 +9,6 @@
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/configurations.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/validate.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/pdf/fpdf_merge.php";
-require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/store_details.php";
 
 class Utils {
 

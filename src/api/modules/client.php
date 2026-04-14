@@ -13,7 +13,6 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/database.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/validate.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/utils.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/csrf.php";
-require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/store_details.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/pdf/pdf.php";
 
 class Client {
