@@ -13,7 +13,6 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/database.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/validate.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/utils.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/csrf.php";
-require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/store_details.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/debug.php";
 
 class Inventory {
@@ -2141,7 +2140,7 @@ class Inventory {
         if(count($item_details)) {
             if($is_csv) {
                 // Path to file.
-                $path_to_file = TEMP_DIR. "item_sold_$year". '_'. strtolower(StoreDetails::STORE_DETAILS[$store_id]['name']).'.csv';
+                $path_to_file = TEMP_DIR. "item_sold_$year". '_'. strtolower(STORE_DETAILS[$store_id]['name']).'.csv';
                 $fp = fopen($path_to_file, 'w');
 
                 // Generate CSV 

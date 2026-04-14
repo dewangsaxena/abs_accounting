@@ -48,8 +48,8 @@ class SalesReturn {
         $store_id = $_SESSION['store_id'];
 
         // Store Tax Rate
-        $federal_tax_rate = $disable_federal_taxes === 1 ? 0.00 : StoreDetails::STORE_DETAILS[$store_id]['gst_hst_tax_rate'];
-        $provincial_tax_rate = $disable_provincial_taxes === 1 ? 0.00 : StoreDetails::STORE_DETAILS[$store_id]['pst_tax_rate'];
+        $federal_tax_rate = $disable_federal_taxes === 1 ? 0.00 : STORE_DETAILS[$store_id]['gst_hst_tax_rate'];
+        $provincial_tax_rate = $disable_provincial_taxes === 1 ? 0.00 : STORE_DETAILS[$store_id]['pst_tax_rate'];
 
         // Validate Item fields
         foreach($items as $item) {
@@ -131,8 +131,8 @@ class SalesReturn {
         $total_restocking_fees = 0;
 
         // Select Tax Rate
-        $federal_tax_rate = $disable_federal_taxes ? 0 : StoreDetails::STORE_DETAILS[$store_id]['gst_hst_tax_rate'];
-        $provincial_tax_rate = $disable_provincial_taxes ? 0 : StoreDetails::STORE_DETAILS[$store_id]['pst_tax_rate'];
+        $federal_tax_rate = $disable_federal_taxes ? 0 : STORE_DETAILS[$store_id]['gst_hst_tax_rate'];
+        $provincial_tax_rate = $disable_provincial_taxes ? 0 : STORE_DETAILS[$store_id]['pst_tax_rate'];
         
         foreach($items as $item) { 
 
@@ -391,7 +391,7 @@ class SalesReturn {
 
         // Validate Store
         $store_id = intval($_SESSION['store_id']);
-        if(key_exists($store_id, StoreDetails::STORE_DETAILS) === false) throw new Exception('Store is Invalid.');
+        if(key_exists($store_id, STORE_DETAILS) === false) throw new Exception('Store is Invalid.');
         if($store_id !== intval($data['storeId'])) throw new Exception('Store does not match with current session.');
 
         // Transaction Date
@@ -497,7 +497,7 @@ class SalesReturn {
 
         // PST Taxes 
         if(!is_numeric($pst_tax)) throw new Exception('PST Tax should be numeric.');
-        if($data['clientDetails']['disableProvincialTaxes'] === 0 && StoreDetails::STORE_DETAILS[$store_id]['pst_tax_rate'] > 0 && $pst_tax <= 0) throw new Exception('PST Tax cannot be zero or negative.');
+        if($data['clientDetails']['disableProvincialTaxes'] === 0 && STORE_DETAILS[$store_id]['pst_tax_rate'] > 0 && $pst_tax <= 0) throw new Exception('PST Tax cannot be zero or negative.');
 
         // GST/HST Taxes
         if(!is_numeric($gst_hst_tax)) throw new Exception('GST/HST Tax should be numeric.');

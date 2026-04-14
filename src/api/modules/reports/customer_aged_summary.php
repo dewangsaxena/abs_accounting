@@ -429,7 +429,7 @@ class CustomerAgedSummary {
         $details = [
             'summary' => $customer_aged_summary,
             'date' => date_format(date_create($till_date), 'd M, Y'),
-            'store_name' => StoreDetails::STORE_DETAILS[$store_id]['name'],
+            'store_name' => STORE_DETAILS[$store_id]['name'],
             'store_id' => $store_id,
         ];
 
@@ -510,7 +510,7 @@ class CustomerAgedSummary {
             $details = [
                 'summary' => $summary,
                 'date' => date_format(date_create($for_date), 'd M, Y'),
-                'store_name' => StoreDetails::STORE_DETAILS[$store_id]['name'],
+                'store_name' => STORE_DETAILS[$store_id]['name'],
                 'store_id' => $store_id,
             ];
 

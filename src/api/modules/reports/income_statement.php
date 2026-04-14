@@ -6,7 +6,6 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/database.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/utils.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/accounts.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/chart.php";
-require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/store_details.php";
 
 class IncomeStatementActions {
 
@@ -449,7 +448,7 @@ class IncomeStatementActions {
 
         $details = [
             'statement' => $statement,
-            'store_name' => StoreDetails::STORE_DETAILS[$selected_store]['name'],
+            'store_name' => STORE_DETAILS[$selected_store]['name'],
             'start_date' => Utils::get_YYYY_mm_dd($dates['startDate']),
             'end_date' => Utils::get_YYYY_mm_dd($dates['endDate']),
         ];

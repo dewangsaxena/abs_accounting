@@ -13,7 +13,6 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/database.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/validate.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/utils.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/csrf.php";
-require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/store_details.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/pdf/pdf.php";
 
 class Client {
@@ -1363,7 +1362,7 @@ class Client {
         else {
             $heading = '<h1>Items Sold in ';
             foreach($store_ids as $store_id) {
-                $heading .= StoreDetails::STORE_DETAILS[$store_id]['name'].', ';
+                $heading .= STORE_DETAILS[$store_id]['name'].', ';
             } 
 
             // Heading

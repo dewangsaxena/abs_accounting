@@ -9,7 +9,6 @@
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/configurations.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/validate.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/pdf/fpdf_merge.php";
-require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/store_details.php";
 
 class Utils {
 
@@ -181,7 +180,7 @@ class Utils {
      */
     public static function get_local_timestamp(string $iso_timestamp, int $store_id, bool $use_24_hour_format=false) : string {
         $date_time = new DateTime(date($iso_timestamp), new DateTimeZone('UTC'));
-        $date_time -> setTimezone(new DateTimeZone(StoreDetails::STORE_DETAILS[$store_id]['timezone']));
+        $date_time -> setTimezone(new DateTimeZone(STORE_DETAILS[$store_id]['timezone']));
         $format = $use_24_hour_format ? 'Y-m-d H:i:s T' : 'Y-m-d h:i:s A T';
         return $date_time -> format($format);
     }
@@ -219,11 +218,11 @@ class Utils {
     public static function get_difference_between_dates(string $date_1, String|DateTime $date_2, int $store_id): array {
         $txn_date = date_create(
             $date_1, 
-            new DateTimeZone(StoreDetails::STORE_DETAILS[$store_id]['timezone'])
+            new DateTimeZone(STORE_DETAILS[$store_id]['timezone'])
         );
         if(gettype($date_2) === 'string') $date_2 = date_create(
             $date_2, 
-            new DateTimeZone(StoreDetails::STORE_DETAILS[$store_id]['timezone'])
+            new DateTimeZone(STORE_DETAILS[$store_id]['timezone'])
         ); 
         $result = date_diff($date_2, $txn_date);
         return [
@@ -267,12 +266,12 @@ class Utils {
      */
     public static function build_store_address(int $store_id) : array {
         return [
-            'company_name' => StoreDetails::STORE_DETAILS[$store_id]['address']['name'],
-            'company_address_line_1' => StoreDetails::STORE_DETAILS[$store_id]['address']['street1'],
-            'company_address_line_2' => StoreDetails::STORE_DETAILS[$store_id]['address']['city'].', '. StoreDetails::STORE_DETAILS[$store_id]['address']['province']. ', '. StoreDetails::STORE_DETAILS[$store_id]['address']['postal_code'],
-            'company_address_line_3' => StoreDetails::STORE_DETAILS[$store_id]['address']['country'],
-            'company_tel' => StoreDetails::STORE_DETAILS[$store_id]['address']['tel'],
-            'company_fax' => StoreDetails::STORE_DETAILS[$store_id]['address']['fax'],
+            'company_name' => STORE_DETAILS[$store_id]['address']['name'],
+            'company_address_line_1' => STORE_DETAILS[$store_id]['address']['street1'],
+            'company_address_line_2' => STORE_DETAILS[$store_id]['address']['city'].', '. STORE_DETAILS[$store_id]['address']['province']. ', '. STORE_DETAILS[$store_id]['address']['postal_code'],
+            'company_address_line_3' => STORE_DETAILS[$store_id]['address']['country'],
+            'company_tel' => STORE_DETAILS[$store_id]['address']['tel'],
+            'company_fax' => STORE_DETAILS[$store_id]['address']['fax'],
         ];
     }
 

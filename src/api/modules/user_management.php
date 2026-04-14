@@ -15,7 +15,6 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/client.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/inventory.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/user_management.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/transactions.php";
-require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/store_details.php";
 
 /**
  * Session Management
@@ -167,7 +166,7 @@ class UserManagement {
             else if(!isset($username[3])) throw new Exception('Username must be atleast 4 characters long.');
             else if(!isset($password[7])) throw new Exception('Password must be atleast 8 characters long.');
             else if(!in_array($access_level, ACCESS_LEVELS)) throw new Exception('Invalid Access Level.');
-            else if(!array_key_exists($store_id, StoreDetails::STORE_DETAILS)) throw new Exception('Invalid Store.');
+            else if(!array_key_exists($store_id, STORE_DETAILS)) throw new Exception('Invalid Store.');
 
             // Replace
             $query = str_replace(
@@ -275,15 +274,15 @@ class UserManagement {
                 $store_id = intval($store_id);
 
                 // Check for Store.
-                if($store_id === StoreDetails::ALL_STORES || (is_numeric($store_id) === false) || (isset(StoreDetails::STORE_DETAILS[$store_id]) === false)) throw new Exception('Store ID not selected.');
+                if($store_id === StoreDetails::ALL_STORES || (is_numeric($store_id) === false) || (isset(STORE_DETAILS[$store_id]) === false)) throw new Exception('Store ID not selected.');
 
                 // CSRF token
                 $csrf_token = CSRF::generate_token();
 
                 // GST/HST Tax Rate
                 $gst_hst_rax_rate = FEDERAL_TAX_RATE;
-                if(StoreDetails::STORE_DETAILS[$store_id]['use_hst']) {
-                    $gst_hst_rax_rate += StoreDetails::STORE_DETAILS[$store_id]['hst_tax_rate'];
+                if(STORE_DETAILS[$store_id]['use_hst']) {
+                    $gst_hst_rax_rate += STORE_DETAILS[$store_id]['hst_tax_rate'];
                 }
                 
                 // Prepare Object 
@@ -302,11 +301,11 @@ class UserManagement {
                     /* Store Details */ 
                     'storeDetails' => [
                         'id' => $store_id,
-                        'location' => StoreDetails::STORE_DETAILS[$store_id]['name'],
-                        'businessName' => StoreDetails::STORE_DETAILS[$store_id]['address']['name'],
+                        'location' => STORE_DETAILS[$store_id]['name'],
+                        'businessName' => STORE_DETAILS[$store_id]['address']['name'],
                         'gstHSTTaxRate' => $gst_hst_rax_rate,
-                        'pstTaxRate' => StoreDetails::STORE_DETAILS[$store_id]['pst_tax_rate'],
-                        'cipherKeyThisStore' => StoreDetails::STORE_DETAILS[$store_id]['cipher_key'],
+                        'pstTaxRate' => STORE_DETAILS[$store_id]['pst_tax_rate'],
+                        'cipherKeyThisStore' => STORE_DETAILS[$store_id]['cipher_key'],
                     ],
                 ];
 

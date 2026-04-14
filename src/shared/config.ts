@@ -1,7 +1,7 @@
 /**
  * Configurations used the application.
  */
-export const CLIENT_APP_VERSION = "2.3.5";
+export const CLIENT_APP_VERSION = "2.4.0";
 
 // Stores
 export class Stores {
@@ -42,6 +42,7 @@ const DOMAINS_BASE_URLS: AttributeType = {
   ten_leasing: "tenleasing.absyeg.store",
   localhost: "localhost",
   vanguard: "vanguard.absyeg.store",
+  salvage_parts: "salvageparts.absyeg.store",
 };
 
 /* Default System Init Mode */
@@ -52,7 +53,7 @@ export const MODE_PARTS: number = 2;
 export const isLocalHost: boolean = location.hostname.includes(DOMAINS_BASE_URLS["localhost"]);
 
 // System Initiation Flags
-export const isParts: boolean = location.hostname.includes(DOMAINS_BASE_URLS["parts"])
+export const isParts: boolean = location.hostname.includes(DOMAINS_BASE_URLS["parts"]) && location.hostname.includes("salvage") == false
   ? true
   : false;
 const isWash: boolean = location.hostname.includes(DOMAINS_BASE_URLS["wash"])
@@ -60,6 +61,7 @@ const isWash: boolean = location.hostname.includes(DOMAINS_BASE_URLS["wash"])
   : false;
 const isTenLeasing: boolean = location.hostname.includes(DOMAINS_BASE_URLS["ten_leasing"]) ? true : false;
 const isVanguard: boolean = location.hostname.includes(DOMAINS_BASE_URLS["vanguard"]) ? true : false;
+const isSalvageParts: boolean = location.hostname.includes(DOMAINS_BASE_URLS["salvage_parts"]) ? true : false;;
 
 /** Detault System Mode */
 const defaultSystemMode: number = MODE_PARTS;
@@ -77,7 +79,10 @@ export const systemConfigMode: number | null =
   : 
   isVanguard
     ? MODE_PARTS
-  :  
+  :
+  isSalvageParts 
+    ? MODE_PARTS
+  :
   defaultSystemMode;
 
 // System Config Mode Colors
@@ -182,6 +187,8 @@ export const APP_HOST = isParts
     "https://" + DOMAINS_BASE_URLS["ten_leasing"]
   : isVanguard ? 
     "https://" + DOMAINS_BASE_URLS["vanguard"]
+  : isSalvageParts ?
+    "https://" + DOMAINS_BASE_URLS['salvage_parts']
   : "http://" + DOMAINS_BASE_URLS["localhost"];
 
 /** Min Length before fetching */

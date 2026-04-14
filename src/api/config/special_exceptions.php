@@ -1,5 +1,5 @@
 <?php 
-require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/store_details.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/configurations.php";
 
 /**
  * This class will define Special Exceptions/Access.

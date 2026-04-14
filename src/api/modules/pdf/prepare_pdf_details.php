@@ -141,6 +141,9 @@ class PrepareDetails_SI_SR_CN_DN_QT {
         // Fetch Sales Rep ID
         $sales_rep_name = UserManagement::fetch_sales_rep_name($txn['sales_rep_id']);
 
+        // Store Details
+        $store_details = STORE_DETAILS[$store_id];
+
         $details = [
             'txn_type_id' => $transaction_type,
             'document_id' => $txn['id'],
@@ -158,7 +161,7 @@ class PrepareDetails_SI_SR_CN_DN_QT {
                 'sold_to' => $addresses['sold_to'] ?? null,
                 'ship_to' => $addresses['ship_to'] ?? null,
             ],
-            'business_number' => StoreDetails::STORE_DETAILS[$txn['store_id']]['business_number'][SYSTEM_INIT_MODE],
+            'business_number' => $store_details['business_number'][SYSTEM_INIT_MODE],
             'details' => $item_details,
             'timestamp' => $txn['created'],
             'modified' => $txn['modified'],
@@ -169,12 +172,12 @@ class PrepareDetails_SI_SR_CN_DN_QT {
             'sub_total' => $is_credit_transaction ? -$txn['sub_total'] : $txn['sub_total'],
             'amount_paid' => $is_credit_transaction ? -$amount_paid : $amount_paid,
             'amount_owing' => $is_credit_transaction ? -$amount_owing : $amount_owing,
-            'pst_number' => StoreDetails::STORE_DETAILS[$store_id]['pst_number'][SYSTEM_INIT_MODE],
+            'pst_number' => $store_details['pst_number'][SYSTEM_INIT_MODE],
             'account_number' => $txn['account_number'] ?? '',
             'store_id' => $store_id,
             'is_old_version' => $txn['is_old_version'] ?? false,
             'sales_rep_name' => $sales_rep_name,
-            'show_pst_number' => StoreDetails::STORE_DETAILS[$store_id]['pst_tax_rate'] > 0 ? 1 : 0,
+            'show_pst_number' => $store_details['pst_tax_rate'] > 0 ? 1 : 0,
         ];
 
         // Add Restocking Fees

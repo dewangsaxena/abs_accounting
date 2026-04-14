@@ -91,15 +91,15 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         self::$pdf -> SetFont(self::ARIAL, 'B', 7.5);
         self::$pdf -> Cell(w:40, h:4, txt: 'Interac e-Transfer:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> SetFont(self::COURIER, '', 7.5);
-        self::$pdf -> Cell(w:80, h:4, txt: StoreDetails::STORE_DETAILS[self::$details['store_id']]['payment_details']['email_id'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
+        self::$pdf -> Cell(w:80, h:4, txt: STORE_DETAILS[self::$details['store_id']]['payment_details']['email_id'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> SetFont(self::ARIAL, 'B', 7);
         self::$pdf -> Cell(w:38, h:4, txt: 'CHECKS PAYABLE TO:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
         self::$pdf -> SetFont(self::ARIAL, 'B', 7);
         self::$pdf -> Cell(w:120, h:4, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> SetFont(self::ARIAL, '', 7);
-        self::$pdf -> Cell(w:30, h:4, txt: StoreDetails::STORE_DETAILS[self::$details['store_id']]['payment_details']['checks']['payable_to'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
+        self::$pdf -> Cell(w:30, h:4, txt: STORE_DETAILS[self::$details['store_id']]['payment_details']['checks']['payable_to'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
         self::$pdf -> Cell(w:120, h:4, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
-        self::$pdf -> Cell(w:30, h:4, txt: StoreDetails::STORE_DETAILS[self::$details['store_id']]['payment_details']['checks']['address'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
+        self::$pdf -> Cell(w:30, h:4, txt: STORE_DETAILS[self::$details['store_id']]['payment_details']['checks']['address'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
     }
 
     /**
@@ -1663,15 +1663,15 @@ class __GenerateCustomerStatement {
         self::$pdf -> SetFont(self::ARIAL, 'B', 7.5);
         self::$pdf -> Cell(w:40, h:4, txt: 'Interac e-Transfer:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> SetFont(self::COURIER, '', 7.5);
-        self::$pdf -> Cell(w:80, h:4, txt: StoreDetails::STORE_DETAILS[self::$details['store_id']]['payment_details']['email_id'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
+        self::$pdf -> Cell(w:80, h:4, txt: STORE_DETAILS[self::$details['store_id']]['payment_details']['email_id'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> SetFont(self::ARIAL, 'B', 7);
         self::$pdf -> Cell(w:38, h:4, txt: 'CHECKS PAYABLE TO:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
         self::$pdf -> SetFont(self::ARIAL, 'B', 7);
         self::$pdf -> Cell(w:120, h:4, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> SetFont(self::ARIAL, '', 7);
-        self::$pdf -> Cell(w:30, h:4, txt: StoreDetails::STORE_DETAILS[self::$details['store_id']]['payment_details']['checks']['payable_to'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
+        self::$pdf -> Cell(w:30, h:4, txt: STORE_DETAILS[self::$details['store_id']]['payment_details']['checks']['payable_to'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
         self::$pdf -> Cell(w:120, h:4, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
-        self::$pdf -> Cell(w:30, h:4, txt: StoreDetails::STORE_DETAILS[self::$details['store_id']]['payment_details']['checks']['address'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
+        self::$pdf -> Cell(w:30, h:4, txt: STORE_DETAILS[self::$details['store_id']]['payment_details']['checks']['address'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
     }
 
     /**
@@ -2478,7 +2478,7 @@ class __GenerateCustomerAgedSummary {
     private static function header(): void {
         // Store Name
         self::$pdf -> SetFont(self::COURIER, 'B', 16,);
-        self::$pdf -> Cell(w: 0, h: 4, txt: StoreDetails::STORE_DETAILS[self::$details['store_id']]['address']['name']. '('. StoreDetails::STORE_DETAILS[self::$details['store_id']]['name'].')', border: self::SHOW_BORDER_FOR_DEBUG, ln:1);
+        self::$pdf -> Cell(w: 0, h: 4, txt: STORE_DETAILS[self::$details['store_id']]['address']['name']. '('. STORE_DETAILS[self::$details['store_id']]['name'].')', border: self::SHOW_BORDER_FOR_DEBUG, ln:1);
         self::$pdf -> SetFont(self::COURIER, '', 10,);
         self::$pdf -> Ln(1);
         // self::$pdf -> Cell(w: 35, h: 4, txt: 'Customer Aged Summary As at '. self::$details['date'], border: self::SHOW_BORDER_FOR_DEBUG, ln:1);
@@ -2910,7 +2910,7 @@ class __GenerateInventory {
             </tr>
             EOS;
         }
-        $store_details = StoreDetails::STORE_DETAILS[$store_id]['name']. ' FOR THE YEAR: '. $year;
+        $store_details = STORE_DETAILS[$store_id]['name']. ' FOR THE YEAR: '. $year;
 
         echo <<<EOS
         <html>
@@ -2992,7 +2992,7 @@ class __GenerateInventory {
         }
 
         $total_inventory_value = Utils::number_format($total_inventory_value);
-        $store_details = StoreDetails::STORE_DETAILS[$store_id]['name']. ' AS OF '. Utils::convert_date_to_human_readable(
+        $store_details = STORE_DETAILS[$store_id]['name']. ' AS OF '. Utils::convert_date_to_human_readable(
             Utils::get_business_date($store_id)
         );
         echo <<<EOS
@@ -3071,7 +3071,7 @@ class __GenerateInventory {
         if($year > 0) $date_text = "IN $year";
         else $date_text = "$month MONTHS AGO";
         $store_details = 
-        StoreDetails::STORE_DETAILS[$store_id]['name']. 
+        STORE_DETAILS[$store_id]['name']. 
         " ~ <u style='color:#800000;'>LAST SOLD $date_text</u>".
         ' ~ AS ON '. 
         Utils::format_to_human_readable_date(Utils::get_business_date($store_id));
@@ -3094,7 +3094,7 @@ class __GenerateInventory {
                 if(isset($last_sold_all_stores[$store_id])) unset($last_sold_all_stores[$store_id]);
                 $last_sold_all_stores_codes = '<tr><td colspan="6"><ul>';
                 foreach($last_sold_all_stores as $key => $last_sold_current_store) {
-                    $store_name = StoreDetails::STORE_DETAILS[$key]['name'];
+                    $store_name = STORE_DETAILS[$key]['name'];
                     $last_sold_current_store = Utils::format_to_human_readable_date($last_sold_current_store);
                     $last_sold_all_stores_codes .= "<li>$store_name ~ $last_sold_current_store</li>";
                 }
@@ -3191,7 +3191,7 @@ class __GenerateInventory {
         self::$pdf = new FPDF(self::ORIENTATION, self::UNIT, self::PAPER_SIZE);
 
         // Set Title
-        $document_name = 'Inventory List for '. StoreDetails::STORE_DETAILS[$store_id]['name'];
+        $document_name = 'Inventory List for '. STORE_DETAILS[$store_id]['name'];
         self::$pdf -> SetTitle($document_name);
 
         // Set Compression ON
@@ -3389,7 +3389,7 @@ class __CustomerSales {
     private static function header(): void {
         // Set Font 
         self::$pdf -> SetFont(self::COURIER, 'B', 12,);
-        self::$pdf -> Cell(w: 165, h: 5, txt: strtoupper('Client Sales Details: '. StoreDetails::STORE_DETAILS[self::$details['store_id']]['name']. ', '. self::$details['client_details']['year']), border: 0, ln: 0);
+        self::$pdf -> Cell(w: 165, h: 5, txt: strtoupper('Client Sales Details: '. STORE_DETAILS[self::$details['store_id']]['name']. ', '. self::$details['client_details']['year']), border: 0, ln: 0);
         $current_page = self::$current_page;
         $no_of_pages = self::$no_of_pages;
         self::$pdf -> SetFont(self::COURIER, '', 8,);
@@ -3507,7 +3507,7 @@ class __CustomerSales {
 
         // Handle 
         self::$pdf = new FPDF(self::ORIENTATION, self::UNIT, self::PAPER_SIZE);
-        self::$pdf -> SetTitle('client_sales_'. strtolower(StoreDetails::STORE_DETAILS[self::$details['store_id']]['name']).'_'. self::$details['client_details']['year']);
+        self::$pdf -> SetTitle('client_sales_'. strtolower(STORE_DETAILS[self::$details['store_id']]['name']).'_'. self::$details['client_details']['year']);
         self::$pdf -> SetCompression(true);
         self::$pdf -> AddPage();
 

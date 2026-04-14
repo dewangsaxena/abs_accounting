@@ -8,7 +8,7 @@ This file contains configurations used by the application.
 /**
  * Client App Version
  */
-define('CLIENT_APP_VERSION', '2.3.2');
+define('CLIENT_APP_VERSION', '2.4.0');
 
 /* Hosts */
 define('__LOCALHOST__', 0);
@@ -23,12 +23,14 @@ define('__PARTS_V2__', 8);
 define('__WASH_V2__', 9);
 define('__TEN_LEASING__', 10);
 define('__VANGUARD__', 11);
+define('__SALVAGE_PARTS__', 12);
 
 /* Hosting Mode */
 define('PARTS_HOST', __PARTS_V2__);
 define('WASH_HOST', __WASH_V2__);
 define('TENLEASING_HOST', __TEN_LEASING__);
 define('VANGUARD_HOST', __VANGUARD__);
+define('SALVAGE_PARTS_HOST', __SALVAGE_PARTS__);
 
 /* Modes */
 define('WASH', 1);
@@ -91,6 +93,10 @@ if ($is_localhost) {
     $offset = __VANGUARD__;
     $mode = PARTS;
 }
+else if ($domain === 'salvageparts.absyeg.store') {
+    $offset = __SALVAGE_PARTS__;
+    $mode = PARTS;
+}
 else die('Invalid Domain');
 
 /* Business Specific Configuration. */
@@ -100,12 +106,18 @@ define('SYSTEM_INIT_HOST', $is_localhost ? __PARTS_V2__ : $offset);
 /** IS Amount Currency in USD */
 define('IS_CURRENCY_USD', SYSTEM_INIT_HOST === VANGUARD_HOST ? true : false);
 
+/** Select Store Details Based on Instance. */
+require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/store_details.php";
+define('STORE_DETAILS', $offset == __SALVAGE_PARTS__ 
+? StoreDetails::SALVAGE_PARTS_STORE_DETAILS 
+: StoreDetails::STORE_DETAILS);
+
+// No. of Stores
+define('NO_OF_STORES', count(STORE_DETAILS));
+
 // Credentials
 // This should always be loaded after the Domain is selected.
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/credentials.php";
-
-// Store Details
-require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/store_details.php";
 
 /* Temp Directory */
 define('TEMP_DIR', "{$_SERVER['DOCUMENT_ROOT']}/tmp/");

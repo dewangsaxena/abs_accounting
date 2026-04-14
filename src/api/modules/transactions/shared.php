@@ -312,8 +312,8 @@ class Shared {
         $store_id = $_SESSION['store_id'];
 
         // Store Tax Rate
-        $federal_tax_rate = $disable_federal_taxes === 1 ? 0.00 : StoreDetails::STORE_DETAILS[$store_id]['gst_hst_tax_rate'];
-        $provincial_tax_rate = $disable_provincial_taxes === 1 ? 0.00 : StoreDetails::STORE_DETAILS[$store_id]['pst_tax_rate'];
+        $federal_tax_rate = $disable_federal_taxes === 1 ? 0.00 : STORE_DETAILS[$store_id]['gst_hst_tax_rate'];
+        $provincial_tax_rate = $disable_provincial_taxes === 1 ? 0.00 : STORE_DETAILS[$store_id]['pst_tax_rate'];
 
         // Validate Item fields
         foreach($items as $item) {
@@ -390,8 +390,8 @@ class Shared {
         $total_discount_per_item = 0;
 
         // Select Tax Rate
-        $federal_tax_rate = $disable_federal_taxes ? 0 : StoreDetails::STORE_DETAILS[$store_id]['gst_hst_tax_rate'];
-        $provincial_tax_rate = $disable_provincial_taxes ? 0 : StoreDetails::STORE_DETAILS[$store_id]['pst_tax_rate'];
+        $federal_tax_rate = $disable_federal_taxes ? 0 : STORE_DETAILS[$store_id]['gst_hst_tax_rate'];
+        $provincial_tax_rate = $disable_provincial_taxes ? 0 : STORE_DETAILS[$store_id]['pst_tax_rate'];
         foreach($items as $item) { 
             $total += $item['amountPerItem'];
             $pst_tax += (($item['amountPerItem'] * $provincial_tax_rate) / 100);
@@ -441,7 +441,7 @@ class Shared {
 
         // Validate Store
         $store_id = intval($_SESSION['store_id']);
-        if(key_exists($store_id, StoreDetails::STORE_DETAILS) === false) throw new Exception('Store is Invalid.');
+        if(key_exists($store_id, STORE_DETAILS) === false) throw new Exception('Store is Invalid.');
         if($store_id !== intval($data['storeId'])) throw new Exception('Store does not match with current session.');
 
         // Sales Rep Id
@@ -550,7 +550,7 @@ class Shared {
 
         // PST Taxes 
         if(!is_numeric($pst_tax)) throw new Exception('PST Tax should be numeric.');
-        if($data['clientDetails']['disableProvincialTaxes'] === 0 && StoreDetails::STORE_DETAILS[$store_id]['pst_tax_rate'] > 0 && $pst_tax <= 0) throw new Exception('PST Tax cannot be zero or negative.');
+        if($data['clientDetails']['disableProvincialTaxes'] === 0 && STORE_DETAILS[$store_id]['pst_tax_rate'] > 0 && $pst_tax <= 0) throw new Exception('PST Tax cannot be zero or negative.');
 
         // GST/HST Taxes
         if(!is_numeric($gst_hst_tax)) throw new Exception('GST/HST Tax should be numeric.');
@@ -1166,13 +1166,13 @@ class Shared {
      * @return string 
      */
     public static function get_store_signature(int $store_id): string {
-        return '<b>'.StoreDetails::STORE_DETAILS[$store_id]['name']. '</b>'.
+        return '<b>'.STORE_DETAILS[$store_id]['name']. '</b>'.
                 '<br>'.
-                StoreDetails::STORE_DETAILS[$store_id]['address']['tel'].
+                STORE_DETAILS[$store_id]['address']['tel'].
                 '<br>'.
-                StoreDetails::STORE_DETAILS[$store_id]['address']['street1'].'<br>'. 
-                StoreDetails::STORE_DETAILS[$store_id]['address']['city'].', '. 
-                StoreDetails::STORE_DETAILS[$store_id]['address']['province']. ' '. StoreDetails::STORE_DETAILS[$store_id]['address']['postal_code'];
+                STORE_DETAILS[$store_id]['address']['street1'].'<br>'. 
+                STORE_DETAILS[$store_id]['address']['city'].', '. 
+                STORE_DETAILS[$store_id]['address']['province']. ' '. STORE_DETAILS[$store_id]['address']['postal_code'];
     }
 
     /**
@@ -1239,7 +1239,7 @@ class Shared {
                 }
                 
                 // Add Business Name
-                $subject .= ' from '. StoreDetails::STORE_DETAILS[$store_id]['email']['from_name'][SYSTEM_INIT_MODE];
+                $subject .= ' from '. STORE_DETAILS[$store_id]['email']['from_name'][SYSTEM_INIT_MODE];
 
                 // Signature 
                 $signature = self::get_store_signature($store_id);
