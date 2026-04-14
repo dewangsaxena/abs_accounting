@@ -1,5 +1,8 @@
 <?php 
 
+require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/configurations.php";
+
+die;
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/utils.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/database.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_summary.php";

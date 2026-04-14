@@ -106,6 +106,12 @@ define('SYSTEM_INIT_HOST', $is_localhost ? __PARTS_V2__ : $offset);
 /** IS Amount Currency in USD */
 define('IS_CURRENCY_USD', SYSTEM_INIT_HOST === VANGUARD_HOST ? true : false);
 
+/** Select Store Details Based on Instance. */
+require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/store_details.php";
+define('STORE_DETAILS', $offset == __SALVAGE_PARTS__ 
+? StoreDetails::SALVAGE_PARTS_STORE_DETAILS 
+: StoreDetails::STORE_DETAILS);
+
 // Credentials
 // This should always be loaded after the Domain is selected.
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/credentials.php";
