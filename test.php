@@ -1,8 +1,4 @@
 <?php 
-
-require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/configurations.php";
-
-die;
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/utils.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/database.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_summary.php";
@@ -16,6 +12,7 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/flyer.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/user_management.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/stats.php";
 die;
+
 function generate_list(int $store_id, bool $do_print=true) {
     $db = get_db_instance();
     $query = <<<'EOS'
