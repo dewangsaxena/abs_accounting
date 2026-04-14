@@ -344,7 +344,7 @@ class BalanceSheetActions {
         $details = [
             'date_txt' => $date,
             'accounts' => $record,
-            'store_name' => StoreDetails::STORE_DETAILS[$store_id]['name'],
+            'store_name' => STORE_DETAILS[$store_id]['name'],
         ];
         GeneratePDF::balance_sheet($details);
     }

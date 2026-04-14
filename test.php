@@ -36,7 +36,7 @@ function generate_list(int $store_id, bool $do_print=true) {
     $statement = $db -> prepare($query);
     $statement -> execute([':store_id' => $store_id]);
     $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
-    $store_name = StoreDetails::STORE_DETAILS[$store_id]['name'];
+    $store_name = STORE_DETAILS[$store_id]['name'];
     $current_date = date('d M, Y');
     $code = <<<EOS
     <html>

@@ -142,9 +142,7 @@ class PrepareDetails_SI_SR_CN_DN_QT {
         $sales_rep_name = UserManagement::fetch_sales_rep_name($txn['sales_rep_id']);
 
         // Store Details
-        $store_details = SYSTEM_INIT_HOST == SALVAGE_PARTS_HOST 
-            ? StoreDetails::SALVAGE_PARTS_STORE_DETAILS[$store_id]
-            : StoreDetails::STORE_DETAILS[$store_id];
+        $store_details = STORE_DETAILS[$store_id];
 
         $details = [
             'txn_type_id' => $transaction_type,

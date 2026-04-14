@@ -72,7 +72,7 @@ if (isset($_GET['action'])) {
     } else if ($action === 'low_stock') {
         $store_id = intval($_GET['store_id']);
         $message = '';
-        if (isset(StoreDetails::STORE_DETAILS[$store_id]) === true) {
+        if (isset(STORE_DETAILS[$store_id]) === true) {
             Inventory::fetch_low_stock($store_id);
         } else $message = 'Invalid Store.';
         die($message);

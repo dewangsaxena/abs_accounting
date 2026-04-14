@@ -112,6 +112,9 @@ define('STORE_DETAILS', $offset == __SALVAGE_PARTS__
 ? StoreDetails::SALVAGE_PARTS_STORE_DETAILS 
 : StoreDetails::STORE_DETAILS);
 
+// No. of Stores
+define('NO_OF_STORES', count(STORE_DETAILS));
+
 // Credentials
 // This should always be loaded after the Domain is selected.
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/credentials.php";

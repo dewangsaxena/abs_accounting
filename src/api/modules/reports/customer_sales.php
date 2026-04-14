@@ -76,7 +76,7 @@ class CustomerSales {
      */
     private static function format(int $store_id, array &$details, float $total): void {
 
-        $store_name = strtoupper(StoreDetails::STORE_DETAILS[$store_id]['name']);
+        $store_name = strtoupper(STORE_DETAILS[$store_id]['name']);
         echo <<<EOS
         <html>
         <body>

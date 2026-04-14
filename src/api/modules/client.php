@@ -1363,7 +1363,7 @@ class Client {
         else {
             $heading = '<h1>Items Sold in ';
             foreach($store_ids as $store_id) {
-                $heading .= StoreDetails::STORE_DETAILS[$store_id]['name'].', ';
+                $heading .= STORE_DETAILS[$store_id]['name'].', ';
             } 
 
             // Heading

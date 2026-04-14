@@ -449,7 +449,7 @@ class IncomeStatementActions {
 
         $details = [
             'statement' => $statement,
-            'store_name' => StoreDetails::STORE_DETAILS[$selected_store]['name'],
+            'store_name' => STORE_DETAILS[$selected_store]['name'],
             'start_date' => Utils::get_YYYY_mm_dd($dates['startDate']),
             'end_date' => Utils::get_YYYY_mm_dd($dates['endDate']),
         ];

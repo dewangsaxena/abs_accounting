@@ -449,7 +449,4 @@ class StoreDetails {
         ],
     ];
 }
-
-// No. of Stores
-define('NO_OF_STORES', count(StoreDetails::STORE_DETAILS));
 ?>
