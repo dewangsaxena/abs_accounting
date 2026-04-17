@@ -11,7 +11,6 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/suppressions.php
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/flyer.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/user_management.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/stats.php";
-die;
 
 function generate_list(int $store_id, bool $do_print=true) {
     $db = get_db_instance();
@@ -937,5 +936,90 @@ function extract_transaction_records_of_clients(int $store_id, string $table_nam
 
 }
 
-extract_transaction_records_of_clients(StoreDetails::DELTA, 'sales_invoice');
+// extract_transaction_records_of_clients(StoreDetails::DELTA, 'sales_invoice');
+
+function extract_client_details(int $store_id) {
+    $fields = [
+        'CustomerNumber',
+        'FusionCustomerNumber',
+        'Company',
+        'BaseBranch',
+        'ControlBranch',
+        'InActive',
+        'PrimaryContactSalutation',
+        'PrimaryContactFirstName',
+        'PrimaryContactMiddleInitial',
+        'PrimaryContactLastName',
+        'PrimaryContactTitle',
+        'Street1',
+        'Street2',
+        'City',
+        'Region',
+        'PostalCode',
+        'Country',
+        'BillToTaxBody',
+        'ShipTo_Street1',
+        'ShipTo_Street2',
+        'ShipTo_City',
+        'ShipTo_Region',
+        'ShipTo_PostalCode',
+        'ShipTo_Country',
+        'ShipToTaxBody',
+        'LanguageName',
+        'Territory',
+        'BusinessTaxNumber',
+        'QuebecTaxNumber',
+        'CanadianTaxNumber',
+        'CreationDate',
+        'PrimaryContactHomePhone',
+        'PrimaryContactWorkPhone',
+        'PrimaryContactCellPhone',
+        'PrimaryContactFax',
+        'InvoiceEmailAddress',
+        'StatementEmailAddress',
+        'TaxStatusDescription',
+        'AccountStatus',
+        'PaymentTerms',
+        'SalesManagementTaxStatus',
+        'CreditLimit',
+        'IsPORequired',
+        'SubjectToFinanceCharge',
+        'BlanketPONumber',
+        'ParentCustomerBranch',
+        'ParentCustomerNumber',
+        'isSeparateStatement',
+        'DefaultPaymentMethod',
+        'SubjectToDelinquency',
+        'SubjectToPastDue',
+        'PerformCreditCheck',
+        'AllowCharge',
+        'Comment1',
+        'Comment2',
+        'AllowMVP',
+        'AllowMVPCardNumber',
+        'MVPCardNumber',
+        'MVPCardNumberType',
+        'MVPExpire',
+        'MVPCreditLimit',
+        'AllowIBS',
+        'IBSNumber',
+        'IBSMessage',
+        'AllowFleetCharge',
+        'InternationalFleetChargeAccountNumber',
+        'InternationalFleetChargePCardNumber',
+        'AllowFreightliner',
+        'FreightlinerInvoiceCopyRequired',
+        'AllowCorcentric',
+        'CorecentricAccountNumber',
+        'AllowServiceUnitOwnership',
+        'IsLPORequired',
+        'ProspectFlag',
+        'LastInvoiceDate',
+        'LastPaymentDate',
+        'CityCode',
+        'FordCustomerType',
+        'IndustryType',
+        'SeparateCoreInvoice',
+    ]
+}
 ?>  
