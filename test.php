@@ -1022,14 +1022,15 @@ function extract_client_details(int $store_id) {
         'SeparateCoreInvoice',
     ];
 
+    $file_handle = fopen('client_details.csv', 'w+');
+
+    fputcsv($file_handle, $fields);
+
     $clients = Client::fetch_clients_of_store($store_id);
 
-    $records = [];
     foreach($clients as $client) {
         $shipping_address = json_decode($client['shipping_addresses'], true, flags: JSON_NUMERIC_CHECK);
-        if(count($shipping_address) > 0) {
-            $shipping_address = $shipping_address[0];
-        }
+        if(count($shipping_address) > 0) $shipping_address = $shipping_address[0];
         else $shipping_address = null;
 
         // Tax 
@@ -1045,6 +1046,8 @@ function extract_client_details(int $store_id) {
         }
         if($net_amount_due_within_days > 0) $payment_terms .= 'NET '. $net_amount_due_within_days. ' DAYS FROM INV.';
 
+        // Last Purchase Date
+        $last_purchase_date = json_decode($client['last_purchase_date'], true, flags: JSON_NUMERIC_CHECK)[$store_id];
         $record = [
             $client['id'], // CustomerNumber
             $client['id'], // FusionCustomerNumber
@@ -1086,9 +1089,51 @@ function extract_client_details(int $store_id) {
             $disable_federal_tax && $disable_provincial_tax ? 'Exempt': 'Taxable',  // TaxStatusDescription
             'Open', // AccountStatus
             $payment_terms,
-
+            '', // SalesManagementTaxStatus
+            json_decode($client['credit_limit'], true, flags: JSON_NUMERIC_CHECK)[$store_id] ?? 0,
+            '', // IsPORequired
+            true, // SubjectToFinanceCharge
+            '', // BlanketPONumber
+            '', // ParentCustomerBranch
+            '', // ParentCustomerNumber
+            '', // isSeparateStatement
+            'Charge', // DefaultPaymentMethod
+            '', // SubjectToDelinquency
+            '', // SubjectToPastDue
+            '', // PerformCreditCheck
+            true, // AllowCharge
+            '', // Comment1
+            '', // Comment2
+            '', // AllowMVP
+            '', // AllowMVPCardNumber
+            '', // MVPCardNumber
+            '', // MVPCardNumberType
+            '', // MVPExpire
+            '', // MVPCreditLimit
+            '', // AllowIBS
+            '', // IBSNumber
+            '', // IBSMessage
+            '', // AllowFleetCharge
+            '', // InternationalFleetChargeAccountNumber
+            '', // InternationalFleetChargePCardNumber
+            '', // AllowFreightliner
+            '', // FreightlinerInvoiceCopyRequired
+            '', // AllowCorcentric
+            '', // CorecentricAccountNumber
+            '', // AllowServiceUnitOwnership
+            '', // IsLPORequired
+            '', // ProspectFlag
+            $last_purchase_date, // LastInvoiceDate
+            '', // LastPaymentDate
+            '', // CityCode
+            '', // FordCustomerType
+            '', // IndustryType
+            '', // SeparateCoreInvoice
         ];
+        fputcsv($file_handle, $record);
     }
+
+    fclose($file_handle);
 }
 
 extract_client_details(StoreDetails::DELTA);

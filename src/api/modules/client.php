@@ -1417,7 +1417,13 @@ class Client {
 
         $statement = $db -> prepare(<<<'EOS'
         SELECT 
-            c.*
+            c.*,
+            c.`shipping_addresses` AS client_shipping_addresses,
+            c.`disable_federal_taxes`,
+            c.`disable_provincial_taxes`,
+            c.`early_payment_paid_within_days`,
+            c.`net_amount_due_within_days`,
+            c.`last_purchase_date`
         FROM 
             clients AS c
         LEFT JOIN 
@@ -1444,7 +1450,25 @@ class Client {
                     'id' => $id,
                     'email_id' => $email_id,
                     'name' => $client['name'],
+                    'contact_name' => $client['contact_name'],
+                    'street_1' => $client['street1'],
+                    'street_2' => $client['street2'],
+                    'city' => $client['city'],
+                    'province' => $client['province'],
+                    'postal_code' => $client['postal_code'],
+                    'phone_number_1' => $client['phone_number_1'],
+                    'phone_number_2' => $client['phone_number_2'],
+                    'fax' => $client['fax'],
+                    'email_id' => $client['email_id'],
+                    'additional_email_addresses' => $client['additional_email_addresses'],
+                    'credit_limit' => $client['credit_limit'],
                     'is_inactive' => json_decode($client['is_inactive'], true, flags: JSON_NUMERIC_CHECK)[$store_id] ?? 0,
+                    'shipping_addresses' => $client['client_shipping_addresses'],
+                    'disable_federal_taxes' => $client['disable_federal_taxes'],
+                    'disable_provincial_taxes' => $client['disable_provincial_taxes'],
+                    'early_payment_paid_within_days' => $client['early_payment_paid_within_days'],
+                    'net_amount_due_within_days' => $client['net_amount_due_within_days'],
+                    'last_purchase_date' => $client['last_purchase_date'],
                 ];
             }
         }
