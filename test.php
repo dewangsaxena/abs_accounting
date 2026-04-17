@@ -1020,6 +1020,76 @@ function extract_client_details(int $store_id) {
         'FordCustomerType',
         'IndustryType',
         'SeparateCoreInvoice',
-    ]
+    ];
+
+    $clients = Client::fetch_clients_of_store($store_id);
+
+    $records = [];
+    foreach($clients as $client) {
+        $shipping_address = json_decode($client['shipping_addresses'], true, flags: JSON_NUMERIC_CHECK);
+        if(count($shipping_address) > 0) {
+            $shipping_address = $shipping_address[0];
+        }
+        else $shipping_address = null;
+
+        // Tax 
+        $disable_federal_tax = json_decode($client['disable_federal_taxes'], true, flags: JSON_NUMERIC_CHECK)[$store_id] ?? 0;
+        $disable_provincial_tax = json_decode($client['disable_provincial_taxes'], true, flags: JSON_NUMERIC_CHECK)[$store_id] ?? 0;
+
+        // early_payment_paid_within_days
+        $early_payment_paid_within_days = json_decode($client['early_payment_paid_within_days'], true, flags: JSON_NUMERIC_CHECK)[$store_id] ?? 0;
+        $net_amount_due_within_days = json_decode($client['net_amount_due_within_days'], true, flags: JSON_NUMERIC_CHECK)[$store_id] ?? 0;
+        $payment_terms = '';
+        if($early_payment_paid_within_days > 0) {
+            $payment_terms .= $early_payment_paid_within_days . ' - ';
+        }
+        if($net_amount_due_within_days > 0) $payment_terms .= 'NET '. $net_amount_due_within_days. ' DAYS FROM INV.';
+
+        $record = [
+            $client['id'], // CustomerNumber
+            $client['id'], // FusionCustomerNumber
+            $client['name'], // Company
+            7, // BaseBranch
+            7, // ControlBranch
+            $client['is_inactive'], // InActive
+            '', // PrimaryContactSalutation
+            $client['contact_name'], // PrimaryContactFirstName
+            '', // PrimaryContactMiddleInitial
+            '', // PrimaryContactLastName
+            '', // PrimaryContactTitle
+            $client['street_1'],
+            $client['street_2'],
+            $client['city'],
+            'BC', // Region
+            $client['postal_code'],
+            'Canada', // Country
+            'BC', // BillToTaxBody
+            $shipping_address['street1'] ?? '',
+            $shipping_address['street2'] ?? '',
+            $shipping_address['city'] ?? '',
+            $shipping_address['province'] ?? '',
+            $shipping_address['postalCode'] ?? '',
+            'Canada', // ShipTo_Country
+            $shipping_address['province'] ?? '',
+            'English', // Language
+            '', // Territory
+            '', // BusinessTaxNumber
+            '', // QuebecTaxNumber
+            '', // CanadianTaxNumber
+            '', // Creation Date
+            '', // PrimaryContactHomePhone
+            $client['phone_number_1'] ?? '', // PrimaryContactWorkPhone
+            $client['phone_number_2'] ?? '', // PrimaryContactCellPhone
+            $client['fax'] ?? '', // PrimaryContactFax
+            $client['email_id'],  // InvoiceEmailAddress
+            $client['additional_email_addresses'], // StatementEmailAddress
+            $disable_federal_tax && $disable_provincial_tax ? 'Exempt': 'Taxable',  // TaxStatusDescription
+            'Open', // AccountStatus
+            $payment_terms,
+
+        ];
+    }
 }
+
+extract_client_details(StoreDetails::DELTA);
 ?>  

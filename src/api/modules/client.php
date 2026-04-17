@@ -1417,9 +1417,7 @@ class Client {
 
         $statement = $db -> prepare(<<<'EOS'
         SELECT 
-            c.id,
-            c.`name`,
-            c.`email_id`
+            c.*
         FROM 
             clients AS c
         LEFT JOIN 
@@ -1443,8 +1441,10 @@ class Client {
 
             if(isset($clients_details[$id]) == false) {
                 $clients_details[$id] = [
+                    'id' => $id,
                     'email_id' => $email_id,
                     'name' => $client['name'],
+                    'is_inactive' => json_decode($client['is_inactive'], true, flags: JSON_NUMERIC_CHECK)[$store_id] ?? 0,
                 ];
             }
         }
