@@ -11,7 +11,6 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/suppressions.php
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/flyer.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/user_management.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/stats.php";
-die;
 
 function generate_list(int $store_id, bool $do_print=true) {
     $db = get_db_instance();
@@ -937,5 +936,205 @@ function extract_transaction_records_of_clients(int $store_id, string $table_nam
 
 }
 
-extract_transaction_records_of_clients(StoreDetails::DELTA, 'sales_invoice');
+// extract_transaction_records_of_clients(StoreDetails::DELTA, 'sales_invoice');
+
+function extract_client_details(int $store_id) {
+    $fields = [
+        'CustomerNumber',
+        'FusionCustomerNumber',
+        'Company',
+        'BaseBranch',
+        'ControlBranch',
+        'InActive',
+        'PrimaryContactSalutation',
+        'PrimaryContactFirstName',
+        'PrimaryContactMiddleInitial',
+        'PrimaryContactLastName',
+        'PrimaryContactTitle',
+        'Street1',
+        'Street2',
+        'City',
+        'Region',
+        'PostalCode',
+        'Country',
+        'BillToTaxBody',
+        'ShipTo_Street1',
+        'ShipTo_Street2',
+        'ShipTo_City',
+        'ShipTo_Region',
+        'ShipTo_PostalCode',
+        'ShipTo_Country',
+        'ShipToTaxBody',
+        'LanguageName',
+        'Territory',
+        'BusinessTaxNumber',
+        'QuebecTaxNumber',
+        'CanadianTaxNumber',
+        'CreationDate',
+        'PrimaryContactHomePhone',
+        'PrimaryContactWorkPhone',
+        'PrimaryContactCellPhone',
+        'PrimaryContactFax',
+        'InvoiceEmailAddress',
+        'StatementEmailAddress',
+        'TaxStatusDescription',
+        'AccountStatus',
+        'PaymentTerms',
+        'SalesManagementTaxStatus',
+        'CreditLimit',
+        'IsPORequired',
+        'SubjectToFinanceCharge',
+        'BlanketPONumber',
+        'ParentCustomerBranch',
+        'ParentCustomerNumber',
+        'isSeparateStatement',
+        'DefaultPaymentMethod',
+        'SubjectToDelinquency',
+        'SubjectToPastDue',
+        'PerformCreditCheck',
+        'AllowCharge',
+        'Comment1',
+        'Comment2',
+        'AllowMVP',
+        'AllowMVPCardNumber',
+        'MVPCardNumber',
+        'MVPCardNumberType',
+        'MVPExpire',
+        'MVPCreditLimit',
+        'AllowIBS',
+        'IBSNumber',
+        'IBSMessage',
+        'AllowFleetCharge',
+        'InternationalFleetChargeAccountNumber',
+        'InternationalFleetChargePCardNumber',
+        'AllowFreightliner',
+        'FreightlinerInvoiceCopyRequired',
+        'AllowCorcentric',
+        'CorecentricAccountNumber',
+        'AllowServiceUnitOwnership',
+        'IsLPORequired',
+        'ProspectFlag',
+        'LastInvoiceDate',
+        'LastPaymentDate',
+        'CityCode',
+        'FordCustomerType',
+        'IndustryType',
+        'SeparateCoreInvoice',
+    ];
+
+    $file_handle = fopen('client_details.csv', 'w+');
+
+    fputcsv($file_handle, $fields);
+
+    $clients = Client::fetch_clients_of_store($store_id);
+
+    foreach($clients as $client) {
+        $shipping_address = json_decode($client['shipping_addresses'], true, flags: JSON_NUMERIC_CHECK);
+        if(count($shipping_address) > 0) $shipping_address = $shipping_address[0];
+        else $shipping_address = null;
+
+        // Tax 
+        $disable_federal_tax = json_decode($client['disable_federal_taxes'], true, flags: JSON_NUMERIC_CHECK)[$store_id] ?? 0;
+        $disable_provincial_tax = json_decode($client['disable_provincial_taxes'], true, flags: JSON_NUMERIC_CHECK)[$store_id] ?? 0;
+
+        // early_payment_paid_within_days
+        $early_payment_paid_within_days = json_decode($client['early_payment_paid_within_days'], true, flags: JSON_NUMERIC_CHECK)[$store_id] ?? 0;
+        $net_amount_due_within_days = json_decode($client['net_amount_due_within_days'], true, flags: JSON_NUMERIC_CHECK)[$store_id] ?? 0;
+        $payment_terms = '';
+        if($early_payment_paid_within_days > 0) {
+            $payment_terms .= $early_payment_paid_within_days . ' - ';
+        }
+        if($net_amount_due_within_days > 0) $payment_terms .= 'NET '. $net_amount_due_within_days. ' DAYS FROM INV.';
+
+        // Last Purchase Date
+        $last_purchase_date = json_decode($client['last_purchase_date'], true, flags: JSON_NUMERIC_CHECK)[$store_id];
+        $record = [
+            $client['id'], // CustomerNumber
+            $client['id'], // FusionCustomerNumber
+            $client['name'], // Company
+            7, // BaseBranch
+            7, // ControlBranch
+            $client['is_inactive'], // InActive
+            '', // PrimaryContactSalutation
+            $client['contact_name'], // PrimaryContactFirstName
+            '', // PrimaryContactMiddleInitial
+            '', // PrimaryContactLastName
+            '', // PrimaryContactTitle
+            $client['street_1'],
+            $client['street_2'],
+            $client['city'],
+            'BC', // Region
+            $client['postal_code'],
+            'Canada', // Country
+            'BC', // BillToTaxBody
+            $shipping_address['street1'] ?? '',
+            $shipping_address['street2'] ?? '',
+            $shipping_address['city'] ?? '',
+            $shipping_address['province'] ?? '',
+            $shipping_address['postalCode'] ?? '',
+            'Canada', // ShipTo_Country
+            $shipping_address['province'] ?? '',
+            'English', // Language
+            '', // Territory
+            '', // BusinessTaxNumber
+            '', // QuebecTaxNumber
+            '', // CanadianTaxNumber
+            '', // Creation Date
+            '', // PrimaryContactHomePhone
+            $client['phone_number_1'] ?? '', // PrimaryContactWorkPhone
+            $client['phone_number_2'] ?? '', // PrimaryContactCellPhone
+            $client['fax'] ?? '', // PrimaryContactFax
+            $client['email_id'],  // InvoiceEmailAddress
+            $client['additional_email_addresses'], // StatementEmailAddress
+            $disable_federal_tax && $disable_provincial_tax ? 'Exempt': 'Taxable',  // TaxStatusDescription
+            'Open', // AccountStatus
+            $payment_terms,
+            '', // SalesManagementTaxStatus
+            json_decode($client['credit_limit'], true, flags: JSON_NUMERIC_CHECK)[$store_id] ?? 0,
+            '', // IsPORequired
+            true, // SubjectToFinanceCharge
+            '', // BlanketPONumber
+            '', // ParentCustomerBranch
+            '', // ParentCustomerNumber
+            '', // isSeparateStatement
+            'Charge', // DefaultPaymentMethod
+            '', // SubjectToDelinquency
+            '', // SubjectToPastDue
+            '', // PerformCreditCheck
+            true, // AllowCharge
+            '', // Comment1
+            '', // Comment2
+            '', // AllowMVP
+            '', // AllowMVPCardNumber
+            '', // MVPCardNumber
+            '', // MVPCardNumberType
+            '', // MVPExpire
+            '', // MVPCreditLimit
+            '', // AllowIBS
+            '', // IBSNumber
+            '', // IBSMessage
+            '', // AllowFleetCharge
+            '', // InternationalFleetChargeAccountNumber
+            '', // InternationalFleetChargePCardNumber
+            '', // AllowFreightliner
+            '', // FreightlinerInvoiceCopyRequired
+            '', // AllowCorcentric
+            '', // CorecentricAccountNumber
+            '', // AllowServiceUnitOwnership
+            '', // IsLPORequired
+            '', // ProspectFlag
+            $last_purchase_date, // LastInvoiceDate
+            '', // LastPaymentDate
+            '', // CityCode
+            '', // FordCustomerType
+            '', // IndustryType
+            '', // SeparateCoreInvoice
+        ];
+        fputcsv($file_handle, $record);
+    }
+
+    fclose($file_handle);
+}
+
+extract_client_details(StoreDetails::DELTA);
 ?>  

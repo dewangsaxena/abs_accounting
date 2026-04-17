@@ -109,8 +109,8 @@ class IncomeStatementActions {
         
         // Profit Margin
         if (SYSTEM_INIT_MODE === PARTS) {
-            $summary_of_all_stores['profit_margin'] = Utils::calculateProfitMargin($summary_of_all_stores['total_revenue'], $summary_of_all_stores['cogs']);
-            $summary_of_all_stores['cogs_margin'] = Utils::calculateCOGSMargin($summary_of_all_stores['total_revenue'], $summary_of_all_stores['cogs']);
+            $summary_of_all_stores['profit_margin'] = Utils::calculateProfitMargin($summary_of_all_stores['total_revenue'], abs($summary_of_all_stores['cogs']));
+            $summary_of_all_stores['cogs_margin'] = Utils::calculateCOGSMargin($summary_of_all_stores['total_revenue'], abs($summary_of_all_stores['cogs']));
         }
         
         // Negate 
