@@ -320,6 +320,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         // Flag
         $is_sales_return = self::$transaction_type === 2; 
         $is_quotations = self::$transaction_type === 5;
+        $is_not_salvage_parts = SYSTEM_INIT_HOST !== __SALVAGE_PARTS__;
 
         // US Dollar Tag
         $us_dollar_tag = (IS_CURRENCY_USD ? 'US': '');
@@ -400,35 +401,79 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         self::$pdf -> SetFont(self::ARIAL, 'B', 5);
         self::$pdf -> Cell(w: 18, h:2, txt: 'Warranty Limitation:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> SetFont(self::ARIAL, '', 5);
-        self::$pdf -> Cell(w: 0, h:2, txt: 'Subject to the requirement below, all services carry a 30-day warranty from the date '. (self::$details['store_id'] != StoreDetails::VANCOUVER && self::$details['store_id'] != StoreDetails::DELTA ? 'ABS Truck' : 'Traction'), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
+
+        if($is_not_salvage_parts) {
+            self::$pdf -> Cell(w: 0, h:2, txt: 'Subject to the requirement below, all services carry a 30-day warranty from the date '. (self::$details['store_id'] != StoreDetails::VANCOUVER && self::$details['store_id'] != StoreDetails::DELTA ? 'ABS Truck' : 'Traction'), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
+        }
+        else self::$pdf -> Cell(w: 0, h:2, txt: 'No Warranty Unless mentioned on Invoice. All Sales are final. No returns.', border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
+        
         self::$pdf -> Cell(w: 100, h:2, txt: 'and service work listed above,along with the purchase and installment of any necessary parts and materials. I confirm I have', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
-        self::$pdf -> Cell(w: 0, h:2, txt: (self::$details['store_id'] != StoreDetails::VANCOUVER && self::$details['store_id'] != StoreDetails::DELTA ? 'and Trailer Parts Ltd. and ABS Truck Wash and Lube Ltd.' : 'Heavy Duty Parts').' completed the work. The owner must advise '. (self::$details['store_id'] != StoreDetails::VANCOUVER && self::$details['store_id'] != StoreDetails::DELTA ? 'ABS Truck and' : 'Traction Heavy Duty Parts'), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
+        if($is_not_salvage_parts) self::$pdf -> Cell(w: 0, h:2, txt: (self::$details['store_id'] != StoreDetails::VANCOUVER && self::$details['store_id'] != StoreDetails::DELTA ? 'and Trailer Parts Ltd. and ABS Truck Wash and Lube Ltd.' : 'Heavy Duty Parts').' completed the work. The owner must advise '. (self::$details['store_id'] != StoreDetails::VANCOUVER && self::$details['store_id'] != StoreDetails::DELTA ? 'ABS Truck and' : 'Traction Heavy Duty Parts'), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
+        else self::$pdf -> Cell(w: 0, h:2, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
         self::$pdf -> SetFont(self::ARIAL, 'B', 5);
         self::$pdf -> Cell(w: 16, h: 2, txt: 'Payment Terms:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> SetFont(self::ARIAL, '', 5);
         self::$pdf -> Cell(w: 84, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt: 'Payment for repairs are due upon the receipt of unit unless charged to customer\'s account. Payment of');
-        self::$pdf -> Cell(w: 0, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: (self::$details['store_id'] != StoreDetails::VANCOUVER && self::$details['store_id'] != StoreDetails::DELTA ? 'Trailer Parts Ltd. and ABS Truck Wash and Lube Ltd.' : 'Traction Heavy Duty Parts').' of any warranty. claim within 5 days of the failure date. Certain');
+        
+        if($is_not_salvage_parts) self::$pdf -> Cell(w: 0, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: (self::$details['store_id'] != StoreDetails::VANCOUVER && self::$details['store_id'] != StoreDetails::DELTA ? 'Trailer Parts Ltd. and ABS Truck Wash and Lube Ltd.' : 'Traction Heavy Duty Parts').' of any warranty. claim within 5 days of the failure date. Certain');
+        else self::$pdf -> Cell(w: 0, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: '');
         self::$pdf -> Cell(w: 100, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt: 'account is due in full by the 15\'thday of the month following the statement date. Unpaid balances will be charged interest of');
-        self::$pdf -> Cell(w: 0, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: 'Parts, products, accessories, materials, and other items used in completing the repair and servicework may be');
+        
+        if($is_not_salvage_parts) {
+            self::$pdf -> Cell(w: 0, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: 'Parts, products, accessories, materials, and other items used in completing the repair and servicework may be');
+        }
+        else self::$pdf -> Cell(w: 0, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: '');
         self::$pdf -> Cell(w: 100, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt: '2% per month compounded monthly (26.82% per annum.).');
-        self::$pdf -> Cell(w: 0, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: 'manufactured and supplied by third parties. The quality and workmanship of such items are entirely outside the control of ');
+        
+        if($is_not_salvage_parts) self::$pdf -> Cell(w: 0, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: 'manufactured and supplied by third parties. The quality and workmanship of such items are entirely outside the control of ');
+        else self::$pdf -> Cell(w: 0, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: '');
         self::$pdf -> SetFont(self::ARIAL, 'B', 5);
         self::$pdf -> Cell(w: 20, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt: 'Garage Keepers Lien:');
         self::$pdf -> SetFont(self::ARIAL, '', 5);
         self::$pdf -> Cell(w: 80, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt: 'By signing below you acknowledge and agree that the vehicle described above is subject to a');
-        self::$pdf -> Cell(w: 0, h: 2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: (self::$details['store_id'] != StoreDetails::VANCOUVER && self::$details['store_id'] != StoreDetails::DELTA ? 'ABS Truck and Trailer Parts Ltd. & ABS Truck Wash and Lube Ltd.' : 'Traction Heavy Duty Parts'). ' makes no warranties, whether expressed, implied,');
-        self::$pdf -> Cell(w: 100, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt: 'Garage Keepers\' Lien in favour of '. (self::$details['store_id'] != StoreDetails::VANCOUVER && self::$details['store_id'] != StoreDetails::DELTA ? 'ABS Truck and Trailer Parts Ltd. and ABS Truck Wash and Lube Ltd.' : 'Traction Heavy Duty Parts'). ' as permitted ');
-        self::$pdf -> Cell(w: 0, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: 'statutory, or otherwise, including any warrantyof merchantability or of fitness for a particular purpose with respect to such');
+
+        if(SYSTEM_INIT_HOST != __SALVAGE_PARTS__) {
+            $store_name = (self::$details['store_id'] != StoreDetails::VANCOUVER && self::$details['store_id'] != StoreDetails::DELTA ? 'ABS Truck and Trailer Parts Ltd. & ABS Truck Wash and Lube Ltd.' : 'Traction Heavy Duty Parts');
+            self::$pdf -> Cell(w: 0, h: 2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: $store_name. ' makes no warranties, whether expressed, implied,');
+        }
+        else {
+            $store_name = 'ABS Salvage used Parts Ltd.';
+            self::$pdf -> Cell(w: 0, h: 2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt:'');
+        }
+        
+        self::$pdf -> Cell(w: 100, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt: 'Garage Keepers\' Lien in favour of '. $store_name. ' as permitted ');
+        
+        if($is_not_salvage_parts) {
+            self::$pdf -> Cell(w: 0, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: 'statutory, or otherwise, including any warranty of merchantability or of fitness for a particular purpose with respect to such');
+        }
+        else self::$pdf -> Cell(w: 0, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: '');
         self::$pdf -> Cell(w: 100, h: 2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt: 'under the Garage Keepers\' Lien Act (Alberta/Canada), as ammended from time to time.');
-        self::$pdf -> Cell(w: 0, h: 2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: 'such items. Responsibility for Vehicle and Contents: '. (self::$details['store_id'] != StoreDetails::VANCOUVER && self::$details['store_id'] != StoreDetails::DELTA ? 'ABS Truck and Trailer PartsLtd. and ABS Truck Wash and Lube Ltd.' : 'Traction Heavy Duty Parts'));
+        if($is_not_salvage_parts) {
+            self::$pdf -> Cell(w: 0, h: 2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: 'such items. Responsibility for Vehicle and Contents: '. (self::$details['store_id'] != StoreDetails::VANCOUVER && self::$details['store_id'] != StoreDetails::DELTA ? 'ABS Truck and Trailer PartsLtd. and ABS Truck Wash and Lube Ltd.' : 'Traction Heavy Duty Parts'));    
+        }
+        else self::$pdf -> Cell(w: 0, h: 2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: '');
+        
         self::$pdf -> SetFont(self::ARIAL, 'B', 5);
         self::$pdf -> Cell(w: 23, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt: 'Warranty Considerations:');
         self::$pdf -> SetFont(self::ARIAL, '', 5);
-        self::$pdf -> Cell(w: 77, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt:  (self::$details['store_id'] != StoreDetails::VANCOUVER && self::$details['store_id'] != StoreDetails::DELTA ? 'ABS Truck and Trailer Parts Ltd. and ABS Truck Wash and Lube Ltd.' : 'Traction Heavy Duty Parts'). 'will submit warranty claim');
-        self::$pdf -> Cell(w: 0, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: 'is not responsible for loss or damage to the vehicle, or to articles, left in vehicles, in case of fire, theft,vandalism, or');
-        self::$pdf -> Cell(w: 100, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt: 'to the manufacturer for any portion of this repair that is designated for warranty considerations. If the manufacturer rejects the');
-        self::$pdf -> Cell(w: 0, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: 'accident.');
-        self::$pdf -> Cell(w: 100, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: 'or portion of the claim, the owner shall pay that portion which is rejected in accordance with the Payment Terms set out above.');
+
+        if(SYSTEM_INIT_HOST != __SALVAGE_PARTS__) {
+            self::$pdf -> Cell(w: 77, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt:  (self::$details['store_id'] != StoreDetails::VANCOUVER && self::$details['store_id'] != StoreDetails::DELTA ? 'ABS Truck and Trailer Parts Ltd. and ABS Truck Wash and Lube Ltd.' : 'Traction Heavy Duty Parts'). 'will submit warranty claim');
+        }
+        else self::$pdf -> Cell(w: 77, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt: 'No Warranty Unless mentioned on Invoice. All Sales are final. No returns.' ); 
+
+        
+        if(SYSTEM_INIT_HOST != __SALVAGE_PARTS__) {
+            self::$pdf -> Cell(w: 0, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: 'is not responsible for loss or damage to the vehicle, or to articles, left in vehicles, in case of fire, theft,vandalism, or');
+            self::$pdf -> Cell(w: 100, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt: 'to the manufacturer for any portion of this repair that is designated for warranty considerations. If the manufacturer rejects the');
+            self::$pdf -> Cell(w: 0, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: 'accident.');
+        }
+        else self::$pdf -> Cell(w: 0, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: '');
+
+        if(SYSTEM_INIT_HOST != __SALVAGE_PARTS__) {
+            self::$pdf -> Cell(w: 100, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: 'or portion of the claim, the owner shall pay that portion which is rejected in accordance with the Payment Terms set out above.');
+        }
+        
         self::$pdf -> SetFont(self::ARIAL, 'B', 7);
         self::$pdf -> Cell(w: 100, h:5, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt: '');
         self::$pdf -> Cell(w: 20, h:5, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt: 'Signature:');
