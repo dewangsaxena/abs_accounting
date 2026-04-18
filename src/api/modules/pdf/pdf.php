@@ -416,8 +416,13 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         self::$pdf -> Cell(w: 20, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt: 'Garage Keepers Lien:');
         self::$pdf -> SetFont(self::ARIAL, '', 5);
         self::$pdf -> Cell(w: 80, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt: 'By signing below you acknowledge and agree that the vehicle described above is subject to a');
-        self::$pdf -> Cell(w: 0, h: 2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: (self::$details['store_id'] != StoreDetails::VANCOUVER && self::$details['store_id'] != StoreDetails::DELTA ? 'ABS Truck and Trailer Parts Ltd. & ABS Truck Wash and Lube Ltd.' : 'Traction Heavy Duty Parts'). ' makes no warranties, whether expressed, implied,');
-        self::$pdf -> Cell(w: 100, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt: 'Garage Keepers\' Lien in favour of '. (self::$details['store_id'] != StoreDetails::VANCOUVER && self::$details['store_id'] != StoreDetails::DELTA ? 'ABS Truck and Trailer Parts Ltd. and ABS Truck Wash and Lube Ltd.' : 'Traction Heavy Duty Parts'). ' as permitted ');
+
+        if(SYSTEM_INIT_HOST != __SALVAGE_PARTS__) {
+            $store_name = (self::$details['store_id'] != StoreDetails::VANCOUVER && self::$details['store_id'] != StoreDetails::DELTA ? 'ABS Truck and Trailer Parts Ltd. & ABS Truck Wash and Lube Ltd.' : 'Traction Heavy Duty Parts');
+        }
+        else $store_name = 'ABS Salvage used Parts Ltd.';
+        self::$pdf -> Cell(w: 0, h: 2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: $store_name. ' makes no warranties, whether expressed, implied,');
+        self::$pdf -> Cell(w: 100, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt: 'Garage Keepers\' Lien in favour of '. $store_name. ' as permitted ');
         self::$pdf -> Cell(w: 0, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: 'statutory, or otherwise, including any warrantyof merchantability or of fitness for a particular purpose with respect to such');
         self::$pdf -> Cell(w: 100, h: 2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt: 'under the Garage Keepers\' Lien Act (Alberta/Canada), as ammended from time to time.');
         self::$pdf -> Cell(w: 0, h: 2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: 'such items. Responsibility for Vehicle and Contents: '. (self::$details['store_id'] != StoreDetails::VANCOUVER && self::$details['store_id'] != StoreDetails::DELTA ? 'ABS Truck and Trailer PartsLtd. and ABS Truck Wash and Lube Ltd.' : 'Traction Heavy Duty Parts'));

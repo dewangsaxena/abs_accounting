@@ -101,7 +101,7 @@ else die('Invalid Domain');
 
 /* Business Specific Configuration. */
 define('SYSTEM_INIT_MODE', $mode);
-define('SYSTEM_INIT_HOST', $is_localhost ? __PARTS_V2__ : $offset);
+define('SYSTEM_INIT_HOST', $is_localhost ? __SALVAGE_PARTS__ : $offset);
 
 /** IS Amount Currency in USD */
 define('IS_CURRENCY_USD', SYSTEM_INIT_HOST === VANGUARD_HOST ? true : false);
