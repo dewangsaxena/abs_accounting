@@ -320,6 +320,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         // Flag
         $is_sales_return = self::$transaction_type === 2; 
         $is_quotations = self::$transaction_type === 5;
+        $is_not_salvage_parts = SYSTEM_INIT_HOST !== __SALVAGE_PARTS__;
 
         // US Dollar Tag
         $us_dollar_tag = (IS_CURRENCY_USD ? 'US': '');
@@ -400,7 +401,12 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         self::$pdf -> SetFont(self::ARIAL, 'B', 5);
         self::$pdf -> Cell(w: 18, h:2, txt: 'Warranty Limitation:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> SetFont(self::ARIAL, '', 5);
-        self::$pdf -> Cell(w: 0, h:2, txt: 'Subject to the requirement below, all services carry a 30-day warranty from the date '. (self::$details['store_id'] != StoreDetails::VANCOUVER && self::$details['store_id'] != StoreDetails::DELTA ? 'ABS Truck' : 'Traction'), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
+
+        if($is_not_salvage_parts) {
+            self::$pdf -> Cell(w: 0, h:2, txt: 'Subject to the requirement below, all services carry a 30-day warranty from the date '. (self::$details['store_id'] != StoreDetails::VANCOUVER && self::$details['store_id'] != StoreDetails::DELTA ? 'ABS Truck' : 'Traction'), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
+        }
+        else self::$pdf -> Cell(w: 0, h:2, txt: 'No Warranty Unless mentioned on Invoice. All Sales are final. No returns.', border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
+        
         self::$pdf -> Cell(w: 100, h:2, txt: 'and service work listed above,along with the purchase and installment of any necessary parts and materials. I confirm I have', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> Cell(w: 0, h:2, txt: (self::$details['store_id'] != StoreDetails::VANCOUVER && self::$details['store_id'] != StoreDetails::DELTA ? 'and Trailer Parts Ltd. and ABS Truck Wash and Lube Ltd.' : 'Heavy Duty Parts').' completed the work. The owner must advise '. (self::$details['store_id'] != StoreDetails::VANCOUVER && self::$details['store_id'] != StoreDetails::DELTA ? 'ABS Truck and' : 'Traction Heavy Duty Parts'), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
         self::$pdf -> SetFont(self::ARIAL, 'B', 5);
