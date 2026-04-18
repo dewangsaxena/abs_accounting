@@ -441,8 +441,6 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
             self::$pdf -> Cell(w: 0, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: 'accident.');
         }
         
-        
-
         if(SYSTEM_INIT_HOST != __SALVAGE_PARTS__) {
             self::$pdf -> Cell(w: 100, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: 'or portion of the claim, the owner shall pay that portion which is rejected in accordance with the Payment Terms set out above.');
         }
