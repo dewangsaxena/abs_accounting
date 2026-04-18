@@ -429,11 +429,24 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         self::$pdf -> SetFont(self::ARIAL, 'B', 5);
         self::$pdf -> Cell(w: 23, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt: 'Warranty Considerations:');
         self::$pdf -> SetFont(self::ARIAL, '', 5);
-        self::$pdf -> Cell(w: 77, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt:  (self::$details['store_id'] != StoreDetails::VANCOUVER && self::$details['store_id'] != StoreDetails::DELTA ? 'ABS Truck and Trailer Parts Ltd. and ABS Truck Wash and Lube Ltd.' : 'Traction Heavy Duty Parts'). 'will submit warranty claim');
+
+        if(SYSTEM_INIT_HOST != __SALVAGE_PARTS__) {
+            self::$pdf -> Cell(w: 77, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt:  (self::$details['store_id'] != StoreDetails::VANCOUVER && self::$details['store_id'] != StoreDetails::DELTA ? 'ABS Truck and Trailer Parts Ltd. and ABS Truck Wash and Lube Ltd.' : 'Traction Heavy Duty Parts'). 'will submit warranty claim');
+        }
+        else self::$pdf -> Cell(w: 77, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt: 'No Warranty Unless mentioned on Invoice. All Sales are final. No returns.' ); 
+
         self::$pdf -> Cell(w: 0, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: 'is not responsible for loss or damage to the vehicle, or to articles, left in vehicles, in case of fire, theft,vandalism, or');
-        self::$pdf -> Cell(w: 100, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt: 'to the manufacturer for any portion of this repair that is designated for warranty considerations. If the manufacturer rejects the');
-        self::$pdf -> Cell(w: 0, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: 'accident.');
-        self::$pdf -> Cell(w: 100, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: 'or portion of the claim, the owner shall pay that portion which is rejected in accordance with the Payment Terms set out above.');
+        if(SYSTEM_INIT_HOST != __SALVAGE_PARTS__) {
+            self::$pdf -> Cell(w: 100, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt: 'to the manufacturer for any portion of this repair that is designated for warranty considerations. If the manufacturer rejects the');
+            self::$pdf -> Cell(w: 0, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: 'accident.');
+        }
+        
+        
+
+        if(SYSTEM_INIT_HOST != __SALVAGE_PARTS__) {
+            self::$pdf -> Cell(w: 100, h:2, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1, txt: 'or portion of the claim, the owner shall pay that portion which is rejected in accordance with the Payment Terms set out above.');
+        }
+        
         self::$pdf -> SetFont(self::ARIAL, 'B', 7);
         self::$pdf -> Cell(w: 100, h:5, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt: '');
         self::$pdf -> Cell(w: 20, h:5, border: self::SHOW_BORDER_FOR_DEBUG, ln: 0, txt: 'Signature:');
