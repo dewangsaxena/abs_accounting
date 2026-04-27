@@ -1136,5 +1136,149 @@ function extract_client_details(int $store_id) {
     fclose($file_handle);
 }
 
-extract_client_details(StoreDetails::DELTA);
+// extract_client_details(StoreDetails::DELTA);
+
+function import_salvage() {
+    // Read file 
+    $items = file_get_contents('C:\\Users\\dewan\\Desktop\\salvage_parts.json');
+    $items = json_decode($items, true, flags: JSON_NUMERIC_CHECK);
+
+    try {
+        $db = get_db_instance();
+        $db -> beginTransaction();
+
+        $statement_check_identifier = $db -> prepare('SELECT * FROM items WHERE identifier = :identifier;');
+        $statement_insert_item = $db -> prepare(<<<'EOS'
+        INSERT INTO items
+        (
+            `code`,
+            `identifier`,
+            `description`,
+            `oem`,
+            `category`,
+            `unit`,
+            `prices`,
+            `account_assets`,
+            `account_revenue`,
+            `account_cogs`,
+            `account_variance`,
+            `account_expense`,
+            `is_inactive`,
+            `is_core`,
+            `memo`,
+            `additional_information`,
+            `reorder_quantity`,
+            `last_sold`
+        )
+        VALUES
+        (
+            :code,
+            :identifier,
+            :description,
+            :oem,
+            :category,
+            :unit,
+            :prices,
+            :account_assets,
+            :account_revenue,
+            :account_cogs,
+            :account_variance,
+            :account_expense,
+            :is_inactive,
+            :is_core,
+            :memo,
+            :additional_information,
+            :reorder_quantity,
+            :last_sold
+        );
+        EOS);
+
+        $statement_insert_inventory = $db -> prepare(<<<'EOS'
+        INSERT INTO inventory 
+        (
+            `item_id`,
+            `quantity`, 
+            `store_id`,
+            `aisle`,
+            `shelf`,
+            `column`
+        )
+        VALUES
+        (
+            :item_id,
+            :quantity,
+            :store_id,
+            :aisle,
+            :shelf,
+            :column
+        );
+        EOS);
+
+        // Default Price
+        $default_price = [2 => ['storeId' => 2, 'sellingPrice' => 0, 'buyingCost' => 0.1, 'preferredPrice' => 0]];
+        $default_per_store = json_encode([2 => 0]);
+
+        foreach($items as $item) {
+            $statement_check_identifier -> execute([':identifier' => $item['identifier']]);
+            $result = $statement_check_identifier -> fetchAll(PDO::FETCH_ASSOC);
+            if(isset($result[0]['id']) == false) {
+                
+                $price = $default_price;
+                $price[2]['sellingPrice'] = $item['price'];
+
+                // Insert item
+                $is_successful = $statement_insert_item -> execute([
+                    ':code' => $item['code'],
+                    ':identifier' => $item['identifier'],
+                    ':description' => $item['description'],
+                    ':oem' => '',
+                    ':category' => 1,
+                    ':unit' => 'Each',
+                    ':prices' => json_encode($price, flags: JSON_NUMERIC_CHECK),
+                    ':account_assets' => 1520,
+                    ':account_revenue' => 4020,
+                    ':account_cogs' => 5020,
+                    ':account_variance' => 5100,
+                    ':account_expense' => 0,
+                    ':is_inactive' => $default_per_store,
+                    ':is_core' => 0,
+                    ':memo' => '',
+                    ':additional_information' => '',
+                    ':reorder_quantity' => $default_per_store,
+                    ':last_sold' => '{}', 
+                ]);
+
+                $last_insert_id = $db -> lastInsertId();
+                if(is_numeric($last_insert_id) == false) throw new Exception('Unable to Add Item: '. $item['identifier']);
+
+                // Add To Inventory
+                if($item['quantity'] > 0) {
+                    $is_successful = $statement_insert_inventory -> execute([
+                        ':item_id' => $last_insert_id,
+                        ':quantity' => $item['quantity'],
+                        ':store_id' => 2,
+                        ':aisle' => $item['aisle'],
+                        ':shelf' => $item['shelf'],
+                        ':column' => $item['column'],
+                    ]);
+
+                    $last_insert_id = $db -> lastInsertId();
+                    if(is_numeric($last_insert_id) != true) {
+                        throw new Exception('Unable to Adjust Inventory for item: '. $item['identifier']);
+                    }
+                }
+            }  
+        }
+
+        assert_success();
+        $db -> commit();
+        echo 'Imported';
+    }
+    catch(Exception $e) {
+        print_r($e -> getMessage());
+        $db -> rollback();
+    }
+}
+
+import_salvage();
 ?>  
