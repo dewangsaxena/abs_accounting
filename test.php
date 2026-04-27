@@ -1140,7 +1140,7 @@ function extract_client_details(int $store_id) {
 
 function import_salvage() {
     // Read file 
-    $items = file_get_contents('C:\\Users\\dewan\\Desktop\\salvage_parts.json');
+    $items = file_get_contents('salvage_parts.json');
     $items = json_decode($items, true, flags: JSON_NUMERIC_CHECK);
 
     try {
