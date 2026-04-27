@@ -1139,6 +1139,8 @@ function extract_client_details(int $store_id) {
 // extract_client_details(StoreDetails::DELTA);
 
 function import_salvage() {
+    if(SYSTEM_INIT_HOST != __SALVAGE_PARTS__) die('System is not Salvage Host');
+
     // Read file 
     $items = file_get_contents('salvage_parts.json');
     $items = json_decode($items, true, flags: JSON_NUMERIC_CHECK);
