@@ -325,10 +325,10 @@ class StoreDetails {
             ],
             'address' => [
                 'name' => 'ABS TRUCK AND TRAILER PARTS BC LTD.',
-                'street1' => '7351 PROGRESS PLACE',
+                'street1' => '8380 RIVER RD',
                 'city' => 'DELTA',
                 'province' => 'BRITISH COLUMBIA',
-                'postal_code' => 'V4G 1A1',
+                'postal_code' => 'V4G 1B5',
                 'country' => 'CANADA',
                 'tel' => '+1 (604)-952-0001',
                 'fax' => ''
