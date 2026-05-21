@@ -75,7 +75,7 @@ class FlyerManagement {
      * @param path_to_attachment
      * @param file_name
      */
-    public static function send_flyer(int $store_id, string $subject, string $content, string $path_to_attachment, string $file_name): void {
+    public static function send_flyer(int $store_id, string $subject, string $content, ?string $path_to_attachment=null, ?string $file_name=null): void {
 
         // Fetch client details
         $client_details = self::fetch_client_detail_of_store($store_id);
