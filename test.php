@@ -113,10 +113,10 @@ function fix_inventory_value(int $store_id): void {
         echo $e -> getMessage();
     }
 }
-$store_id = StoreDetails::SASKATOON;
-// fix_inventory_value($store_id);
-// generate_list($store_id, true);
-// die;
+$store_id = StoreDetails::EDMONTON;
+fix_inventory_value($store_id);
+echo generate_list($store_id, false);
+die;
 
 // $code = 'AF';
 // $details = Inventory::fetch_item_quantity_sold_by_prefix($code, StoreDetails::CALGARY, '2025-01-01', '2025-12-31');
