@@ -113,9 +113,9 @@ function fix_inventory_value(int $store_id): void {
         echo $e -> getMessage();
     }
 }
-$store_id = StoreDetails::SASKATOON;
+$store_id = StoreDetails::EDMONTON;
 // fix_inventory_value($store_id);
-// generate_list($store_id, true);
+// echo generate_list($store_id, false);
 // die;
 
 // $code = 'AF';
