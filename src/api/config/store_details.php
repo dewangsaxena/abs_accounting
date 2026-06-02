@@ -44,13 +44,13 @@ class StoreDetails {
             ],
             'address' => [
                 'name' => 'ABS SALVAGE USED PARTS LTD.',
-                'street1' => '6030 125 AVENUE NW',
+                'street1' => '12555 62 ST NW',
                 'city' => 'EDMONTON',
                 'province' => 'ALBERTA',
-                'postal_code' => 'T5W 1Z6',
+                'postal_code' => 'T5W 4W9',
                 'country' => 'CANADA',
-                'tel' => '+1 (780) 479-4700',
-                'fax' => '+1 (780) 479-7995',
+                'tel' => '+1 (825) 203-1938',
+                'fax' => '',
             ],
             'email' => [
                 'from_name' => [
@@ -66,7 +66,7 @@ class StoreDetails {
                 'email_id' => 'abssalvageparts@gmail.com',
                 'checks' => [
                     'payable_to' => 'ABS SALVAGE USED PARTS LTD.',
-                    'address' => '6030 125 AVE NW, EDMONTON, ALBERTA, T5W 1Z6',
+                    'address' => '12555 62 ST NW, EDMONTON, ALBERTA, T5W 4W9',
                 ]
             ],
             'cipher_key' => 'uk.s+vD?acf:Y"-Q:5$.!WQt{)vr(/op',
