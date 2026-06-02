@@ -202,3 +202,5 @@ ALTER TABLE sales_return ADD COLUMN is_payment_in_usd BOOLEAN NOT NULL DEFAULT 0
 ALTER TABLE credit_note ADD COLUMN is_payment_in_usd BOOLEAN NOT NULL DEFAULT 0 COMMENT 'Is the payment in USD?';
 ALTER TABLE debit_note ADD COLUMN is_payment_in_usd BOOLEAN NOT NULL DEFAULT 0 COMMENT 'Is the payment in USD?';
 ALTER TABLE quotation ADD COLUMN is_payment_in_usd BOOLEAN NOT NULL DEFAULT 0 COMMENT 'Is the payment in USD?';
+
+alter table inventory modify column `quantity` NUMERIC(6, 2) UNSIGNED NOT NULL DEFAULT 0.00;
