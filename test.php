@@ -114,9 +114,9 @@ function fix_inventory_value(int $store_id): void {
     }
 }
 $store_id = StoreDetails::EDMONTON;
-fix_inventory_value($store_id);
-echo generate_list($store_id, false);
-die;
+// fix_inventory_value($store_id);
+// echo generate_list($store_id, false);
+// die;
 
 // $code = 'AF';
 // $details = Inventory::fetch_item_quantity_sold_by_prefix($code, StoreDetails::CALGARY, '2025-01-01', '2025-12-31');
