@@ -1469,6 +1469,8 @@ class Client {
                     'early_payment_paid_within_days' => $client['early_payment_paid_within_days'],
                     'net_amount_due_within_days' => $client['net_amount_due_within_days'],
                     'last_purchase_date' => $client['last_purchase_date'],
+                    'memo' => $client['memo'],
+                    'additional_information' => $client['additional_information'],
                 ];
             }
         }
