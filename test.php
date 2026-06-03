@@ -1,4 +1,5 @@
 <?php 
+die;
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/utils.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/database.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_summary.php";
@@ -16,6 +17,7 @@ function generate_list(int $store_id, bool $do_print=true) {
     $db = get_db_instance();
     $query = <<<'EOS'
     SELECT 
+        i.id,
         i.`identifier`,
         i.`prices`,
         inv.`quantity`
@@ -74,7 +76,6 @@ function generate_list(int $store_id, bool $do_print=true) {
         EOS;
     }
 
-    
     if($do_print) {
         $total_value = Utils::number_format($total_value, 2);
         $code .= "</table><br><br>Total Inventory Value: &nbsp;&nbsp;&nbsp;&nbsp;<label style='letter-spacing: 2px;font-weight:bold;'>\$ $total_value</label>";
@@ -117,6 +118,57 @@ $store_id = StoreDetails::EDMONTON;
 // fix_inventory_value($store_id);
 // echo generate_list($store_id, false);
 // die;
+
+function find_duplicate_entries(PDO &$db, int $store_id): array {
+    $statement = $db -> prepare(<<<'EOS'
+    SELECT id, item_id FROM inventory WHERE store_id = :store_id;
+    EOS);
+
+    $statement -> execute([':store_id' => $store_id]);
+    $results = $statement -> fetchAll(PDO::FETCH_ASSOC);
+    $items = [];
+    $duplicate_items = [];
+    foreach($results as $r) {
+        $item_id = $r['item_id'];
+        $row_id = $r['id'];
+        if(in_array($item_id, $items) === false) $items[]= $item_id;
+        else $duplicate_items []= $row_id; 
+    }
+    return $duplicate_items;
+}
+
+function remove_duplicate_inventory_entries(int $store_id) {
+    $db = get_db_instance();
+    try {
+        $db -> beginTransaction();
+
+        // Duplicate Items row index
+        $duplicate_items_row_ids = find_duplicate_entries($db, $store_id);
+        
+        print_r($duplicate_items_row_ids);
+
+        $statement = $db -> prepare(<<<'EOS'
+        DELETE FROM inventory WHERE id = :id;
+        EOS);
+
+        foreach($duplicate_items_row_ids as $row_id) {
+            $is_successful = $statement -> execute([':id' => $row_id]);
+            if($is_successful !== true && $statement -> rowCount() < 1) throw new Exception('Unable to Delete Row.');
+        }
+
+        // Fetch Duplicate Records
+        $db -> commit();
+        
+        echo '<br><br>Removed';
+    }
+    catch(Exception $e) {
+        echo $e -> getMessage();
+        if($db -> inTransaction()) $db -> rollBack();
+    }
+}
+
+remove_duplicate_inventory_entries($store_id);
+die;
 
 // $code = 'AF';
 // $details = Inventory::fetch_item_quantity_sold_by_prefix($code, StoreDetails::CALGARY, '2025-01-01', '2025-12-31');
