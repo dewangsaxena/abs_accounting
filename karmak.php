@@ -475,5 +475,210 @@ function extract_client_details(int $store_id) {
 function extract_accounts_receivables_file_for_store(int $store_id) : void {
     $db = get_db_instance();
 
-    
+    $ar_records = [];
+    $client_lists = [];
+
+    $statement_fetch_invoice = $db -> prepare(<<<'EOS'
+    SELECT 
+        `id`, 
+        `client_id`,
+        `date`,
+        `po`,
+        `payment_method`,
+        `credit_amount`
+    FROM 
+        `sales_invoice` 
+    WHERE 
+        `credit_amount` != 0.0 
+    AND
+        `store_id` = :store_id
+    EOS);
+    $statement_fetch_invoice -> execute([':store_id' => $store_id]);
+    $records = $statement_fetch_invoice -> fetchAll(PDO::FETCH_ASSOC);
+
+    foreach($records as $r) {
+        $date = date_create($r['date']);
+        date_add($date, date_interval_create_from_date_string('30 days'));
+        $payment_date = date_format($date, 'Y-m-d');
+
+        $client_lists []= $r['client_id'];
+        $ar_records []= [
+            $store_id,
+            $r['date'],
+            $r['id'],
+            $store_id,
+            $r['client_id'],
+            'Net 30 Days from Inv.',
+            $payment_date,
+            $r['credit_amount'],
+            '__COMPANY_NAME__',
+            '',
+            '',
+            '__PAYMENT_METHOD__',
+        ];
+    }
+
+    $statement_fetch_returns = $db -> prepare(<<<'EOS'
+    SELECT 
+        `id`, 
+        `client_id`,
+        `date`,
+        `po`,
+        `payment_method`,
+        `credit_amount`
+    FROM 
+        `sales_return` 
+    WHERE 
+        `credit_amount` != 0.0 
+    AND
+        `store_id` = :store_id
+    EOS);
+    $statement_fetch_returns -> execute([':store_id' => $store_id]);
+    $records = $statement_fetch_returns -> fetchAll(PDO::FETCH_ASSOC);
+
+    foreach($records as $r) {
+        $date = date_create($r['date']);
+        date_add($date, date_interval_create_from_date_string('30 days'));
+        $payment_date = date_format($date, 'Y-m-d');
+        
+        $client_lists []= $r['client_id'];
+        $ar_records []= [
+            $store_id,
+            $r['date'],
+            $r['id'],
+            $store_id,
+            $r['client_id'],
+            'Net 30 Days from Inv.',
+            $payment_date,
+            -$r['credit_amount'],
+            '__COMPANY_NAME__',
+            '',
+            '',
+            '__PAYMENT_METHOD__',
+        ];
+    }
+
+    $statement_fetch_cn = $db -> prepare(<<<'EOS'
+    SELECT 
+        `id`, 
+        `client_id`,
+        `date`,
+        `credit_amount`
+    FROM 
+        `credit_note` 
+    WHERE 
+        `credit_amount` != 0.0 
+    AND
+        `store_id` = :store_id
+    EOS);
+    $statement_fetch_cn -> execute([':store_id' => $store_id]);
+    $records = $statement_fetch_cn -> fetchAll(PDO::FETCH_ASSOC);
+
+    foreach($records as $r) {
+        $date = date_create($r['date']);
+        date_add($date, date_interval_create_from_date_string('30 days'));
+        $payment_date = date_format($date, 'Y-m-d');
+        $client_lists []= $r['client_id'];
+        $ar_records []= [
+            $store_id,
+            $r['date'],
+            $r['id'],
+            $store_id,
+            $r['client_id'],
+            'Net 30 Days from Inv.',
+            $payment_date,
+            -$r['credit_amount'],
+            '__COMPANY_NAME__',
+            '',
+            '',
+            '__PAYMENT_METHOD__',
+        ];
+    }
+
+    $statement_fetch_dn = $db -> prepare(<<<'EOS'
+    SELECT 
+        `id`, 
+        `client_id`,
+        `date`,
+        `credit_amount`
+    FROM 
+        `debit_note` 
+    WHERE 
+        `credit_amount` != 0.0 
+    AND
+        `store_id` = :store_id
+    EOS);
+    $statement_fetch_dn -> execute([':store_id' => $store_id]);
+    $records = $statement_fetch_dn -> fetchAll(PDO::FETCH_ASSOC);
+
+    foreach($records as $r) {
+        $date = date_create($r['date']);
+        date_add($date, date_interval_create_from_date_string('30 days'));
+        $payment_date = date_format($date, 'Y-m-d');
+        $client_lists []= $r['client_id'];
+        $ar_records []= [
+            $store_id,
+            $r['date'],
+            $r['id'],
+            $store_id,
+            $r['client_id'],
+            'Net 30 Days from Inv.',
+            $payment_date,
+            $r['credit_amount'],
+            '__COMPANY_NAME__',
+            '',
+            '',
+            '__PAYMENT_METHOD__',
+        ];
+        break;
+    }
+
+    // Fetch Client Details
+    $client_lists = array_unique($client_lists);
+
+    $query = <<<'EOS'
+    SELECT
+        `id`, 
+        `name`,
+        `default_receipt_payment_method`
+    FROM
+        `clients`
+    WHERE
+        id IN (:placeholder);
+    EOS;
+
+    $ret_value = Utils::mysql_in_placeholder_pdo_substitute($client_lists, $query);
+    $client_lists = $ret_value['values'];
+    $query = $ret_value['query'];
+    $statement_fetch_client = $db -> prepare($query);
+    $statement_fetch_client -> execute($client_lists);
+    $client_lists = $statement_fetch_client -> fetchAll(PDO::FETCH_ASSOC);
+
+    $client_data = [];
+    foreach($client_lists as $c) {
+        $client_data [$c['id']] = [
+            'name' => $c['name'],
+            'payment_method' => PaymentMethod::DEBIT_PAYMENT_METHODS[$c['default_receipt_payment_method']],
+        ];
+    }
+
+    $file_handle = fopen("ar_$store_id.csv", 'w');
+
+    $count = count($ar_records);
+    for($i = 0; $i < $count; ++$i) {
+        $client_id = $ar_records[$i][4];
+        if(isset(Client::SELF_CLIENT_WHITELIST[$client_id])) {
+            continue;
+        }
+        $ar_records[$i][8] = $client_data[$client_id]['name'];
+        $ar_records[$i][11] = $client_data[$client_id]['payment_method'];
+
+        fputcsv($file_handle, $ar_records[$i]);
+    }
+
+    fclose($file_handle);
+
 }
+
+extract_accounts_receivables_file_for_store(StoreDetails::EDMONTON);
+
