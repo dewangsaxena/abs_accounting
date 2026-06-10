@@ -117,6 +117,8 @@ function fix_inventory_value(int $store_id): void {
 $store_id = StoreDetails::EDMONTON;
 // fix_inventory_value($store_id);
 // echo generate_list($store_id, false);
+// $report_data = Inventory::fetch_item_quantity_sold_by_prefix('PAI', StoreDetails::DELTA, '2022-01-01', '2027-01-01');
+// Inventory::generate_quantity_report_of_item_sold('pai_inventory_sold.csv', $report_data);
 // die;
 
 function find_duplicate_entries(PDO &$db, int $store_id): array {
@@ -167,8 +169,8 @@ function remove_duplicate_inventory_entries(int $store_id) {
     }
 }
 
-remove_duplicate_inventory_entries($store_id);
-die;
+// remove_duplicate_inventory_entries($store_id);
+// die;
 
 // $code = 'AF';
 // $details = Inventory::fetch_item_quantity_sold_by_prefix($code, StoreDetails::CALGARY, '2025-01-01', '2025-12-31');
@@ -932,7 +934,7 @@ function extract_transaction_records_of_clients(int $store_id, string $table_nam
 
     $transaction_records = $statement -> fetchAll(PDO::FETCH_ASSOC);
 
-    $file_handle = fopen("delta_$table_name.csv", 'w');
+    $file_handle = fopen("edmonton_$table_name.csv", 'w');
     fputcsv($file_handle, [
                 'BranchCode',
                 'Customer',
@@ -988,7 +990,7 @@ function extract_transaction_records_of_clients(int $store_id, string $table_nam
 
 }
 
-// extract_transaction_records_of_clients(StoreDetails::DELTA, 'sales_invoice');
+extract_transaction_records_of_clients(StoreDetails::EDMONTON, 'debit_note');die;
 
 function extract_client_details(int $store_id) {
     $fields = [
@@ -1334,5 +1336,5 @@ function import_salvage() {
     }
 }
 
-import_salvage();
+// import_salvage();
 ?>  
