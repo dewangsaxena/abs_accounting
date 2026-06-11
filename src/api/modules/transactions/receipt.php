@@ -1039,20 +1039,21 @@ class Receipt {
             // Generate
             GeneratePDF::receipt($receipt_details, $filenames[0], $dump_file);
 
+            // This is the output filename
+            $receipt_filename = "receipt-$receipt_id-$random_token.pdf";
+            $temp_dir_receipt_filename = TEMP_DIR. $receipt_filename;
+
             // Merge PDF
-            $merge_object = Utils::merge_pdfs($filenames);
+            Utils::merge_pdfs($filenames, $temp_dir_receipt_filename);
 
             // Delete Residual Files
             if($for === 'print' && $dump_file) Utils::delete_files($filenames);
 
-            // This is the output filename
-            $receipt_filename = "receipt-$receipt_id-$random_token.pdf";
-
-            // Output 
-            $merge_object -> output($for === 'email' && $dump_file ? TEMP_DIR. $receipt_filename : null);
+            // Send to Browser
+            if($for === 'print') Shared::send_pdf_file_to_browser($temp_dir_receipt_filename);  
 
             // Set Path To Output File
-            $path_to_output_file = TEMP_DIR. $receipt_filename;
+            $path_to_output_file = $temp_dir_receipt_filename;
         }
         catch(Exception $e) {
             $path_to_output_file = null;
@@ -1060,7 +1061,7 @@ class Receipt {
         }
         finally {
             // Delete residual files
-            Utils::delete_files($filenames);
+            // Utils::delete_files($filenames);
             return ['status' => $path_to_output_file !== null, 'data' => $path_to_output_file, 'message' => $err_message];
         }
     }
