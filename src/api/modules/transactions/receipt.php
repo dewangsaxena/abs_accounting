@@ -1046,14 +1046,14 @@ class Receipt {
             // Merge PDF
             Utils::merge_pdfs($filenames, $temp_dir_receipt_filename);
 
-            // Delete Residual Files
-            if($for === 'print' && $dump_file) Utils::delete_files($filenames);
-
             // Send to Browser
             if($for === 'print') Shared::send_pdf_file_to_browser($temp_dir_receipt_filename);  
 
             // Set Path To Output File
             $path_to_output_file = $temp_dir_receipt_filename;
+
+            // Delete Residual Files
+            if($for === 'print' && $dump_file) Utils::delete_files($filenames);
         }
         catch(Exception $e) {
             $path_to_output_file = null;
@@ -1061,7 +1061,7 @@ class Receipt {
         }
         finally {
             // Delete residual files
-            // Utils::delete_files($filenames);
+            Utils::delete_files($filenames);
             return ['status' => $path_to_output_file !== null, 'data' => $path_to_output_file, 'message' => $err_message];
         }
     }
