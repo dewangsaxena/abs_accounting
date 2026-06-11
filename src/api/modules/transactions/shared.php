@@ -1654,4 +1654,17 @@ class Shared {
         }
         return $total_cogs;
     }
+
+    /**
+     * This method will send pdf file to browser.
+     * 
+     * @param file
+     */
+    public static function send_pdf_file_to_browser(string $file) {
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: inline;');
+        header('Content-Length: ' . filesize($file));
+        readfile($file);
+        exit;
+    }
 }

@@ -321,13 +321,7 @@ class CustomerStatement {
             Utils::delete_files($txn_filenames);
 
             // Output to browser
-            if($dump_file == false) {
-                header('Content-Type: application/pdf');
-                header('Content-Disposition: inline;');
-                header('Content-Length: ' . filesize($temp_dir_attached_csf));
-                readfile($temp_dir_attached_csf);
-                exit;
-            }
+            if($dump_file == false) Shared::send_pdf_file_to_browser($temp_dir_attached_csf);
 
             return $customer_statement_filename;
         }
