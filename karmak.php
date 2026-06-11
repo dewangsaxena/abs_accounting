@@ -125,7 +125,7 @@ function generate_new_store_inventory_file(int $store_id) {
         $items_details[$identifier]['is_discount_disabled'] = $is_discount_disabled;
     }
 
-    $file_handle = fopen('delta_inventory.csv', 'w');
+    $file_handle = fopen(StoreDetails::STORE_DETAILS[$store_id]['name']. '_inventory.csv' , 'w');
 
     fputcsv($file_handle, [
                 'Line Abbreviation',
@@ -680,5 +680,5 @@ function extract_accounts_receivables_file_for_store(int $store_id) : void {
 
 }
 
-extract_accounts_receivables_file_for_store(StoreDetails::EDMONTON);
+// extract_accounts_receivables_file_for_store(StoreDetails::EDMONTON);
 
