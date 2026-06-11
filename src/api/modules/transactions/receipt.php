@@ -1037,7 +1037,8 @@ class Receipt {
             $receipt_details = PrepareDetails_Receipts::fetch_record_by_id($receipt_id);
 
             // Generate
-            GeneratePDF::receipt($receipt_details, $filenames[0], $dump_file);
+            // Dump File will always be true because we are using GhostScript to Combine PDF.
+            GeneratePDF::receipt($receipt_details, $filenames[0], true);
 
             // This is the output filename
             $receipt_filename = "receipt-$receipt_id-$random_token.pdf";
