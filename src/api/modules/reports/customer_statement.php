@@ -307,16 +307,27 @@ class CustomerStatement {
 
             $txn_filenames = [$customer_statement_filename.'.pdf', ...$txn_filenames];
 
+            // Dump File
+            // We will dump file here because we are using GhostScript to combine PDF, irrespective of whether we are sending
+            // the document to Browser or in email.
+            // Whether we send in email or to the browser will be determined by dump_file flag.
+            $customer_statement_filename = 'customer_statement_'. Utils::generate_token(8). '_'.strtolower(Utils::convert_date_to_human_readable($till_date, '_')). '.pdf';            
+            $temp_dir_attached_csf = TEMP_DIR . $customer_statement_filename;
+            
             // Merge PDF
-            $merge_object = Utils::merge_pdfs($txn_filenames);
+            Utils::merge_pdfs($txn_filenames, $temp_dir_attached_csf);
 
             // Delete Files
             Utils::delete_files($txn_filenames);
 
-            // Output Single File
-            // Generate a new Filename
-            if($dump_file) $customer_statement_filename = 'customer_statement_'. Utils::generate_token(8). '_'.strtolower(Utils::convert_date_to_human_readable($till_date, '_')). '.pdf';
-            $merge_object -> output($dump_file ? TEMP_DIR. $customer_statement_filename : null);
+            // Output to browser
+            if($dump_file == false) {
+                header('Content-Type: application/pdf');
+                header('Content-Disposition: inline;');
+                header('Content-Length: ' . filesize($temp_dir_attached_csf));
+                readfile($temp_dir_attached_csf);
+                exit;
+            }
 
             return $customer_statement_filename;
         }
