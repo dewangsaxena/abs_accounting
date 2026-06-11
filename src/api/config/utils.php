@@ -249,11 +249,20 @@ class Utils {
     /**
      * This method will merge pdf and return merge pdf instance.
      * @param filenames
+     * @param output_file
+     * 
      * @return FPDF_Merge Object 
      */
-    public static function merge_pdfs(array $filenames): FPDF_Merge {
+    public static function merge_pdfs(array $filenames, string $output_file=''): FPDF_Merge {
         $merge_pdf = new FPDF_Merge();
-        foreach($filenames as $filename) $merge_pdf -> add(TEMP_DIR. $filename);
+
+        $combine_pdf_command = "gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -sOutputFile=$output_file ";
+        foreach($filenames as $filename) {
+            // $merge_pdf -> add(TEMP_DIR. $filename);
+            $combine_pdf_command .= TEMP_DIR. $filename. ' ';
+        }
+
+        shell_exec($combine_pdf_command);
 
         // Return Merge PDF Object
         return $merge_pdf;
