@@ -53,11 +53,11 @@ function read_line_code_from_delta($filename) {
     return $items_details;
 }
 
-// read_line_code_from_calgary("{$_SERVER['DOCUMENT_ROOT']}/calgary_line_code.csv");
-// $items_details = read_line_code_from_delta("{$_SERVER['DOCUMENT_ROOT']}/delta_line_code.csv");
-// print_r($items_details);
+read_line_code_from_calgary("{$_SERVER['DOCUMENT_ROOT']}/calgary_line_code.csv");
+$items_details = read_line_code_from_delta("{$_SERVER['DOCUMENT_ROOT']}/edmonton_line_code.csv");
+// print_r($items_details);die;
 
-function generate_new_store_inventory_file(int $store_id) {
+function generate_inventory_file(int $store_id) {
     global $items_details;
     $db = get_db_instance();
 
@@ -172,7 +172,7 @@ function generate_new_store_inventory_file(int $store_id) {
     fclose($file_handle);
 }
 
-// generate_new_delta_inventory_file(StoreDetails::DELTA);
+generate_inventory_file(StoreDetails::EDMONTON);die;
 
 function extract_transaction_records_of_clients(int $store_id, string $table_name) {
     $db = get_db_instance();
