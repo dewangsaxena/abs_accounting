@@ -180,7 +180,7 @@ function generate_inventory_file(int $store_id) {
     fclose($file_handle);
 }
 
-generate_inventory_file(StoreDetails::EDMONTON);die;
+// generate_inventory_file(StoreDetails::EDMONTON);die;
 
 function extract_transaction_records_of_clients(int $store_id, string $table_name) {
     $db = get_db_instance();
@@ -690,3 +690,54 @@ function extract_accounts_receivables_file_for_store(int $store_id) : void {
 
 // extract_accounts_receivables_file_for_store(StoreDetails::EDMONTON);
 
+function extract_quotation_manual_mode(int $store_id) {
+    $db = get_db_instance();
+
+    $statement = $db -> prepare(<<<'EOS'
+    SELECT 
+        *
+    FROM
+        quotation
+    WHERE 
+        store_id = :store_id;
+    EOS);
+    $statement -> execute([':store_id' => $store_id]);
+
+    $quotations = $statement -> fetchAll(PDO::FETCH_ASSOC);
+
+    $file_handle = fopen("quotations_$store_id.csv", 'w');
+    fputcsv($file_handle, [
+        'InvoiceNumber',
+        'CustomerID',
+        'PaymentMethod',
+        'DeliveryMethod',
+        'Supplier',
+        'PartNumber',
+        'MiscellaneousCharge',
+        'Action',
+        'Quantity',
+        'Price',
+    ]);
+    foreach($quotations as $q) {
+        $items = json_decode($q['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+
+        foreach($items as $i) {
+            $row = [
+                    $q['id'],
+                    $q['client_id'],
+                    'Charge',
+                    'Local Pickup / Ramassage',
+                    '',
+                    $i['identifier'],
+                    '',
+                    'Sale',
+                    $i['quantity'],
+                    $i['pricePerItem'],
+            ];
+            fputcsv($file_handle,$row,);
+        }  
+    }
+    fclose($file_handle);
+}
+
+extract_quotation_manual_mode(StoreDetails::EDMONTON);
