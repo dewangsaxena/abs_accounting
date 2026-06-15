@@ -25,6 +25,7 @@ function read_line_code_from_calgary($filename) {
                 'quantity' => 0, 
                 'description' => $d[1],
                 'buyingCost' => 0,
+                'sellingPrice' => 0,
                 'min' => 0,
                 'max' => 0,
                 'value' => 0,
@@ -44,6 +45,7 @@ function read_line_code_from_delta($filename) {
                 'quantity' => 0, 
                 'description' => $d[1],
                 'buyingCost' => 0,
+                'sellingPrice' => 0,
                 'min' => 0,
                 'max' => 0,
                 'value' => 0,
@@ -53,11 +55,11 @@ function read_line_code_from_delta($filename) {
     return $items_details;
 }
 
-// read_line_code_from_calgary("{$_SERVER['DOCUMENT_ROOT']}/calgary_line_code.csv");
-// $items_details = read_line_code_from_delta("{$_SERVER['DOCUMENT_ROOT']}/delta_line_code.csv");
-// print_r($items_details);
+read_line_code_from_calgary("{$_SERVER['DOCUMENT_ROOT']}/calgary_line_code.csv");
+$items_details = read_line_code_from_delta("{$_SERVER['DOCUMENT_ROOT']}/edmonton_line_code.csv");
+// print_r($items_details);die;
 
-function generate_new_store_inventory_file(int $store_id) {
+function generate_inventory_file(int $store_id) {
     global $items_details;
     $db = get_db_instance();
 
@@ -99,6 +101,7 @@ function generate_new_store_inventory_file(int $store_id) {
                 'quantity' => 0, 
                 'description' => $i['description'],
                 'buyingCost' => 0,
+                'sellingPrice' => 0,
                 'min' => 0,
                 'max' => 0,
                 'value' => 0,
@@ -106,7 +109,10 @@ function generate_new_store_inventory_file(int $store_id) {
         }
         $items_details[$identifier]['quantity'] = $i['quantity'] ?? 0;
         if(isset($reorder_quantity[$store_id])) $items_details[$identifier]['min'] = $reorder_quantity[$store_id];
-        if(isset($prices[$store_id])) $items_details[$identifier]['buyingCost'] = Utils::round($prices[$store_id]['buyingCost'], 2);
+        if(isset($prices[$store_id])) {
+            $items_details[$identifier]['buyingCost'] = Utils::round($prices[$store_id]['buyingCost'], 2);
+            $items_details[$identifier]['sellingPrice'] = Utils::round($prices[$store_id]['sellingPrice'], 2);
+        }
         $items_details[$identifier]['value'] = Utils::round($items_details[$identifier]['buyingCost'] * $items_details[$identifier]['quantity'], 2);
 
         $items_details[$identifier]['code'] = $i['code'];
@@ -125,7 +131,7 @@ function generate_new_store_inventory_file(int $store_id) {
         $items_details[$identifier]['is_discount_disabled'] = $is_discount_disabled;
     }
 
-    $file_handle = fopen('delta_inventory.csv', 'w');
+    $file_handle = fopen(StoreDetails::STORE_DETAILS[$store_id]['name']. '_inventory.csv' , 'w');
 
     fputcsv($file_handle, [
                 'Line Abbreviation',
@@ -134,6 +140,7 @@ function generate_new_store_inventory_file(int $store_id) {
                 'Part Number Description',
                 'Supplier',
                 'Store Cost',
+                'Selling Price', /* This is not part of the official template */
                 'Unit of measure',
                 'Quantity on Hand',
                 'Current Minium Stocked (MIN)',
@@ -155,6 +162,7 @@ function generate_new_store_inventory_file(int $store_id) {
                 $i['description'],
                 '',
                 $i['buyingCost'],
+                $i['sellingPrice'], /* TO BE REMOVED LATER */
                 'Each',
                 $i['quantity'],
                 $i['min'],
@@ -172,7 +180,7 @@ function generate_new_store_inventory_file(int $store_id) {
     fclose($file_handle);
 }
 
-// generate_new_delta_inventory_file(StoreDetails::DELTA);
+// generate_inventory_file(StoreDetails::EDMONTON);die;
 
 function extract_transaction_records_of_clients(int $store_id, string $table_name) {
     $db = get_db_instance();
@@ -471,3 +479,265 @@ function extract_client_details(int $store_id) {
 }
 
 // extract_client_details(StoreDetails::DELTA);
+
+function extract_accounts_receivables_file_for_store(int $store_id) : void {
+    $db = get_db_instance();
+
+    $ar_records = [];
+    $client_lists = [];
+
+    $statement_fetch_invoice = $db -> prepare(<<<'EOS'
+    SELECT 
+        `id`, 
+        `client_id`,
+        `date`,
+        `po`,
+        `payment_method`,
+        `credit_amount`
+    FROM 
+        `sales_invoice` 
+    WHERE 
+        `credit_amount` != 0.0 
+    AND
+        `store_id` = :store_id
+    EOS);
+    $statement_fetch_invoice -> execute([':store_id' => $store_id]);
+    $records = $statement_fetch_invoice -> fetchAll(PDO::FETCH_ASSOC);
+
+    foreach($records as $r) {
+        $date = date_create($r['date']);
+        date_add($date, date_interval_create_from_date_string('30 days'));
+        $payment_date = date_format($date, 'Y-m-d');
+
+        $client_lists []= $r['client_id'];
+        $ar_records []= [
+            $store_id,
+            $r['date'],
+            $r['id'],
+            $store_id,
+            $r['client_id'],
+            'Net 30 Days from Inv.',
+            $payment_date,
+            $r['credit_amount'],
+            '__COMPANY_NAME__',
+            '',
+            '',
+            '__PAYMENT_METHOD__',
+        ];
+    }
+
+    $statement_fetch_returns = $db -> prepare(<<<'EOS'
+    SELECT 
+        `id`, 
+        `client_id`,
+        `date`,
+        `po`,
+        `payment_method`,
+        `credit_amount`
+    FROM 
+        `sales_return` 
+    WHERE 
+        `credit_amount` != 0.0 
+    AND
+        `store_id` = :store_id
+    EOS);
+    $statement_fetch_returns -> execute([':store_id' => $store_id]);
+    $records = $statement_fetch_returns -> fetchAll(PDO::FETCH_ASSOC);
+
+    foreach($records as $r) {
+        $date = date_create($r['date']);
+        date_add($date, date_interval_create_from_date_string('30 days'));
+        $payment_date = date_format($date, 'Y-m-d');
+        
+        $client_lists []= $r['client_id'];
+        $ar_records []= [
+            $store_id,
+            $r['date'],
+            $r['id'],
+            $store_id,
+            $r['client_id'],
+            'Net 30 Days from Inv.',
+            $payment_date,
+            -$r['credit_amount'],
+            '__COMPANY_NAME__',
+            '',
+            '',
+            '__PAYMENT_METHOD__',
+        ];
+    }
+
+    $statement_fetch_cn = $db -> prepare(<<<'EOS'
+    SELECT 
+        `id`, 
+        `client_id`,
+        `date`,
+        `credit_amount`
+    FROM 
+        `credit_note` 
+    WHERE 
+        `credit_amount` != 0.0 
+    AND
+        `store_id` = :store_id
+    EOS);
+    $statement_fetch_cn -> execute([':store_id' => $store_id]);
+    $records = $statement_fetch_cn -> fetchAll(PDO::FETCH_ASSOC);
+
+    foreach($records as $r) {
+        $date = date_create($r['date']);
+        date_add($date, date_interval_create_from_date_string('30 days'));
+        $payment_date = date_format($date, 'Y-m-d');
+        $client_lists []= $r['client_id'];
+        $ar_records []= [
+            $store_id,
+            $r['date'],
+            $r['id'],
+            $store_id,
+            $r['client_id'],
+            'Net 30 Days from Inv.',
+            $payment_date,
+            -$r['credit_amount'],
+            '__COMPANY_NAME__',
+            '',
+            '',
+            '__PAYMENT_METHOD__',
+        ];
+    }
+
+    $statement_fetch_dn = $db -> prepare(<<<'EOS'
+    SELECT 
+        `id`, 
+        `client_id`,
+        `date`,
+        `credit_amount`
+    FROM 
+        `debit_note` 
+    WHERE 
+        `credit_amount` != 0.0 
+    AND
+        `store_id` = :store_id
+    EOS);
+    $statement_fetch_dn -> execute([':store_id' => $store_id]);
+    $records = $statement_fetch_dn -> fetchAll(PDO::FETCH_ASSOC);
+
+    foreach($records as $r) {
+        $date = date_create($r['date']);
+        date_add($date, date_interval_create_from_date_string('30 days'));
+        $payment_date = date_format($date, 'Y-m-d');
+        $client_lists []= $r['client_id'];
+        $ar_records []= [
+            $store_id,
+            $r['date'],
+            $r['id'],
+            $store_id,
+            $r['client_id'],
+            'Net 30 Days from Inv.',
+            $payment_date,
+            $r['credit_amount'],
+            '__COMPANY_NAME__',
+            '',
+            '',
+            '__PAYMENT_METHOD__',
+        ];
+        break;
+    }
+
+    // Fetch Client Details
+    $client_lists = array_unique($client_lists);
+
+    $query = <<<'EOS'
+    SELECT
+        `id`, 
+        `name`,
+        `default_receipt_payment_method`
+    FROM
+        `clients`
+    WHERE
+        id IN (:placeholder);
+    EOS;
+
+    $ret_value = Utils::mysql_in_placeholder_pdo_substitute($client_lists, $query);
+    $client_lists = $ret_value['values'];
+    $query = $ret_value['query'];
+    $statement_fetch_client = $db -> prepare($query);
+    $statement_fetch_client -> execute($client_lists);
+    $client_lists = $statement_fetch_client -> fetchAll(PDO::FETCH_ASSOC);
+
+    $client_data = [];
+    foreach($client_lists as $c) {
+        $client_data [$c['id']] = [
+            'name' => $c['name'],
+            'payment_method' => PaymentMethod::DEBIT_PAYMENT_METHODS[$c['default_receipt_payment_method']],
+        ];
+    }
+
+    $file_handle = fopen("ar_$store_id.csv", 'w');
+
+    $count = count($ar_records);
+    for($i = 0; $i < $count; ++$i) {
+        $client_id = $ar_records[$i][4];
+        if(isset(Client::SELF_CLIENT_WHITELIST[$client_id])) {
+            continue;
+        }
+        $ar_records[$i][8] = $client_data[$client_id]['name'];
+        $ar_records[$i][11] = $client_data[$client_id]['payment_method'];
+
+        fputcsv($file_handle, $ar_records[$i]);
+    }
+
+    fclose($file_handle);
+
+}
+
+// extract_accounts_receivables_file_for_store(StoreDetails::EDMONTON);
+
+function extract_quotation_manual_mode(int $store_id) {
+    $db = get_db_instance();
+
+    $statement = $db -> prepare(<<<'EOS'
+    SELECT 
+        *
+    FROM
+        quotation
+    WHERE 
+        store_id = :store_id;
+    EOS);
+    $statement -> execute([':store_id' => $store_id]);
+
+    $quotations = $statement -> fetchAll(PDO::FETCH_ASSOC);
+
+    $file_handle = fopen("quotations_$store_id.csv", 'w');
+    fputcsv($file_handle, [
+        'InvoiceNumber',
+        'CustomerID',
+        'PaymentMethod',
+        'DeliveryMethod',
+        'Supplier',
+        'PartNumber',
+        'MiscellaneousCharge',
+        'Action',
+        'Quantity',
+        'Price',
+    ]);
+    foreach($quotations as $q) {
+        $items = json_decode($q['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+
+        foreach($items as $i) {
+            $row = [
+                    $q['id'],
+                    $q['client_id'],
+                    'Charge',
+                    'Local Pickup / Ramassage',
+                    '',
+                    $i['identifier'],
+                    '',
+                    'Sale',
+                    $i['quantity'],
+                    $i['pricePerItem'],
+            ];
+            fputcsv($file_handle,$row,);
+        }  
+    }
+    fclose($file_handle);
+}
+
+extract_quotation_manual_mode(StoreDetails::EDMONTON);
