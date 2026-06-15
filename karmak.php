@@ -25,6 +25,7 @@ function read_line_code_from_calgary($filename) {
                 'quantity' => 0, 
                 'description' => $d[1],
                 'buyingCost' => 0,
+                'sellingPrice' => 0,
                 'min' => 0,
                 'max' => 0,
                 'value' => 0,
@@ -44,6 +45,7 @@ function read_line_code_from_delta($filename) {
                 'quantity' => 0, 
                 'description' => $d[1],
                 'buyingCost' => 0,
+                'sellingPrice' => 0,
                 'min' => 0,
                 'max' => 0,
                 'value' => 0,
@@ -99,6 +101,7 @@ function generate_inventory_file(int $store_id) {
                 'quantity' => 0, 
                 'description' => $i['description'],
                 'buyingCost' => 0,
+                'sellingPrice' => 0,
                 'min' => 0,
                 'max' => 0,
                 'value' => 0,
@@ -106,7 +109,10 @@ function generate_inventory_file(int $store_id) {
         }
         $items_details[$identifier]['quantity'] = $i['quantity'] ?? 0;
         if(isset($reorder_quantity[$store_id])) $items_details[$identifier]['min'] = $reorder_quantity[$store_id];
-        if(isset($prices[$store_id])) $items_details[$identifier]['buyingCost'] = Utils::round($prices[$store_id]['buyingCost'], 2);
+        if(isset($prices[$store_id])) {
+            $items_details[$identifier]['buyingCost'] = Utils::round($prices[$store_id]['buyingCost'], 2);
+            $items_details[$identifier]['sellingPrice'] = Utils::round($prices[$store_id]['sellingPrice'], 2);
+        }
         $items_details[$identifier]['value'] = Utils::round($items_details[$identifier]['buyingCost'] * $items_details[$identifier]['quantity'], 2);
 
         $items_details[$identifier]['code'] = $i['code'];
@@ -134,6 +140,7 @@ function generate_inventory_file(int $store_id) {
                 'Part Number Description',
                 'Supplier',
                 'Store Cost',
+                'Selling Price', /* This is not part of the official template */
                 'Unit of measure',
                 'Quantity on Hand',
                 'Current Minium Stocked (MIN)',
@@ -155,6 +162,7 @@ function generate_inventory_file(int $store_id) {
                 $i['description'],
                 '',
                 $i['buyingCost'],
+                $i['sellingPrice'], /* TO BE REMOVED LATER */
                 'Each',
                 $i['quantity'],
                 $i['min'],
