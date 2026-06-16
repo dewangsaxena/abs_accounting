@@ -2207,12 +2207,16 @@ class Inventory {
             $item_details = json_decode($si['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
 
             foreach($item_details as $item) {
-                $item_id = $item['identifier'];
+                $item_id = $item['itemId'];
                 if(isset($items_sold[$item_id]) === false) {
-                    $items_sold[$item_id] = 0;
+                    $items_sold[$item_id] = [
+                        'identifier' => $item['identifier'],
+                        'description' => $item['description'],
+                        'quantity' => 0,
+                    ];
                 }
 
-                $items_sold[$item_id] += $item['quantity'];
+                $items_sold[$item_id]['quantity'] += $item['quantity'];
             }
         }
 
@@ -2220,8 +2224,11 @@ class Inventory {
             $item_details = json_decode($sr['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
 
             foreach($item_details as $item) {
-                $item_id = $item['identifier'];
+                $item_id = $item['itemId'];
                 if(isset($items_sold[$item_id]) === false) continue;
+
+                // Deduct Quantity Returned
+                $items_sold[$item_id]['quantity'] -= $item['quantity'];
             }
         }
         return $items_sold;
