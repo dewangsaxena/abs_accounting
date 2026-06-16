@@ -1702,9 +1702,10 @@ class Inventory {
         $fp = fopen('inventory_list.csv', 'w');
         fputcsv($fp, ['Identifier', 'Description', 'Quantity', 'Price / Item', 'Value']);
         foreach($details as $item) {
-            $buying_cost = Utils::round($item['buying_cost']);
+            $buying_cost = $item['buying_cost'];
             $quantity = $item['quantity'];
             $value = Utils::round($buying_cost * $quantity);
+            $buying_cost = Utils::round($buying_cost);
             fputcsv($fp, [$item['identifier'], $item['description'], $quantity, $buying_cost, $value]);
         }
         fclose($fp);
