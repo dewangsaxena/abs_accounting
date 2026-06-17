@@ -293,17 +293,20 @@ class CustomerStatement {
                 $details, 
                 $customer_statement_filename, 
                 generate_record: $generate_record_of_all_txn, 
-                generate_file: $attach_transactions || $dump_file
-            );
+                generate_file: true,
+            );    
 
-            $txn_records = [];
-            foreach($transaction_records as $txn) {
-                $txn_records[]= ['type' => $txn['txn_type'], 'id' => $txn['txn_id']];
+            $txn_filenames = [];
+            if($attach_transactions == true) {
+                $txn_records = [];
+                foreach($transaction_records as $txn) {
+                    $txn_records[]= ['type' => $txn['txn_type'], 'id' => $txn['txn_id']];
+                }
+
+                $txn_filenames = Shared::generate_pdf($txn_records, true);
+                if($txn_filenames['status'] === false) throw new Exception('Unable to Generate Transaction Files.');
+                else $txn_filenames = $txn_filenames['data'];
             }
-
-            $txn_filenames = Shared::generate_pdf($txn_records, true);
-            if($txn_filenames['status'] === false) throw new Exception('Unable to Generate Transaction Files.');
-            else $txn_filenames = $txn_filenames['data'];
 
             $txn_filenames = [$customer_statement_filename.'.pdf', ...$txn_filenames];
 

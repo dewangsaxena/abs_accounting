@@ -1053,7 +1053,8 @@ class Shared {
         foreach($txn_queue as $txn) {
 
             $output_filename = trim(self::TABLE_NAME_INDEX[$txn['type']]);
-            $filename = "{$output_filename}_{$txn['id']}.pdf";
+            $unique_token = Utils::generate_token(8);
+            $filename = "{$output_filename}_{$txn['id']}_$unique_token.pdf";
 
             // Transaction Details
             $transaction_details = self::fetch_transaction_for_pdf($txn['id'], $txn['type'], $txn['version'] ?? null);
@@ -1665,6 +1666,7 @@ class Shared {
         header('Content-Disposition: inline;');
         header('Content-Length: ' . filesize($file));
         readfile($file);
+        unlink($file);
         exit;
     }
 }

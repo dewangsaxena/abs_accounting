@@ -31,3 +31,6 @@ proxy.js
 
 # .csv
 *.csv
+
+# TMP
+tmp/*
