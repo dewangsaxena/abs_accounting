@@ -293,17 +293,20 @@ class CustomerStatement {
                 $details, 
                 $customer_statement_filename, 
                 generate_record: $generate_record_of_all_txn, 
-                generate_file: $attach_transactions || $dump_file
-            );
+                generate_file: true,
+            );    
 
-            $txn_records = [];
-            foreach($transaction_records as $txn) {
-                $txn_records[]= ['type' => $txn['txn_type'], 'id' => $txn['txn_id']];
+            $txn_filenames = [];
+            if($attach_transactions == true) {
+                $txn_records = [];
+                foreach($transaction_records as $txn) {
+                    $txn_records[]= ['type' => $txn['txn_type'], 'id' => $txn['txn_id']];
+                }
+
+                $txn_filenames = Shared::generate_pdf($txn_records, true);
+                if($txn_filenames['status'] === false) throw new Exception('Unable to Generate Transaction Files.');
+                else $txn_filenames = $txn_filenames['data'];
             }
-
-            $txn_filenames = Shared::generate_pdf($txn_records, true);
-            if($txn_filenames['status'] === false) throw new Exception('Unable to Generate Transaction Files.');
-            else $txn_filenames = $txn_filenames['data'];
 
             $txn_filenames = [$customer_statement_filename.'.pdf', ...$txn_filenames];
 
@@ -317,11 +320,11 @@ class CustomerStatement {
             // Merge PDF
             Utils::merge_pdfs($txn_filenames, $temp_dir_attached_csf);
 
-            // Delete Files
-            Utils::delete_files($txn_filenames);
-
             // Output to browser
             if($dump_file == false) Shared::send_pdf_file_to_browser($temp_dir_attached_csf);
+
+            // Delete Files
+            Utils::delete_files($txn_filenames);
 
             return $customer_statement_filename;
         }
