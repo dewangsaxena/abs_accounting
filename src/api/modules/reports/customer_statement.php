@@ -320,11 +320,11 @@ class CustomerStatement {
             // Merge PDF
             Utils::merge_pdfs($txn_filenames, $temp_dir_attached_csf);
 
-            // Output to browser
-            if($dump_file == false) Shared::send_pdf_file_to_browser($temp_dir_attached_csf);
-
             // Delete Files
             Utils::delete_files($txn_filenames);
+
+            // Output to browser
+            if($dump_file == false) Shared::send_pdf_file_to_browser($temp_dir_attached_csf);
 
             return $customer_statement_filename;
         }
