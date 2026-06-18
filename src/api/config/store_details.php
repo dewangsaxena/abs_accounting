@@ -20,7 +20,7 @@ class StoreDetails {
     public const SASKATOON = 9;
 
     // Business Name
-    public const BUSINESS_NAME = [WASH => 'ABS TRUCK WASH AND LUBE LTD.', PARTS =>'ABS TRUCK & TRAILER PARTS LTD.'][SYSTEM_INIT_MODE];
+    public const BUSINESS_NAME = [WASH => 'ABS TRUCK WASH AND LUBE LTD.', PARTS =>'ABS TRUCK & TRAILERS PARTS LTD.'][SYSTEM_INIT_MODE];
 
     // Salvage Parts Store Details
     public const SALVAGE_PARTS_STORE_DETAILS = [
