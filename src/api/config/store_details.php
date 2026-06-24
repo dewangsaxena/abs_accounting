@@ -347,7 +347,7 @@ class StoreDetails {
                 'email_id' => 'ABSPARTS.TRACTION.DELTA@GMAIL.COM',
                 'checks' => [
                     'payable_to' => 'ABS TRUCK AND TRAILER PARTS BC LTD.',
-                    'address' => '7351 PROGRESS PLACE, DELTA, BRITISH COLUMBIA, V4G 1A1',
+                    'address' => '8380 RIVER RD, DELTA, BRITISH COLUMBIA, V4G 1B5',
                 ],
             ],
             'cipher_key' => 'K(|;Q7cKYnb~ZMa/6^67pb{}(bWm2/s5',

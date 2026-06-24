@@ -854,7 +854,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         // Message
         self::$pdf -> Cell(w:10, h:4, txt: '');
         self::$pdf -> SetFont(self::ARIAL, 'BUI', 10);
-        self::$pdf -> Cell(w: 0, h:4, txt: "*** {$details['company_name']} NOW OPEN 7 DAYS A WEEK ***", border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
+        self::$pdf -> Cell(w: 0, h:4, txt: "*** {$details['company_name']} OPEN 7 DAYS A WEEK ***", border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
 
         // Padding 
         self::$pdf -> Cell(w: 0, h: 2, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
