@@ -2015,6 +2015,36 @@ class Inventory {
     }
 
     /**
+     * Generate Dead Stock Inventory CSV.
+     * 
+     * @param item_details
+     */
+    private static function generate_dead_stock_inventory(array $item_details) {
+        $file_handle = fopen(Utils::generate_token(4).'.csv', 'w') ;
+        fputcsv($file_handle, [
+                'Identifier',
+                'Description',
+                'Last Sold',
+                'Quantity',
+                'Buying Cost',
+                'Value'
+        ]);
+
+        $dead_stock = $item_details['dead_stock'];
+        foreach($dead_stock as $item) {
+            fputcsv($file_handle, [
+                $item['identifier'],
+                $item['description'],
+                $item['last_sold'],
+                $item['quantity'],
+                $item['buying_cost'],
+                $item['value'],
+            ]);
+        }
+        fclose($file_handle);
+    }
+
+    /**
      * This method will generate dead inventory stock.
      * @param store_id
      * @param month
@@ -2034,6 +2064,7 @@ class Inventory {
         float $max_cost_of_each_item = 0,
         int $min_qty_dead_stock = 0,
         int $max_qty_dead_stock = 0,
+        int $is_csv = 0,
     ): void {
         $inventory_details = self::get_dead_inventory(
             $store_id, 
@@ -2044,13 +2075,16 @@ class Inventory {
             $min_qty_dead_stock,
             $max_qty_dead_stock,
         );
-        GeneratePDF::generate_dead_inventory_list(
-            $inventory_details, 
-            $store_id, 
-            $month,
-            $year,
-            $include_last_sold_for_all_stores,
-        );
+        if($is_csv !== 0) self::generate_dead_stock_inventory($inventory_details);
+        else {
+            GeneratePDF::generate_dead_inventory_list(
+                $inventory_details, 
+                $store_id, 
+                $month,
+                $year,
+                $include_last_sold_for_all_stores,
+            );
+        }
     }
 
     /**
