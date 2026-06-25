@@ -91,8 +91,8 @@ if (isset($_GET['action'])) {
                 intval($_GET['maxCostOfEachItem'] ?? 0),
                 intval($_GET['minQtyDeadStock'] ?? 0),
                 intval($_GET['maxQtyDeadStock'] ?? 0),
+                intval($_GET['isCSV'] ?? 0),
             );
-            die;
         }
     }
     else if($action === 'fetch_item_sold_report' && is_numeric($_GET['storeId'] ?? null) && is_numeric($_GET['year'] ?? null)) {
