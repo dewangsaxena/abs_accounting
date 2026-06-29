@@ -182,7 +182,7 @@ function generate_inventory_file(int $store_id) {
 
 // generate_inventory_file(StoreDetails::EDMONTON);die;
 
-function extract_transaction_records_of_clients(int $store_id, string $table_name) {
+function extract_transaction_records_of_clients(int $store_id, string $table_name, string $from_date) {
     $db = get_db_instance();
     $clients = Client::fetch_clients_of_store($store_id);
 
@@ -203,7 +203,7 @@ function extract_transaction_records_of_clients(int $store_id, string $table_nam
         AND 
             t.store_id = :store_id 
         AND 
-            t.`date` >= '2023-01-01' 
+            t.`date` >= :from_date 
         ORDER BY `id`, `date` ASC;
         EOS;
     }
@@ -215,6 +215,7 @@ function extract_transaction_records_of_clients(int $store_id, string $table_nam
     $results = Utils::mysql_in_placeholder_pdo_substitute(array_keys($clients), $query);
     $query = $results['query'];
     $values = $results['values'];
+    $values[':from_date'] = $from_date;
     $values[':store_id'] = $store_id;
     $statement = $db -> prepare($query);
     $is_successful = $statement -> execute($values);
