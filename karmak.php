@@ -741,4 +741,71 @@ function extract_quotation_manual_mode(int $store_id) {
     fclose($file_handle);
 }
 
-extract_quotation_manual_mode(StoreDetails::EDMONTON);
+function extract_default_item_margins(int $store_id) {
+    $db = get_db_instance();
+    $clients = Client::fetch_clients_of_store($store_id);
+
+    $items_statement = $db -> prepare('SELECT id, identifier FROM items;');
+    $items_statement -> execute();
+    $items_record = $items_statement -> fetchAll(PDO::FETCH_ASSOC);
+    $items = [];
+    foreach($items_record as $item) $items[$item['id']] = $item['identifier'];
+
+    $query = <<<'EOS'
+    SELECT 
+        `name`,
+        `standard_profit_margins`,
+        `custom_selling_price_for_items`
+    FROM 
+        clients 
+    WHERE
+        id IN (:placeholder);
+    EOS;
+
+    $client_keys = array_keys($clients);
+    $ret = Utils::mysql_in_placeholder_pdo_substitute($client_keys, $query);
+    $statement = $db -> prepare($ret['query']);
+    $statement -> execute($ret['values']);
+
+    $file_handle = fopen('client_prices.csv', 'w');
+    fputcsv($file_handle, ['Client', 'Standard Profit Margin', 'Custom Selling Price for Items']);
+
+    $details = $statement -> fetchAll(PDO::FETCH_ASSOC);
+    foreach($details as $client) {
+        if($client['standard_profit_margins'] == '[]' && $client['custom_selling_price_for_items'] == '[]') continue;
+        
+        $standard_profit_margins_filtered = [];
+        $standard_profit_margins = json_decode($client['standard_profit_margins'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+        if(isset($standard_profit_margins[$store_id])) {
+            $standard_profit_margins = $standard_profit_margins[$store_id];
+            $keys = array_keys($standard_profit_margins);
+            foreach($keys as $key) {
+                if($standard_profit_margins[$key] != 0) {
+                    $standard_profit_margins_filtered[$key] = $standard_profit_margins[$key];
+                }
+            }
+        }
+
+        $custom_selling_price_for_items = json_decode($client['custom_selling_price_for_items'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+        $custom_items = [];
+        if(isset($custom_selling_price_for_items[$store_id])) {
+            $custom_selling_price_for_items = $custom_selling_price_for_items[$store_id];
+        
+            $custom_item_keys = array_keys($custom_selling_price_for_items);
+            foreach($custom_item_keys as $key) {
+                $custom_items[$items[intval($key)]] = $custom_selling_price_for_items[$key];
+            }
+        }
+
+        fputcsv($file_handle, [
+            $client['name'],
+            json_encode($standard_profit_margins_filtered), 
+            json_encode($custom_items),
+        ]);
+    }
+
+    fclose($file_handle);
+}
+
+extract_default_item_margins(StoreDetails::EDMONTON);
+// extract_quotation_manual_mode(StoreDetails::EDMONTON);
