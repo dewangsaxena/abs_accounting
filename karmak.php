@@ -502,7 +502,7 @@ function extract_accounts_receivables_file_for_store(int $store_id) : void {
     FROM 
         `sales_invoice` 
     WHERE 
-        `credit_amount` != 0.0 
+        `credit_amount` > 0.0 
     AND
         `store_id` = :store_id
     EOS);
@@ -542,7 +542,7 @@ function extract_accounts_receivables_file_for_store(int $store_id) : void {
     FROM 
         `sales_return` 
     WHERE 
-        `credit_amount` != 0.0 
+        `credit_amount` > 0.0 
     AND
         `store_id` = :store_id
     EOS);
@@ -580,7 +580,7 @@ function extract_accounts_receivables_file_for_store(int $store_id) : void {
     FROM 
         `credit_note` 
     WHERE 
-        `credit_amount` != 0.0 
+        `credit_amount` > 0.0 
     AND
         `store_id` = :store_id
     EOS);
@@ -617,7 +617,7 @@ function extract_accounts_receivables_file_for_store(int $store_id) : void {
     FROM 
         `debit_note` 
     WHERE 
-        `credit_amount` != 0.0 
+        `credit_amount` > 0.0 
     AND
         `store_id` = :store_id
     EOS);
