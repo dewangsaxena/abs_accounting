@@ -690,7 +690,7 @@ function extract_accounts_receivables_file_for_store(int $store_id) : void {
     fclose($file_handle);
 }
 
-extract_accounts_receivables_file_for_store(StoreDetails::EDMONTON);die;
+extract_accounts_receivables_file_for_store(StoreDetails::CALGARY);die;
 
 // [DATA]: QUOTATIONS
 function extract_quotation_manual_mode(int $store_id) {
