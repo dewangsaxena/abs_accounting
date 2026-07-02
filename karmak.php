@@ -722,6 +722,7 @@ function extract_quotation_manual_mode(int $store_id) {
         'Action',
         'Quantity',
         'Price',
+        'Comments',
     ]);
     foreach($quotations as $q) {
         $items = json_decode($q['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
@@ -738,6 +739,7 @@ function extract_quotation_manual_mode(int $store_id) {
                     'Sale',
                     $i['quantity'],
                     $i['pricePerItem'],
+                    $i['notes'],
             ];
             fputcsv($file_handle,$row,);
         }  
