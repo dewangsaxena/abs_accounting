@@ -680,10 +680,7 @@ function extract_accounts_receivables_file_for_store(int $store_id) : void {
     $count = count($ar_records);
     for($i = 0; $i < $count; ++$i) {
         $client_id = $ar_records[$i][4];
-        if(isset(Client::SELF_CLIENT_WHITELIST[$client_id])) {
-            continue;
-        }
-
+        if(isset(Client::SELF_CLIENT_WHITELIST[$client_id])) continue;
         if(isset(SpecialExceptions::CUSTOMER_AGED_SUMMARY_CLIENT_EXCLUSIONS[SYSTEM_INIT_HOST][$client_id])) continue;
 
         $ar_records[$i][8] = $client_data[$client_id]['name'];
