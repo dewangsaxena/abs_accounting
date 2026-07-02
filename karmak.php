@@ -683,6 +683,9 @@ function extract_accounts_receivables_file_for_store(int $store_id) : void {
         if(isset(Client::SELF_CLIENT_WHITELIST[$client_id])) {
             continue;
         }
+
+        if(isset(SpecialExceptions::CUSTOMER_AGED_SUMMARY_CLIENT_EXCLUSIONS[SYSTEM_INIT_HOST][$client_id])) continue;
+
         $ar_records[$i][8] = $client_data[$client_id]['name'];
         $ar_records[$i][11] = $client_data[$client_id]['payment_method'];
 
@@ -693,7 +696,7 @@ function extract_accounts_receivables_file_for_store(int $store_id) : void {
 
 }
 
-// extract_accounts_receivables_file_for_store(StoreDetails::CALGARY);die;
+extract_accounts_receivables_file_for_store(StoreDetails::EDMONTON);die;
 
 // [DATA]: QUOTATIONS
 function extract_quotation_manual_mode(int $store_id) {
