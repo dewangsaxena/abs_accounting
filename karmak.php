@@ -55,8 +55,8 @@ function read_line_code_from_delta($filename) {
     return $items_details;
 }
 
-// read_line_code_from_calgary("{$_SERVER['DOCUMENT_ROOT']}/calgary_line_code.csv");
-// $items_details = read_line_code_from_delta("{$_SERVER['DOCUMENT_ROOT']}/edmonton_line_code.csv");
+read_line_code_from_calgary("{$_SERVER['DOCUMENT_ROOT']}/calgary_line_code.csv");
+$items_details = read_line_code_from_delta("{$_SERVER['DOCUMENT_ROOT']}/edmonton_line_code.csv");
 // print_r($items_details);die;
 
 // [DATA]: INVENTORY
@@ -281,8 +281,9 @@ function extract_transaction_records_of_clients(int $store_id, string $table_nam
 
 }
 
-// extract_transaction_records_of_clients(StoreDetails::EDMONTON, 'debit_note');die;
+// extract_transaction_records_of_clients(StoreDetails::EDMONTON, 'sales_invoice', '');die;
 
+// [DATA]: CLIENT DETAILS
 function extract_client_details(int $store_id) {
     $fields = [
         'CustomerNumber',
@@ -481,7 +482,7 @@ function extract_client_details(int $store_id) {
     fclose($file_handle);
 }
 
-// extract_client_details(StoreDetails::DELTA);
+// extract_client_details(StoreDetails::EDMONTON);die;
 
 // [DATA]: ACCOUNTS RECEIVABLES / OPEN RECEIVABLES
 function extract_accounts_receivables_file_for_store(int $store_id) : void {
@@ -746,7 +747,7 @@ function extract_quotation_manual_mode(int $store_id) {
     fclose($file_handle);
 }
 
-extract_quotation_manual_mode(StoreDetails::EDMONTON);die;
+// extract_quotation_manual_mode(StoreDetails::EDMONTON);die;
 
 function extract_default_item_margins(int $store_id) {
     $db = get_db_instance();
