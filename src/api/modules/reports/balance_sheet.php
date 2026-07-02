@@ -165,6 +165,9 @@ class BalanceSheetActions {
 
         // Accounts Receivables
         $record[1230] = 0;
+
+        // Karmak
+        $record[1200] = 340365.97;
         $accounts_receivables_accounts = [1200, 1205,];
         foreach($accounts_receivables_accounts as $account) {
             $record[1230] += $record[$account];

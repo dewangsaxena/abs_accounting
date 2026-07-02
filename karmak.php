@@ -281,7 +281,7 @@ function extract_transaction_records_of_clients(int $store_id, string $table_nam
 
 }
 
-// extract_transaction_records_of_clients(StoreDetails::CALGARY, 'sales_invoice', '2025-01-01');die;
+// extract_transaction_records_of_clients(StoreDetails::CALGARY, 'credit_note', '2025-01-01');die;
 
 // [DATA]: CLIENT DETAILS
 function extract_client_details(int $store_id) {
@@ -690,7 +690,7 @@ function extract_accounts_receivables_file_for_store(int $store_id) : void {
     fclose($file_handle);
 }
 
-extract_accounts_receivables_file_for_store(StoreDetails::CALGARY);die;
+// extract_accounts_receivables_file_for_store(StoreDetails::CALGARY);die;
 
 // [DATA]: QUOTATIONS
 function extract_quotation_manual_mode(int $store_id) {
