@@ -523,7 +523,7 @@ function extract_accounts_receivables_file_for_store(int $store_id) : void {
             $r['client_id'],
             'Net 30 Days from Inv.',
             $payment_date,
-            Utils::round($r['credit_amount']),
+            ($r['credit_amount']),
             '__COMPANY_NAME__',
             '',
             '',
@@ -563,7 +563,7 @@ function extract_accounts_receivables_file_for_store(int $store_id) : void {
             $r['client_id'],
             'Net 30 Days from Inv.',
             $payment_date,
-            Utils::round(-$r['credit_amount']),
+            (-$r['credit_amount']),
             '__COMPANY_NAME__',
             '',
             '',
@@ -600,7 +600,7 @@ function extract_accounts_receivables_file_for_store(int $store_id) : void {
             $r['client_id'],
             'Net 30 Days from Inv.',
             $payment_date,
-            Utils::round(-$r['credit_amount']),
+            (-$r['credit_amount']),
             '__COMPANY_NAME__',
             '',
             '',
@@ -637,13 +637,12 @@ function extract_accounts_receivables_file_for_store(int $store_id) : void {
             $r['client_id'],
             'Net 30 Days from Inv.',
             $payment_date,
-            Utils::round($r['credit_amount']),
+            ($r['credit_amount']),
             '__COMPANY_NAME__',
             '',
             '',
             '__PAYMENT_METHOD__',
         ];
-        break;
     }
 
     // Fetch Client Details
@@ -688,9 +687,7 @@ function extract_accounts_receivables_file_for_store(int $store_id) : void {
 
         fputcsv($file_handle, $ar_records[$i]);
     }
-
     fclose($file_handle);
-
 }
 
 extract_accounts_receivables_file_for_store(StoreDetails::EDMONTON);die;
