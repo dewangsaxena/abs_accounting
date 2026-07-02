@@ -211,7 +211,7 @@ function extract_transaction_records_of_clients(int $store_id, string $table_nam
     }
     else {
         $is_credit_or_debit = false;
-        $query = "SELECT * FROM $table_name WHERE client_id IN (:placeholder) AND store_id = :store_id AND `date` >= '2023-01-01' ORDER BY `id`, `date` ASC;";
+        $query = "SELECT * FROM $table_name WHERE client_id IN (:placeholder) AND store_id = :store_id AND `date` >= :from_date ORDER BY `id`, `date` ASC;";
     }
 
     $results = Utils::mysql_in_placeholder_pdo_substitute(array_keys($clients), $query);
@@ -281,7 +281,7 @@ function extract_transaction_records_of_clients(int $store_id, string $table_nam
 
 }
 
-// extract_transaction_records_of_clients(StoreDetails::EDMONTON, 'sales_invoice', '');die;
+extract_transaction_records_of_clients(StoreDetails::EDMONTON, 'sales_invoice', '2025-01-01');die;
 
 // [DATA]: CLIENT DETAILS
 function extract_client_details(int $store_id) {
