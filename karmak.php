@@ -726,7 +726,6 @@ function extract_quotation_manual_mode(int $store_id) {
     ]);
     foreach($quotations as $q) {
         $items = json_decode($q['details'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
-
         foreach($items as $i) {
             $row = [
                     $q['id'],
@@ -739,13 +738,15 @@ function extract_quotation_manual_mode(int $store_id) {
                     'Sale',
                     $i['quantity'],
                     $i['pricePerItem'],
-                    $i['notes'],
+                    $q['notes']
             ];
             fputcsv($file_handle,$row,);
         }  
     }
     fclose($file_handle);
 }
+
+extract_quotation_manual_mode(StoreDetails::EDMONTON);die;
 
 function extract_default_item_margins(int $store_id) {
     $db = get_db_instance();
