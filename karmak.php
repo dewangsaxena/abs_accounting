@@ -281,7 +281,7 @@ function extract_transaction_records_of_clients(int $store_id, string $table_nam
 
 }
 
-extract_transaction_records_of_clients(StoreDetails::EDMONTON, 'sales_invoice', '2025-01-01');die;
+// extract_transaction_records_of_clients(StoreDetails::CALGARY, 'sales_invoice', '2025-01-01');die;
 
 // [DATA]: CLIENT DETAILS
 function extract_client_details(int $store_id) {
@@ -675,7 +675,7 @@ function extract_accounts_receivables_file_for_store(int $store_id) : void {
         ];
     }
 
-    $file_handle = fopen("ar_$store_id.csv", 'w');
+    $file_handle = fopen(StoreDetails::STORE_DETAILS[$store_id]['name'].'_ar.csv', 'w');
 
     $count = count($ar_records);
     for($i = 0; $i < $count; ++$i) {
@@ -693,7 +693,7 @@ function extract_accounts_receivables_file_for_store(int $store_id) : void {
 
 }
 
-// extract_accounts_receivables_file_for_store(StoreDetails::EDMONTON);die;
+// extract_accounts_receivables_file_for_store(StoreDetails::CALGARY);die;
 
 // [DATA]: QUOTATIONS
 function extract_quotation_manual_mode(int $store_id) {
@@ -711,7 +711,7 @@ function extract_quotation_manual_mode(int $store_id) {
 
     $quotations = $statement -> fetchAll(PDO::FETCH_ASSOC);
 
-    $file_handle = fopen("quotations_$store_id.csv", 'w');
+    $file_handle = fopen(StoreDetails::STORE_DETAILS[$store_id]['name'].'_quotations.csv', 'w');
     fputcsv($file_handle, [
         'InvoiceNumber',
         'CustomerID',
@@ -747,7 +747,7 @@ function extract_quotation_manual_mode(int $store_id) {
     fclose($file_handle);
 }
 
-// extract_quotation_manual_mode(StoreDetails::EDMONTON);die;
+extract_quotation_manual_mode(StoreDetails::EDMONTON);die;
 
 function extract_default_item_margins(int $store_id) {
     $db = get_db_instance();
