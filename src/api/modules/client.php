@@ -1440,6 +1440,10 @@ class Client {
         $clients_details = [];
         foreach($clients as $client) {
             $id = $client['id'];
+
+            // Remove Self Clients.
+            if(isset(Client::SELF_CLIENT_WHITELIST[$id])) continue;
+
             $email_id = $client['email_id'];
 
             // Validate Email
