@@ -482,7 +482,7 @@ function extract_client_details(int $store_id) {
     fclose($file_handle);
 }
 
-extract_client_details(StoreDetails::EDMONTON);die;
+extract_client_details(StoreDetails::DELTA);die;
 
 // [DATA]: ACCOUNTS RECEIVABLES / OPEN RECEIVABLES
 function extract_accounts_receivables_file_for_store(int $store_id) : void {
