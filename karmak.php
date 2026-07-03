@@ -368,7 +368,7 @@ function extract_client_details(int $store_id) {
         'SeparateCoreInvoice',
     ];
 
-    $file_handle = fopen('client_details.csv', 'w+');
+    $file_handle = fopen(StoreDetails::STORE_DETAILS[$store_id]['name'].'_client_details.csv', 'w+');
 
     fputcsv($file_handle, $fields);
 
@@ -482,7 +482,7 @@ function extract_client_details(int $store_id) {
     fclose($file_handle);
 }
 
-// extract_client_details(StoreDetails::EDMONTON);die;
+extract_client_details(StoreDetails::EDMONTON);die;
 
 // [DATA]: ACCOUNTS RECEIVABLES / OPEN RECEIVABLES
 function extract_accounts_receivables_file_for_store(int $store_id) : void {
