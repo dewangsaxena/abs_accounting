@@ -225,7 +225,7 @@ function extract_transaction_records_of_clients(int $store_id, string $table_nam
 
     $transaction_records = $statement -> fetchAll(PDO::FETCH_ASSOC);
 
-    $file_handle = fopen("edmonton_$table_name.csv", 'w');
+    $file_handle = fopen(StoreDetails::STORE_DETAILS[$store_id]['name']."_$table_name.csv", 'w');
     fputcsv($file_handle, [
                 'BranchCode',
                 'Customer',
@@ -281,7 +281,7 @@ function extract_transaction_records_of_clients(int $store_id, string $table_nam
 
 }
 
-// extract_transaction_records_of_clients(StoreDetails::CALGARY, 'credit_note', '2025-01-01');die;
+extract_transaction_records_of_clients(StoreDetails::EDMONTON, 'debit_note', '2025-01-01');die;
 
 // [DATA]: CLIENT DETAILS
 function extract_client_details(int $store_id) {
@@ -482,7 +482,7 @@ function extract_client_details(int $store_id) {
     fclose($file_handle);
 }
 
-extract_client_details(StoreDetails::DELTA);die;
+// extract_client_details(StoreDetails::DELTA);die;
 
 // [DATA]: ACCOUNTS RECEIVABLES / OPEN RECEIVABLES
 function extract_accounts_receivables_file_for_store(int $store_id) : void {
@@ -690,7 +690,7 @@ function extract_accounts_receivables_file_for_store(int $store_id) : void {
     fclose($file_handle);
 }
 
-// extract_accounts_receivables_file_for_store(StoreDetails::CALGARY);die;
+// extract_accounts_receivables_file_for_store(StoreDetails::EDMONTON);die;
 
 // [DATA]: QUOTATIONS
 function extract_quotation_manual_mode(int $store_id) {
@@ -744,7 +744,7 @@ function extract_quotation_manual_mode(int $store_id) {
     fclose($file_handle);
 }
 
-extract_quotation_manual_mode(StoreDetails::CALGARY);die;
+extract_quotation_manual_mode(StoreDetails::EDMONTON);die;
 
 function extract_default_item_margins(int $store_id) {
     $db = get_db_instance();
@@ -812,5 +812,4 @@ function extract_default_item_margins(int $store_id) {
     fclose($file_handle);
 }
 
-extract_default_item_margins(StoreDetails::EDMONTON);
-// extract_quotation_manual_mode(StoreDetails::EDMONTON);
+// extract_default_item_margins(StoreDetails::EDMONTON);

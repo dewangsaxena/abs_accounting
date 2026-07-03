@@ -115,7 +115,7 @@ function fix_inventory_value(int $store_id): void {
     }
 }
 $store_id = StoreDetails::EDMONTON;
-// fix_inventory_value($store_id);
+fix_inventory_value($store_id);die;
 // echo generate_list($store_id, false);
 // $report_data = Inventory::fetch_item_quantity_sold_by_prefix('PAI', StoreDetails::DELTA, '2022-01-01', '2027-01-01');
 // Inventory::generate_quantity_report_of_item_sold('pai_inventory_sold.csv', $report_data);
