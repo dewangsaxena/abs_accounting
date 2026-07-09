@@ -2405,7 +2405,7 @@ const TransactionHeaderDetails = ({
                         />}
                       </Box>
                   )}
-                  {type === TRANSACTION_TYPES["SI"] && (
+                  {(type === TRANSACTION_TYPES["SI"] || type === TRANSACTION_TYPES["SR"]) && (
                     <Box width="100%">
                       <HStack width="100%">
                         <Box width="25%">
