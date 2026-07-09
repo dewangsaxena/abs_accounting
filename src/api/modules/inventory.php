@@ -343,11 +343,11 @@ class Inventory {
             // Current store
             $store_id = $_SESSION['store_id'];
 
-            // Check cutoff
-            Utils::check_cutoff_for_traction($store_id);
-
             // Create DB Instance
             $db = get_db_instance();
+
+            // Check cutoff
+            Utils::check_cutoff_for_traction($store_id);
 
             // Begin Transaction
             $db->beginTransaction();
@@ -669,8 +669,15 @@ class Inventory {
     public static function update_profit_margins(array $data): array {
         $db = get_db_instance();
         try {
+
+            // Store Id
+            $store_id = $_SESSION['store_id'];
+
+            // Check cutoff date
+            Utils::check_cutoff_for_traction($store_id);
+
             // Begin transaction
-            $db->beginTransaction();
+            $db -> beginTransaction();
 
             // Profit Margins
             $profit_margins = $data['profitMargins'] ?? [];
@@ -704,7 +711,7 @@ class Inventory {
             // Params
             $params = [
                 ':profit_margins' => json_encode($profit_margins, JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR),
-                ':store_id' => $_SESSION['store_id'],
+                ':store_id' => $store_id,
                 ':last_modified_timestamp' => $data['lastModifiedTimestamp'],
             ];
 

@@ -705,6 +705,9 @@ class Client {
             // Store Id
             $store_id = intval($_SESSION['store_id']);
 
+            // Check cutoff
+            Utils::check_cutoff_for_traction($store_id);
+
             // Custom Selling Price
             $custom_selling_price_for_items = self::remove_redundant_details_for_custom_pricing($data['customSellingPriceForItems'] ?? [], $store_id);
 
