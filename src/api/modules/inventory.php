@@ -120,6 +120,10 @@ class Inventory {
      * @return array
      */
     private static function add(PDO &$db, array $values, int $initial_quantity, float $buying_cost): array {
+
+        // Store id 
+        $store_id = intval($_SESSION['store_id']);
+
         $query = <<<'EOS'
         INSERT INTO
             items
@@ -189,9 +193,6 @@ class Inventory {
                 ],
             ];
 
-            // Store id 
-            $store_id = intval($_SESSION['store_id']);
-
             // Adjust Inventory
             $ret = self::adjust_inventory($params, $store_id, $db);
             if ($ret['status'] === true) return ['status' => true];
@@ -206,6 +207,10 @@ class Inventory {
      * @return array
      */
     private static function update(PDO &$db, array $values): array {
+
+        // Store ID
+        $store_id = intval($_SESSION['store_id']);
+
         // Item Id 
         $item_id = $values[':id'];
 
@@ -222,9 +227,6 @@ class Inventory {
         // Check for Price Change
         $old_prices = json_decode($record[0]['prices'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
         $new_prices = json_decode($values[':prices'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
-
-        // Store ID
-        $store_id = intval($_SESSION['store_id']);
 
         // If Prices does not exists for Store Id
         // Use 0 as base value.
@@ -340,6 +342,9 @@ class Inventory {
         try {
             // Current store
             $store_id = $_SESSION['store_id'];
+
+            // Check cutoff
+            Utils::check_cutoff_for_traction($store_id);
 
             // Create DB Instance
             $db = get_db_instance();
@@ -1049,6 +1054,10 @@ class Inventory {
         // Create Transaction
         if ($details === null) return ['status' => false, 'message' => 'Invalid Request.'];
         try {
+
+            // Check cutoff
+            Utils::check_cutoff_for_traction($store_id);
+
             // New DB Connection
             $is_new_db_connection = $db === null;
 

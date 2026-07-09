@@ -656,6 +656,9 @@ class SalesReturn {
             // Store ID
             $store_id = $validated_details['store_id'];
 
+            // Check cutoff
+            Utils::check_cutoff_for_traction($store_id);
+
             // [DEBUG_START]
             Debug::set_current_inventory_value('old_inventory_value', $db, $store_id);
             // [DEBUG_END]
@@ -1138,6 +1141,9 @@ class SalesReturn {
 
             // Store ID
             $store_id = $validated_details['store_id'];
+
+            // Check cutoff
+            Utils::check_cutoff_for_traction($store_id);
 
             // [DEBUG_START]
             Debug::$data['cogs'] = 0;

@@ -285,6 +285,9 @@ class Receipt {
             $client_last_modified_timestamp = $data['clientLastModifiedTimestamp'];
             $date = Utils::get_business_date($store_id);
 
+            // Check cutoff
+            Utils::check_cutoff_for_traction($store_id);
+
             // Check for Fresh Copy of Client.
             Client::check_fresh_copy_of_client($client_id, $client_last_modified_timestamp, $db);
 
@@ -444,6 +447,9 @@ class Receipt {
                 Utils::convert_utc_str_timestamp_to_localtime($data['date'], $store_id)
             );
 
+            // Check cutoff
+            Utils::check_cutoff_for_traction($store_id);
+
             // Cash Payment Disabled
             if($payment_method === PaymentMethod::CASH) throw new Exception('Cash payment method has been disabled.');
             
@@ -566,6 +572,9 @@ class Receipt {
 
             // Store Id 
             $store_id = $receipt_details['storeId'];
+
+            // Check cutoff
+            Utils::check_cutoff_for_traction($store_id);
 
             // Date 
             $date = $receipt_details['date'];
