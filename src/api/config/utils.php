@@ -496,5 +496,21 @@ class Utils {
         else http_response_code(404);
         exit;
     }
+
+    /**
+     * This method will check cutoff date for traction.
+     * 
+     * @param store_id
+     * @throws Exception
+     */
+    public static function check_cutoff_for_traction(int $store_id): void {
+        if(MAKE_SYSTEM_READONLY_AFTER_DATE === null) return;
+
+        // Get Date
+        $cutoff_date = MAKE_SYSTEM_READONLY_AFTER_DATE[$store_id] ?? null;
+        if($cutoff_date === null) return;
+
+        if(self::get_business_date($store_id) >= $cutoff_date) throw new Exception('Cannot process due to System cutoff. Create Quotation Instead.');
+    }
 }
 ?>

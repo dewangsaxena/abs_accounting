@@ -36,6 +36,9 @@ class CreditNote {
             // Store ID
             $store_id = $validated_details['store_id'];
 
+            // Check cutoff
+            Utils::check_cutoff_for_traction($store_id);
+
             // Check for Balance Due
             Shared::allow_balance_due_check_for_client($client_id, $store_id);
 
@@ -249,6 +252,9 @@ class CreditNote {
 
             // Store ID
             $store_id = $validated_details['store_id'];
+
+            // Check cutoff
+            Utils::check_cutoff_for_traction($store_id);
 
             // Check for Balance Due
             Shared::allow_balance_due_check_for_client($client_id, $store_id);

@@ -488,6 +488,9 @@ class SalesInvoice {
             // Store ID
             $store_id = $validated_details['store_id'];
 
+            // Check cutoff
+            Utils::check_cutoff_for_traction($store_id);
+
             // Client Id 
             $client_id = $validated_details['client_id'];
 
@@ -825,6 +828,9 @@ class SalesInvoice {
 
             // Store Id 
             $store_id = $details['store_id'];
+
+            // Check cutoff
+            Utils::check_cutoff_for_traction($store_id);
 
             // [DEBUG_START]
             Debug::$data['cogs'] = 0;
