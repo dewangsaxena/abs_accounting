@@ -268,7 +268,7 @@ define('CHECK_TRANSACTION_DATE', SYSTEM_INIT_HOST === __TEN_LEASING__ ? 5 : 2);
 
 // Make System Readonly After Date
 define('MAKE_SYSTEM_READONLY_AFTER_DATE', SYSTEM_INIT_HOST === PARTS_HOST ? [
-    StoreDetails::EDMONTON => '2026-07-09',
+    StoreDetails::EDMONTON => '2026-07-16',
     StoreDetails::CALGARY => null,
     StoreDetails::DELTA => null,
 ] : null);
