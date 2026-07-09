@@ -265,4 +265,11 @@ define('DEFAULT_PROFIT_MARGIN_KEY', 'DEFAULT');
 
 // Check Transaction Date
 define('CHECK_TRANSACTION_DATE', SYSTEM_INIT_HOST === __TEN_LEASING__ ? 5 : 2);
+
+// Make System Readonly After Date
+define('MAKE_SYSTEM_READONLY_AFTER_DATE', [
+    StoreDetails::EDMONTON => '2026-07-08',
+    StoreDetails::CALGARY => '2026-07-08',
+    StoreDetails::DELTA => '2026-07-08',
+]);
 ?>
