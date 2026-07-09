@@ -959,6 +959,7 @@ class SalesReturn {
      * @param details
      * @param statement_adjust_inventory
      * @param store_id
+     * @param db
      */
     private static function revert_old_transaction(
         array &$bs_affected_accounts, 
