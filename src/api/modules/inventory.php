@@ -343,11 +343,11 @@ class Inventory {
             // Current store
             $store_id = $_SESSION['store_id'];
 
-            // Check cutoff
-            Utils::check_cutoff_for_traction($store_id);
-
             // Create DB Instance
             $db = get_db_instance();
+
+            // Check cutoff
+            Utils::check_cutoff_for_traction($store_id);
 
             // Begin Transaction
             $db->beginTransaction();
