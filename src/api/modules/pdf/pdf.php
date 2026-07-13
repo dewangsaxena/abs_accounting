@@ -13,6 +13,7 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/configurations.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/transactions/receipt.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/third_party/fpdf/fpdf.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/transactions/sales_return.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/pdf/pdf_traction.php";
 
 class __GeneratePDF_SI_SR_CN_DN_QT {
 
@@ -3593,7 +3594,10 @@ class GeneratePDF {
      * @return void 
      */
     public static function transaction(array $details, string $filename, bool $generate_file=false): void {
-        __GeneratePDF_SI_SR_CN_DN_QT::generate($details, TEMP_DIR. $filename, $generate_file);
+        if($details['timestamp'] >= MAKE_SYSTEM_READONLY_AFTER_DATE[$details['store_id']] && Utils::check_cutoff_for_traction($details['store_id'], true)) {
+            __GeneratePDF_SI_SR_CN_DN_QT_Traction::generate($details, TEMP_DIR. $filename, $generate_file);
+        }
+        else __GeneratePDF_SI_SR_CN_DN_QT::generate($details, TEMP_DIR. $filename, $generate_file);
     }
 
     /**
