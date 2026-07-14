@@ -512,8 +512,10 @@ class Utils {
         if($cutoff_timestamp === null) return false;
         
         // UTC Timestamp
-        $utc_timestamp = Utils::get_current_utc_unix_timestamp();
-        $current_timestamp = Utils::convert_to_local_timestamp_from_utc_unix_timestamp($utc_timestamp, $store_id);
+        $current_timestamp = Utils::convert_to_local_timestamp_from_utc_unix_timestamp(
+            Utils::get_current_utc_unix_timestamp(), 
+            $store_id
+        );
 
         if($current_timestamp >= $cutoff_timestamp) {
             if($do_return === false) throw new Exception('Cannot process due to System cutoff. Create Quotation Instead.');
