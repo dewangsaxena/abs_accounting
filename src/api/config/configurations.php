@@ -266,9 +266,9 @@ define('DEFAULT_PROFIT_MARGIN_KEY', 'DEFAULT');
 // Check Transaction Date
 define('CHECK_TRANSACTION_DATE', SYSTEM_INIT_HOST === __TEN_LEASING__ ? 5 : 2);
 
-// Make System Readonly After Date
-define('MAKE_SYSTEM_READONLY_AFTER_DATE', SYSTEM_INIT_HOST === PARTS_HOST ? [
-    StoreDetails::EDMONTON => '2026-07-16',
+// Make System Readonly After Timestamp
+define('MAKE_SYSTEM_READONLY_AFTER_TIMESTAMP', SYSTEM_INIT_HOST === PARTS_HOST ? [
+    StoreDetails::EDMONTON => '2026-07-15 06:00:00 PM MDT',
     StoreDetails::CALGARY => null,
     StoreDetails::DELTA => null,
 ] : null);

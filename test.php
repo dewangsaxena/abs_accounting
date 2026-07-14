@@ -990,7 +990,7 @@ function extract_transaction_records_of_clients(int $store_id, string $table_nam
 
 }
 
-extract_transaction_records_of_clients(StoreDetails::EDMONTON, 'debit_note');die;
+// extract_transaction_records_of_clients(StoreDetails::EDMONTON, 'debit_note');die;
 
 function extract_client_details(int $store_id) {
     $fields = [
@@ -1337,4 +1337,5 @@ function import_salvage() {
 }
 
 // import_salvage();
+echo Utils::convert_utc_str_timestamp_to_localtime('2026-07-14 22:56:07', StoreDetails::EDMONTON);
 ?>  
