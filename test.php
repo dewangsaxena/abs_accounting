@@ -1,5 +1,5 @@
 <?php 
-die;
+
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/utils.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/database.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_summary.php";
@@ -990,7 +990,7 @@ function extract_transaction_records_of_clients(int $store_id, string $table_nam
 
 }
 
-extract_transaction_records_of_clients(StoreDetails::EDMONTON, 'debit_note');die;
+// extract_transaction_records_of_clients(StoreDetails::EDMONTON, 'debit_note');die;
 
 function extract_client_details(int $store_id) {
     $fields = [
@@ -1337,4 +1337,12 @@ function import_salvage() {
 }
 
 // import_salvage();
+$utc_timestamp = Utils::get_current_utc_unix_timestamp();
+$current_time = Utils::convert_to_local_timestamp_from_utc_unix_timestamp($utc_timestamp, StoreDetails::EDMONTON);
+
+echo $current_time.'<br>';
+$cutoff_time = '2026-07-14 04:47:00 PM MDT';
+
+if($current_time < $cutoff_time) echo 'Time left to cutoff';
+else echo 'CUtoff reached';
 ?>  

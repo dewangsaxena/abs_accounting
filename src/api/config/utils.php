@@ -498,20 +498,24 @@ class Utils {
     }
 
     /**
-     * This method will check cutoff date for traction.
+     * This method will check cutoff timestamp for traction.
      * 
      * @param store_id
      * @return bool 
      * @throws Exception
      */
     public static function check_cutoff_for_traction(int $store_id, bool $do_return = false): bool {
-        if(MAKE_SYSTEM_READONLY_AFTER_DATE === null) return false;
+        if(MAKE_SYSTEM_READONLY_AFTER_TIMESTAMP === null) return false;
 
-        // Get Date
-        $cutoff_date = MAKE_SYSTEM_READONLY_AFTER_DATE[$store_id] ?? null;
-        if($cutoff_date === null) return false;
+        // Get Timestamp
+        $cutoff_timestamp = MAKE_SYSTEM_READONLY_AFTER_TIMESTAMP[$store_id] ?? null;
+        if($cutoff_timestamp === null) return false;
+        
+        // UTC Timestamp
+        $utc_timestamp = Utils::get_current_utc_unix_timestamp();
+        $current_timestamp = Utils::convert_to_local_timestamp_from_utc_unix_timestamp($utc_timestamp, $store_id);
 
-        if(self::get_business_date($store_id) >= $cutoff_date) {
+        if($current_timestamp >= $cutoff_timestamp) {
             if($do_return === false) throw new Exception('Cannot process due to System cutoff. Create Quotation Instead.');
             return true;
         }
