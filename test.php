@@ -1337,12 +1337,5 @@ function import_salvage() {
 }
 
 // import_salvage();
-$utc_timestamp = Utils::get_current_utc_unix_timestamp();
-$current_time = Utils::convert_to_local_timestamp_from_utc_unix_timestamp($utc_timestamp, StoreDetails::EDMONTON);
-
-echo $current_time.'<br>';
-$cutoff_time = '2026-07-14 04:47:00 PM MDT';
-
-if($current_time < $cutoff_time) echo 'Time left to cutoff';
-else echo 'CUtoff reached';
+echo Utils::convert_utc_str_timestamp_to_localtime('2026-07-14 22:56:07', StoreDetails::EDMONTON);
 ?>  
