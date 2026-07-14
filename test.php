@@ -1337,5 +1337,4 @@ function import_salvage() {
 }
 
 // import_salvage();
-echo Utils::convert_utc_str_timestamp_to_localtime('2026-07-14 22:56:07', StoreDetails::EDMONTON);
 ?>  
