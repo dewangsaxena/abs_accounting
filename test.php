@@ -1,5 +1,5 @@
 <?php 
-die;
+
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/utils.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/database.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_summary.php";
@@ -1337,4 +1337,6 @@ function import_salvage() {
 }
 
 // import_salvage();
+
+echo Utils::check_cutoff_for_traction(StoreDetails::EDMONTON, false);
 ?>  
