@@ -181,7 +181,7 @@ function generate_inventory_file(int $store_id) {
     fclose($file_handle);
 }
 
-generate_inventory_file(StoreDetails::EDMONTON);die;
+// generate_inventory_file(StoreDetails::EDMONTON);die;
 
 // [DATA]: SALES RECORD FROM TRANSACTIONS SUCH AS SALES INVOICE
 function extract_transaction_records_of_clients(int $store_id, string $table_name, string $from_date) {
@@ -281,7 +281,7 @@ function extract_transaction_records_of_clients(int $store_id, string $table_nam
 
 }
 
-extract_transaction_records_of_clients(StoreDetails::EDMONTON, 'debit_note', '2025-01-01');die;
+// extract_transaction_records_of_clients(StoreDetails::EDMONTON, 'sales_return', '2025-01-01');die;
 
 // [DATA]: CLIENT DETAILS
 function extract_client_details(int $store_id) {
@@ -482,7 +482,7 @@ function extract_client_details(int $store_id) {
     fclose($file_handle);
 }
 
-// extract_client_details(StoreDetails::DELTA);die;
+// extract_client_details(StoreDetails::EDMONTON);die;
 
 // [DATA]: ACCOUNTS RECEIVABLES / OPEN RECEIVABLES
 function extract_accounts_receivables_file_for_store(int $store_id) : void {
