@@ -744,7 +744,7 @@ function extract_quotation_manual_mode(int $store_id) {
     fclose($file_handle);
 }
 
-extract_quotation_manual_mode(StoreDetails::EDMONTON);die;
+// extract_quotation_manual_mode(StoreDetails::EDMONTON);die;
 
 function extract_default_item_margins(int $store_id) {
     $db = get_db_instance();

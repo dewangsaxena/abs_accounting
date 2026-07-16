@@ -1,5 +1,5 @@
 <?php 
-die;
+
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/utils.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/config/database.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_summary.php";
@@ -115,7 +115,7 @@ function fix_inventory_value(int $store_id): void {
     }
 }
 $store_id = StoreDetails::EDMONTON;
-fix_inventory_value($store_id);die;
+// fix_inventory_value($store_id);die;
 // echo generate_list($store_id, false);
 // $report_data = Inventory::fetch_item_quantity_sold_by_prefix('PAI', StoreDetails::DELTA, '2022-01-01', '2027-01-01');
 // Inventory::generate_quantity_report_of_item_sold('pai_inventory_sold.csv', $report_data);
