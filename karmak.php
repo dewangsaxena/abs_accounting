@@ -700,7 +700,7 @@ function extract_accounts_receivables_file_for_store(int $store_id) : void {
 // extract_accounts_receivables_file_for_store(StoreDetails::EDMONTON);die;
 
 // [DATA]: QUOTATIONS
-function extract_quotation_manual_mode(int $store_id, string $cutoff_utc_timestamp) {
+function extract_quotation_manual_mode(int $store_id, string $cutoff_utc_timestamp, string $till_date) {
     $db = get_db_instance();
 
     $statement = $db -> prepare(<<<'EOS'
@@ -712,8 +712,15 @@ function extract_quotation_manual_mode(int $store_id, string $cutoff_utc_timesta
         store_id = :store_id
     AND 
         created >= :created_
+    AND 
+        `date` <= :till_date;
     EOS);
-    $statement -> execute([':store_id' => $store_id, ':created_' => $cutoff_utc_timestamp]);
+    $statement -> execute([
+        ':store_id' => $store_id, 
+        ':created_' => $cutoff_utc_timestamp,
+        ':till_date' => $till_date,
+    ]
+    );
 
     $quotations = $statement -> fetchAll(PDO::FETCH_ASSOC);
 
@@ -753,7 +760,7 @@ function extract_quotation_manual_mode(int $store_id, string $cutoff_utc_timesta
     fclose($file_handle);
 }
 
-extract_quotation_manual_mode(StoreDetails::EDMONTON, '2026-07-16 00:00:00');die;
+extract_quotation_manual_mode(StoreDetails::EDMONTON, '2026-07-17 00:00:00', '2026-07-16');die;
 
 function extract_default_item_margins(int $store_id) {
     $db = get_db_instance();
