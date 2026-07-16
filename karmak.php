@@ -392,6 +392,12 @@ function extract_client_details(int $store_id) {
         }
         if($net_amount_due_within_days > 0) $payment_terms .= 'NET '. $net_amount_due_within_days. ' DAYS FROM INV.';
 
+        $region = [
+            StoreDetails::EDMONTON => 'AB',
+            StoreDetails::CALGARY => 'AB',
+            StoreDetails::DELTA => 'BC',
+        ][$store_id];
+
         // Last Purchase Date
         $last_purchase_date = json_decode($client['last_purchase_date'], true, flags: JSON_NUMERIC_CHECK)[$store_id];
         $record = [
@@ -409,10 +415,10 @@ function extract_client_details(int $store_id) {
             $client['street_1'],
             $client['street_2'],
             $client['city'],
-            'AB', // Region
+            $region, // Region
             $client['postal_code'],
             'Canada', // Country
-            'AB', // BillToTaxBody
+            $region, // BillToTaxBody
             $shipping_address['street1'] ?? '',
             $shipping_address['street2'] ?? '',
             $shipping_address['city'] ?? '',
