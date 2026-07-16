@@ -374,6 +374,12 @@ function extract_client_details(int $store_id) {
 
     $clients = Client::fetch_clients_of_store($store_id);
 
+    $region = [
+        StoreDetails::EDMONTON => 'AB',
+        StoreDetails::CALGARY => 'AB',
+        StoreDetails::DELTA => 'BC',
+    ][$store_id];
+
     foreach($clients as $client) {
         $shipping_address = json_decode($client['shipping_addresses'], true, flags: JSON_NUMERIC_CHECK);
         if(count($shipping_address) > 0) $shipping_address = $shipping_address[0];
@@ -391,12 +397,6 @@ function extract_client_details(int $store_id) {
             $payment_terms .= $early_payment_paid_within_days . ' - ';
         }
         if($net_amount_due_within_days > 0) $payment_terms .= 'NET '. $net_amount_due_within_days. ' DAYS FROM INV.';
-
-        $region = [
-            StoreDetails::EDMONTON => 'AB',
-            StoreDetails::CALGARY => 'AB',
-            StoreDetails::DELTA => 'BC',
-        ][$store_id];
 
         // Last Purchase Date
         $last_purchase_date = json_decode($client['last_purchase_date'], true, flags: JSON_NUMERIC_CHECK)[$store_id];
