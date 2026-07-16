@@ -759,7 +759,7 @@ function extract_quotation_manual_mode(int $store_id, string $cutoff_utc_timesta
     fclose($file_handle);
 }
 
-extract_quotation_manual_mode(StoreDetails::EDMONTON, '2026-07-17 00:00:00', '2026-07-16');die;
+extract_quotation_manual_mode(StoreDetails::EDMONTON, '2026-07-16 06:00:00', '2026-07-16');die;
 
 function extract_default_item_margins(int $store_id) {
     $db = get_db_instance();
