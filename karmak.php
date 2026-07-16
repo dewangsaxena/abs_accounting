@@ -398,8 +398,8 @@ function extract_client_details(int $store_id) {
             $client['id'], // CustomerNumber
             $client['id'], // FusionCustomerNumber
             $client['name'], // Company
-            7, // BaseBranch
-            7, // ControlBranch
+            $store_id, // BaseBranch
+            $store_id, // ControlBranch
             $client['is_inactive'], // InActive
             '', // PrimaryContactSalutation
             $client['contact_name'], // PrimaryContactFirstName
@@ -409,10 +409,10 @@ function extract_client_details(int $store_id) {
             $client['street_1'],
             $client['street_2'],
             $client['city'],
-            'BC', // Region
+            'AB', // Region
             $client['postal_code'],
             'Canada', // Country
-            'BC', // BillToTaxBody
+            'AB', // BillToTaxBody
             $shipping_address['street1'] ?? '',
             $shipping_address['street2'] ?? '',
             $shipping_address['city'] ?? '',
@@ -482,7 +482,7 @@ function extract_client_details(int $store_id) {
     fclose($file_handle);
 }
 
-// extract_client_details(StoreDetails::EDMONTON);die;
+extract_client_details(StoreDetails::EDMONTON);die;
 
 // [DATA]: ACCOUNTS RECEIVABLES / OPEN RECEIVABLES
 function extract_accounts_receivables_file_for_store(int $store_id) : void {
