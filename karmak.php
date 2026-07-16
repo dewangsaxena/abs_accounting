@@ -489,7 +489,7 @@ function extract_client_details(int $store_id) {
     fclose($file_handle);
 }
 
-extract_client_details(StoreDetails::EDMONTON);die;
+// extract_client_details(StoreDetails::EDMONTON);die;
 
 // [DATA]: ACCOUNTS RECEIVABLES / OPEN RECEIVABLES
 function extract_accounts_receivables_file_for_store(int $store_id) : void {
@@ -700,7 +700,7 @@ function extract_accounts_receivables_file_for_store(int $store_id) : void {
 // extract_accounts_receivables_file_for_store(StoreDetails::EDMONTON);die;
 
 // [DATA]: QUOTATIONS
-function extract_quotation_manual_mode(int $store_id) {
+function extract_quotation_manual_mode(int $store_id, string $cutoff_utc_timestamp) {
     $db = get_db_instance();
 
     $statement = $db -> prepare(<<<'EOS'
@@ -711,13 +711,13 @@ function extract_quotation_manual_mode(int $store_id) {
     WHERE 
         store_id = :store_id
     AND 
-        created >= 
+        created >= :created_
     EOS);
-    $statement -> execute([':store_id' => $store_id]);
+    $statement -> execute([':store_id' => $store_id, ':created_' => $cutoff_utc_timestamp]);
 
     $quotations = $statement -> fetchAll(PDO::FETCH_ASSOC);
 
-    $file_handle = fopen(StoreDetails::STORE_DETAILS[$store_id]['name'].'_quotations.csv', 'w');
+    $file_handle = fopen(StoreDetails::STORE_DETAILS[$store_id]['name'].'_temp_quotations.csv', 'w');
     fputcsv($file_handle, [
         'InvoiceNumber',
         'CustomerID',
@@ -753,7 +753,7 @@ function extract_quotation_manual_mode(int $store_id) {
     fclose($file_handle);
 }
 
-// extract_quotation_manual_mode(StoreDetails::EDMONTON);die;
+extract_quotation_manual_mode(StoreDetails::EDMONTON, '2026-07-16 00:00:00');die;
 
 function extract_default_item_margins(int $store_id) {
     $db = get_db_instance();
