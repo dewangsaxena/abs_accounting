@@ -26,6 +26,10 @@ class IncomeStatementActions {
         $begin_time = Utils::get_YYYY_mm_dd(Utils::convert_utc_str_timestamp_to_localtime($begin_time, StoreDetails::EDMONTON));
         $end_time = Utils::get_YYYY_mm_dd(Utils::convert_utc_str_timestamp_to_localtime($end_time, StoreDetails::EDMONTON));
 
+        // TODO 
+        $begin_time = '2025-06-01';
+        $end_time = '2026-07-16';
+
         // Fetch Income Statement
         $data = self::find_by_location($begin_time, $end_time, $locations_selected);
         if($data['status'] === false) return [];
@@ -437,6 +441,7 @@ class IncomeStatementActions {
             else $selected_store = $selected_stores[0];
         }
         $dates = json_decode($data['dates'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+
         $response = self::fetch_graph_data_points(
             $dates['startDate'],
             $dates['endDate'],
