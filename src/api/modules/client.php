@@ -1447,7 +1447,7 @@ class Client {
             $email_id = $client['email_id'];
 
             // Validate Email
-            if(is_string($email_id) && Validate::is_email_id($email_id) === false) continue;
+            // if(is_string($email_id) && Validate::is_email_id($email_id) === false) continue;
 
             if(isset($clients_details[$id]) == false) {
                 $clients_details[$id] = [

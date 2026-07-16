@@ -381,6 +381,7 @@ function extract_client_details(int $store_id) {
     ][$store_id];
 
     foreach($clients as $client) {
+
         $shipping_address = json_decode($client['shipping_addresses'], true, flags: JSON_NUMERIC_CHECK);
         if(count($shipping_address) > 0) $shipping_address = $shipping_address[0];
         else $shipping_address = null;
@@ -708,7 +709,9 @@ function extract_quotation_manual_mode(int $store_id) {
     FROM
         quotation
     WHERE 
-        store_id = :store_id;
+        store_id = :store_id
+    AND 
+        created >= 
     EOS);
     $statement -> execute([':store_id' => $store_id]);
 
