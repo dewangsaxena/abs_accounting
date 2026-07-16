@@ -719,8 +719,7 @@ function extract_quotation_manual_mode(int $store_id, string $cutoff_utc_timesta
         ':store_id' => $store_id, 
         ':created_' => $cutoff_utc_timestamp,
         ':till_date' => $till_date,
-    ]
-    );
+    ]);
 
     $quotations = $statement -> fetchAll(PDO::FETCH_ASSOC);
 
