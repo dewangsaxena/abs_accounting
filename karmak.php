@@ -281,7 +281,7 @@ function extract_transaction_records_of_clients(int $store_id, string $table_nam
 
 }
 
-extract_transaction_records_of_clients(StoreDetails::EDMONTON, 'debit_note', '2023-07-01');die;
+// extract_transaction_records_of_clients(StoreDetails::EDMONTON, 'debit_note', '2023-07-01');die;
 
 // [DATA]: CLIENT DETAILS
 function extract_client_details(int $store_id) {
