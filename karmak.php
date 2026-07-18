@@ -828,3 +828,5 @@ function extract_default_item_margins(int $store_id) {
 }
 
 // extract_default_item_margins(StoreDetails::EDMONTON);
+
+//  SELECT * FROM `clients` where id in (24695, 26048);
