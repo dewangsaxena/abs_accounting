@@ -1338,5 +1338,6 @@ function import_salvage() {
 
 // import_salvage();
 
-echo Utils::check_cutoff_for_traction(StoreDetails::EDMONTON, false);
+// echo Utils::check_cutoff_for_traction(StoreDetails::EDMONTON, false);
+Inventory::fetch_item_inventory_details_by_prefix(['GRO'], StoreDetails::EDMONTON);
 ?>  
