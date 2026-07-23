@@ -2489,6 +2489,7 @@ class Inventory {
 
     /**
      * This method will generate quantity report of item sold.
+     * @param filename
      * @param details
      */
     public static function generate_quantity_report_of_item_sold(string $filename, array $details): void {
@@ -2500,5 +2501,63 @@ class Inventory {
         }
 
         fclose($fp);
+    }
+
+    /**
+     * This method will fetch item inventory details by prefix.
+     * 
+     * @param prefix
+     * @param store_id
+     */
+    public static function fetch_item_inventory_details_by_prefix(array $prefix, int $store_id, string $filename): void {
+        $db = get_db_instance();
+        try {
+            $query = <<<'EOS'
+            SELECT 
+                i.`id`,
+                i.`identifier`,
+                i.`description`,
+                i.`prices`,
+                inv.`quantity`
+            FROM 
+                items AS i
+            LEFT JOIN 
+                inventory AS inv
+            ON 
+                i.id = inv.item_id
+            WHERE 
+                inv.`quantity` > 0 
+            AND
+                inv.`store_id` = :store_id 
+            AND 
+                (
+            EOS;
+            $i = 0;
+            $count = count($prefix);
+            for($i = 0; $i < $count; ++$i) $query .= ' `identifier` LIKE '. "'{$prefix[$i]}%' ". ($i != ($count - 1) ? ' OR ': '');
+            $query .= ');';
+
+            $statement = $db -> prepare($query);
+            $statement -> execute([':store_id' => $store_id]);
+            $inventory = $statement -> fetchAll(PDO::FETCH_ASSOC);
+
+            $file_handle = fopen($filename, 'w');
+            fputcsv($file_handle, ['Id', 'Item Identifier', 'Item Description', 'Quantity', 'Buying Cost', 'Selling Price', 'COGS Margin %', 'Profit Margin %']);
+            foreach($inventory as $i) { 
+                $prices = json_decode($i['prices'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+                if(isset($prices[$store_id]) === false) continue;
+
+                $buying_cost = $prices[$store_id]['buyingCost'];
+                $selling_price = $prices[$store_id]['sellingPrice'];
+
+                $cogs_margin = Utils::calculateCOGSMargin($selling_price, $buying_cost);
+                $profit_margin = Utils::calculateProfitMargin($selling_price, $buying_cost);
+                fputcsv($file_handle, [$i['id'], $i['identifier'], $i['description'], $i['quantity'], $buying_cost, $selling_price, $cogs_margin, $profit_margin]);
+            }
+            fclose($file_handle);
+        }
+        catch(Exception $e) {
+            print_r($e -> getMessage());
+        }
     }
 }
