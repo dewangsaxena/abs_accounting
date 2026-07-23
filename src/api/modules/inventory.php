@@ -2542,7 +2542,7 @@ class Inventory {
             $inventory = $statement -> fetchAll(PDO::FETCH_ASSOC);
 
             $file_handle = fopen($filename, 'w');
-            fputcsv($file_handle, ['Id', 'Item Identifier', 'Item Description', 'Quantity', 'COGS Margin %', 'Profit Margin %']);
+            fputcsv($file_handle, ['Id', 'Item Identifier', 'Item Description', 'Quantity', 'Buying Cost', 'Selling Price', 'COGS Margin %', 'Profit Margin %']);
             foreach($inventory as $i) { 
                 $prices = json_decode($i['prices'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
                 if(isset($prices[$store_id]) === false) continue;
@@ -2552,7 +2552,7 @@ class Inventory {
 
                 $cogs_margin = Utils::calculateCOGSMargin($selling_price, $buying_cost);
                 $profit_margin = Utils::calculateProfitMargin($selling_price, $buying_cost);
-                fputcsv($file_handle, [$i['id'], $i['identifier'], $i['description'], $i['quantity'], $cogs_margin, $profit_margin]);
+                fputcsv($file_handle, [$i['id'], $i['identifier'], $i['description'], $i['quantity'], $buying_cost, $selling_price, $cogs_margin, $profit_margin]);
             }
             fclose($file_handle);
         }
