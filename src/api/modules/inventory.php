@@ -2508,9 +2508,8 @@ class Inventory {
      * 
      * @param prefix
      * @param store_id
-     * @return array
      */
-    public static function fetch_item_inventory_details_by_prefix(array $prefix, int $store_id, string $filename): array {
+    public static function fetch_item_inventory_details_by_prefix(array $prefix, int $store_id, string $filename): void {
         $db = get_db_instance();
         try {
             $query = <<<'EOS'
@@ -2518,6 +2517,7 @@ class Inventory {
                 i.`id`,
                 i.`identifier`,
                 i.`description`,
+                i.`prices`,
                 inv.`quantity`
             FROM 
                 items AS i
@@ -2542,9 +2542,17 @@ class Inventory {
             $inventory = $statement -> fetchAll(PDO::FETCH_ASSOC);
 
             $file_handle = fopen($filename, 'w');
-            fputcsv($file_handle, ['Id', 'Item Identifier', 'Item Description', 'Quantity']);
+            fputcsv($file_handle, ['Id', 'Item Identifier', 'Item Description', 'Quantity', 'COGS Margin %', 'Profit Margin %']);
             foreach($inventory as $i) { 
-                fputcsv($file_handle, [$i['id'], $i['identifier'], $i['description'], $['quantity']]);
+                $prices = json_decode($i['prices'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+                if(isset($prices[$store_id]) === false) continue;
+
+                $buying_cost = $prices[$store_id]['buyingCost'];
+                $selling_price = $prices[$store_id]['sellingPrice'];
+
+                $cogs_margin = Utils::calculateCOGSMargin($selling_price, $buying_cost);
+                $profit_margin = Utils::calculateProfitMargin($selling_price, $buying_cost);
+                fputcsv($file_handle, [$i['id'], $i['identifier'], $i['description'], $i['quantity'], $cogs_margin, $profit_margin]);
             }
             fclose($file_handle);
         }
