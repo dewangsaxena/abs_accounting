@@ -193,7 +193,7 @@ function generate_inventory_file(int $store_id) {
     fclose($file_handle);
 }
 
-generate_inventory_file(StoreDetails::CALGARY);die;
+// generate_inventory_file(StoreDetails::CALGARY);die;
 
 // [DATA]: SALES RECORD FROM TRANSACTIONS SUCH AS SALES INVOICE
 function extract_transaction_records_of_clients(int $store_id, string $table_name, string $from_date) {
@@ -378,6 +378,7 @@ function extract_client_details(int $store_id) {
         'FordCustomerType',
         'IndustryType',
         'SeparateCoreInvoice',
+        'IndustryType',
     ];
 
     $file_handle = fopen(StoreDetails::STORE_DETAILS[$store_id]['name'].'_client_details.csv', 'w+');
@@ -449,7 +450,7 @@ function extract_client_details(int $store_id) {
             $client['phone_number_1'] ?? '', // PrimaryContactWorkPhone
             $client['phone_number_2'] ?? '', // PrimaryContactCellPhone
             $client['fax'] ?? '', // PrimaryContactFax
-            $client['email_id'],  // InvoiceEmailAddress
+            strlen($client['email_id']) > 0 ? ($client['email_id'].';'.StoreDetails::STORE_DETAILS[$store_id]['email']['bcc'][PARTS]) : '',  // InvoiceEmailAddress
             $client['additional_email_addresses'], // StatementEmailAddress
             $disable_federal_tax && $disable_provincial_tax ? 'Exempt': 'Taxable',  // TaxStatusDescription
             'Open', // AccountStatus
@@ -494,6 +495,8 @@ function extract_client_details(int $store_id) {
             '', // FordCustomerType
             '', // IndustryType
             '', // SeparateCoreInvoice
+            $client['category'],
+
         ];
         fputcsv($file_handle, $record);
     }
@@ -501,7 +504,7 @@ function extract_client_details(int $store_id) {
     fclose($file_handle);
 }
 
-// extract_client_details(StoreDetails::EDMONTON);die;
+extract_client_details(StoreDetails::CALGARY);die;
 
 // [DATA]: ACCOUNTS RECEIVABLES / OPEN RECEIVABLES
 function extract_accounts_receivables_file_for_store(int $store_id) : void {

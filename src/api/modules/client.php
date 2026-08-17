@@ -1475,6 +1475,7 @@ class Client {
                     'last_purchase_date' => $client['last_purchase_date'],
                     'memo' => $client['memo'],
                     'additional_information' => $client['additional_information'],
+                    'category' => self::CLIENT_CATEGORY_INDEX[$client['category']],
                 ];
             }
         }
