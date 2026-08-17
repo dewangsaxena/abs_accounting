@@ -181,7 +181,7 @@ function generate_inventory_file(int $store_id) {
     fclose($file_handle);
 }
 
-// generate_inventory_file(StoreDetails::EDMONTON);die;
+generate_inventory_file(StoreDetails::CALGARY);die;
 
 // [DATA]: SALES RECORD FROM TRANSACTIONS SUCH AS SALES INVOICE
 function extract_transaction_records_of_clients(int $store_id, string $table_name, string $from_date) {
