@@ -77,7 +77,10 @@ function generate_inventory_file(int $store_id) {
         i.`description`,
         i.`reorder_quantity`,
         i.`prices`,
-        inv.`quantity`
+        inv.`quantity`,
+        inv.`aisle`,
+        inv.`shelf`,
+        inv.`column`
     FROM
         inventory as inv
     LEFT JOIN
@@ -125,6 +128,9 @@ function generate_inventory_file(int $store_id) {
         $items_details[$identifier]['is_core'] = $i['is_core'];
         $items_details[$identifier]['memo'] = $i['memo'];
         $items_details[$identifier]['additional_information'] = $i['additional_information'];
+        $items_details[$identifier]['aisle'] = $i['aisle'];
+        $items_details[$identifier]['shelf'] = $i['shelf'];
+        $items_details[$identifier]['column'] = $i['column'];
 
         $is_discount_disabled = json_decode($i['is_discount_disabled'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
         if(isset($is_discount_disabled[$store_id])) $is_discount_disabled = $is_discount_disabled[$store_id];
@@ -153,6 +159,9 @@ function generate_inventory_file(int $store_id) {
                 'Memo',
                 'Additional Information',
                 'Is Discount Disabled',
+                'Aisle',
+                'Shelf',
+                'Column',
             ]);
 
     foreach($items_details as $i) {
@@ -175,6 +184,9 @@ function generate_inventory_file(int $store_id) {
                 $i['memo'] ?? '',
                 $i['additional_information'] ?? '',
                 $i['is_discount_disabled'] ?? 0,
+                $i['aisle'] ?? '',
+                $i['shelf'] ?? '',
+                $i['column'] ?? '',
             ]);
     }
 
