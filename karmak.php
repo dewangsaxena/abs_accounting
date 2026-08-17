@@ -448,7 +448,7 @@ function extract_client_details(int $store_id) {
             '', // Creation Date
             '', // PrimaryContactHomePhone
             $client['phone_number_1'] ?? '', // PrimaryContactWorkPhone
-            $client['phone_number_2'] ?? '', // PrimaryContactCellPhone
+            $client['phone_number_1'] ?? '', // PrimaryContactCellPhone
             $client['fax'] ?? '', // PrimaryContactFax
             strlen($client['email_id']) > 0 ? ($client['email_id'].';'.StoreDetails::STORE_DETAILS[$store_id]['email']['bcc'][PARTS]) : '',  // InvoiceEmailAddress
             $client['additional_email_addresses'], // StatementEmailAddress
