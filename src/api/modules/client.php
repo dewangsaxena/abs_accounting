@@ -1476,6 +1476,7 @@ class Client {
                     'memo' => $client['memo'],
                     'additional_information' => $client['additional_information'],
                     'category' => self::CLIENT_CATEGORY_INDEX[$client['category']],
+                    'disable_credit_transactions' => $client['disable_credit_transactions'],
                 ];
             }
         }

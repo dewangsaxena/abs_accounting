@@ -458,7 +458,7 @@ function extract_client_details(int $store_id) {
             '', // SalesManagementTaxStatus
             json_decode($client['credit_limit'], true, flags: JSON_NUMERIC_CHECK)[$store_id] ?? 0,
             '', // IsPORequired
-            true, // SubjectToFinanceCharge
+            false, // SubjectToFinanceCharge
             '', // BlanketPONumber
             '', // ParentCustomerBranch
             '', // ParentCustomerNumber
@@ -467,7 +467,7 @@ function extract_client_details(int $store_id) {
             '', // SubjectToDelinquency
             '', // SubjectToPastDue
             '', // PerformCreditCheck
-            true, // AllowCharge
+            $client['disable_credit_transactions'] == 0 ? true : false, // AllowCharge
             '', // Comment1
             '', // Comment2
             '', // AllowMVP
