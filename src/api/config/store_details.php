@@ -121,6 +121,7 @@ class StoreDetails {
                 ]
             ],
             'cipher_key' => ';5_N$4{]7(nsk>^H4oU~zJ+&?bNC5nK(',
+            'disable_over_credit' => False,
         ],
         self::CALGARY => [
             'id' => self::CALGARY, 
@@ -167,6 +168,7 @@ class StoreDetails {
                 ]
             ],
             'cipher_key' => '#.0l>HH(HhxEP|pZ=gJN/d+f6V<zVnk{',
+            'disable_over_credit' => True,
         ],
         self::NISKU => [
             'id' => self::NISKU, 
@@ -213,6 +215,7 @@ class StoreDetails {
                 ]
             ],
             'cipher_key' => 'T+=Xk;T6}!{jCK[h*p/>ty#?4ml_T)A9',
+            'disable_over_credit' => False,
         ],
         self::VANCOUVER => [
             'id' => self::VANCOUVER, 
@@ -259,6 +262,7 @@ class StoreDetails {
                 ],
             ],
             'cipher_key' => 'JL`=rtluOqF|bkVF/g=YOm#>,fk9q1>%',
+            'disable_over_credit' => False,
         ],
         self::SLAVE_LAKE => [
             'id' => self::SLAVE_LAKE, 
@@ -305,6 +309,7 @@ class StoreDetails {
                 ]
             ],
             'cipher_key' => '+dH<do)&v9z#";BY-%y_L+Ocob4o@-,8',
+            'disable_over_credit' => False,
         ],
         self::DELTA => [
             'id' => self::DELTA, 
@@ -351,6 +356,7 @@ class StoreDetails {
                 ],
             ],
             'cipher_key' => 'K(|;Q7cKYnb~ZMa/6^67pb{}(bWm2/s5',
+            'disable_over_credit' => False,
         ],
 
         // https://www.zeitverschiebung.net/en/timezone/america--regina
@@ -399,6 +405,7 @@ class StoreDetails {
                 ],
             ],
             'cipher_key' => 'Ewk"tuZ2<$tqwnF2tc3X%5r(d?/:|9JU',
+            'disable_over_credit' => False,
         ],
 
         self::SASKATOON => [
@@ -446,6 +453,7 @@ class StoreDetails {
                 ],
             ],
             'cipher_key' => '=yyS]q=)NYpy+{p$i[;gT`/|7Uho^x`9',
+            'disable_over_credit' => False,
         ],
     ];
 }
