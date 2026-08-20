@@ -178,6 +178,7 @@ class SalesInvoice {
      * @return array
      */
     private static function validate_details(array $data): array {
+
         // Client Id 
         $client_id = $data['clientDetails']['id'] ?? null;
 
@@ -336,6 +337,17 @@ class SalesInvoice {
 
         // Remove Tag from meta details
         Shared::remove_item_tag_from_transaction_meta_details($data);
+
+        // Check for Txn Going Over Credit Limit
+        if($is_pay_later && StoreDetails::STORE_DETAILS[$store_id]['disable_over_credit']) {
+            $credit_limit = $data['clientDetails']['creditLimit'];
+            if($credit_limit > 0) {
+                $amount_owing = $data['clientDetails']['amountOwing'];
+                if($amount_owing + $sum_total > $credit_limit) {
+                    throw new Exception('Client is or will be Over Existing Credit Limit. Clear Balance to proceed further.');
+                }
+            }
+        }
 
         // Flag
         $is_unit_no_or_vin_or_po_given = false;
