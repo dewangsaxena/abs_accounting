@@ -572,6 +572,8 @@ class Quotations {
                 c.fax,
                 c.email_id,
                 c.country,
+                c.amount_owing,
+                c.credit_limit,
                 qt.*
             FROM 
                 quotation AS qt
@@ -626,6 +628,14 @@ class Quotations {
 
                 // Is Self Client
                 $record['is_self_client'] = Client::is_self_client($record['client_id']);
+
+                // Amount Owing 
+                $amount_owing = json_decode($record['amount_owing'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+                $record['amount_owing'] = isset($amount_owing[$store_id]) ? $amount_owing[$store_id]: 0;
+
+                // Credit Limit
+                $credit_limit = json_decode($record['credit_limit'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
+                $record['credit_limit'] = isset($credit_limit[$store_id]) ? $credit_limit[$store_id]: 0;
 
                 // ID
                 $formatted_record[$record['id']] = $record;
