@@ -1740,6 +1740,12 @@ class SalesInvoice {
 
             /* Last Modified Timestamp */ 
             'lastModifiedTimestamp' => $quotation['client_last_modified_timestamp'],
+
+            /* Amount Owing */
+            'amountOwing' => $quotation['amount_owing'],
+
+            /* Credit Limit */
+            'creditLimit' => $quotation['credit_limit'],
         ];
         return $details;
     }
