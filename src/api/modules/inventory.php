@@ -763,7 +763,7 @@ class Inventory {
             if (is_numeric($store_id)) $query .= " AND store_id = $store_id ";
 
             // Create new Connection
-            if ($db === null) $db = get_db_instance();
+            if (is_null($db)) $db = get_db_instance();
 
             $statement = $db->prepare("$query;");
             $statement->execute($values);
