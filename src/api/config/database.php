@@ -17,15 +17,16 @@ function get_db_instance(): PDO {
         $db_name = DB_NAME;
 
         // Try to establish connection to the database.
-        $instance = new PDO("mysql:host=$host;dbname=$db_name;charset=UTF8;", DB_USERNAME, DB_PASSWORD);
-
-        // Set PDO error mode to exception 
-        $instance -> setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $args = [
+            PDO::ATTR_PERSISTENT => true,
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        ];
+        $instance = new PDO("mysql:host=$host;dbname=$db_name;charset=UTF8;", DB_USERNAME, DB_PASSWORD, $args);
 
         return $instance;
     }
     catch (Exception|Throwable|PDOException $e) {
-        die('Cannot establish connection to the Database.');
+        die('Cannot establish connection to the Database: '. $e -> getMessage());
     }
 }
 
