@@ -724,7 +724,7 @@ class Inventory {
             assert_success();
 
             // Commit changes
-            $db->commit();
+            if($db -> inTransaction()) $db->commit();
 
             // Fetch Latest
             return ['status' => true, 'data' => self::fetch_profit_margins($_SESSION['store_id'], $db)];

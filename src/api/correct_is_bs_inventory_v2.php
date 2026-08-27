@@ -410,7 +410,7 @@ class Correct_IS_BS_InventoryV2 {
                     }
                 }
             }
-            $db -> commit();
+            if($db -> inTransaction()) $db -> commit();
             return true;
         }
         catch(Exception $e) {

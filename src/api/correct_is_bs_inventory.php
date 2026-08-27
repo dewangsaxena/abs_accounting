@@ -514,7 +514,7 @@ class Correct_IS_BS_Inventory {
                     }
                 }
             }
-            $db -> commit();
+            if($db -> inTransaction()) $db -> commit();
             return true;
         }
         catch(Exception $e) {
