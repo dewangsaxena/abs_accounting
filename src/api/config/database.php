@@ -18,7 +18,7 @@ function get_db_instance(): PDO {
 
         // Try to establish connection to the database.
         $args = [
-            PDO::ATTR_PERSISTENT => true,
+            // PDO::ATTR_PERSISTENT => true,
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         ];
         $instance = new PDO("mysql:host=$host;dbname=$db_name;charset=UTF8;", DB_USERNAME, DB_PASSWORD, $args);
