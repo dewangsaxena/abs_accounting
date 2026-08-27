@@ -206,7 +206,7 @@ class UserManagement {
             assert_success();
 
             // Commit
-            $db_instance -> commit();
+            if($db_instance -> inTransaction()) $db_instance -> commit();
 
             return ['status' => true];
         }
@@ -364,7 +364,7 @@ class UserManagement {
             assert_success();
 
             // Commit
-            $db_instance -> commit();
+            if($db_instance -> inTransaction()) $db_instance -> commit();
             return ['status' => true];
         }
         catch(Throwable $th) {
@@ -468,7 +468,7 @@ class UserManagement {
             assert_success();
 
             // Commit
-            $db -> commit();
+            if($db -> inTransaction()) $db -> commit();
 
             return ['status' => true];
         }
@@ -527,7 +527,7 @@ class UserManagement {
             assert_success();
 
             // Commit
-            $db -> commit();
+            if($db -> inTransaction()) $db -> commit();
 
             return ['status' => true];
         }
@@ -579,7 +579,7 @@ class UserManagement {
             assert_success();
 
             // Commit
-            $db -> commit();
+            if($db -> inTransaction()) $db -> commit();
 
             return ['status' => true];
         }
