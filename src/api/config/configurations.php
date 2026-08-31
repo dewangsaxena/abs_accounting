@@ -51,11 +51,8 @@ if ($is_localhost) {
         define('IS_LOCALHOST', true);
         define('DISABLE_EMAIL_ON_LOCALHOST', true);
     }
-} else if($domain === 'tenleasing.absyeg.store') {
+} else if($domain === 'tenleasing.abs.company') {
     $offset = __TEN_LEASING__;
-    $mode = PARTS;
-} else if ($domain === 'abs.company') {
-    $offset = __ABS_COMPANY__;
     $mode = PARTS;
 } else if ($domain === 'wash.abs.company') {
     $offset = __WASH_V2__;
@@ -63,41 +60,13 @@ if ($is_localhost) {
 } else if ($domain === 'parts.abs.company') {
     $offset = __PARTS_V2__;
     $mode = PARTS;
-} else if ($domain === 'alpha.abs.company') {
-    $offset = __ALPHA_WASH_ABS__;
-    $mode = PARTS;
-} else if ($domain === 'beta.abs.company') {
-    $offset = __ALPHA_PARTS_ABS__;
-    $mode = PARTS;
-} else if ($domain === 'testing.abs.company') {
-    $offset = __TESTING__;
-    $mode = PARTS;
-} else if ($domain === 'demo.abs.company') {
-    $offset = __DEMO__;
-    $mode = PARTS;
-    http_response_code(404);
-    die;
-} else if ($domain === 'partsv2.abs.company') {
-    $offset = __PARTS_V2__;
-    $mode = PARTS;
-} else if ($domain === 'washv2.abs.company') {
-    $offset = __WASH_V2__;
-    $mode = WASH;
-} else if ($domain === 'parts.absyeg.store') {
-    $offset = __PARTS_V2__;
-    $mode = PARTS;
-} else if ($domain === 'wash.absyeg.store') {
-    $offset = __WASH_V2__;
-    $mode = WASH;
-} else if ($domain === 'vanguard.absyeg.store') {
+} else if ($domain === 'vanguard.abs.company') {
     $offset = __VANGUARD__;
     $mode = PARTS;
-}
-else if ($domain === 'salvageparts.absyeg.store') {
+} else if ($domain === 'salvageparts.abs.company') {
     $offset = __SALVAGE_PARTS__;
     $mode = PARTS;
-}
-else die('Invalid Domain');
+} else die('Invalid Domain');
 
 /* Business Specific Configuration. */
 define('SYSTEM_INIT_MODE', $mode);
