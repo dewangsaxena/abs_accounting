@@ -241,4 +241,22 @@ define('MAKE_SYSTEM_READONLY_AFTER_TIMESTAMP', SYSTEM_INIT_HOST === PARTS_HOST ?
     StoreDetails::CALGARY => null,
     StoreDetails::DELTA => null,
 ] : null);
+
+/**
+ * Redirect To abs.company
+ */
+function redirect_to_abs_company() {
+    if($_SERVER['SERVER_NAME'] === 'localhost') return;
+    
+    $redirect_slug = '';
+    switch(SYSTEM_INIT_HOST) {
+        case PARTS_HOST: $redirect_slug = 'parts'; break;
+        case WASH_HOST: $redirect_slug = 'wash'; break;
+        case TENLEASING_HOST: $redirect_slug = 'tenleasing'; break;
+        case VANGUARD_HOST: $redirect_slug = 'vanguard'; break;
+        case SALVAGE_PARTS_HOST: $redirect_slug = 'salvageparts'; break;
+        default: http_response_code(500); die;
+    }
+    header("Location: https://$redirect_slug.abs.company");
+}
 ?>
