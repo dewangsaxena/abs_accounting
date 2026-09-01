@@ -43,6 +43,12 @@ define('CATEGORY_INVENTORY', 1);
 /* Base Domain */
 define('BASE_DOMAIN', 'abs.company');
 
+/* Server Timezone */
+define('SERVER_TIMEZONE', 'UTC');
+
+/* Set Default Timezone */
+date_default_timezone_set(SERVER_TIMEZONE);
+
 /* Select Credentials Based On Server */
 $mode = null;
 $domain = $_SERVER['SERVER_NAME'];
