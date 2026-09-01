@@ -456,7 +456,7 @@ class Shared {
     
         // Transaction Date
         $transaction_date = Utils::get_YYYY_mm_dd(
-            Utils::convert_utc_str_timestamp_to_localtime($data['txnDate'], $store_id),
+            Utils::convert_server_str_timestamp_to_localtime($data['txnDate'], $store_id),
         );
         if($transaction_date === null) throw new Exception('Invalid Date.');
 
@@ -770,7 +770,7 @@ class Shared {
             if(isset($data['txnStartDate'][0])) {
                 $query .= ' AND txn_tb.`date` >= :txnStartDate ';
                 $values[':txnStartDate'] = Utils::get_YYYY_mm_dd(
-                    Utils::convert_utc_str_timestamp_to_localtime($data['txnStartDate'], $store_id), 
+                    Utils::convert_server_str_timestamp_to_localtime($data['txnStartDate'], $store_id), 
                 );
             }
 
@@ -778,7 +778,7 @@ class Shared {
             if(isset($data['txnEndDate'][0])) {
                 $query .= ' AND txn_tb.`date` <= :txnEndDate ';
                 $values[':txnEndDate'] = Utils::get_YYYY_mm_dd(
-                    Utils::convert_utc_str_timestamp_to_localtime($data['txnEndDate'], $store_id), 
+                    Utils::convert_server_str_timestamp_to_localtime($data['txnEndDate'], $store_id), 
                 );
             }
 
@@ -1029,7 +1029,7 @@ class Shared {
                 $transaction['restocking_fees'] = $amounts['restockingFees'];
 
                 // Update Modified Timestamp
-                $transaction['modified'] = Utils::get_utc_str_timestamp_from_utc_unix_timestamp($version);
+                $transaction['modified'] = Utils::get_server_str_timestamp_from_server_unix_timestamp($version);
             }
             return $transaction;
         }

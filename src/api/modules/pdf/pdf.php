@@ -3594,7 +3594,7 @@ class GeneratePDF {
      * @return void 
      */
     public static function transaction(array $details, string $filename, bool $generate_file=false): void {
-        $current_timestamp_in_local_time = Utils::convert_utc_str_timestamp_to_localtime($details['timestamp'], $details['store_id'], true);
+        $current_timestamp_in_local_time = Utils::convert_server_str_timestamp_to_localtime($details['timestamp'], $details['store_id'], true);
         if($current_timestamp_in_local_time >= MAKE_SYSTEM_READONLY_AFTER_TIMESTAMP[$details['store_id']] && Utils::check_cutoff_for_traction($details['store_id'], true)) {
             __GeneratePDF_SI_SR_CN_DN_QT_Traction::generate($details, TEMP_DIR. $filename, $generate_file);
         }

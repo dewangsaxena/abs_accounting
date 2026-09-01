@@ -890,7 +890,7 @@ class Inventory {
                     $response[$item_id]['column'] = $current_record['column'];
                     $response[$item_id]['existingQuantity'] = $current_record['quantity'];
                     $timestamp = $current_record['modified'];
-                    $local_timestamp = Utils::convert_utc_str_timestamp_to_localtime(
+                    $local_timestamp = Utils::convert_server_str_timestamp_to_localtime(
                         $timestamp,
                         $store_id,
                     );
