@@ -8,7 +8,7 @@ This file contains configurations used by the application.
 /**
  * Client App Version
  */
-define('CLIENT_APP_VERSION', '2.4.4');
+define('CLIENT_APP_VERSION', '2.4.5');
 
 /* Hosts */
 define('__LOCALHOST__', 0);
@@ -40,6 +40,9 @@ define('PARTS', 2);
 define('CATEGORY_SERVICE', 0);
 define('CATEGORY_INVENTORY', 1);
 
+/* Base Domain */
+define('BASE_DOMAIN', 'abs.company');
+
 /* Select Credentials Based On Server */
 $mode = null;
 $domain = $_SERVER['SERVER_NAME'];
@@ -51,19 +54,19 @@ if ($is_localhost) {
         define('IS_LOCALHOST', true);
         define('DISABLE_EMAIL_ON_LOCALHOST', true);
     }
-} else if($domain === 'tenleasing.abs.company') {
+} else if($domain === 'tenleasing.'. BASE_DOMAIN) {
     $offset = __TEN_LEASING__;
     $mode = PARTS;
-} else if ($domain === 'wash.abs.company') {
+} else if ($domain === 'wash.'. BASE_DOMAIN) {
     $offset = __WASH_V2__;
     $mode = WASH;
-} else if ($domain === 'parts.abs.company') {
+} else if ($domain === 'parts.'. BASE_DOMAIN) {
     $offset = __PARTS_V2__;
     $mode = PARTS;
-} else if ($domain === 'vanguard.abs.company') {
+} else if ($domain === 'vanguard.'. BASE_DOMAIN) {
     $offset = __VANGUARD__;
     $mode = PARTS;
-} else if ($domain === 'salvageparts.abs.company') {
+} else if ($domain === 'salvageparts.'. BASE_DOMAIN) {
     $offset = __SALVAGE_PARTS__;
     $mode = PARTS;
 } else die('Invalid Domain');
@@ -246,7 +249,7 @@ define('MAKE_SYSTEM_READONLY_AFTER_TIMESTAMP', SYSTEM_INIT_HOST === PARTS_HOST ?
  * Redirect To abs.company
  */
 function redirect_to_abs_company() {
-    if($_SERVER['SERVER_NAME'] === 'localhost') return;
+    if($_SERVER['SERVER_NAME'] === 'localhost' || str_contains($_SERVER['SERVER_NAME'], BASE_DOMAIN)) return;
     
     $redirect_slug = '';
     switch(SYSTEM_INIT_HOST) {
@@ -257,6 +260,6 @@ function redirect_to_abs_company() {
         case SALVAGE_PARTS_HOST: $redirect_slug = 'salvageparts'; break;
         default: http_response_code(500); die;
     }
-    header("Location: https://$redirect_slug.abs.company");
+    header("Location: https://$redirect_slug.". BASE_DOMAIN);
 }
 ?>

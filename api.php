@@ -24,6 +24,9 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_state
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/reports/customer_summary.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/src/api/modules/utils/stats.php";
 
+// Redirect To ABS.COMPANY
+redirect_to_abs_company();
+
 // Perform External Operation.
 if (isset($_GET['action'])) {
 
