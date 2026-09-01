@@ -44,7 +44,7 @@ define('CATEGORY_INVENTORY', 1);
 define('BASE_DOMAIN', 'abs.company');
 
 /* Server Timezone */
-define('SERVER_TIMEZONE', 'UTC');
+define('SERVER_TIMEZONE', 'America/New_York');
 
 /* Set Default Timezone */
 date_default_timezone_set(SERVER_TIMEZONE);
