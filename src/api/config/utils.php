@@ -172,7 +172,7 @@ class Utils {
     }
 
     /**
-     * This method will return the time after converting it from UTC ISO 8601 to Local Business Timezone.
+     * This method will return the time after converting it from ISO 8601 to Local Business Timezone.
      * @param iso_timestamp The timestamp to convert
      * @param store_id 
      * @param use_24_hour_format Whether to convert to 24-hour format or 12 hour.
