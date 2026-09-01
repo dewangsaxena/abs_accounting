@@ -202,7 +202,7 @@ class Utils {
     public static function get_business_date(int $store_id): string {
         return self::get_YYYY_mm_dd(
                     self::convert_to_local_timestamp_from_server_unix_timestamp(
-                    self::get_current_utc_unix_timestamp(),
+                    self::get_current_server_unix_timestamp(),
                     $store_id
                 )
         );
@@ -351,10 +351,10 @@ class Utils {
     }
 
     /**
-     * This method will get current UTC Timestamp.
+     * This method will get current Server Timestamp.
      * @return int
      */
-    public static function get_current_utc_unix_timestamp(): int {
+    public static function get_current_server_unix_timestamp(): int {
         return date_timestamp_get(date_create('now', new DateTimeZone(SERVER_TIMEZONE)));
     }
 
@@ -515,7 +515,7 @@ class Utils {
         
         // Current Timestamp
         $current_timestamp = Utils::convert_to_local_timestamp_from_server_unix_timestamp(
-            Utils::get_current_utc_unix_timestamp(), 
+            Utils::get_current_server_unix_timestamp(), 
             $store_id,
             true,
         );
