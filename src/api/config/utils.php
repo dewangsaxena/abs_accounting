@@ -359,7 +359,7 @@ class Utils {
     }
 
     /**
-     * This method will get UTC Timestamp from Date Format.
+     * This method will get Server Timestamp from Date Format.
      * @param utc_str_timestamp
      * @return int 
      */
