@@ -395,7 +395,7 @@ class Utils {
 
     /**
      * This method will convert Server timestamp to LocalTime.
-     * @param utc_str_timestamp
+     * @param server_str_timestamp
      * @param store_id
      * @param use_24_hour_format
      * @return string
