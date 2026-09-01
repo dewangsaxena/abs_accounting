@@ -201,7 +201,7 @@ class Utils {
      */
     public static function get_business_date(int $store_id): string {
         return self::get_YYYY_mm_dd(
-                    self::convert_to_local_timestamp_from_utc_unix_timestamp(
+                    self::convert_to_local_timestamp_from_server_unix_timestamp(
                     self::get_current_utc_unix_timestamp(),
                     $store_id
                 )
@@ -385,7 +385,7 @@ class Utils {
      * @param use_24_hour_format
      * @return string
      */
-    public static function convert_to_local_timestamp_from_utc_unix_timestamp(int $utc_unix_timestamp, int $store_id, bool $use_24_hour_format = false): string {
+    public static function convert_to_local_timestamp_from_server_unix_timestamp(int $utc_unix_timestamp, int $store_id, bool $use_24_hour_format = false): string {
         date_default_timezone_set(SERVER_TIMEZONE);
         $date_created = date_create();
         $date = date_timestamp_set($date_created, $utc_unix_timestamp);
@@ -514,7 +514,7 @@ class Utils {
         if($cutoff_timestamp === null) return false;
         
         // Current Timestamp
-        $current_timestamp = Utils::convert_to_local_timestamp_from_utc_unix_timestamp(
+        $current_timestamp = Utils::convert_to_local_timestamp_from_server_unix_timestamp(
             Utils::get_current_utc_unix_timestamp(), 
             $store_id,
             true,

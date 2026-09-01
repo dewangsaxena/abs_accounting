@@ -84,7 +84,7 @@ class Shared {
         $temp = [];
         $counter = 1;
         foreach($timestamps as $timestamp) {
-            $temp[$timestamp] = "$counter ~ ". Utils::convert_to_local_timestamp_from_utc_unix_timestamp($timestamp, $store_id);
+            $temp[$timestamp] = "$counter ~ ". Utils::convert_to_local_timestamp_from_server_unix_timestamp($timestamp, $store_id);
             ++$counter;
         }
         return $temp;
