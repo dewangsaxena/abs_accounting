@@ -195,7 +195,7 @@ class Utils {
     }
 
     /**
-     * This method will return the business date after converting it from UTC time.
+     * This method will return the business date after converting it from Server time.
      * @param store_id
      * @return string 
      */
