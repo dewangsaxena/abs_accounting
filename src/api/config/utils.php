@@ -179,7 +179,7 @@ class Utils {
      * @return string
      */
     public static function get_local_timestamp(string $iso_timestamp, int $store_id, bool $use_24_hour_format=false) : string {
-        $date_time = new DateTime(date($iso_timestamp), new DateTimeZone('UTC'));
+        $date_time = new DateTime(date($iso_timestamp), new DateTimeZone(SERVER_TIMEZONE));
         $date_time -> setTimezone(new DateTimeZone(STORE_DETAILS[$store_id]['timezone']));
         $format = $use_24_hour_format ? 'Y-m-d H:i:s T' : 'Y-m-d h:i:s A T';
         return $date_time -> format($format);
@@ -355,7 +355,7 @@ class Utils {
      * @return int
      */
     public static function get_current_utc_unix_timestamp(): int {
-        return date_timestamp_get(date_create('now', new DateTimeZone('UTC')));
+        return date_timestamp_get(date_create('now', new DateTimeZone(SERVER_TIMEZONE)));
     }
 
     /**
@@ -364,7 +364,7 @@ class Utils {
      * @return int 
      */
     public static function get_utc_unix_timestamp_from_utc_str_timestamp(string $utc_str_timestamp): int {
-        $date = date_create($utc_str_timestamp, new DateTimeZone('UTC'));
+        $date = date_create($utc_str_timestamp, new DateTimeZone(SERVER_TIMEZONE));
         return date_timestamp_get($date);
     }
 
@@ -374,7 +374,7 @@ class Utils {
      * @return string
      */
     public static function get_utc_str_timestamp_from_utc_unix_timestamp(int $unix_timestamp): string {
-        date_default_timezone_set('UTC');
+        date_default_timezone_set(SERVER_TIMEZONE);
         return date('Y-m-d H:i:s', $unix_timestamp);
     }
 
@@ -386,7 +386,7 @@ class Utils {
      * @return string
      */
     public static function convert_to_local_timestamp_from_utc_unix_timestamp(int $utc_unix_timestamp, int $store_id, bool $use_24_hour_format = false): string {
-        date_default_timezone_set('UTC');
+        date_default_timezone_set(SERVER_TIMEZONE);
         $date_created = date_create();
         $date = date_timestamp_set($date_created, $utc_unix_timestamp);
         $date = date_format($date, 'Y-m-d H:i:s');
@@ -401,7 +401,7 @@ class Utils {
      * @return string
      */
     public static function convert_utc_str_timestamp_to_localtime(string $utc_str_timestamp, int $store_id, bool $use_24_hour_format = false): string {
-        date_default_timezone_set('UTC');
+        date_default_timezone_set(SERVER_TIMEZONE);
         $date_created = date_create($utc_str_timestamp);
         $date_timestamp = date_timestamp_get($date_created);
         $date = date_timestamp_set($date_created, $date_timestamp);
