@@ -8,7 +8,7 @@ This file contains configurations used by the application.
 /**
  * Client App Version
  */
-define('CLIENT_APP_VERSION', '2.4.5');
+define('CLIENT_APP_VERSION', '2.4.6');
 
 /* Hosts */
 define('__LOCALHOST__', 0);
