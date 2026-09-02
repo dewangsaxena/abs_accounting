@@ -266,6 +266,13 @@ function redirect_to_abs_company() {
         case SALVAGE_PARTS_HOST: $redirect_slug = 'salvageparts'; break;
         default: http_response_code(500); die;
     }
-    header("Location: https://$redirect_slug.". BASE_DOMAIN);
+    if($redirect_slug !== '') {
+        echo json_encode(['status' => false, 'message' => "Visit 'https://$redirect_slug.'". BASE_DOMAIN.' to access system.']);
+        die;
+    }
+    else {
+        http_response_code(500);
+        die;
+    }
 }
 ?>
