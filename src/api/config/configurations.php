@@ -12,13 +12,6 @@ define('CLIENT_APP_VERSION', '2.4.5');
 
 /* Hosts */
 define('__LOCALHOST__', 0);
-define('__ABS_COMPANY__', 1);
-define('__WASH_ABS_COMPANY__', 2);
-define('__PARTS_ABS_COMPANY__', 3);
-define('__ALPHA_WASH_ABS__', 4);
-define('__ALPHA_PARTS_ABS__', 5);
-define('__TESTING__', 6);
-define('__DEMO__', 7);
 define('__PARTS_V2__', 8);
 define('__WASH_V2__', 9);
 define('__TEN_LEASING__', 10);
