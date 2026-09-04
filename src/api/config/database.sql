@@ -16,6 +16,7 @@ memory_limit = 1024M
 upload_max_filesize = 1024M
 post_max_size = 1024M
 date.timezone=UTC
+max_input_vars = 1000000
 
 [config.inc.php and config.default.php]
 $cfg['ExecTimeLimit'] = 0;
