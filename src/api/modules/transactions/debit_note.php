@@ -327,7 +327,7 @@ class DebitNote {
             // Check for Any Changes in Details. If yes, add to versions
             if($is_transaction_detail_changed) {
                 if(is_null($versions)) $versions = [];
-                $versions[Utils::get_utc_unix_timestamp_from_utc_str_timestamp($data['lastModifiedTimestamp'])] = $data['initial']['details'];
+                $versions[Utils::get_server_unix_timestamp_from_server_str_timestamp($data['lastModifiedTimestamp'])] = $data['initial']['details'];
                 $sales_rep_history[]= $data['salesRepId'];
             }
 

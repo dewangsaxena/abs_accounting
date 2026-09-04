@@ -172,14 +172,14 @@ class Utils {
     }
 
     /**
-     * This method will return the time after converting it from UTC ISO 8601 to Local Business Timezone.
+     * This method will return the time after converting it from ISO 8601 to Local Business Timezone.
      * @param iso_timestamp The timestamp to convert
      * @param store_id 
      * @param use_24_hour_format Whether to convert to 24-hour format or 12 hour.
      * @return string
      */
     public static function get_local_timestamp(string $iso_timestamp, int $store_id, bool $use_24_hour_format=false) : string {
-        $date_time = new DateTime(date($iso_timestamp), new DateTimeZone('UTC'));
+        $date_time = new DateTime(date($iso_timestamp), new DateTimeZone(SERVER_TIMEZONE));
         $date_time -> setTimezone(new DateTimeZone(STORE_DETAILS[$store_id]['timezone']));
         $format = $use_24_hour_format ? 'Y-m-d H:i:s T' : 'Y-m-d h:i:s A T';
         return $date_time -> format($format);
@@ -195,14 +195,14 @@ class Utils {
     }
 
     /**
-     * This method will return the business date after converting it from UTC time.
+     * This method will return the business date after converting it from Server time.
      * @param store_id
      * @return string 
      */
     public static function get_business_date(int $store_id): string {
         return self::get_YYYY_mm_dd(
-                    self::convert_to_local_timestamp_from_utc_unix_timestamp(
-                    self::get_current_utc_unix_timestamp(),
+                    self::convert_to_local_timestamp_from_server_unix_timestamp(
+                    self::get_current_server_unix_timestamp(),
                     $store_id
                 )
         );
@@ -351,58 +351,58 @@ class Utils {
     }
 
     /**
-     * This method will get current UTC Timestamp.
+     * This method will get current Server Timestamp.
      * @return int
      */
-    public static function get_current_utc_unix_timestamp(): int {
-        return date_timestamp_get(date_create('now', new DateTimeZone('UTC')));
+    public static function get_current_server_unix_timestamp(): int {
+        return date_timestamp_get(date_create('now', new DateTimeZone(SERVER_TIMEZONE)));
     }
 
     /**
-     * This method will get UTC Timestamp from Date Format.
-     * @param utc_str_timestamp
+     * This method will get Server Timestamp from Date Format.
+     * @param server_str_timestamp
      * @return int 
      */
-    public static function get_utc_unix_timestamp_from_utc_str_timestamp(string $utc_str_timestamp): int {
-        $date = date_create($utc_str_timestamp, new DateTimeZone('UTC'));
+    public static function get_server_unix_timestamp_from_server_str_timestamp(string $server_str_timestamp): int {
+        $date = date_create($server_str_timestamp, new DateTimeZone(SERVER_TIMEZONE));
         return date_timestamp_get($date);
     }
 
     /**
-     * This method will return UTC str timestamp from UTC unix timestamp.
+     * This method will return Server str timestamp from Server unix timestamp.
      * @param unix_timestamp 
      * @return string
      */
-    public static function get_utc_str_timestamp_from_utc_unix_timestamp(int $unix_timestamp): string {
-        date_default_timezone_set('UTC');
+    public static function get_server_str_timestamp_from_server_unix_timestamp(int $unix_timestamp): string {
+        date_default_timezone_set(SERVER_TIMEZONE);
         return date('Y-m-d H:i:s', $unix_timestamp);
     }
 
     /**
-     * This method will convert UTC timestamp to Local Timestamp.
-     * @param utc_unix_timestamp 
+     * This method will convert Server timestamp to Local Timestamp.
+     * @param server_unix_timestamp 
      * @param store_id
      * @param use_24_hour_format
      * @return string
      */
-    public static function convert_to_local_timestamp_from_utc_unix_timestamp(int $utc_unix_timestamp, int $store_id, bool $use_24_hour_format = false): string {
-        date_default_timezone_set('UTC');
+    public static function convert_to_local_timestamp_from_server_unix_timestamp(int $server_unix_timestamp, int $store_id, bool $use_24_hour_format = false): string {
+        date_default_timezone_set(SERVER_TIMEZONE);
         $date_created = date_create();
-        $date = date_timestamp_set($date_created, $utc_unix_timestamp);
+        $date = date_timestamp_set($date_created, $server_unix_timestamp);
         $date = date_format($date, 'Y-m-d H:i:s');
         return Utils::get_local_timestamp($date, $store_id, $use_24_hour_format);
     }
 
     /**
-     * This method will convert UTC timestamp to LocalTime.
-     * @param utc_str_timestamp
+     * This method will convert Server timestamp to LocalTime.
+     * @param server_str_timestamp
      * @param store_id
      * @param use_24_hour_format
      * @return string
      */
-    public static function convert_utc_str_timestamp_to_localtime(string $utc_str_timestamp, int $store_id, bool $use_24_hour_format = false): string {
-        date_default_timezone_set('UTC');
-        $date_created = date_create($utc_str_timestamp);
+    public static function convert_server_str_timestamp_to_localtime(string $server_str_timestamp, int $store_id, bool $use_24_hour_format = false): string {
+        date_default_timezone_set(SERVER_TIMEZONE);
+        $date_created = date_create($server_str_timestamp);
         $date_timestamp = date_timestamp_get($date_created);
         $date = date_timestamp_set($date_created, $date_timestamp);
         $date = date_format($date, 'Y-m-d H:i:s');
@@ -514,8 +514,8 @@ class Utils {
         if($cutoff_timestamp === null) return false;
         
         // Current Timestamp
-        $current_timestamp = Utils::convert_to_local_timestamp_from_utc_unix_timestamp(
-            Utils::get_current_utc_unix_timestamp(), 
+        $current_timestamp = Utils::convert_to_local_timestamp_from_server_unix_timestamp(
+            Utils::get_current_server_unix_timestamp(), 
             $store_id,
             true,
         );

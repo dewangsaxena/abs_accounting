@@ -622,10 +622,10 @@ function find_issue(int $store_id): void {
             if(is_null($si['versions']) === false) {
                 $versions = json_decode($si['versions'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
                 $version_keys = array_keys($versions);
-                $local_time_from_debug = Utils::convert_utc_str_timestamp_to_localtime($debug_created_time, $store_id);
+                $local_time_from_debug = Utils::convert_server_str_timestamp_to_localtime($debug_created_time, $store_id);
                 $selected_version = null;
                 foreach($version_keys as $version) {
-                    $local_time = Utils::convert_to_local_timestamp_from_utc_unix_timestamp($version, $store_id);
+                    $local_time = Utils::convert_to_local_timestamp_from_server_unix_timestamp($version, $store_id);
                     if($local_time_from_debug == $local_time) {
                         $selected_version = $version;
                         break;
@@ -647,11 +647,11 @@ function find_issue(int $store_id): void {
             if(is_null($si['versions']) === false) {
                 $versions = json_decode($si['versions'], true, flags: JSON_NUMERIC_CHECK | JSON_THROW_ON_ERROR);
                 $version_keys = array_keys($versions);
-                $local_time_from_debug = Utils::convert_utc_str_timestamp_to_localtime($debug_created_time, $store_id);
+                $local_time_from_debug = Utils::convert_server_str_timestamp_to_localtime($debug_created_time, $store_id);
                 $selected_version = null;
 
                 foreach($version_keys as $version) {
-                    $local_time = Utils::convert_to_local_timestamp_from_utc_unix_timestamp($version, $store_id);
+                    $local_time = Utils::convert_to_local_timestamp_from_server_unix_timestamp($version, $store_id);
 
                     if($local_time_from_debug == $local_time) {
                         $selected_version = $version;

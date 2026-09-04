@@ -8,17 +8,10 @@ This file contains configurations used by the application.
 /**
  * Client App Version
  */
-define('CLIENT_APP_VERSION', '2.4.5');
+define('CLIENT_APP_VERSION', '2.4.6');
 
 /* Hosts */
 define('__LOCALHOST__', 0);
-define('__ABS_COMPANY__', 1);
-define('__WASH_ABS_COMPANY__', 2);
-define('__PARTS_ABS_COMPANY__', 3);
-define('__ALPHA_WASH_ABS__', 4);
-define('__ALPHA_PARTS_ABS__', 5);
-define('__TESTING__', 6);
-define('__DEMO__', 7);
 define('__PARTS_V2__', 8);
 define('__WASH_V2__', 9);
 define('__TEN_LEASING__', 10);
@@ -42,6 +35,12 @@ define('CATEGORY_INVENTORY', 1);
 
 /* Base Domain */
 define('BASE_DOMAIN', 'abs.company');
+
+/* Server Timezone */
+define('SERVER_TIMEZONE', 'America/New_York');
+
+/* Set Default Timezone */
+date_default_timezone_set(SERVER_TIMEZONE);
 
 /* Select Credentials Based On Server */
 $mode = null;
@@ -260,6 +259,13 @@ function redirect_to_abs_company() {
         case SALVAGE_PARTS_HOST: $redirect_slug = 'salvageparts'; break;
         default: http_response_code(500); die;
     }
-    header("Location: https://$redirect_slug.". BASE_DOMAIN);
+    if($redirect_slug !== '') {
+        echo json_encode(['status' => false, 'message' => "Visit 'https://$redirect_slug.'". BASE_DOMAIN.' to access system.']);
+        die;
+    }
+    else {
+        http_response_code(500);
+        die;
+    }
 }
 ?>

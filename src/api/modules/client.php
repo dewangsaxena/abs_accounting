@@ -551,7 +551,7 @@ class Client {
 
         if($any_details_changed) {
             
-            // This is UTC Timestamp
+            // This is Server Timestamp
             $old['modified'] = date('Y-m-d H:m:s');
 
             // Name of the user who changed it 

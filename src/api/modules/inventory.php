@@ -91,6 +91,9 @@ class Inventory {
     // IF CHANGED HERE, MAKE SURE TO CHANGE IN THE FRONT END AS WELL.
     public const ITEM_DETAILS_TAG = '85163d53-ace8-4140-b83c-1c89294f6464';
 
+    // Max Quantity Allowed
+    private const MAX_QUANTITY_ALLOWED = 1000;
+
     /**
      * This method will remove item detail tag.
      * @param value
@@ -890,7 +893,7 @@ class Inventory {
                     $response[$item_id]['column'] = $current_record['column'];
                     $response[$item_id]['existingQuantity'] = $current_record['quantity'];
                     $timestamp = $current_record['modified'];
-                    $local_timestamp = Utils::convert_utc_str_timestamp_to_localtime(
+                    $local_timestamp = Utils::convert_server_str_timestamp_to_localtime(
                         $timestamp,
                         $store_id,
                     );
@@ -1177,6 +1180,9 @@ class Inventory {
 
                 // Quantity Can be negative but not NULL
                 if ($quantity_to_be_adjusted === null) continue;
+
+                // Check Valid Quantity 
+                if($quantity_to_be_adjusted > self::MAX_QUANTITY_ALLOWED) throw new Exception('Cannot add more than '. self::MAX_QUANTITY_ALLOWED. ' in a single entry.');
 
                 // Buying Cost
                 $buying_cost = is_numeric($details[$key]['buyingCost']) ? Utils::round(floatval($details[$key]['buyingCost'])) : null;

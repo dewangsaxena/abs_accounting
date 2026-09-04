@@ -167,7 +167,7 @@ class Quotations {
 
         // Transaction Date
         $transaction_date = Utils::get_YYYY_mm_dd(
-            Utils::convert_utc_str_timestamp_to_localtime($data['txnDate'], $store_id)
+            Utils::convert_server_str_timestamp_to_localtime($data['txnDate'], $store_id)
         );
         if($transaction_date === null) throw new Exception('Invalid Date.');
 
@@ -434,7 +434,7 @@ class Quotations {
             // Check for Any Changes in Details. If yes, add to versions
             if($initial_details_json !== $new_details_json) {
                 if(is_null($versions)) $versions = [];
-                $versions[Utils::get_utc_unix_timestamp_from_utc_str_timestamp($data['lastModifiedTimestamp'])] = $data['initial']['details'];
+                $versions[Utils::get_server_unix_timestamp_from_server_str_timestamp($data['lastModifiedTimestamp'])] = $data['initial']['details'];
                 $sales_rep_history[]= $data['salesRepId'];
             }
 

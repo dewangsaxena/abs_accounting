@@ -23,8 +23,8 @@ class IncomeStatementActions {
         $locations_selected = trim($locations_selected, ',');
 
         // Convert Date
-        $begin_time = Utils::get_YYYY_mm_dd(Utils::convert_utc_str_timestamp_to_localtime($begin_time, StoreDetails::EDMONTON));
-        $end_time = Utils::get_YYYY_mm_dd(Utils::convert_utc_str_timestamp_to_localtime($end_time, StoreDetails::EDMONTON));
+        $begin_time = Utils::get_YYYY_mm_dd(Utils::convert_server_str_timestamp_to_localtime($begin_time, StoreDetails::EDMONTON));
+        $end_time = Utils::get_YYYY_mm_dd(Utils::convert_server_str_timestamp_to_localtime($end_time, StoreDetails::EDMONTON));
 
         // Fetch Income Statement
         $data = self::find_by_location($begin_time, $end_time, $locations_selected);
@@ -324,7 +324,6 @@ class IncomeStatementActions {
      * @return void 
      */
     public static function update(array $account_details, int $store_id, ?string $date=null, ?PDO &$db=null): void {
-        // NOTE: Ensure the server is using UTC timezone.
         if($date === null) $date = Utils::get_business_date($store_id);
 
         // Convert to specific format
