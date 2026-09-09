@@ -8,7 +8,7 @@ This file contains configurations used by the application.
 /**
  * Client App Version
  */
-define('CLIENT_APP_VERSION', '2.4.6');
+define('CLIENT_APP_VERSION', '2.4.7');
 
 /* Hosts */
 define('__LOCALHOST__', 0);
@@ -38,6 +38,12 @@ define('BASE_DOMAIN', 'abs.company');
 
 /* Server Timezone */
 define('SERVER_TIMEZONE', 'America/New_York');
+
+/* Client App Date Timezone 
+ * 
+ * The default timezone that client app date selector sends is in UTC. 
+ */
+define('CLIENT_APP_DATE_TIMEZONE', 'UTC');
 
 /* Set Default Timezone */
 date_default_timezone_set(SERVER_TIMEZONE);

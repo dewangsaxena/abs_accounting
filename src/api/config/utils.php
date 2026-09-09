@@ -176,10 +176,11 @@ class Utils {
      * @param iso_timestamp The timestamp to convert
      * @param store_id 
      * @param use_24_hour_format Whether to convert to 24-hour format or 12 hour.
+     * @param timezone
      * @return string
      */
-    public static function get_local_timestamp(string $iso_timestamp, int $store_id, bool $use_24_hour_format=false) : string {
-        $date_time = new DateTime(date($iso_timestamp), new DateTimeZone(SERVER_TIMEZONE));
+    public static function get_local_timestamp(string $iso_timestamp, int $store_id, bool $use_24_hour_format=false, string $timezone = SERVER_TIMEZONE) : string {
+        $date_time = new DateTime(date($iso_timestamp), new DateTimeZone($timezone));
         $date_time -> setTimezone(new DateTimeZone(STORE_DETAILS[$store_id]['timezone']));
         $format = $use_24_hour_format ? 'Y-m-d H:i:s T' : 'Y-m-d h:i:s A T';
         return $date_time -> format($format);
@@ -407,6 +408,21 @@ class Utils {
         $date = date_timestamp_set($date_created, $date_timestamp);
         $date = date_format($date, 'Y-m-d H:i:s');
         return Utils::get_local_timestamp($date, $store_id, $use_24_hour_format);
+    }
+
+    /**
+     * This method will convert Client App timestamp(UTC) to localtime.
+     * 
+     * @param client_app_timestamp
+     * @param store_id
+     * @return string
+     */
+    public static function convert_client_app_timestamp_to_localtime(string $client_app_timestamp, int $store_id): string {
+        $date_created = date_create($client_app_timestamp, new DateTimeZone(CLIENT_APP_DATE_TIMEZONE));
+        $date_timestamp = date_timestamp_get($date_created);
+        $date = date_timestamp_set($date_created, $date_timestamp);
+        $date = date_format($date, 'Y-m-d H:i:s');
+        return Utils::get_local_timestamp($date, $store_id, false, CLIENT_APP_DATE_TIMEZONE);
     }
 
     /**
