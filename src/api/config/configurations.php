@@ -39,6 +39,12 @@ define('BASE_DOMAIN', 'abs.company');
 /* Server Timezone */
 define('SERVER_TIMEZONE', 'America/New_York');
 
+/* Client App Date Timezone 
+ * 
+ * The default timezone that client app date selector sends is in UTC. 
+ */
+define('CLIENT_APP_DATE_TIMEZONE', 'UTC');
+
 /* Set Default Timezone */
 date_default_timezone_set(SERVER_TIMEZONE);
 
