@@ -35,14 +35,21 @@ export class Stores {
   }
 }
 
-// Domains Base URLS
-const DOMAINS_BASE_URLS: AttributeType = {
-  parts: "parts.absyeg.store",
-  wash: "wash.absyeg.store",
-  ten_leasing: "tenleasing.absyeg.store",
-  localhost: "localhost",
-  vanguard: "vanguard.absyeg.store",
-  salvage_parts: "salvageparts.absyeg.store",
+/**
+ * Base Domain
+ */
+const BASE_DOMAIN: String = "abs.company";
+
+// SubDomains Base URLS
+const SUBDOMAINS_BASE_URLS: AttributeType = {
+  parts: `parts.${BASE_DOMAIN}`,
+  wash: `wash.${BASE_DOMAIN}`,
+  ten_leasing: `tenleasing.${BASE_DOMAIN}`,
+  localhost: `localhost`,
+  vanguard: `vanguard.${BASE_DOMAIN}`,
+  salvage_parts: `salvageparts.${BASE_DOMAIN}`,
+  testing_parts: `testing-parts.${BASE_DOMAIN}`,
+  testing_wash: `testing-wash.${BASE_DOMAIN}`,
 };
 
 /* Default System Init Mode */
@@ -50,19 +57,18 @@ export const MODE_WASH: number = 1;
 export const MODE_PARTS: number = 2;
 
 // Is LocalHost
-export const isLocalHost: boolean = location.hostname.includes(DOMAINS_BASE_URLS["localhost"]);
+export const isLocalHost: boolean = location.hostname.includes(SUBDOMAINS_BASE_URLS["localhost"]);
 
 // System Initiation Flags
-export const isParts: boolean = location.hostname.includes(DOMAINS_BASE_URLS["parts"]) && location.hostname.includes("salvage") == false
+export const isParts: boolean = location.hostname.includes(SUBDOMAINS_BASE_URLS["parts"]) && location.hostname.includes("salvage") == false
   ? true
   : false;
-const isWash: boolean = location.hostname.includes(DOMAINS_BASE_URLS["wash"])
-  ? true
-  : false;
-const isTenLeasing: boolean = location.hostname.includes(DOMAINS_BASE_URLS["ten_leasing"]) ? true : false;
-const isVanguard: boolean = location.hostname.includes(DOMAINS_BASE_URLS["vanguard"]) ? true : false;
-const isSalvageParts: boolean = location.hostname.includes(DOMAINS_BASE_URLS["salvage_parts"]) ? true : false;;
-
+const isWash: boolean = location.hostname.includes(SUBDOMAINS_BASE_URLS["wash"]);
+const isTenLeasing: boolean = location.hostname.includes(SUBDOMAINS_BASE_URLS["ten_leasing"]);
+const isVanguard: boolean = location.hostname.includes(SUBDOMAINS_BASE_URLS["vanguard"]);
+const isSalvageParts: boolean = location.hostname.includes(SUBDOMAINS_BASE_URLS["salvage_parts"]);
+const isTestingParts: boolean = location.hostname.includes(SUBDOMAINS_BASE_URLS["testing_parts"]);
+const isTestingWash: boolean = location.hostname.includes(SUBDOMAINS_BASE_URLS["testing_wash"]) ;
 /** Detault System Mode */
 const defaultSystemMode: number = MODE_PARTS;
 
@@ -82,6 +88,12 @@ export const systemConfigMode: number | null =
   :
   isSalvageParts 
     ? MODE_PARTS
+  :
+  isTestingParts
+    ? MODE_PARTS 
+  :
+  isTestingWash
+    ? MODE_WASH
   :
   defaultSystemMode;
 
@@ -179,17 +191,15 @@ export const UNKNOWN_SERVER_ERROR_MSG: string = "Unknown Server Error.";
 export const DEFAULT_PROFIT_MARGIN_KEY = "DEFAULT";
 
 /** This module contains config shared by entire application. */
-export const APP_HOST = isParts
-  ? "https://" + DOMAINS_BASE_URLS["parts"]
-  : isWash
-  ? "https://" + DOMAINS_BASE_URLS["wash"]
-  : isTenLeasing ? 
-    "https://" + DOMAINS_BASE_URLS["ten_leasing"]
-  : isVanguard ? 
-    "https://" + DOMAINS_BASE_URLS["vanguard"]
-  : isSalvageParts ?
-    "https://" + DOMAINS_BASE_URLS['salvage_parts']
-  : "http://" + DOMAINS_BASE_URLS["localhost"];
+export const APP_HOST = 
+    isParts ? "https://" + SUBDOMAINS_BASE_URLS["parts"]
+  : isWash  ? "https://" + SUBDOMAINS_BASE_URLS["wash"]
+  : isTenLeasing ? "https://" + SUBDOMAINS_BASE_URLS["ten_leasing"]
+  : isVanguard ? "https://" + SUBDOMAINS_BASE_URLS["vanguard"]
+  : isSalvageParts ? "https://" + SUBDOMAINS_BASE_URLS['salvage_parts']
+  : isTestingParts ? "https://" + SUBDOMAINS_BASE_URLS['testing_parts']
+  : isTestingWash ? "https://" + SUBDOMAINS_BASE_URLS['testing_wash']
+  : "http://" + SUBDOMAINS_BASE_URLS["localhost"];
 
 /** Min Length before fetching */
 export const AUTO_SUGGEST_MIN_INPUT_LENGTH: number = 1;
