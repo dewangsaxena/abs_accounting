@@ -60,10 +60,13 @@ export const MODE_PARTS: number = 2;
 export const isLocalHost: boolean = location.hostname.includes(SUBDOMAINS_BASE_URLS["localhost"]);
 
 // System Initiation Flags
-export const isParts: boolean = location.hostname.includes(SUBDOMAINS_BASE_URLS["parts"]) && location.hostname.includes("salvage") == false
+export const isParts: boolean = 
+    location.hostname.includes(SUBDOMAINS_BASE_URLS["parts"]) 
+&&  location.hostname.includes("salvage") == false
+&&  location.hostname.includes("testing") == false
   ? true
   : false;
-const isWash: boolean = location.hostname.includes(SUBDOMAINS_BASE_URLS["wash"]);
+const isWash: boolean = location.hostname.includes(SUBDOMAINS_BASE_URLS["wash"]) && location.hostname.includes("testing") == false;
 const isTenLeasing: boolean = location.hostname.includes(SUBDOMAINS_BASE_URLS["ten_leasing"]);
 const isVanguard: boolean = location.hostname.includes(SUBDOMAINS_BASE_URLS["vanguard"]);
 const isSalvageParts: boolean = location.hostname.includes(SUBDOMAINS_BASE_URLS["salvage_parts"]);
