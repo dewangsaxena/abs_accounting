@@ -1028,10 +1028,10 @@ class Receipt {
         try {
             $path_to_output_file = null;
             $err_message = '';
-            $random_token = Utils::generate_token(4);
+            $random_token = Utils::generate_token(8);
 
             // By Default, Receipt Filename will be included.
-            $filenames = ["receipt_$receipt_id.pdf"];
+            $filenames = ["receipt-$receipt_id-$random_token.pdf"];
             $attach_transactions = count($transactions) > 0;
             if($attach_transactions) {
                 $result = Shared::generate_pdf($transactions, dump_file: true);
@@ -1050,6 +1050,7 @@ class Receipt {
             GeneratePDF::receipt($receipt_details, $filenames[0], true);
 
             // This is the output filename
+            $random_token = Utils::generate_token(8);
             $receipt_filename = "receipt-$receipt_id-$random_token.pdf";
             $temp_dir_receipt_filename = TEMP_DIR. $receipt_filename;
 
