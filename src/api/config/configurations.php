@@ -8,7 +8,7 @@ This file contains configurations used by the application.
 /**
  * Client App Version
  */
-define('CLIENT_APP_VERSION', '2.4.7');
+define('CLIENT_APP_VERSION', '2.4.8');
 
 /* Hosts */
 define('__LOCALHOST__', 0);
@@ -17,6 +17,8 @@ define('__WASH_V2__', 9);
 define('__TEN_LEASING__', 10);
 define('__VANGUARD__', 11);
 define('__SALVAGE_PARTS__', 12);
+define('__TESTING_PARTS__', 13);
+define('__TESTING_WASH__', 14);
 
 /* Hosting Mode */
 define('PARTS_HOST', __PARTS_V2__);
@@ -24,6 +26,8 @@ define('WASH_HOST', __WASH_V2__);
 define('TENLEASING_HOST', __TEN_LEASING__);
 define('VANGUARD_HOST', __VANGUARD__);
 define('SALVAGE_PARTS_HOST', __SALVAGE_PARTS__);
+define('__TESTING_PARTS_HOST__', __TESTING_PARTS__);
+define('__TESTING_WASH_HOST__', __TESTING_WASH__);
 
 /* Modes */
 define('WASH', 1);
@@ -74,6 +78,12 @@ if ($is_localhost) {
 } else if ($domain === 'salvageparts.'. BASE_DOMAIN) {
     $offset = __SALVAGE_PARTS__;
     $mode = PARTS;
+} else if ($domain === 'testing-parts.'. BASE_DOMAIN) {
+    $offset = __TESTING_PARTS__;
+    $mode = PARTS;
+} else if ($domain === 'testing-wash.'. BASE_DOMAIN) {
+    $offset = __TESTING_WASH__;
+    $mode = WASH;
 } else die('Invalid Domain');
 
 /* Business Specific Configuration. */
@@ -263,6 +273,8 @@ function redirect_to_abs_company() {
         case TENLEASING_HOST: $redirect_slug = 'tenleasing'; break;
         case VANGUARD_HOST: $redirect_slug = 'vanguard'; break;
         case SALVAGE_PARTS_HOST: $redirect_slug = 'salvageparts'; break;
+        case __TESTING_PARTS_HOST__: $redirect_slug = 'testing-parts'; break;
+        case __TESTING_WASH_HOST__: $redirect_slug = 'testing-wash'; break;
         default: http_response_code(500); die;
     }
     if($redirect_slug !== '') {
