@@ -119,8 +119,9 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
         self::$pdf -> Cell(w:$offset_right_section, h:4, txt: self::$details['company_name'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
 
         // Document Type
-        $document_type = strtoupper(self::$details['document_type']);
-        self::$pdf -> Cell(w:38, h:4, txt: $document_type === 'SALES INVOICE' ? 'INVOICE': $document_type, border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
+        $document_type = self::$details['document_type'];
+        $document_type_id = self::$details['txn_type_id'];
+        self::$pdf -> Cell(w:38, h:4, txt: $document_type_id === SALES_INVOICE ? 'INVOICE': strtoupper($document_type), border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
 
         // PADDING 
         self::$pdf -> Cell(w: 0, h: 1.5, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
@@ -130,7 +131,7 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
 
         // Line 1
         self::$pdf -> Cell(w: $offset_right_section, h:4, txt: self::$details['company_address_line_1'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
-        self::$pdf -> Cell(w: 20, h:4, txt: self::$details['document_type'].' #:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
+        self::$pdf -> Cell(w: 20, h:4, txt: $document_type.' #:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         self::$pdf -> SetFont(self::COURIER, '', 7.5);
         self::$pdf -> Cell(w: 0, h:4, txt: self::$details['document_id'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 1);
 
@@ -208,7 +209,17 @@ class __GeneratePDF_SI_SR_CN_DN_QT {
 
         // Last Line 
         self::$pdf -> SetFont(self::ARIAL, '', 7.5);
-        self::$pdf -> Cell(w:$offset_right_section, h:4, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
+
+        if($document_type_id == SALES_RETURN) {
+            self::$pdf -> SetFont(self::ARIAL, '', 7.5);
+            self::$pdf -> Cell(w:30, h:4, txt: 'Sales Invoice #: ', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
+            self::$pdf -> SetFont(self::COURIER, '', 7.5);
+            self::$pdf -> Cell(w:$offset_right_section - 30, h:4, txt: self::$details['sales_invoice_id'], border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
+        }
+        else {
+            self::$pdf -> Cell(w:$offset_right_section, h:4, txt: '', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
+        }
+        self::$pdf -> SetFont(self::ARIAL, '', 7.5);
         self::$pdf -> Cell(w: 20, h:4, txt: 'Page #:', border: self::SHOW_BORDER_FOR_DEBUG, ln: 0);
         $no_of_pages = self::$no_of_pages;
         self::$pdf -> SetFont(self::COURIER, '', 7.5);
