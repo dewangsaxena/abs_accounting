@@ -147,6 +147,7 @@ class PrepareDetails_SI_SR_CN_DN_QT {
         $details = [
             'txn_type_id' => $transaction_type,
             'document_id' => $txn['id'],
+            'sales_invoice_id' => $txn['sales_invoice_id'] ?? null,
             'date' => Utils::convert_date_to_human_readable($txn['date']),
             'document_type' => TRANSACTION_NAMES[$transaction_type],
             'po' => $txn['po'] ?? '',
