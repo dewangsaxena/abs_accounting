@@ -125,8 +125,11 @@ class Inventory {
      */
     private static function add(PDO &$db, array $values, int $initial_quantity, float $buying_cost): array {
 
+        // User Id 
+        $user_id = intval($_SESSION['user_id']);
+
         // Disable Item Add in Wash
-        if(SYSTEM_INIT_MODE === WASH) throw new Exception('Cannot add new Parts in Wash.');
+        if(SYSTEM_INIT_MODE === WASH && $user_id !== UserManagement::ROOT_USER_ID) throw new Exception('Cannot add new Parts in Wash.');
 
         // Store id 
         $store_id = intval($_SESSION['store_id']);
